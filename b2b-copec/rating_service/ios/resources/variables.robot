@@ -15,7 +15,7 @@ ${PASSWORD_BAVARIA_SINGLE}  Bienvenido1
 ${URL_BACKUS}               https://qa-conv-backus.abi-sandbox.net/customer/account/login/
 ${EMAIL_BACKUS}             0010001001@mailinator.com
 ${PASSWORD_BACKUS}          Bienvenido1
-${POC_BACKUS}               Bodega Maria | 0010001002
+${POC_BACKUS}               Bodega Maria 
 
 ${APP_BACKUS}               /Users/tailarosa/Library/Developer/Xcode/DerivedData/TapWiser-eancirtbmjcpkfheobsmhfmamlcy/Build/Products/Debug-iphonesimulator/Backus.app     
 ${BUNDLE_BACKUS}            com.ciandt.enterprise.abi-backus-qa
@@ -25,8 +25,8 @@ ${PASSWORD_BACKUS_SINGLE}   Bienvenido1
 
 #==============================MI TIENDA CN=====================
 ${URL_MITIENDA}             https://qa-conv-nacional.abi-sandbox.net/customer/account/login/
-${EMAIL_MITIENDA}           
-${PASSWORD_MITIENDA}        
+${EMAIL_MITIENDA}           NAO TEM
+${PASSWORD_MITIENDA}        NAO TEM 
 
 ${APP_MITIENDA}             /Users/tailarosa/Library/Developer/Xcode/DerivedData/TapWiser-eancirtbmjcpkfheobsmhfmamlcy/Build/Products/Debug-iphonesimulator/Cerveceria Nacional.app     
 ${BUNDLE_MITIENDA}          com.ciandt.enterprise.abi-cerveceria-nacional-qa

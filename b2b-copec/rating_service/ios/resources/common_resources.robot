@@ -11,16 +11,16 @@ I opened the Application
     Open Application    http://localhost:4723/wd/hub    platformName=iOS    platformVersion=12.1   deviceName=iPhone 7     app=${app}     bundIeId=${bundle}
     Wait Until Page Contains Element        accessibility_id=Allow          
     Click Element       accessibility_id=Allow 
-    #Wait Until Page Contains Element        //XCUIElementTypeImage[@name="launchImageMedium"]       timeout=10
+    Wait Until Page Contains Element        //XCUIElementTypeImage[@name="launchImageMedium"]       timeout=10
     #uncomment the next row when Mi Tienda scenarios are running
-    Wait Until Page Contains Element        accessibility_id=onboardingBg.png
+    #Wait Until Page Contains Element        accessibility_id=onboardingBg.png
 
 
 I set environment
     [Arguments]     ${env}
-    #Tap     //XCUIElementTypeImage[@name="launchImageMedium"]     x_offset=50       y_offset=50       count=3
+    Tap     //XCUIElementTypeImage[@name="launchImageMedium"]     x_offset=50       y_offset=50       count=3
     #uncomment the next row when Mi Tienda scenarios are running
-    Tap     accessibility_id=onboardingBg.png     x_offset=50       y_offset=50       count=3
+    #Tap     accessibility_id=onboardingBg.png     x_offset=50       y_offset=50       count=3
     Wait Until Element Is Visible       ${env}     50 
     Click Element       ${env}
     Wait Until Page Contains Element     //XCUIElementTypeNavigationBar[@name="Debug Drawer"]
@@ -33,18 +33,19 @@ Click on login button
 
 
 I enter my credentials
-    [Arguments]                         ${email}    ${password}
+    [Arguments]                         ${email}     ${password}
     Input Text                          //XCUIElementTypeTextField[@name="Email Address Login"]     ${email}
     Input Password                      //XCUIElementTypeSecureTextField[@name="Password"]          ${password}
 
 
-I click on Login
-    Click Element                       //XCUIElementTypeButton[@name="Login"]                      timeout=20
-    # Wait Until Page Contains Element    accessibility_id= Bodega Maria
-
 I select the POC 
     [Arguments]         ${poc}
-    Click Element       accessibility_id=${poc}
+    Wait Until Page Contains Element        //XCUIElementTypeTable[@name="Account table"]/XCUIElementTypeCell[2] 
+    Click Element       accessibility_id= ${poc}
+
+I click on Login
+    Click Element                         //XCUIElementTypeButton[@name="Login"]                      
+    # Wait Until Page Contains Element    accessibility_id= Bodega Maria
 
 
 
