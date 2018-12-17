@@ -14,15 +14,16 @@ ${TV_CATGORY_TITLE}              id=title
 ${GLOBAL_ENVIRONMENTS}           std.Create List  Static Prod PreProd Qa Dev
 
 # Messages
+${LOGIN_DIALOG_BTN_MESSAGE}      CONFIRMAR
+${TOTAL_TUTORIAL_SCREENS}        3
 ${bavaria_login_error_message}   Usuario o clave errada o su cuenta se ha desactivado temporalmente.\n\nv1.7.3
 ${quilmes_login_error_message}   Usuario o clave incorrecta. Por favor ingrese los datos de nuevo.
-@{LOGIN_INVALID_MESSAGE}         ${bavaria_login_error_message}         ${quilmes_login_error_message}
+@{LOGIN_INVALID_MESSAGE}         ${bavaria_login_error_message}  ${quilmes_login_error_message}
 
 # Time
 ${TIMEOUT}                       50s
 ${SCREENSHOT_SLEEP}              200ms
 ${BOOTSTRAP_SLEEP}               5s
-
 
 #========================== LOGIN ==========================#
 # Screen elements

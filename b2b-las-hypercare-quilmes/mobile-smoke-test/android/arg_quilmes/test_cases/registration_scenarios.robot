@@ -2,7 +2,7 @@
 Documentation   Tests to verify that the Registration Feature succeed and 
 ...             failed correctly depending on the new user credentials.
 
-Resource		${CURDIR}/../helpers/global_imports.robot
+Resource		${CURDIR}/../helpers/quilmes_imports.robot
 
 Suite Setup     Bootstrap test environment
 Suite Teardown	Close App

@@ -3,7 +3,7 @@ Documentation	    Tests to verify that the Post Order Feature succeed and
 ...               failed correctly depending on the users credentials and
 ...               order information.
 
-Resource		      ${CURDIR}/../helpers/global_imports.robot
+Resource		      ${CURDIR}/../helpers/quilmes_imports.robot
 
 Suite Setup       Bootstrap test environment
 Suite Teardown	  Close App
