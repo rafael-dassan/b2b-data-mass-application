@@ -19,20 +19,14 @@ Open App
   ...                                             avd=${GLOBAL_AVD}
 
 Bootstrap test environment
-  ${command}                                      std.Set Variable  adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
-  process.Run Process                             ${command}  shell=true
-  ${command}                                      std.Set Variable  %{ANDROID_HOME}/emulator/emulator -avd ${GLOBAL_AVD} &
-  process.Run Process                             ${command}  shell=true  stdout=/dev/null  stderr=/dev/null
+  Shutdown android virtual device
+  Shutdown appium server
+  Start android virtual device
   std.Sleep                                       ${BOOTSTRAP_SLEEP}
-  ${command}                                      std.Set Variable  ps -ef | grep appium | grep -v grep | awk '{print $2}' | xargs kill -9
-  std.Log                                         ${command}  console=true
-  process.Run Process                             ${command}  shell=true
-  ${command}                                      std.Set Variable  appium --session-override --reboot &
-  std.Log                                         ${command}  console=true
-  process.Run Process                             ${command}  shell=true  stdout=/dev/null  stderr=/dev/null
+  Start appium server
   std.Sleep                                       ${BOOTSTRAP_SLEEP}
   Open App
-
+  
 Swipe From Right To Left
   appium.Swipe By Percent                         95  50	05  50  350
 
@@ -45,7 +39,7 @@ Hide Debug Drawer
 I select the environment
   [Arguments]                                     ${environment}
   collections.List Should Contain Value           ${GLOBAL_ENVIRONMENTS}  ${environment} 
-  std.Log                                         \nRunning tests against ${environment}  console=yes
+  std.Log                                         \nRunning tests against: ${environment}  console=yes
   appium.Wait Until Page Contains Element         ${BTN_GO_TO_LOGIN}  ${TIMEOUT}
   appium.Capture Page Screenshot                  ${LOGDIR}/screenshots/home/home_screen.png
   Show Debug Drawer
@@ -83,8 +77,25 @@ Go to the menu
   
 Close App
   appium.Close Application
-  process.Run Process                             ${KILL_EMULATOR_COMMAND}  shell=true
+  Shutdown android virtual device
+  Shutdown appium server
 
+Shutdown android virtual device
+  ${command}                                        std.Set Variable  adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
+  process.Run Process                               ${command}  shell=true
+
+Start android virtual device
+  ${command}                                        std.Set Variable  %{ANDROID_HOME}/emulator/emulator -avd ${GLOBAL_AVD} &
+  process.Run Process                               ${command}  shell=true  stdout=/dev/null  stderr=/dev/null
+
+Shutdown appium server
+  ${command}                                        std.Set Variable  ps -ef | grep appium | grep -v grep | awk '{print $2}' | xargs kill -9
+  process.Run Process                               ${command}  shell=true
+
+Start appium server
+  ${command}                                        std.Set Variable  appium --session-override --reboot &
+  process.Run Process                               ${command}  shell=true  stdout=/dev/null  stderr=/dev/null
+  
 #======================================== LOGIN ========================================#
 A login error message is displayed
   appium.Wait Until Page Contains Element           ${TP_LOGIN_ERROR_MESSAGE}  ${TIMEOUT}

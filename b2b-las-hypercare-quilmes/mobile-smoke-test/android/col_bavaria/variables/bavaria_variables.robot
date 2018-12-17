@@ -10,7 +10,6 @@ ${GLOBAL_APP_ACTIVITY}           com.abinbev.android.tapwiser.app.StartupActivit
 ${GLOBAL_APP_PACKAGE}            com.abinbev.android.tapwiser.colombiaBavaria.debug
 ${GLOBAL_AVD}                    Nexus_5X_API_28
 ${GLOBAL_AUTOMATION_NAME}        UiAutomator2
-${KILL_EMULATOR_COMMAND}         std.Set Variable  adb emu kill
 
 # Results directory
 ${LOGDIR}                        ${CURDIR}/../results
