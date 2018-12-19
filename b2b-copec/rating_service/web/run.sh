@@ -3,51 +3,49 @@
 rm -r ./results/*
 
 ######### FIVE SCENARIOS
-#FILE=five_stars_scenarios_backus
+FILE=five_stars_scenarios_backus
+robot -d ./results ./tests/$FILE.robot
+mkdir -p ./results/$FILE
+mv ./results/*.* ./results/$FILE
+
+# FILE=five_stars_scenarios_bavaria
+# robot -d ./results ./tests/$FILE.robot
+# mkdir -p ./results/$FILE
+# mv ./results/*.* ./results/$FILE
+#
+#FILE=five_stars_scenarios_mitiendacn
 #robot -d ./results ./tests/$FILE.robot
 #mkdir -p ./results/$FILE
 #mv ./results/*.* ./results/$FILE
 
-FILE=five_stars_scenarios_bavaria
-robot -d ./results ./tests/$FILE.robot
-mkdir -p ./results/$FILE
-mv ./results/*.* ./results/$FILE
-#
-#FILE=five_stars_scenarios_mitienda
-#robot -d ./results ./tests/$FILE.robot
-#mkdir -p ./results/$FILE
-#mv ./results/*.* ./results/$FILE
-#
-#
 ######### TWO SCENARIOS
-#FILE=two_stars_scenarios_backus
+FILE=two_star_scenarios_backus
+robot -d ./results ./tests/$FILE.robot
+mkdir -p ./results/$FILE
+mv ./results/*.* ./results/$FILE
+
+# FILE=two_star_scenarios_bavaria
+# robot -d ./results ./tests/$FILE.robot
+# mkdir -p ./results/$FILE
+# mv ./results/*.* ./results/$FILE
+#
+#FILE=two_star_scenarios_mitiendacn
 #robot -d ./results ./tests/$FILE.robot
 #mkdir -p ./results/$FILE
 #mv ./results/*.* ./results/$FILE
-#
-#FILE=two_stars_scenarios_bavaria
-#robot -d ./results ./tests/$FILE.robot
-#mkdir -p ./results/$FILE
-#mv ./results/*.* ./results/$FILE
-#
-#FILE=two_stars_scenarios_mitienda
-#robot -d ./results ./tests/$FILE.robot
-#mkdir -p ./results/$FILE
-#mv ./results/*.* ./results/$FILE
-#
-#
+
 ######### ONE SCENARIOS
-#FILE=one_star_scenarios_backus
-#robot -d ./results ./tests/$FILE.robot
-#mkdir -p ./results/$FILE
-#mv ./results/*.* ./results/$FILE
-#
-FILE=one_star_scenarios_bavaria
+FILE=one_star_scenarios_backus
 robot -d ./results ./tests/$FILE.robot
 mkdir -p ./results/$FILE
 mv ./results/*.* ./results/$FILE
 #
-#FILE=one_star_scenarios_mitienda
+# FILE=one_star_scenarios_bavaria
+# robot -d ./results ./tests/$FILE.robot
+# mkdir -p ./results/$FILE
+# mv ./results/*.* ./results/$FILE
+#
+#FILE=one_star_scenarios_mitiendacn
 #robot -d ./results ./tests/$FILE.robot
 #mkdir -p ./results/$FILE
 #mv ./results/*.* ./results/$FILE
@@ -58,12 +56,12 @@ mv ./results/*.* ./results/$FILE
 #mkdir -p ./results/$FILE
 #mv ./results/*.* ./results/$FILE
 #
-FILE=non_display_rating_service_bavaria
-robot -d ./results ./tests/$FILE.robot
-mkdir -p ./results/$FILE
-mv ./results/*.* ./results/$FILE
+#FILE=non_display_rating_service_bavaria
+#robot -d ./results ./tests/$FILE.robot
+#mkdir -p ./results/$FILE
+#mv ./results/*.* ./results/$FILE
 #
-#FILE=non_display_rating_service_mitienda
+#FILE=non_display_rating_service_mitiendacn
 #robot -d ./results ./tests/$FILE.robot
 #mkdir -p ./results/$FILE
 #mv ./results/*.* ./results/$FILE
