@@ -11,7 +11,7 @@ Resource    ./variables.robot
 End Web Test
     [Arguments]      ${url}      ${user_jwt}     ${user_account}     ${useCaseId}    ${country}     ${admin_jwt} 
     Remove the rating done      ${url}      ${user_jwt}     ${user_account}     ${useCaseId}     ${country}     ${admin_jwt}
-    #Close Browser
+    Close Browser
 
 I am logged 
     [Arguments]                             ${url}      ${email}    ${password}

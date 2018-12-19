@@ -1,6 +1,6 @@
 *** Settings ***
 Resource        ../resources/common_resources.robot
-Test Teardown   End Web Test
+Test Teardown  Close Browser
 
 *** Test Case ***
 

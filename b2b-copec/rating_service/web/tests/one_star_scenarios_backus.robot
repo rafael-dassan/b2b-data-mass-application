@@ -33,23 +33,3 @@ Test Teardown   End Web Test    ${MS_RATING_URL}      ${JWT_BACKUS}     ${CUSTID
     And I select three tags
     And I click on submit
   Then the thank you modal should be displayed
-
-# 1 Star 0 Tag Without Comment
-    # [Documentation] Verify if the submit button stay disable according to the specification
-#   [Tags]  WEB   B2BCOPEC-861
-#   Given I am logged     ${URL_BACKUS}     ${EMAIL_BACKUS}    ${PASSWORD_BACKUS}
-#     And I select the POC  1
-#   When the rating service modal is displayed
-#     And I select a star   1
-#   Then the submit button should be disabled
-
-# 1 Star 3 Tags With Comment - Single Account User
-#   [Tags]  WEB   B2BCOPEC-861
-#   Given I am logged     ${URL_BACKUS}     ${EMAIL_BACKUS_SINGLE}    ${PASSWORD_BACKUS_SINGLE}
-#     And I closed the novedad modal
-#   When the rating service modal is displayed
-#     And I select a star     1
-#     And I select three tags
-#     And I filled the comment area
-#     And I click on submit
-#   Then the thank you modal should be displayed
