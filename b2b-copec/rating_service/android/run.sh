@@ -3,10 +3,10 @@
 rm -r ./results/*
 
 ######### FIVE SCENARIOS
-FILE=five_stars_scenarios_backus
-robot -d ./results ./tests/$FILE.robot
-mkdir -p ./results/$FILE
-mv ./results/*.* ./results/$FILE
+# FILE=five_stars_scenarios_bavaria
+# robot -d ./results ./tests/$FILE.robot
+# mkdir -p ./results/$FILE
+# mv ./results/*.* ./results/$FILE
 
 # FILE=five_stars_scenarios_bavaria
 # robot -d ./results ./tests/$FILE.robot
@@ -18,17 +18,16 @@ mv ./results/*.* ./results/$FILE
 # mkdir -p ./results/$FILE
 # mv ./results/*.* ./results/$FILE
 
-
 # ######## TWO SCENARIOS
 # FILE=two_stars_scenarios_backus
 # robot -d ./results ./tests/$FILE.robot
 # mkdir -p ./results/$FILE
 # mv ./results/*.* ./results/$FILE
 
-# FILE=two_stars_scenarios_bavaria
-# robot -d ./results ./tests/$FILE.robot
-# mkdir -p ./results/$FILE
-# mv ./results/*.* ./results/$FILE
+FILE=single_account_scenarios_backus
+robot -d ./results ./tests/$FILE.robot
+mkdir -p ./results/$FILE
+mv ./results/*.* ./results/$FILE
 
 # FILE=two_stars_scenarios_mitienda
 # robot -d ./results ./tests/$FILE.robot
