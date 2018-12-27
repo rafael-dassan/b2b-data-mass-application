@@ -31,7 +31,7 @@ Perform GET request
     Log                ${RESPONSE.text}
     Set Test Variable  ${RESPONSE}
 
-Requisitar o livro "${ID_LIVRO}"
+Perform GET request by ID "${ID_LIVRO}"
     ${RESPONSE}        Get Request  fakeAPI  Books/${ID_LIVRO}
     Log                ${RESPONSE.text}
     Set Test Variable  ${RESPONSE}
@@ -52,7 +52,7 @@ Check the reason
     [Arguments]                 ${EXPECTED_REASON}
     Should Be Equal As Strings  ${RESPONSE.reason}  ${EXPECTED_REASON}
 
-Conferir se retorna uma lista com "${BOOKS_QTY}" livros
+Check if the request returns a list with "${BOOKS_QTY}" books
     Length Should Be  ${RESPONSE.json()}  ${BOOKS_QTY}
 
 Check if the request returns the correct data for book "15"
