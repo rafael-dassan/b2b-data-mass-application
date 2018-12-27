@@ -1,24 +1,24 @@
 *** Settings ***
-Documentation   Documentação da API: https://fakerestapi.azurewebsites.net/swagger/ui/index#!/Books
+Documentation   API Documentation: https://fakerestapi.azurewebsites.net/swagger/ui/index#!/Books
 Resource        ../resource/resource_api.robot
-Suite Setup     Conectar a minha API
+Suite Setup     Connect to the API
 
 *** Test Cases ***
-Caso de Teste 01: Buscar a listagem de todos os livros (GET em todos os livros)
-    Requisitar todos os livros
-    Conferir o status code    200
-    Conferir o reason   OK
-    Conferir se retorna uma lista com "200" livros
+Test Case 01: GET All Books
+    Perform GET request
+    Check the status code    200
+    Check the reason   OK
+    Check if the request returns a list with "200" books
 
-Caso de Teste 02: Buscar um livro específico (GET em um livro específico)
-    Requisitar o livro "15"
-    Conferir o status code    200
-    Conferir o reason   OK
-    Conferir se retorna todos os dados corretos do livro 15
+Test Case 02: GET Book By ID
+    Perform GET request by ID "15"
+    Check the status code    200
+    Check the reason   OK
+    Check if the request returns the correct data for book "15"
 
-Caso de Teste 03: Cadastrar um novo livro (POST)
-    Cadastrar um novo livro
-    Conferir se retorna todos os dados cadastrados para o novo livro
+Test Case 03: Register a new book (POST Request)
+    Perform POST request
+    Check if the request returns the correct data for the new book
 
 # TO-DO: Caso de Teste 04: Alterar um livro específico (PUT em um livro específico)
 #   - Conferir se retorna todos os dados alterados do livro 150
