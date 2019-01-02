@@ -4,14 +4,14 @@ Test Setup        Open Browser  about:blank  headlesschrome
 Test Teardown     Close Browser
 
 *** Test Cases ***
-Test Case 01: Pesquisar produto existente
-  Acessar a página home do site
-  Digitar o nome do produto "Blouse" no campo de pesquisa
-  Clicar no botão pesquisar
-  Conferir se o produto "Blouse" foi listado no site
+Test Case 01: Search For Existent Product
+  Access the home page
+  Type the product "Blouse" in the search field
+  Click on the search button
+  Check if the product "Blouse" was listed
 
-Test Case 02: Pesquisar produto não existente
-  Acessar a página home do site
-  Digitar o nome do produto "itemNãoExistente" no campo de pesquisa
-  Clicar no botão pesquisar
-  Conferir mensagem de erro "No results were found for your search "itemNãoExistente""
+Test Case 02: Search For Non-Existent Product
+  Access the home page
+  Type the product "itemNãoExistente" in the search field
+  Click on the search button
+  Check the error message "No results were found for your search "itemNãoExistente""
