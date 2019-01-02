@@ -1,6 +1,6 @@
 *** Settings ***
 Resource          ../resource/resource_web.robot
-Test Setup        Open Browser  about:blank  chrome
+Test Setup        Open Browser  about:blank  headlesschrome
 Test Teardown     Close Browser
 
 *** Test Cases ***

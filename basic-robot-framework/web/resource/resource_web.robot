@@ -3,13 +3,17 @@ Library     SeleniumLibrary
 
 *** Variables ***
 ${URL}      http://automationpractice.com
-${BROWSER}  chrome
+${BROWSER}  headlesschrome
 ${PRODUTO}  Blouse
 
 *** Keywords ***
 # Step-by-step
 Acessar a página home do site
-    Go To            ${URL}
+    # ${options}=   Evaluate  sys.modules['selenium.webdriver'].ChromeOptions()  sys
+    # Call Method   ${options}   add_argument   --no-sandbox
+    # Call Method   ${options}   add_argument   --disable-setuid-sandbox 
+    # Create WebDriver   ${BROWSER}   chrome_options=${options}
+    Go To   ${URL}
     Title Should Be  My Store
 
 Digitar o nome do produto "${PRODUTO}" no campo de pesquisa
