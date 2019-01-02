@@ -23,7 +23,7 @@ Open Login Page
     [Arguments]                             ${url}
     Open Browser                            ${url}      ${BROWSER}
     Wait Until Page Contains                Ingresa
-    Sleep                                   200ms
+    Sleep                                   500ms
     Capture Page Screenshot                # login_page.png
 
 Input Login and Password
@@ -32,7 +32,7 @@ Input Login and Password
     Input Password                          //*[@id="pass"]     ${password}
 
 Click on LOG IN button
-    Sleep                                   200ms
+    Sleep                                   500ms
     Capture Page Screenshot                 #user_and_password.png
     Click Button                            //*[@id="send2"]
 
@@ -51,31 +51,31 @@ the rating service modal shouldnt be displayed
 
 the rating service modal is displayed
     Wait Until Page Contains Element        //*[@id="rating-my-service"]/div/div/div    timeout=50s
-    Sleep                                   200ms
+    Sleep                                   500ms
     Capture Page Screenshot                 #modal_displayed.png
 
 I filled the comment area
     Input Text                              //*[@id="option-anwser"]    Teste 
     ${textArea}=       Get Value            //*[@id="option-anwser"]
     Should Be Equal As Strings              ${textArea}   Teste
-    Sleep                                   200ms
+    Sleep                                   500ms
     Capture Page Screenshot                 #comment_area_filled.png   
 
 I click on submit
     Element Should Be Enabled               //*[@id="rate-form"]/button
-    Sleep                                   200ms
+    Sleep                                   500ms
     Capture Page Screenshot                 #options_selected_modal.png
     Click Button                            //*[@id="rate-form"]/button
 
 the thank you modal should be displayed
     Wait Until Element Is Visible           //*[@id="rating-my-service"]/div/div/div/div[3]/p[1]/button
-    Sleep                                   200ms
+    Sleep                                   500ms
     Capture Page Screenshot                 #thank_you.png
     Click Element                           //*[@id="rating-my-service"]/div/div/div/div[3]/p[1]/button
 
 the submit button should be disabled
     Element Should Be Disabled              //*[@id="rate-form"]/button
-    Sleep                                   200ms
+    Sleep                                   500ms
     Capture Page Screenshot                 #submit_button_disabled.png
 
 I select one tag
@@ -97,7 +97,7 @@ I select the POC
     Sleep                                   5s
     Wait Until Page Contains Element        //*[@id="choose-account"]
     Click Element                           //*[@id="login-association"]/div/div[1]/div[${pocPosition}]
-    Sleep                                   200ms
+    Sleep                                   500ms
     Capture Page Screenshot                 #poc_selected.png
     Click Button                            //*[@id="choose-account"]
 
