@@ -31,3 +31,4 @@ Conferir se o produto "${PRODUTO}" foi listado no site
 Conferir mensagem de erro "${MENSAGEM_ALERTA}"
     Wait Until Element Is Visible  //*[@id="center_column"]/p[@class="alert alert-warning"]
     Element Text Should Be         //*[@id="center_column"]/p[@class="alert alert-warning"]  ${MENSAGEM_ALERTA}
+    Capture Page Screenshot
