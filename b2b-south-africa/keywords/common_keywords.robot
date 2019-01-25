@@ -48,15 +48,22 @@ I select the environment
   Hide Debug Drawer
 
 I navigate through all introduction screens
-  :FOR  ${index}  IN RANGE  ${TOTAL_TUTORIAL_SCREENS}
+  ${length}                                       std.Get Length                    ${TUTORIAL_SCREENS_TEXTS_LIST}
+  std.Log                                         ${length}     console=yes
+
+  :FOR  ${index}  IN RANGE  ${length}
+  \    @{listTexts}                               std.Set Variable  @{TUTORIAL_SCREENS_TEXTS_LIST}[${index}]
   \    ${tutorial_screen_number}                  std.Evaluate  ${index} + 1
-  \    ${is_not_last_tutorial_screen}             std.Evaluate  ${tutorial_screen_number} < ${TOTAL_TUTORIAL_SCREENS}
+  \    ${is_not_last_tutorial_screen}             std.Evaluate  ${tutorial_screen_number} < ${length}
   \    appium.Wait Until Page Contains Element    ${TUTORIAL_IMAGE}  ${TIMEOUT}
+  \    Validate strings on screen                 @{listTexts}
   #\    appium.Capture Page Screenshot             ${LOGDIR}/screenshots/tutorial/tutorial_page_${index}.png
   \    std.Run Keyword If                         ${is_not_last_tutorial_screen}  Swipe From Right To Left
 
   # When in last tutorial screen
   appium.Page Should Contain Element              ${BTN_TUTORIAL_START}
+  ${startButtonText}                              appium.Get Text  ${BTN_TUTORIAL_START} 
+  std.Should Be Equal                             ${startButtonText}  ${TUTORIAL_START_BUTTON_MESSAGE}  ignore_case=true
   appium.Click Element                            ${BTN_TUTORIAL_START}
 
 I will be redirected to browse screen
@@ -95,68 +102,9 @@ Shutdown appium server
 Start appium server
   ${command}                                        std.Set Variable  appium --session-override --reboot &
   process.Run Process                               ${command}  shell=true  stdout=/dev/null  stderr=/dev/null
-  
-#======================================== LOGIN ========================================#
-A login error message is displayed
-  appium.Wait Until Page Contains Element           ${TP_LOGIN_ERROR_MESSAGE}  ${TIMEOUT}
-  ${errorMessage}                                   appium.Get Text  ${TV_LOGIN_ERROR_MESSAGE}
-  std.Should Contain Any                            ${errorMessage}  @{LOGIN_INVALID_MESSAGE}  ignore_case=false
-  appium.Element Should Contain Text                ${BTN_LOGIN_CONFIRM}  ${LOGIN_DIALOG_BTN_MESSAGE}  ${TIMEOUT}
-  std.Sleep                                         ${SCREENSHOT_SLEEP}
-  #appium.Capture Page Screenshot                    ${LOGDIR}/screenshots/login/login_error_message.png
-  appium.Click Element                              ${BTN_LOGIN_CONFIRM}
-  appium.Wait Until Page Does Not Contain Element   ${TP_LOGIN_ERROR_MESSAGE}  ${TIMEOUT}
 
-I login with invalid password
-  [Arguments]                                       ${user}  ${password}
-  std.Log                                           \nUser credentials: ${user} \nPassword: ${password}  console=yes
-  appium.Click Element                              ${BTN_GO_TO_LOGIN}
-  appium.Wait Until Page Contains Element           ${LOGIN_FORM}  ${TIMEOUT}                                              
-  appium.Input Text                                 ${ET_USERNAME}  ${user}
-  appium.Input Password                             ${ET_PASSWORD}  ${password}
-  std.Sleep                                         ${SCREENSHOT_SLEEP}
-  #appium.Capture Page Screenshot                    ${LOGDIR}/screenshots/login/invalid_password.png
-  appium.Click Element                              ${BTN_LOGIN}
-
-The Login button must be disabled
-  appium.Element Should Be Disabled                 ${BTN_LOGIN}
-  #appium.Capture Page Screenshot                    ${LOGDIR}/screenshots/login/login_button_disabled.png
-
-I login with invalid email
-  [Arguments]                                       ${user}  ${password}
-  std.Log                                           \nUser credentials: ${user} \nPassword: ${password}  console=yes
-  appium.Click Element                              ${BTN_GO_TO_LOGIN}
-  appium.Wait Until Page Contains Element           ${LOGIN_FORM}  ${TIMEOUT}                                              
-  appium.Input Text                                 ${ET_USERNAME}  ${user}
-  appium.Input Password                             ${ET_PASSWORD}  ${password}
-  std.Sleep                                         ${SCREENSHOT_SLEEP}
-  #appium.Capture Page Screenshot                    ${LOGDIR}/screenshots/login/invalid_email.png
-  appium.Click Element                              ${BTN_LOGIN}
-
-I do not enter the login credentials
-  [Arguments]                                       ${user}  ${password}
-  std.Log                                           \nUser credentials: ${user} \nPassword: ${password}  console=yes
-  appium.Click Element                              ${BTN_GO_TO_LOGIN}
-  appium.Wait Until Page Contains Element           ${LOGIN_FORM}  ${TIMEOUT}                                              
-  appium.Input Text                                 ${ET_USERNAME}  ${user}
-  appium.Input Password                             ${ET_PASSWORD}  ${password}
-  std.Sleep                                         ${SCREENSHOT_SLEEP}
-  #appium.Capture Page Screenshot                    ${LOGDIR}/screenshots/login/empty_credentials.png
-  appium.Click Element                              ${BTN_LOGIN}
-
-I choose the POC
-  [Arguments]                                       ${poc}
-  appium.Wait Until Page Contains Element           ${ACCOUNT_VIEW}  ${TIMEOUT}
-  #appium.Capture Page Screenshot                    ${LOGDIR}/screenshots/login/chosen_poc.png
-  appium.Click Text                                 ${poc}
-
-I login with my user credentials
-  [Arguments]                                       ${user}  ${password}
-  std.Log                                           \nUser credentials: ${user} \nPassword: ${password}  console=yes
-  appium.Click Element                              ${BTN_GO_TO_LOGIN}
-  appium.Wait Until Page Contains Element           ${LOGIN_FORM}  ${TIMEOUT}                                              
-  appium.Input Text                                 ${ET_USERNAME}  ${user}
-  appium.Input Password                             ${ET_PASSWORD}  ${password}
-  std.Sleep                                         ${SCREENSHOT_SLEEP}
-  #appium.Capture Page Screenshot                    ${LOGDIR}/screenshots/login/valid_credentials.png
-  appium.Click Element                              ${BTN_LOGIN}
+Validate strings on screen
+    [Documentation]                                   
+    [Arguments]                                     @{texts_to_validate}
+    :FOR  ${index}  ${text}  IN ENUMERATE           @{texts_to_validate}
+    \    appium.Page Should Contain Text            ${text}

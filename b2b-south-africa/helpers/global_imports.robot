@@ -1,13 +1,15 @@
 *** Settings ***
 
-#Resource    ${CURDIR}/../../android/helpers/global_imports.robot
-
 # Keywords
 Resource    ${CURDIR}/../keywords/common_keywords.robot
+Resource    ${CURDIR}/../keywords/login_keywords.robot
 
 # Variables
 Resource    ${CURDIR}/../variables/global_variables.robot
 Resource    ${CURDIR}/../variables/login_variables.robot
+
+# Python files
+Variables   ${CURDIR}/../variables/messages.py
 
 # Library aliases
 Library     AppiumLibrary    WITH NAME  appium
