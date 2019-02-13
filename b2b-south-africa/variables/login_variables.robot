@@ -2,8 +2,8 @@
 
 # Credentials
 # User with more than one POC
-${USER_EMAIL}                  110920@mailinator.com
-${USER_PASSWORD}               Teste123
+${MULTIPLE_USER_EMAIL}         110920@mailinator.com
+${MULTIPLE_USER_PASSWORD}      Teste123
 ${TEST_POC}                    110920
 # User with only one POC
 ${SINGLE_USER_EMAIL}           110918@mailinator.com

@@ -14,9 +14,15 @@ A login error message is displayed
 
 I login with invalid password
   [Arguments]                                       ${user}  ${password}
+  ${length}                                         std.Get Length   ${LOGIN_SCREEN_TEXTS}
   std.Log                                           \nUser credentials: ${user} \nPassword: ${password}  console=yes
   appium.Click Element                              ${BTN_GO_TO_LOGIN}
-  appium.Wait Until Page Contains Element           ${LOGIN_FORM}  ${TIMEOUT}                                              
+  appium.Wait Until Page Contains Element           ${LOGIN_FORM}  ${TIMEOUT}
+
+  :FOR  ${index}  IN RANGE  ${length}
+  \    ${listTexts}                                 std.Set Variable  ${LOGIN_SCREEN_TEXTS}[${index}]
+  \    Validate strings on screen                   ${listTexts}
+
   appium.Input Text                                 ${ET_USERNAME}  ${user}
   appium.Input Password                             ${ET_PASSWORD}  ${password}
   std.Sleep                                         ${SCREENSHOT_SLEEP}
@@ -29,9 +35,15 @@ The Login button must be disabled
 
 I login with invalid email
   [Arguments]                                       ${user}  ${password}
+  ${length}                                         std.Get Length   ${LOGIN_SCREEN_TEXTS}
   std.Log                                           \nUser credentials: ${user} \nPassword: ${password}  console=yes
   appium.Click Element                              ${BTN_GO_TO_LOGIN}
-  appium.Wait Until Page Contains Element           ${LOGIN_FORM}  ${TIMEOUT}                                              
+  appium.Wait Until Page Contains Element           ${LOGIN_FORM}  ${TIMEOUT} 
+
+  :FOR  ${index}  IN RANGE  ${length}
+  \    ${listTexts}                                 std.Set Variable  ${LOGIN_SCREEN_TEXTS}[${index}]
+  \    Validate strings on screen                   ${listTexts}
+
   appium.Input Text                                 ${ET_USERNAME}  ${user}
   appium.Input Password                             ${ET_PASSWORD}  ${password}
   std.Sleep                                         ${SCREENSHOT_SLEEP}
@@ -40,9 +52,15 @@ I login with invalid email
 
 I do not enter the login credentials
   [Arguments]                                       ${user}  ${password}
+  ${length}                                         std.Get Length   ${LOGIN_SCREEN_TEXTS}
   std.Log                                           \nUser credentials: ${user} \nPassword: ${password}  console=yes
   appium.Click Element                              ${BTN_GO_TO_LOGIN}
-  appium.Wait Until Page Contains Element           ${LOGIN_FORM}  ${TIMEOUT}                                              
+  appium.Wait Until Page Contains Element           ${LOGIN_FORM}  ${TIMEOUT} 
+
+  :FOR  ${index}  IN RANGE  ${length}
+  \    ${listTexts}                                 std.Set Variable  ${LOGIN_SCREEN_TEXTS}[${index}]
+  \    Validate strings on screen                   ${listTexts}
+
   appium.Input Text                                 ${ET_USERNAME}  ${user}
   appium.Input Password                             ${ET_PASSWORD}  ${password}
   std.Sleep                                         ${SCREENSHOT_SLEEP}
@@ -51,15 +69,27 @@ I do not enter the login credentials
 
 I choose the POC
   [Arguments]                                       ${poc}
+  ${length}                                         std.Get Length   ${POC_SELECTION_SCREEN_TEXTS}
   appium.Wait Until Page Contains Element           ${ACCOUNT_VIEW}  ${TIMEOUT}
+
+  :FOR  ${index}  IN RANGE  ${length}
+  \    ${listTexts}                                 std.Set Variable  ${POC_SELECTION_SCREEN_TEXTS}[${index}]
+  \    Validate strings on screen                   ${listTexts}
+
   #appium.Capture Page Screenshot                    ${LOGDIR}/screenshots/login/chosen_poc.png
   appium.Click Text                                 ${poc}
 
 I login with my user credentials
   [Arguments]                                       ${user}  ${password}
+  ${length}                                         std.Get Length   ${LOGIN_SCREEN_TEXTS}
   std.Log                                           \nUser credentials: ${user} \nPassword: ${password}  console=yes
   appium.Click Element                              ${BTN_GO_TO_LOGIN}
-  appium.Wait Until Page Contains Element           ${LOGIN_FORM}  ${TIMEOUT}                                              
+  appium.Wait Until Page Contains Element           ${LOGIN_FORM}  ${TIMEOUT} 
+
+  :FOR  ${index}  IN RANGE  ${length}
+  \    ${listTexts}                                 std.Set Variable  ${LOGIN_SCREEN_TEXTS}[${index}]
+  \    Validate strings on screen                   ${listTexts}
+
   appium.Input Text                                 ${ET_USERNAME}  ${user}
   appium.Input Password                             ${ET_PASSWORD}  ${password}
   std.Sleep                                         ${SCREENSHOT_SLEEP}

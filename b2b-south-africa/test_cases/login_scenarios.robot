@@ -14,7 +14,7 @@ Test Teardown	  appium.Quit Application
 Scenario 01: Login successfully as user with multiple POCs
 	[Tags]	high	za-auto  login
 	Given I select the environment  ${ZA_ENV}
-  When I login with my user credentials  ${USER_EMAIL}  ${USER_PASSWORD}
+  When I login with my user credentials  ${MULTIPLE_USER_EMAIL}  ${MULTIPLE_USER_PASSWORD}
 		And I choose the POC  ${TEST_POC}
     And I navigate through all introduction screens  
   Then I will be redirected to browse screen
@@ -35,17 +35,17 @@ Scenario 03: Login unsuccessfully with empty credentials
 Scenario 04: Login unsuccessfully with invalid email format
   [Tags]	high	za-auto  login
   Given I select the environment  ${ZA_ENV}
-  When I login with invalid email  ${INVALID_EMAIL_FORMAT}  ${USER_PASSWORD}
+  When I login with invalid email  ${INVALID_EMAIL_FORMAT}  ${SINGLE_USER_PASSWORD}
   Then A login error message is displayed
 
 Scenario 05: Login unsuccessfully with non-existent email
   [Tags]	high	za-auto  login
   Given I select the environment  ${ZA_ENV}
-  When I login with invalid email  ${NON_EXISTENT_USER}  ${USER_PASSWORD}
+  When I login with invalid email  ${NON_EXISTENT_USER}  ${SINGLE_USER_PASSWORD}
   Then A login error message is displayed
 
 Scenario 06: Login unsuccessfully with invalid password
   [Tags]	high	za-auto  login
   Given I select the environment  ${ZA_ENV}
-  When I login with invalid password  ${USER_EMAIL}  ${INVALID_PASSWORD}
+  When I login with invalid password  ${SINGLE_USER_EMAIL}  ${INVALID_PASSWORD}
   Then A login error message is displayed
