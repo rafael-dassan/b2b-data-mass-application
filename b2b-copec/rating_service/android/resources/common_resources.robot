@@ -1,12 +1,24 @@
 *** Settings ***
 Library     AppiumLibrary
+Library     RequestsLibrary
 Library     Collections
+Library     BuiltIn
+Library     JSONLibrary
+Library     String
 Library     Process
+
 Resource    ./variables.robot
 Library     ../helpers/ratingBarHelper.py
 
 
 *** Keywords ***
+End Test
+    [Arguments]      ${url}      ${user_jwt}     ${user_account}     ${useCaseId}    ${country}     ${admin_jwt} 
+    Remove the rating done      ${url}      ${user_jwt}     ${user_account}     ${useCaseId}     ${country}     ${admin_jwt}
+    Sleep           2s
+    Quit Application
+
+
 I opened the Application
     Wait Until Element Is Visible           id=background_layout        timeout=60s
 
@@ -63,7 +75,7 @@ I select a star
    
 I select one tag
     [Arguments]     ${tag}
-    Click Text                              Wrong quantity
+    Click Text                              ${tag}
     Wait Until Page Contains Element        id=ratingSubmitButton
 
 I select three tags
@@ -116,3 +128,18 @@ I'm redirected to home screen
 
 the rating service modal shouldnt be displayed
     Wait Until Page Does Not Contain        id=ratingIncludeToolbar     timeout=60s      
+
+Remove the rating done
+    [Arguments]     ${url}      ${user_jwt}     ${accountId}     ${useCaseId}    ${country}    ${admin_jwt} 
+    &{headers}=     Create Dictionary              requestTraceId    12341234    Authorization  ${user_jwt}
+    Create Session	rating	    ${url}      disable_warnings=1
+    ${resp}=        Get Request     rating      /?country=${country}&useCaseType=ORDER&accountId=${accountId}&useCaseId=${useCaseId}&page=1&pageSize=10   headers=${headers}
+    Should Be Equal As Strings  ${resp.status_code}     200
+    ${json_object}          Set Variable     ${resp.json()}
+    # Log To Console          \n\nJSON OBJECT: ${json_object}
+    ${rating_id_array}	    Get Value From Json	${json_object}      $.content[0].id 
+    ${rating_id}            Set Variable     ${rating_id_array}[0] 
+  
+    &{headers}=       Create Dictionary     requestTraceId    12341234    Authorization     ${admin_jwt}
+    ${resp}     Delete Request  rating      /${rating_id}  headers=${headers}
+    Should Be Equal As Strings  ${resp.status_code}     204

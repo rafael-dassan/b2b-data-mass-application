@@ -4,7 +4,7 @@ Suite Setup		Bootstrap test environment          ${APP_MITIENDA}    ${APP_PACKAG
 Suite Teardown  Close Application
 
 Test Setup      Launch Application
-Test Teardown   Quit Application
+Test Teardown   End Test    ${MS_RATING_URL}      ${JWT_MITIENDA}     ${CUSTID_MITIENDA}     ${USE_CASE_ID_MITIENDA}   ${COUNTRY_MITIENDA}     ${JWT_ADMIN}
 
 *** Test Case ***
 1 Star and 1 Tag Without Comment
@@ -61,27 +61,27 @@ Test Teardown   Quit Application
     And I click on submit
   Then the thank you screen should be displayed
 
-1 Star and 0 Tags
-  [Tags]  Android   B2BCOPEC-859  MITIENDA
-  Given I opened the Application
-    And I set environment                           ${ENV}
-    And Click on login button
-    And I enter my credentials                      ${EMAIL_MITIENDA}   ${PASSWORD_MITIENDA}
-    And I select the POC                            ${POC_MITIENDA}
-  When the rating service screen is displayed
-    And I select a star   1
-  Then the submit button should appear disable
+# 1 Star and 0 Tags
+#   [Tags]  Android   B2BCOPEC-859  MITIENDA
+#   Given I opened the Application
+#     And I set environment                           ${ENV}
+#     And Click on login button
+#     And I enter my credentials                      ${EMAIL_MITIENDA}   ${PASSWORD_MITIENDA}
+#     And I select the POC                            ${POC_MITIENDA}
+#   When the rating service screen is displayed
+#     And I select a star   1
+#   Then the submit button should appear disable
 
-1 Star and 3 Tags With Comment - Single Account User
-  [Tags]  Android   B2BCOPEC-859  MITIENDA
-  Given I opened the Application
-    And I set environment                           ${ENV}
-    And Click on login button
-    And I enter my credentials                      ${EMAIL_MITIENDA_SINGLE}   ${PASSWORD_MITIENDA_SINGLE}
-    And I finish the onboard
-  When the rating service screen is displayed
-    And I select a star   1
-    And I select three tags                         ${TAG_1}  ${TAG_2}  ${TAG_3}
-    And I input a comment
-    And I click on submit
-  Then the thank you screen should be displayed
+# 1 Star and 3 Tags With Comment - Single Account User
+#   [Tags]  Android   B2BCOPEC-859  MITIENDA
+#   Given I opened the Application
+#     And I set environment                           ${ENV}
+#     And Click on login button
+#     And I enter my credentials                      ${EMAIL_MITIENDA_SINGLE}   ${PASSWORD_MITIENDA_SINGLE}
+#     And I finish the onboard
+#   When the rating service screen is displayed
+#     And I select a star   1
+#     And I select three tags                         ${TAG_1}  ${TAG_2}  ${TAG_3}
+#     And I input a comment
+#     And I click on submit
+#   Then the thank you screen should be displayed
