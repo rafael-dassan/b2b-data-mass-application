@@ -4,7 +4,6 @@ Resource     libraries.robot
 Variables    ../variables/debug-drawer.py
 Resource     ../variables/variables-global.robot
 Resource     ../keywords/common_keywords.robot
-Resource     ../../microservice/variables.robot
 
 *** Keywords ***
 

@@ -13,7 +13,7 @@ Resource          ../keywords/authentication.robot
 Scenario: Login successfully as user with only one POC
     [Documentation]                                    Login successfuly as user with *only one POC* (Point of Consumption).
     [Tags]
-    Given I select the environment                     ${ENV}
+    Given I select the environment                     Qa
     When I login with my user credentials              ahardinger@somethingdigital.com                                                      pZhU6KckqNQTkPc
     And I navigate through all introduction screens
     Then I will be redirected to browse screen

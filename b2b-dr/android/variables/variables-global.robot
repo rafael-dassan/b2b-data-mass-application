@@ -13,11 +13,11 @@ ${PLATFORM_VERSION}         9
 #${DEVICE_NAME}             SM-G903M
 #${DEVICE_NAME}             Samsung GT-I9515L
 #${DEVICE_NAME}             Moto G_5s_Plus
-${DEVICE_NAME}              Pixel_Oreo
+${DEVICE_NAME}              emulator-5444
 ${APK}                      ${CURDIR}/../apks/app-dominicanRepublic-debug.apk
 ${APP_ACTIVITY}             com.abinbev.android.tapwiser.app.StartupActivity
 ${APP_PACKAGE}              com.abinbev.android.tapwiser.dominicanRepublic.debug
-${AVD}                      Pixel_Oreo
+${AVD}                      Pixel_Pie
 ${AUTOMATION_NAME}          uiautomator2
 
 ${KILL_PROCESS_COMMAND}     ps aux | pgrep -f pattern | xargs kill $SIGTERM
