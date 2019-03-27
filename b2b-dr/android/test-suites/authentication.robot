@@ -14,7 +14,7 @@ Scenario: Login successfully as user with only one POC
     [Documentation]                                    Login successfuly as user with *only one POC* (Point of Consumption).
     [Tags]
     Given I select the environment                     Qa
-    When I login with my user credentials              ahardinger@somethingdigital.com                                                      pZhU6KckqNQTkPc
+    When I login with my user credentials              190319@mailinator.com                                                      Teste123
     And I navigate through all introduction screens
     Then I will be redirected to browse screen
 
