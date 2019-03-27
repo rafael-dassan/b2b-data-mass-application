@@ -1,0 +1,8 @@
+-v fullReset:false
+-v noReset:false
+-v waitAction:350
+-v printPageSourceOnFindFailure:true
+--name 'Register New Account Test Suite'
+-d ./output/register-new-account-flow
+--removekeywords name:keywords-common.BootstrapTestEnvironment
+--removekeywords name:keywords-common.ShutdownTestEnvironment
