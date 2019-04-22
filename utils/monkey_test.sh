@@ -15,13 +15,13 @@ DATE=$(date +'%d-%m-%Y_%T')
 # - ignore-timeouts: ignore freeze
 # - pct-touch: percentage of events that will be "touch"
 # - last param: number of events
-adb shell monkey -p ${package_name} --throttle 1000 --pct-touch 40 --ignore-crashes --ignore-timeouts 25000 | adb logcat -d *:E > $DATE.txt
+adb shell monkey -p ${package_name} --throttle 1000 --pct-touch 40 --ignore-crashes --ignore-timeouts 25000 | adb logcat -d *:E > ${DATE}.txt
 
-crash_number=$(cat $DATE.txt | grep "FATAL EXCEPTION" | wc -l)
+crash_number=$(cat ${DATE}.txt | grep "FATAL EXCEPTION" | wc -l)
 
 if [ $crash_number = 0 ]
 then
-    rm $DATE.txt
+    mv ${DATE}.txt NOCRASH_${DATE}.txt
 fi
 
 echo Crashes: ${crash_number}
