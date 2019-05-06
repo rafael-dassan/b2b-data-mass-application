@@ -20,10 +20,10 @@ do
     mkdir -p ./results/$FILE
     mv ./results/*.* ./results/$FILE
 
-    FILE=single_account_scenarios_$i
-    robot -d ./results ./tests/$FILE.robot
-    mkdir -p ./results/$FILE
-    mv ./results/*.* ./results/$FILE
+    # FILE=single_account_scenarios_$i
+    # robot -d ./results ./tests/$FILE.robot
+    # mkdir -p ./results/$FILE
+    # mv ./results/*.* ./results/$FILE
 
     echo "$i scenarios finished"
 done

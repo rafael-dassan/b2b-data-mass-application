@@ -1,5 +1,5 @@
 #!/bin/bash
-ARRAY=(bavaria mitienda backus)
+ARRAY=(backus)
 rm -r ./results/*
 
 
@@ -21,10 +21,10 @@ do
     mkdir -p ./results/$FILE
     mv ./results/*.* ./results/$FILE
 
-    FILE=single_account_scenarios_$i
-    robot -d ./results ./tests/$FILE.robot
-    mkdir -p ./results/$FILE
-    mv ./results/*.* ./results/$FILE
+    # FILE=single_account_scenarios_$i
+    # robot -d ./results ./tests/$FILE.robot
+    # mkdir -p ./results/$FILE
+    # mv ./results/*.* ./results/$FILE
 
 # FILE=non_display_rating_service_$i
 # robot -d ./results ./tests/$FILE.robot
