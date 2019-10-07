@@ -1,8 +1,0 @@
--v fullReset:false
--v noReset:false
--v waitAction:350
--v printPageSourceOnFindFailure:true
---name 'Authentication Tests Suite'
--d ./android/output/authentication
---removekeywords name:keywords-common.BootstrapTestEnvironment
---removekeywords name:keywords-common.ShutdownTestEnvironment

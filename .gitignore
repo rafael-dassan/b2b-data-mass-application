@@ -1,9 +1,0 @@
-.DS_Store
-*.idea
-**/results
-**/log.html
-**/report.html
-**/output.xml
-.vscode/
-*.apk
-*.pyc
