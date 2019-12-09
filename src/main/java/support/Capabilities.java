@@ -65,12 +65,12 @@ public enum Capabilities implements MobileApplication {
         DesiredCapabilities caps = new DesiredCapabilities();
         caps.setCapability("platformName", "iOS");
         caps.setCapability("platformVersion", "12.1");
-        caps.setCapability("udid", "692977ee25f0c12fc0eb917d6cfd622fbf3148b9");
-        caps.setCapability("deviceName", "LE-005 - Lab Express");
+        caps.setCapability("udid", "");
+        caps.setCapability("deviceName", "");
         caps.setCapability("automationName", "XCUITest");
-        caps.setCapability("bundleId", "com.itau.enterprise");
+        caps.setCapability("bundleId", "");
         caps.setCapability("usePrebuiltWDA", "true");
-        caps.setCapability("app", "/Users/matrool/Downloads/ios-itau-varejo.ipa");
+        caps.setCapability("app", "");
         caps.setCapability("noReset", "true");
         caps.setCapability("useNewWDA", "false");
         return caps;

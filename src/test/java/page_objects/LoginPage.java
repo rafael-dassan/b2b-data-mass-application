@@ -27,7 +27,7 @@ public class LoginPage {
 	@AndroidFindBy(xpath = "//android.support.v7.widget.RecyclerView[@content-desc=\"Account table\"]/android.widget.LinearLayout[1]/android.widget.TextView")
 	private MobileElement btn_account;
 
-	@AndroidFindBy(id = "tutorial_image")
+	@AndroidFindBy(id = "tutorial_title")
 	private MobileElement presentationSlide;
 
 	@AndroidFindBy(id = "start_button")
