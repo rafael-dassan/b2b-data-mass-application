@@ -12,6 +12,7 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/
 
 # Generated files
 .idea/**/contentModel.xml
@@ -93,6 +94,7 @@ fabric.properties
 ### Java ###
 # Compiled class file
 *.class
+target/
 
 # Log file
 *.log
