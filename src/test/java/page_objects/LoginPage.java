@@ -1,19 +1,14 @@
 package page_objects;
 
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.MobileDriver;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
-import io.appium.java_client.pagefactory.iOSXCUITFindBy;
 import org.openqa.selenium.support.PageFactory;
-
-import java.awt.event.MouseListener;
-import java.util.List;
 
 public class LoginPage {
 
-	// *******Construtor*******//
+	// *******Constructor*******//
 	
 	public LoginPage(AppiumDriver<MobileElement> appiumDriver) {
 		PageFactory.initElements(new AppiumFieldDecorator(appiumDriver), this);
@@ -22,88 +17,88 @@ public class LoginPage {
 	// *******Elements*******//
 
 	@AndroidFindBy(id = "background_layout")
-	private MobileElement tlt_Login;
+	private MobileElement screenLogin;
 
 	@AndroidFindBy(xpath = "//android.support.v7.widget.RecyclerView[@content-desc=\"Account table\"]/android.widget.LinearLayout[1]/android.widget.TextView")
-	private MobileElement btn_account;
+	private MobileElement btnAccount;
 
 	@AndroidFindBy(id = "tutorial_title")
 	private MobileElement presentationSlide;
 
 	@AndroidFindBy(id = "start_button")
-	private MobileElement btn_start;
+	private MobileElement btnStart;
 
 	@AndroidFindBy(id = "ratingRbRating")
-	private MobileElement btn_rating;
+	private MobileElement btnRating;
 
 	@AndroidFindBy(id = "ratingAddNotesText")
-	private MobileElement txt_addNotes;
+	private MobileElement txtAddNotes;
 
 	@AndroidFindBy(xpath = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.ScrollView/android.widget.LinearLayout/android.widget.FrameLayout[2]/android.view.ViewGroup/android.widget.LinearLayout[3]/android.widget.TextView")
-	private MobileElement btn_question;
+	private MobileElement btnQuestion;
 
 	@AndroidFindBy(id = "ratingSubmitButton")
-	private MobileElement btn_ratingSubmit;
+	private MobileElement btnRatingSubmit;
 
 	@AndroidFindBy(id = "sentCloseButton")
-	private MobileElement btn_finishClassification;
+	private MobileElement btnFinishClassification;
 
 	@AndroidFindBy(id = "loginLogo")
-	private MobileElement img_logoLogin;
+	private MobileElement imgLogoLogin;
 
 	@AndroidFindBy(id = "view_pager")
-	private MobileElement img_Carroussel;
+	private MobileElement imgCarousel;
 
 	// *******getter and setters*******//
 
-	public MobileElement getTlt_Login() {
-		return tlt_Login;
+	public MobileElement getScreenLogin() {
+		return screenLogin;
 	}
 
-	public MobileElement getBtn_account() {
-		return btn_account;
+	public MobileElement getBtnAccount() {
+		return btnAccount;
 	}
 
 	public MobileElement getPresentationSlide() {
 		return presentationSlide;
 	}
 
-	public MobileElement getBtn_start() {
-		return btn_start;
+	public MobileElement getBtnStart() {
+		return btnStart;
 	}
 
-	public MobileElement getBtn_rating() {
-		return btn_rating;
+	public MobileElement getBtnRating() {
+		return btnRating;
 	}
 
-	public MobileElement getBtn_ratingSubmit() {
-		return btn_ratingSubmit;
+	public MobileElement getBtnRatingSubmit() {
+		return btnRatingSubmit;
 	}
 
-	public MobileElement getTxt_addNotes() {
-		return txt_addNotes;
+	public MobileElement getTxtAddNotes() {
+		return txtAddNotes;
 	}
 
-	public MobileElement getBtn_finishClassification() {
-		return btn_finishClassification;
+	public MobileElement getBtnFinishClassification() {
+		return btnFinishClassification;
 	}
 
-	public MobileElement getBtn_question() {
-		return btn_question;
+	public MobileElement getBtnQuestion() {
+		return btnQuestion;
 	}
 
-	public MobileElement getImg_logoLogin() {
-		return img_logoLogin;
+	public MobileElement getImgLogoLogin() {
+		return imgLogoLogin;
 	}
 
-	public MobileElement getImg_Carroussel() {
-		return img_Carroussel;
+	public MobileElement getImgCarousel() {
+		return imgCarousel;
 	}
 
 	// *******Elements Custom*******//
 
-	public String getRb_Ambiente(String ambiente) {
-		return "//android.widget.RadioButton[contains(@text,'"+ ambiente +"')]";
+	public String getRb_Ambiente(String enviroment) {
+		return "//android.widget.RadioButton[contains(@text,'"+ enviroment +"')]";
 	}
 
 }

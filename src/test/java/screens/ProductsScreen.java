@@ -1,7 +1,6 @@
 package screens;
 
 import base_screen.BaseScreen;
-import common.Helper;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import page_objects.ProductsPage;
 
@@ -13,19 +12,19 @@ public class ProductsScreen extends BaseScreen {
     	this.productsPage = new ProductsPage(driver);
     }
 
-    public void adicionarProdutos() {
-        wait.until(ExpectedConditions.elementToBeClickable(this.productsPage.getBtn_recommenderAdd()));
-        this.productsPage.getBtn_recommenderAdd().click();
-        wait.until(ExpectedConditions.elementToBeClickable(this.productsPage.getLbl_loadingTruck()));
+    public void addProduct() {
+        wait.until(ExpectedConditions.elementToBeClickable(this.productsPage.getBtnRecommenderAdd()));
+        this.productsPage.getBtnRecommenderAdd().click();
+        wait.until(ExpectedConditions.elementToBeClickable(this.productsPage.getLblLoadingTruck()));
     }
 
-    public void fecharPedidoFacil() {
-        wait.until(ExpectedConditions.elementToBeClickable(this.productsPage.getBtn_closePopupPedidoFacil()));
-        this.productsPage.getBtn_closePopupPedidoFacil().click();
+    public void closePedidoFacil() {
+        wait.until(ExpectedConditions.elementToBeClickable(this.productsPage.getBtnClosePopupPedidoFacil()));
+        this.productsPage.getBtnClosePopupPedidoFacil().click();
     }
 
-    public void irCaminhao() {
-        productsPage.getBtn_truck().click();
+    public void openTruck() {
+        productsPage.getBtnTruck().click();
     }
 
 }

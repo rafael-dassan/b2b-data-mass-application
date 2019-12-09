@@ -8,7 +8,7 @@ import org.openqa.selenium.support.PageFactory;
 
 public class UtilsPage {
 
-    // *******Construtor*******//
+    // *******Constructor*******//
 
     public UtilsPage(MobileDriver appiumDriver) {
         PageFactory.initElements(new AppiumFieldDecorator(appiumDriver), this);
@@ -17,42 +17,40 @@ public class UtilsPage {
     // *******Elements*******//
 
     @AndroidFindBy(id = "logIn")
-    private MobileElement btn_Entrar;
+    private MobileElement btnEnter;
 
     @AndroidFindBy(id = "username")
-    private MobileElement lbl_email;
+    private MobileElement lblEmail;
 
     @AndroidFindBy(id = "newPassword")
-    private MobileElement lbl_senha;
+    private MobileElement lblPassword;
 
     @AndroidFindBy(id = "login")
-    private MobileElement btn_Login;
+    private MobileElement btnLogin;
 
     @AndroidFindBy(id = "logout")
-    private MobileElement btn_Logout;
+    private MobileElement btnLogout;
 
     // *******getter and setters*******//
 
-    public MobileElement getBtn_Entrar() {
-        return btn_Entrar;
+    public MobileElement getBtnEnter() {
+        return btnEnter;
     }
 
-    public MobileElement getLbl_email() {
-        return lbl_email;
+    public MobileElement getLblEmail() {
+        return lblEmail;
     }
 
-    public MobileElement getLbl_senha() {
-        return lbl_senha;
+    public MobileElement getLblPassword() {
+        return lblPassword;
     }
 
-    public MobileElement getBtn_Login() {
-        return btn_Login;
+    public MobileElement getBtnLogin() {
+        return btnLogin;
     }
 
-    public MobileElement getBtn_Logout() {
-        return btn_Logout;
+    public MobileElement getBtnLogout() {
+        return btnLogout;
     }
-
-    // *******getter and setters String*******//
 
 }

@@ -13,44 +13,39 @@ public class LoginScreen extends BaseScreen {
         this.loginPage = new LoginPage(driver);
     }
 
-    public void selecionarAmbiente(String ambiente){
-        wait.until(ExpectedConditions.visibilityOfAllElements(this.loginPage.getTlt_Login()));
-        Helper.swipeForEnvironment(this.loginPage.getTlt_Login());
-        Helper.clicarElementoCustom(this.loginPage.getRb_Ambiente(ambiente));
+    public void selectEnviroment(String enviroment){
+        wait.until(ExpectedConditions.visibilityOfAllElements(this.loginPage.getScreenLogin()));
+        Helper.swipeForEnvironment(this.loginPage.getScreenLogin());
+        Helper.clicarElementoCustom(this.loginPage.getRb_Ambiente(enviroment));
     }
 
-    public void selecionarConta() {
-        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getBtn_account()));
-        this.loginPage.getBtn_account().click();
+    public void selectAccount() {
+        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getBtnAccount()));
+        this.loginPage.getBtnAccount().click();
     }
 
-    public boolean validarTelaLogin(){
-        wait.until(ExpectedConditions.visibilityOfAllElements(this.loginPage.getImg_logoLogin()));
-        return this.loginPage.getImg_logoLogin().isDisplayed();
+    public boolean checkCarouselLogin(){
+        wait.until(ExpectedConditions.visibilityOfAllElements(this.loginPage.getImgCarousel()));
+        return this.loginPage.getImgCarousel().isDisplayed();
     }
 
-    public boolean validarCarrousselLogin(){
-        wait.until(ExpectedConditions.visibilityOfAllElements(this.loginPage.getImg_Carroussel()));
-        return this.loginPage.getImg_Carroussel().isDisplayed();
-    }
-
-    public void passarApresentacao() {
+    public void swipePresentation() {
         wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getPresentationSlide()));
         for(int i=0; i<=4; i++){
             Helper.swipeHorizontalRightToLeftElement(this.loginPage.getPresentationSlide());
         }
-        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getBtn_start()));
-        this.loginPage.getBtn_start().click();
+        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getBtnStart()));
+        this.loginPage.getBtnStart().click();
     }
 
-    public void classificacaoApp() {
-        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getBtn_rating()));
-        this.loginPage.getBtn_rating().click();
-        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getBtn_question()));
-        this.loginPage.getBtn_question().click();
-        this.loginPage.getTxt_addNotes().sendKeys("Executing automated test...");
-        this.loginPage.getBtn_ratingSubmit().click();
-        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getBtn_finishClassification()));
-        this.loginPage.getBtn_finishClassification().click();
+    public void appRating() {
+        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getBtnRating()));
+        this.loginPage.getBtnRating().click();
+        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getBtnQuestion()));
+        this.loginPage.getBtnQuestion().click();
+        this.loginPage.getTxtAddNotes().sendKeys("Executing automated test...");
+        this.loginPage.getBtnRatingSubmit().click();
+        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getBtnFinishClassification()));
+        this.loginPage.getBtnFinishClassification().click();
     }
 }

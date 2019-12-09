@@ -26,18 +26,18 @@ public class ProductsSteps {
 
     @Given("that I want to buy some products")
     public void that_I_want_to_buy_some_products() {
-        utilsScreen.clicarEntrar();
-        utilsScreen.logar("REPUBLICADOMINICANA");
-        utilsScreen.clicarEntrarLogin();
-        loginScreen.selecionarConta();
-        loginScreen.passarApresentacao();
-        loginScreen.classificacaoApp();
+        utilsScreen.clickEnter();
+        utilsScreen.loginData("REPUBLICADOMINICANA");
+        utilsScreen.clickLogin();
+        loginScreen.selectAccount();
+        loginScreen.swipePresentation();
+        loginScreen.appRating();
     }
 
     @When("I select one or more products")
     public void i_select_one_or_more_products() {
-        productsScreen.adicionarProdutos();
-        productsScreen.irCaminhao();
+        productsScreen.addProduct();
+        productsScreen.openTruck();
     }
 
     @Then("the products must be added into my cart")

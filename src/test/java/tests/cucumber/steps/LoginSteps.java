@@ -23,39 +23,39 @@ public class LoginSteps {
 
     @Given("I am on Initial screen")
     public void i_am_on_initial_screen() {
-        assertTrue(utilsScreen.validarTelaInicial());
+        assertTrue(utilsScreen.checkInitialScreen());
     }
 
     @When("I selected the enviroment {string}")
-    public void i_selected_the_enviroment(String ambiente) {
-        loginScreen.selecionarAmbiente(ambiente);
+    public void i_selected_the_enviroment(String enviroment) {
+        loginScreen.selectEnviroment(enviroment);
     }
 
     @Then("I go to screen login")
     public void i_go_to_screen_login() {
-        assertTrue(loginScreen.validarTelaLogin());
+        assertTrue(utilsScreen.checkInitialScreen());
     }
 
     @Given("that I have an existing account")
     public void that_I_have_an_existing_account() {
-        utilsScreen.clicarEntrar();
+        utilsScreen.clickEnter();
     }
 
     @When("I insert my credentials {string}")
     public void i_insert_my_credentials(String zona) {
-        utilsScreen.logar(zona);
-        utilsScreen.clicarEntrarLogin();
+        utilsScreen.loginData(zona);
+        utilsScreen.clickLogin();
     }
 
     @When("I click on the login button")
     public void i_click_on_the_login_button() {
-        loginScreen.selecionarConta();
-        loginScreen.passarApresentacao();
-        loginScreen.classificacaoApp();
+        loginScreen.selectAccount();
+        loginScreen.swipePresentation();
+        loginScreen.appRating();
     }
 
     @Then("I must be logged successfully")
     public void i_must_be_logged_successfully() {
-        assertTrue(loginScreen.validarCarrousselLogin());
+        assertTrue(loginScreen.checkCarouselLogin());
     }
 }

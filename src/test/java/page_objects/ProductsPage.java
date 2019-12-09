@@ -1,12 +1,9 @@
 package page_objects;
 
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.MobileDriver;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
-import io.appium.java_client.pagefactory.iOSXCUITFindBy;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;
 
 public class ProductsPage {
@@ -18,44 +15,42 @@ public class ProductsPage {
     // *******Elements*******//
 
     @AndroidFindBy(id = "beerRecommenderAdd")
-    private MobileElement btn_recommenderAdd;
+    private MobileElement btnRecommenderAdd;
 
     @AndroidFindBy(xpath = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.support.v4.widget.DrawerLayout/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.RelativeLayout")
-    private MobileElement lbl_loadingTruck;
+    private MobileElement lblLoadingTruck;
 
     @AndroidFindBy(id = "recommender_popup_close")
-    private MobileElement btn_closePopupPedidoFacil;
+    private MobileElement btnClosePopupPedidoFacil;
 
     @AndroidFindBy(id = "recommender_popup_title")
-    private MobileElement lbl_popupTitle;
+    private MobileElement lblPopupTitle;
 
    @AndroidFindBy(id = "truck")
-    private MobileElement btn_truck;
+    private MobileElement btnTruck;
 
 
     // *******getter and setters*******//
 
-    public MobileElement getBtn_recommenderAdd() {
-        return btn_recommenderAdd;
+    public MobileElement getBtnRecommenderAdd() {
+        return btnRecommenderAdd;
     }
 
-    public MobileElement getLbl_loadingTruck() {
-        return lbl_loadingTruck;
+    public MobileElement getLblLoadingTruck() {
+        return lblLoadingTruck;
     }
 
-    public MobileElement getBtn_closePopupPedidoFacil() {
-        return btn_closePopupPedidoFacil;
+    public MobileElement getBtnClosePopupPedidoFacil() {
+        return btnClosePopupPedidoFacil;
     }
 
-    public MobileElement getLbl_popupTitle() {
-        return lbl_popupTitle;
+    public MobileElement getLblPopupTitle() {
+        return lblPopupTitle;
     }
 
-    public MobileElement getBtn_truck() {
-        return btn_truck;
+    public MobileElement getBtnTruck() {
+        return btnTruck;
     }
-
-
-    // *******getter and setters string*******//
+    
 
 }
