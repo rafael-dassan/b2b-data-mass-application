@@ -13,8 +13,8 @@ public class LogoutScreen extends BaseScreen {
     }
 
     public void abrirMenu() {
-        wait.until(ExpectedConditions.elementToBeClickable(this.logoutPage.getBtn_abrirMenu()));
-        this.logoutPage.getBtn_abrirMenu().click();
+        wait.until(ExpectedConditions.elementToBeClickable(this.logoutPage.getBtn_AbrirMenu()));
+        this.logoutPage.getBtn_AbrirMenu().click();
     }
 
 }

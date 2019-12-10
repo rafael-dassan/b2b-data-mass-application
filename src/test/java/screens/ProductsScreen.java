@@ -16,16 +16,15 @@ public class ProductsScreen extends BaseScreen {
     public void adicionarProdutos() {
         wait.until(ExpectedConditions.elementToBeClickable(this.productsPage.getBtn_recommenderAdd()));
         this.productsPage.getBtn_recommenderAdd().click();
-        wait.until(ExpectedConditions.elementToBeClickable(this.productsPage.getLbl_loadingTruck()));
     }
 
     public void fecharPedidoFacil() {
-        wait.until(ExpectedConditions.elementToBeClickable(this.productsPage.getBtn_closePopupPedidoFacil()));
-        this.productsPage.getBtn_closePopupPedidoFacil().click();
+        wait.until(ExpectedConditions.elementToBeClickable(this.productsPage.getBtn_ClosePopupPedidoFacil()));
+        this.productsPage.getBtn_ClosePopupPedidoFacil().click();
     }
 
     public void irCaminhao() {
-        productsPage.getBtn_truck().click();
+        productsPage.getBtn_Truck().click();
     }
 
 }

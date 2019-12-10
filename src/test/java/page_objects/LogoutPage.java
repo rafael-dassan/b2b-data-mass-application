@@ -19,19 +19,19 @@ public class LogoutPage {
     }
 
     @AndroidFindBy(xpath = "//android.widget.ImageButton[@content-desc='Menu btn']")
-    private MobileElement btn_abrirMenu;
+    private MobileElement btn_AbrirMenu;
 
     @AndroidFindBy(id = "action_close")
-    private MobileElement btn_closeAction;
+    private MobileElement btn_CloseAction;
 
     // *******getter and setters*******//
 
-    public MobileElement getBtn_abrirMenu() {
-        return btn_abrirMenu;
+    public MobileElement getBtn_AbrirMenu() {
+        return btn_AbrirMenu;
     }
 
-    public MobileElement getBtn_closeAction() {
-        return btn_closeAction;
+    public MobileElement getBtn_CloseAction() {
+        return btn_CloseAction;
     }
 
 }

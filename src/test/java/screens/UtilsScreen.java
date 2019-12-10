@@ -30,13 +30,13 @@ public class UtilsScreen extends BaseScreen {
     }
 
     public void digitarEmail(String zona) {
-        wait.until(ExpectedConditions.elementToBeClickable(this.utilsPage.getLbl_email()));
-        this.utilsPage.getLbl_email().sendKeys(CredentialsImpl.valueOf(zona.toUpperCase().replaceAll(" ", "")).email());
+        wait.until(ExpectedConditions.elementToBeClickable(this.utilsPage.getLbl_Email()));
+        this.utilsPage.getLbl_Email().sendKeys(CredentialsImpl.valueOf(zona.toUpperCase().replaceAll(" ", "")).email());
     }
 
     public void digitarSenha(String zona) {
-        wait.until(ExpectedConditions.elementToBeClickable(this.utilsPage.getLbl_senha()));
-        this.utilsPage.getLbl_senha().sendKeys(CredentialsImpl.valueOf(zona.toUpperCase().replaceAll(" ", "")).senha());
+        wait.until(ExpectedConditions.elementToBeClickable(this.utilsPage.getLbl_Senha()));
+        this.utilsPage.getLbl_Senha().sendKeys(CredentialsImpl.valueOf(zona.toUpperCase().replaceAll(" ", "")).senha());
     }
 
     public void clicarEntrarLogin(){

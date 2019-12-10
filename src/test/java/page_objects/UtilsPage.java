@@ -20,10 +20,10 @@ public class UtilsPage {
     private MobileElement btn_Entrar;
 
     @AndroidFindBy(id = "username")
-    private MobileElement lbl_email;
+    private MobileElement lbl_Email;
 
     @AndroidFindBy(id = "newPassword")
-    private MobileElement lbl_senha;
+    private MobileElement lbl_Senha;
 
     @AndroidFindBy(id = "login")
     private MobileElement btn_Login;
@@ -37,12 +37,12 @@ public class UtilsPage {
         return btn_Entrar;
     }
 
-    public MobileElement getLbl_email() {
-        return lbl_email;
+    public MobileElement getLbl_Email() {
+        return lbl_Email;
     }
 
-    public MobileElement getLbl_senha() {
-        return lbl_senha;
+    public MobileElement getLbl_Senha() {
+        return lbl_Senha;
     }
 
     public MobileElement getBtn_Login() {
@@ -52,7 +52,5 @@ public class UtilsPage {
     public MobileElement getBtn_Logout() {
         return btn_Logout;
     }
-
-    // *******getter and setters String*******//
 
 }

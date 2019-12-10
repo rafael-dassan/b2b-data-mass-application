@@ -24,32 +24,32 @@ public class LoginPage {
 	@AndroidFindBy(id = "background_layout")
 	private MobileElement tlt_Login;
 
-	@AndroidFindBy(xpath = "//android.support.v7.widget.RecyclerView[@content-desc=\"Account table\"]/android.widget.LinearLayout[1]/android.widget.TextView")
-	private MobileElement btn_account;
+	@AndroidFindBy(xpath = "//android.widget.LinearLayout[1]/android.widget.TextView")
+	private MobileElement btn_Account;
 
 	@AndroidFindBy(id = "tutorial_title")
-	private MobileElement presentationSlide;
+	private MobileElement tlt_PresentationSlide;
 
 	@AndroidFindBy(id = "start_button")
-	private MobileElement btn_start;
+	private MobileElement btn_Start;
 
 	@AndroidFindBy(id = "ratingRbRating")
-	private MobileElement btn_rating;
+	private MobileElement btn_Rating;
 
 	@AndroidFindBy(id = "ratingAddNotesText")
-	private MobileElement txt_addNotes;
+	private MobileElement txt_AddNotes;
 
-	@AndroidFindBy(xpath = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.ScrollView/android.widget.LinearLayout/android.widget.FrameLayout[2]/android.view.ViewGroup/android.widget.LinearLayout[3]/android.widget.TextView")
-	private MobileElement btn_question;
+	@AndroidFindBy(xpath = "//android.widget.TextView[contains(@text,\"Damaged\")]")
+	private MobileElement btn_Question;
 
 	@AndroidFindBy(id = "ratingSubmitButton")
-	private MobileElement btn_ratingSubmit;
+	private MobileElement btn_RatingSubmit;
 
 	@AndroidFindBy(id = "sentCloseButton")
-	private MobileElement btn_finishClassification;
+	private MobileElement btn_FinishClassification;
 
 	@AndroidFindBy(id = "loginLogo")
-	private MobileElement img_logoLogin;
+	private MobileElement img_LogoLogin;
 
 	@AndroidFindBy(id = "view_pager")
 	private MobileElement img_Carroussel;
@@ -60,40 +60,40 @@ public class LoginPage {
 		return tlt_Login;
 	}
 
-	public MobileElement getBtn_account() {
-		return btn_account;
+	public MobileElement getBtn_Account() {
+		return btn_Account;
 	}
 
-	public MobileElement getPresentationSlide() {
-		return presentationSlide;
+	public MobileElement getTlt_PresentationSlide() {
+		return tlt_PresentationSlide;
 	}
 
-	public MobileElement getBtn_start() {
-		return btn_start;
+	public MobileElement getBtn_Start() {
+		return btn_Start;
 	}
 
-	public MobileElement getBtn_rating() {
-		return btn_rating;
+	public MobileElement getBtn_Rating() {
+		return btn_Rating;
 	}
 
-	public MobileElement getBtn_ratingSubmit() {
-		return btn_ratingSubmit;
+	public MobileElement getBtn_RatingSubmit() {
+		return btn_RatingSubmit;
 	}
 
-	public MobileElement getTxt_addNotes() {
-		return txt_addNotes;
+	public MobileElement getTxt_AddNotes() {
+		return txt_AddNotes;
 	}
 
-	public MobileElement getBtn_finishClassification() {
-		return btn_finishClassification;
+	public MobileElement getBtn_FinishClassification() {
+		return btn_FinishClassification;
 	}
 
-	public MobileElement getBtn_question() {
-		return btn_question;
+	public MobileElement getBtn_Question() {
+		return btn_Question;
 	}
 
-	public MobileElement getImg_logoLogin() {
-		return img_logoLogin;
+	public MobileElement getImg_LogoLogin() {
+		return img_LogoLogin;
 	}
 
 	public MobileElement getImg_Carroussel() {

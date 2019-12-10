@@ -18,44 +18,34 @@ public class ProductsPage {
     // *******Elements*******//
 
     @AndroidFindBy(id = "beerRecommenderAdd")
-    private MobileElement btn_recommenderAdd;
-
-    @AndroidFindBy(xpath = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.support.v4.widget.DrawerLayout/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.RelativeLayout")
-    private MobileElement lbl_loadingTruck;
+    private MobileElement btn_RecommenderAdd;
 
     @AndroidFindBy(id = "recommender_popup_close")
-    private MobileElement btn_closePopupPedidoFacil;
+    private MobileElement btn_ClosePopupPedidoFacil;
 
     @AndroidFindBy(id = "recommender_popup_title")
-    private MobileElement lbl_popupTitle;
+    private MobileElement lbl_PopupTitle;
 
    @AndroidFindBy(id = "truck")
-    private MobileElement btn_truck;
+    private MobileElement btn_Truck;
 
 
     // *******getter and setters*******//
 
     public MobileElement getBtn_recommenderAdd() {
-        return btn_recommenderAdd;
+        return btn_RecommenderAdd;
     }
 
-    public MobileElement getLbl_loadingTruck() {
-        return lbl_loadingTruck;
+    public MobileElement getBtn_ClosePopupPedidoFacil() {
+        return btn_ClosePopupPedidoFacil;
     }
 
-    public MobileElement getBtn_closePopupPedidoFacil() {
-        return btn_closePopupPedidoFacil;
+    public MobileElement getLbl_PopupTitle() {
+        return lbl_PopupTitle;
     }
 
-    public MobileElement getLbl_popupTitle() {
-        return lbl_popupTitle;
+    public MobileElement getBtn_Truck() {
+        return btn_Truck;
     }
-
-    public MobileElement getBtn_truck() {
-        return btn_truck;
-    }
-
-
-    // *******getter and setters string*******//
 
 }

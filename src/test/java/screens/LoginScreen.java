@@ -20,13 +20,13 @@ public class LoginScreen extends BaseScreen {
     }
 
     public void selecionarConta() {
-        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getBtn_account()));
-        this.loginPage.getBtn_account().click();
+        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getBtn_Account()));
+        this.loginPage.getBtn_Account().click();
     }
 
     public boolean validarTelaLogin(){
-        wait.until(ExpectedConditions.visibilityOfAllElements(this.loginPage.getImg_logoLogin()));
-        return this.loginPage.getImg_logoLogin().isDisplayed();
+        wait.until(ExpectedConditions.visibilityOfAllElements(this.loginPage.getImg_LogoLogin()));
+        return this.loginPage.getImg_LogoLogin().isDisplayed();
     }
 
     public boolean validarCarrousselLogin(){
@@ -35,22 +35,22 @@ public class LoginScreen extends BaseScreen {
     }
 
     public void passarApresentacao() {
-        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getPresentationSlide()));
+        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getTlt_PresentationSlide()));
         for(int i=0; i<=4; i++){
-            Helper.swipeHorizontalRightToLeftElement(this.loginPage.getPresentationSlide());
+            Helper.swipeHorizontalRightToLeftElement(this.loginPage.getTlt_PresentationSlide());
         }
-        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getBtn_start()));
-        this.loginPage.getBtn_start().click();
+        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getBtn_Start()));
+        this.loginPage.getBtn_Start().click();
     }
 
     public void classificacaoApp() {
-        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getBtn_rating()));
-        this.loginPage.getBtn_rating().click();
-        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getBtn_question()));
-        this.loginPage.getBtn_question().click();
-        this.loginPage.getTxt_addNotes().sendKeys("Executing automated test...");
-        this.loginPage.getBtn_ratingSubmit().click();
-        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getBtn_finishClassification()));
-        this.loginPage.getBtn_finishClassification().click();
+        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getBtn_Rating()));
+        this.loginPage.getBtn_Rating().click();
+        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getBtn_Question()));
+        this.loginPage.getBtn_Question().click();
+        this.loginPage.getTxt_AddNotes().sendKeys("Executing automated test...");
+        this.loginPage.getBtn_RatingSubmit().click();
+        wait.until(ExpectedConditions.elementToBeClickable(this.loginPage.getBtn_FinishClassification()));
+        this.loginPage.getBtn_FinishClassification().click();
     }
 }
