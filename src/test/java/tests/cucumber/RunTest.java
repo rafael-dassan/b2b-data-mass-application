@@ -13,7 +13,7 @@ import java.io.IOException;
 @CucumberOptions(features = "src/test/java/tests/cucumber/features",
         glue = {"tests.cucumber.steps","support"},
         //plugin = {"pretty", "html:reports"},
-        tags = {"@logout"},
+        tags = {"@products"},
         dryRun = false)
 
 public class RunTest {

@@ -10,7 +10,7 @@ import io.appium.java_client.pagefactory.AndroidFindBy;
 
 public class OrdersPage {
 
-	// *******Construtor*******//
+	// *******Constructor*******//
 	
 	public OrdersPage(MobileDriver appiumDriver) {
 		PageFactory.initElements(new AppiumFieldDecorator(appiumDriver), this);

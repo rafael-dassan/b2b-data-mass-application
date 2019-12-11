@@ -23,23 +23,23 @@ public class LogoutSteps {
 
     @Given("that I am logged")
     public void that_I_am_logged() {
-        utilsScreen.clicarEntrar();
-        utilsScreen.logar("REPUBLICADOMINICANA");
-        utilsScreen.clicarEntrarLogin();
-        loginScreen.selecionarConta();
-        loginScreen.passarApresentacao();
-        loginScreen.classificacaoApp();
-        logoutScreen.abrirMenu();
+        utilsScreen.clickEnter();
+        utilsScreen.loginData("REPUBLICADOMINICANA");
+        utilsScreen.clickLogin();
+        loginScreen.selectAccount();
+        loginScreen.swipePresentation();
+        loginScreen.appRating();
+        logoutScreen.openMenu();
     }
 
     @When("I click on the logout button")
     public void i_click_on_the_logout_button() {
-        utilsScreen.clicarLogout();
+        utilsScreen.clickLogout();
     }
 
     @Then("I must be logged out")
     public void i_must_be_logged_out() {
-        assertTrue(utilsScreen.validarTelaInicial());
+        assertTrue(utilsScreen.checkInitialScreen());
     }
 
 }
