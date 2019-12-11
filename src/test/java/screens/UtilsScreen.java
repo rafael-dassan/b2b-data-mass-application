@@ -14,38 +14,38 @@ public class UtilsScreen extends BaseScreen {
         this.utilsPage = new UtilsPage(driver);
     }
 
-    public void logar(String zona) {
-        digitarEmail(zona);
-        digitarSenha(zona);
+    public void loginData(String zona) {
+        typeEmail(zona);
+        typePassword(zona);
     }
 
-    public boolean validarTelaInicial(){
-        wait.until(ExpectedConditions.visibilityOfAllElements(this.utilsPage.getBtn_Entrar()));
-        return this.utilsPage.getBtn_Entrar().isDisplayed();
+    public boolean checkInitialScreen(){
+        wait.until(ExpectedConditions.visibilityOfAllElements(this.utilsPage.getBtnEnter()));
+        return this.utilsPage.getBtnEnter().isDisplayed();
     }
 
-    public void clicarEntrar(){
-        wait.until(ExpectedConditions.elementToBeClickable(this.utilsPage.getBtn_Entrar()));
-        this.utilsPage.getBtn_Entrar().click();
+    public void clickEnter(){
+        wait.until(ExpectedConditions.elementToBeClickable(this.utilsPage.getBtnEnter()));
+        this.utilsPage.getBtnEnter().click();
     }
 
-    public void digitarEmail(String zona) {
-        wait.until(ExpectedConditions.elementToBeClickable(this.utilsPage.getLbl_Email()));
-        this.utilsPage.getLbl_Email().sendKeys(CredentialsImpl.valueOf(zona.toUpperCase().replaceAll(" ", "")).email());
+    public void typeEmail(String zona) {
+        wait.until(ExpectedConditions.elementToBeClickable(this.utilsPage.getLblEmail()));
+        this.utilsPage.getLblEmail().sendKeys(CredentialsImpl.valueOf(zona.toUpperCase().replaceAll(" ", "")).email());
     }
 
-    public void digitarSenha(String zona) {
-        wait.until(ExpectedConditions.elementToBeClickable(this.utilsPage.getLbl_Senha()));
-        this.utilsPage.getLbl_Senha().sendKeys(CredentialsImpl.valueOf(zona.toUpperCase().replaceAll(" ", "")).senha());
+    public void typePassword(String zona) {
+        wait.until(ExpectedConditions.elementToBeClickable(this.utilsPage.getLblPassword()));
+        this.utilsPage.getLblPassword().sendKeys(CredentialsImpl.valueOf(zona.toUpperCase().replaceAll(" ", "")).senha());
     }
 
-    public void clicarEntrarLogin(){
-        wait.until(ExpectedConditions.elementToBeClickable(this.utilsPage.getBtn_Login()));
-        this.utilsPage.getBtn_Login().click();
+    public void clickLogin(){
+        wait.until(ExpectedConditions.elementToBeClickable(this.utilsPage.getBtnLogin()));
+        this.utilsPage.getBtnLogin().click();
     }
 
-    public void clicarLogout() {
-        this.utilsPage.getBtn_Logout().click();
+    public void clickLogout() {
+        this.utilsPage.getBtnLogout().click();
     }
 
 }
