@@ -1,7 +1,7 @@
 package tests.cucumber.steps;
 
-import pages.LoginPage;
-import pages.OrdersPage;
+import pages.common.LoginPage;
+import pages.common.OrdersPage;
 
 public class OrdersSteps {
 

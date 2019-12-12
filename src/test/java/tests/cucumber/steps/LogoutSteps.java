@@ -3,9 +3,9 @@ package tests.cucumber.steps;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import pages.LoginPage;
-import pages.LogoutPage;
-import pages.UtilsPage;
+import pages.common.LoginPage;
+import pages.common.LogoutPage;
+import pages.common.UtilsPage;
 
 import static junit.framework.TestCase.assertTrue;
 

@@ -1,4 +1,4 @@
-package pages;
+package pages.common;
 
 import support.DriverConfig;
 import support.Common;

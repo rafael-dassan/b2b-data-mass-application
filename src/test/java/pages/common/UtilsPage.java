@@ -1,4 +1,4 @@
-package pages;
+package pages.common;
 
 import data.CredentialsImpl;
 import org.openqa.selenium.support.ui.ExpectedConditions;
