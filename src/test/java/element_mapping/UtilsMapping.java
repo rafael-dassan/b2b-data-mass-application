@@ -1,4 +1,4 @@
-package page_objects;
+package element_mapping;
 
 import io.appium.java_client.MobileDriver;
 import io.appium.java_client.MobileElement;
@@ -6,11 +6,11 @@ import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import org.openqa.selenium.support.PageFactory;
 
-public class UtilsPage {
+public class UtilsMapping {
 
     // *******Constructor*******//
 
-    public UtilsPage(MobileDriver appiumDriver) {
+    public UtilsMapping(MobileDriver appiumDriver) {
         PageFactory.initElements(new AppiumFieldDecorator(appiumDriver), this);
     }
 

@@ -1,6 +1,6 @@
 package tests.cucumber;
 
-import common.VariaveisStaticas;
+import support.StaticVariable;
 import cucumber.api.CucumberOptions;
 import cucumber.api.junit.Cucumber;
 import org.junit.BeforeClass;
@@ -11,9 +11,9 @@ import java.io.IOException;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(features = "src/test/java/tests/cucumber/features",
-        glue = {"tests.cucumber.steps","support"},
+        glue = {"tests.cucumber.steps", "support"},
         //plugin = {"pretty", "html:reports"},
-        tags = {"@products"},
+        tags = {"@logout"},
         dryRun = false)
 
 public class RunTest {
@@ -22,7 +22,7 @@ public class RunTest {
     @BeforeClass
     public static void setup() throws IOException {
         System.out.println("Test JUnit Before");
-        VariaveisStaticas.setPlatformType("android");
+        StaticVariable.setPlatformType("android");
+        StaticVariable.setZone("ZA");
     }
 }
-

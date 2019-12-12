@@ -1,4 +1,4 @@
-package page_objects;
+package element_mapping;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileElement;
@@ -6,11 +6,11 @@ import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import org.openqa.selenium.support.PageFactory;
 
-public class LoginPage {
+public class LoginMapping {
 
 	// *******Constructor*******//
 	
-	public LoginPage(AppiumDriver<MobileElement> appiumDriver) {
+	public LoginMapping(AppiumDriver<MobileElement> appiumDriver) {
 		PageFactory.initElements(new AppiumFieldDecorator(appiumDriver), this);
 	}
 
@@ -19,7 +19,7 @@ public class LoginPage {
 	@AndroidFindBy(id = "background_layout")
 	private MobileElement screenLogin;
 
-	@AndroidFindBy(xpath = "//android.support.v7.widget.RecyclerView[@content-desc=\"Account table\"]/android.widget.LinearLayout[1]/android.widget.TextView")
+	@AndroidFindBy(xpath = "//android.widget.LinearLayout[1]/android.widget.TextView")
 	private MobileElement btnAccount;
 
 	@AndroidFindBy(id = "tutorial_title")
@@ -34,7 +34,7 @@ public class LoginPage {
 	@AndroidFindBy(id = "ratingAddNotesText")
 	private MobileElement txtAddNotes;
 
-	@AndroidFindBy(xpath = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.ScrollView/android.widget.LinearLayout/android.widget.FrameLayout[2]/android.view.ViewGroup/android.widget.LinearLayout[3]/android.widget.TextView")
+	@AndroidFindBy(xpath = "//android.widget.TextView[contains(@text,'Damaged')]")
 	private MobileElement btnQuestion;
 
 	@AndroidFindBy(id = "ratingSubmitButton")

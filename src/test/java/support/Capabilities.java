@@ -1,18 +1,13 @@
 package support;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Scanner;
 
-import io.appium.java_client.MobileDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileElement;
-import io.appium.java_client.ios.IOSDriver;
-import support.interfaces.MobileApplication;
+import interfaces.MobileApplication;
 
 public enum Capabilities implements MobileApplication {
 
@@ -75,5 +70,4 @@ public enum Capabilities implements MobileApplication {
         caps.setCapability("useNewWDA", "false");
         return caps;
     }
-
 }

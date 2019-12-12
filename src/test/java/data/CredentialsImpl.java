@@ -1,6 +1,4 @@
-package enums;
-
-import interfaces.Credentials;
+package data;
 
 public enum CredentialsImpl  implements Credentials {
 

@@ -1,27 +1,22 @@
-package base_screen;
+package support;
 
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.MobileDriver;
 import io.appium.java_client.MobileElement;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import support.interfaces.MobileApplication;
+import interfaces.MobileApplication;
 
-import java.util.concurrent.TimeUnit;
-
-public class BaseScreen {
+public class DriverConfig {
 
     public static AppiumDriver<MobileElement> driver;
     protected static WebDriverWait wait;
-    protected static WebDriverWait shortWait;
 
-    public AppiumDriver<MobileElement> inicializarAppAdroid(MobileApplication mobileApplication) {
+    public AppiumDriver<MobileElement> createAndroidDriver(MobileApplication mobileApplication) {
         driver = mobileApplication.getDriver();
         wait = new WebDriverWait(driver,20);
         return driver;
     }
 
-    public AppiumDriver<MobileElement> inicializarAppIos(MobileApplication mobileApplication) {
+    public AppiumDriver<MobileElement> createIosDriver(MobileApplication mobileApplication) {
         driver = mobileApplication.getDriver();
         wait = new WebDriverWait(driver,20);
         return driver;

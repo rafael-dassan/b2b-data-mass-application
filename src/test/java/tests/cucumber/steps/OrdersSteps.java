@@ -1,16 +1,16 @@
 package tests.cucumber.steps;
 
-import screens.LoginScreen;
-import screens.OrdersScreen;
+import pages.LoginPage;
+import pages.OrdersPage;
 
 public class OrdersSteps {
 
-    OrdersScreen ordersScreen;
-    LoginScreen loginScreen;
+    OrdersPage ordersPage;
+    LoginPage loginPage;
 
     public OrdersSteps() {
-        loginScreen = new LoginScreen();
-        ordersScreen = new OrdersScreen();
+        loginPage = new LoginPage();
+        ordersPage = new OrdersPage();
     }
 
 }

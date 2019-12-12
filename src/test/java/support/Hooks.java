@@ -1,19 +1,18 @@
 package support;
 
-import base_screen.BaseScreen;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 
-public class Hooks extends BaseScreen {
+public class Hooks extends DriverConfig {
 
 	@Before(value = "@android")
 	public void beforeMobileAndroid() {
-		inicializarAppAdroid(Capabilities.ANDROID);
+		createAndroidDriver(Capabilities.ANDROID);
 	}
 
 	@Before(value = "@ios")
 	public void beforeMobileIos() {
-		inicializarAppIos(Capabilities.IOS);
+		createIosDriver(Capabilities.IOS);
 	}
 
 	@After(value = "@android")

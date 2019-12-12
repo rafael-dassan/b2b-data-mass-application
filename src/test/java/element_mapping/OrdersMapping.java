@@ -1,18 +1,15 @@
-package page_objects;
+package element_mapping;
 
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
-import io.appium.java_client.pagefactory.iOSXCUITFindBy;
 import org.openqa.selenium.support.PageFactory;
 
 import io.appium.java_client.MobileDriver;
-import io.appium.java_client.MobileElement;
-import io.appium.java_client.pagefactory.AndroidFindBy;
 
-public class OrdersPage {
+public class OrdersMapping {
 
 	// *******Constructor*******//
 	
-	public OrdersPage(MobileDriver appiumDriver) {
+	public OrdersMapping(MobileDriver appiumDriver) {
 		PageFactory.initElements(new AppiumFieldDecorator(appiumDriver), this);
 	}
 

@@ -3,43 +3,43 @@ package tests.cucumber.steps;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import screens.LoginScreen;
-import screens.LogoutScreen;
-import screens.UtilsScreen;
+import pages.LoginPage;
+import pages.LogoutPage;
+import pages.UtilsPage;
 
 import static junit.framework.TestCase.assertTrue;
 
 public class LogoutSteps {
 
-    LogoutScreen logoutScreen;
-    LoginScreen loginScreen;
-    UtilsScreen utilsScreen;
+    LogoutPage logoutPage;
+    LoginPage loginPage;
+    UtilsPage utilsPage;
 
     public LogoutSteps() throws Exception {
-        logoutScreen = new LogoutScreen();
-        loginScreen = new LoginScreen();
-        utilsScreen = new UtilsScreen();
+        logoutPage = new LogoutPage();
+        loginPage = new LoginPage();
+        utilsPage = new UtilsPage();
     }
 
     @Given("that I am logged")
     public void that_I_am_logged() {
-        utilsScreen.clickEnter();
-        utilsScreen.loginData("REPUBLICADOMINICANA");
-        utilsScreen.clickLogin();
-        loginScreen.selectAccount();
-        loginScreen.swipePresentation();
-        loginScreen.appRating();
-        logoutScreen.openMenu();
+        utilsPage.clickEnter();
+        utilsPage.loginData("REPUBLICADOMINICANA");
+        utilsPage.clickLogin();
+        loginPage.selectAccount();
+        loginPage.swipePresentation();
+        loginPage.appRating();
+        logoutPage.openMenu();
     }
 
     @When("I click on the logout button")
     public void i_click_on_the_logout_button() {
-        utilsScreen.clickLogout();
+        utilsPage.clickLogout();
     }
 
     @Then("I must be logged out")
     public void i_must_be_logged_out() {
-        assertTrue(utilsScreen.checkInitialScreen());
+        assertTrue(utilsPage.checkInitialScreen());
     }
 
 }

@@ -1,4 +1,4 @@
-package page_objects;
+package element_mapping;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileElement;
@@ -6,9 +6,9 @@ import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import org.openqa.selenium.support.PageFactory;
 
-public class ProductsPage {
+public class ProductsMapping {
 
-    public ProductsPage(AppiumDriver<MobileElement> appiumDriver) {
+    public ProductsMapping(AppiumDriver<MobileElement> appiumDriver) {
         PageFactory.initElements(new AppiumFieldDecorator(appiumDriver), this);
     }
 
@@ -16,9 +16,6 @@ public class ProductsPage {
 
     @AndroidFindBy(id = "beerRecommenderAdd")
     private MobileElement btnRecommenderAdd;
-
-    @AndroidFindBy(xpath = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.support.v4.widget.DrawerLayout/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.RelativeLayout")
-    private MobileElement lblLoadingTruck;
 
     @AndroidFindBy(id = "recommender_popup_close")
     private MobileElement btnClosePopupPedidoFacil;
@@ -34,10 +31,6 @@ public class ProductsPage {
 
     public MobileElement getBtnRecommenderAdd() {
         return btnRecommenderAdd;
-    }
-
-    public MobileElement getLblLoadingTruck() {
-        return lblLoadingTruck;
     }
 
     public MobileElement getBtnClosePopupPedidoFacil() {

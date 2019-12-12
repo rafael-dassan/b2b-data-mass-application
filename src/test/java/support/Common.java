@@ -1,15 +1,9 @@
-package common;
+package support;
 
-import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
-
-import base_screen.BaseScreen;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.touch.TapOptions;
@@ -17,7 +11,7 @@ import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.ElementOption;
 import io.appium.java_client.touch.offset.PointOption;
 
-public class Helper extends BaseScreen {
+public class Common extends DriverConfig {
 
     /**
      * Verifica se o elemento existe
@@ -37,7 +31,7 @@ public class Helper extends BaseScreen {
      * Fechar o teclado
      */
     public static void fecharTeclado() {
-        if(VariaveisStaticas.getPlatformType().equals("android")){
+        if(StaticVariable.getPlatformType().equals("android")){
             driver.hideKeyboard();
         }else{
             //Implementar para iOS
