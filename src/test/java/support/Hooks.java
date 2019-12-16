@@ -7,12 +7,12 @@ public class Hooks extends DriverConfig {
 
 	@Before(value = "@android")
 	public void beforeMobileAndroid() {
-		createAndroidDriver(Capabilities.ANDROID);
+		createAndroidDriver(AndroidCapabilities.ANDROID);
 	}
 
 	@Before(value = "@ios")
 	public void beforeMobileIos() {
-		createIosDriver(Capabilities.IOS);
+		createIosDriver(IosCapabilities.IOS);
 	}
 
 	@After(value = "@android")
