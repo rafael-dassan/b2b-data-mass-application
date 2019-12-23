@@ -7,7 +7,6 @@
     <groupId>br.com.itau.pf</groupId>
     <artifactId>specs-io-pf</artifactId>
     <version>1.0-SNAPSHOT</version>
-
     <build>
         <plugins>
             <plugin>
@@ -22,13 +21,28 @@
         </plugins>
     </build>
     <repositories>
-        <repository>
-            <id>itau-artifactory</id>
-            <url>http://painel.repodep.des.cloud.ihf:80/artifactory/maven-devel</url>
-        </repository>
     </repositories>
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.5</version>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -40,7 +54,7 @@
         <dependency>
             <groupId>io.appium</groupId>
             <artifactId>java-client</artifactId>
-            <version>7.0.0</version>
+            <version>7.3.0</version>
         </dependency>
 
 
@@ -78,14 +92,5 @@
             <artifactId>selenium-java</artifactId>
             <version>3.141.59</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.24</version>
-        </dependency>
-
-
     </dependencies>
 </project>

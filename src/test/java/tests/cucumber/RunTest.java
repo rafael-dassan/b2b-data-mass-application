@@ -12,8 +12,8 @@ import java.io.IOException;
 @RunWith(Cucumber.class)
 @CucumberOptions(features = "src/test/java/tests/cucumber/features",
         glue = {"tests.cucumber.steps", "support"},
-        //plugin = {"pretty", "html:reports"},
-        tags = {"@logout"},
+        plugin = {"pretty", "html:reports"},
+        tags = {"@login"},
         dryRun = false)
 
 public class RunTest {
@@ -21,8 +21,7 @@ public class RunTest {
 
     @BeforeClass
     public static void setup() throws IOException {
-        System.out.println("Test JUnit Before");
-        StaticVariable.setPlatformType("android");
-        StaticVariable.setZone("ZA");
+        StaticVariable.setPlatformType("ios");
+        StaticVariable.setZone("Dr");
     }
 }

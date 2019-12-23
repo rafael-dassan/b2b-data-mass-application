@@ -3,59 +3,53 @@ package tests.cucumber.steps;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import pages.common.LoginPage;
-import pages.common.LogoutPage;
-import pages.common.UtilsPage;
-
-import static junit.framework.TestCase.assertTrue;
+import org.junit.Assert;
+import pages.android.PagesAndroid;
+import pages.ios.PagesIos;
+import support.StaticVariable;
 
 public class LoginSteps {
+  @Given("that {string} as an {string} user is in the login screen")
+  public void that_as_an_user_is_in_the_login_screen(String userName, String accountType) {
+    if(StaticVariable.getPlatformType().equals("android"))
+      PagesAndroid.loginPage().accessTheLoginScreen();
+    else
+      PagesIos.loginPage().accessTheLoginScreen();
+  }
 
-    LoginPage loginPage;
-    LogoutPage logoutPage;
-    UtilsPage utilsPage;
+  @Given("he filled in the login data correctly")
+  public void he_filled_in_the_login_data_correctly() {
+    if(StaticVariable.getPlatformType().equals("android"))
+      PagesAndroid.loginPage().fillLoginFieldsWithValidValues();
+    else
+      PagesIos.loginPage().fillLoginFieldsWithValidValues();
+  }
 
-    public LoginSteps() throws Exception {
-        loginPage = new LoginPage();
-        utilsPage = new UtilsPage();
-        logoutPage = new LogoutPage();
+  @When("he triggers the option to access")
+  public void he_triggers_the_option_to_access() {
+    if(StaticVariable.getPlatformType().equals("android")){
+      PagesAndroid.loginPage().waitUntilElementIsVisible(PagesAndroid.loginPage().loginMapping.getEnterOption());
+      PagesAndroid.loginPage().loginMapping.getEnterOption().click();
+    } else {
+        PagesIos.loginPage().waitUntilElementIsVisible(PagesIos.loginPage().loginMapping.getEnterOption());
+        PagesIos.loginPage().loginMapping.getEnterOption().click();
     }
+  }
 
-    @Given("I am on Initial screen")
-    public void i_am_on_initial_screen() {
-        assertTrue(utilsPage.checkInitialScreen());
+  @Then("the account list page should be displayed")
+  public void the_account_list_page_should_be_displayed() {
+    if (StaticVariable.getPlatformType().equals("android")) {
+      PagesAndroid.accountListPage()
+          .waitUntilElementIsVisible(
+              PagesAndroid.accountListPage().accountListMapping.getAccountListSection());
+      Assert.assertTrue(
+          PagesAndroid.accountListPage().accountListMapping.accountList[0].isDisplayed());
+      }else{
+      PagesIos.accountListPage().waitUntilElementIsVisible(
+              PagesIos.accountListPage().accountListMapping.getAccountList()
+      );
+      Assert.assertTrue(PagesIos.accountListPage().accountListMapping.getAccountList().isDisplayed());
     }
-
-    @When("I selected the enviroment {string}")
-    public void i_selected_the_enviroment(String enviroment) {
-        loginPage.selectEnviroment(enviroment);
-    }
-
-    @Then("I go to screen login")
-    public void i_go_to_screen_login() {
-        assertTrue(utilsPage.checkInitialScreen());
-    }
-
-    @Given("that I have an existing account")
-    public void that_I_have_an_existing_account() {
-        utilsPage.clickEnter();
-    }
-
-    @When("I insert my credentials {string}")
-    public void i_insert_my_credentials(String zona) {
-        utilsPage.loginData(zona);
-        utilsPage.clickLogin();
-    }
-
-    @When("I click on the login button")
-    public void i_click_on_the_login_button() {
-        loginPage.selectAccount();
-        loginPage.swipePresentation();
-        loginPage.appRating();
-    }
-
-    @Then("I must be logged successfully")
-    public void i_must_be_logged_successfully() {
-        assertTrue(loginPage.checkCarouselLogin());
     }
 }
+

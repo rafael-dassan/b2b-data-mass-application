@@ -1,0 +1,18 @@
+
+{
+  "users" : {
+    "adm": {
+      "email": "product-dr@mailinator.com",
+      "password": "Teste123",
+      "account-name" : "SUPER BODEGA MINAYA"
+    },
+    "client": {
+      "email": "test-qa@mailinator.com",
+      "password": "Teste@123"
+    }
+  },
+  "messages" : {
+    "error" : "error message",
+    "wrong-parameter": "wrong parameter"},
+  "zone-name": "dominicanRepublic"
+}

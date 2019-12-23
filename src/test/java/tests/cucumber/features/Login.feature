@@ -1,16 +1,15 @@
 #language: en
-@android
-Feature: Beer Tech - Login
+@common @login
+Feature: Login
+    As a registered user in the app
+    James would like to sign in to the app
+    To access your store at any time
 
-@select_environment
-Scenario: Select to the environment
-    Given I am on Initial screen
-    When I selected the enviroment "QA"
-    Then I go to screen login
+    Background:
+        Given  that "James" as an "ADM" user is in the login screen
 
-@login
-Scenario: Login to the customer account
-    Given that I have an existing account
-    When I insert my credentials "REPUBLICADOMINICANA"
-    When I click on the login button
-    Then I must be logged successfully
+
+    Scenario: Valid Login
+        And he filled in the login data correctly
+        When he triggers the option to access
+        Then the account list page should be displayed
