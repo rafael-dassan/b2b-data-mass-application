@@ -105,8 +105,10 @@ def inputDiscountBySku(accounts, zone, environment, listOffers, typeDiscount, va
                     }
                 },
                 "dealOutput": {
-                    "dealOutputTotalDiscount": {
-                        strTypeDiscount: valueDiscount
+                    "dealOutputSKUDiscount": {
+                        "skus": listOffers,
+                        strTypeDiscount: valueDiscount,
+                        "maxQuantity": 1000
                     }
                 },
                 "externalId": "ANTARCTICA-" + str(uuid1()) + '-bySku',

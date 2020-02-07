@@ -262,7 +262,7 @@ def add_products_to_account_middleware(abi_id, zone, environment):
     return result
 
 #Add products in microservice account
-def add_products_to_account_microservice(abi_id, zone, environment):
+def add_products_to_account_microservice(abi_id, zone, environment, deliveryCenterId):
 
     # Request get products microservice
     allProductsMicroservice = request_get_products_microservice(zone, environment)
@@ -284,7 +284,7 @@ def add_products_to_account_microservice(abi_id, zone, environment):
     array_ids_new_products = generate_random_price_ids(qtd)
 
     # Insert products in account
-    result = request_post_products_account_microservice(abi_id, zone, environment, array_ids_new_products, productsInput)
+    result = request_post_products_account_microservice(abi_id, zone, environment, array_ids_new_products, productsInput, deliveryCenterId)
 
     return result
 
@@ -309,25 +309,22 @@ def request_get_products_microservice(zone, environment):
         print('- [Product] Something went wrong in search products on microservice')
 
 # Post requests product price and product inclusion in account
-def request_post_products_account_microservice(abi_id, zone, environment, array_ids_new_products, productsInput):
+def request_post_products_account_microservice(abi_id, zone, environment, array_ids_new_products, productsInput, deliveryCenterId):
     
-    price_list_id = abi_id
-    delivery_center_id = abi_id
+    delivery_center_id = deliveryCenterId
     index = 0
     while index < len(productsInput):
 
         last = datetime.now()
         # Sync products with account
-        result = request_post_price_inclusion_microservice(
-            zone, environment, productsInput[index]['sku'], array_ids_new_products[index], delivery_center_id)
+        result = request_post_price_inclusion_microservice(zone, environment, productsInput[index]['sku'], array_ids_new_products[index], delivery_center_id)
         if result == 'false':
             return result
 
         # Post price product in Price Engine Microservice
         # Workaround to prevent requests from CL to go to the Pricing Engine MS
         if zone != 'CL':
-            result = request_post_price_microservice(
-                abi_id, zone, environment, productsInput[index]['sku'], array_ids_new_products[index])
+            result = request_post_price_microservice(abi_id, zone, environment, productsInput[index]['sku'], array_ids_new_products[index])
 
         if result == 'false':
             return result
@@ -344,59 +341,45 @@ def request_post_products_account_microservice(abi_id, zone, environment, array_
 
     return 'success'
 
-# Post request product price microservice
-def request_post_price_account_microservice(zone, environment, sku_product, product_price_id, price_list_id):
-
-    # Get header request
-    request_headers = get_header_request(zone, 'true')
-
-    # Get url base
-    request_url = get_microservice_base_url(environment) + "/middleware-relay/products/" + str(sku_product) + "/prices"
-
-    # Get request body
-    request_body = get_body_price_middleware_request(
-        product_price_id, price_list_id)
-
-    # Place request
-    response = place_request("POST", request_url, request_body, request_headers)
-
-    if response.status_code != 202:
-        print('- [Product] Something went wrong in define product price SKU ' + str(sku_product) + ' on microservice middleware-relay')
-        return 'false'
-
-    return 'true'
-
 # Post request product inclusion microservice
 def request_post_price_inclusion_microservice(zone, environment, sku_product, product_price_id, delivery_center_id):
 
     # Get header request
-    request_headers = get_header_request(zone, 'false', 'true')
+    request_headers = get_header_request(zone, 'false', 'false', 'true', sku_product)
 
     # Get url base
-    request_url = get_microservice_base_url(environment) + "/middleware-relay/products/" + str(sku_product) + "/inclusions"
+    #request_url = get_microservice_base_url(environment) + "/middleware-relay/products/" + str(sku_product) + "/inclusions"
+    request_url = get_microservice_base_url(environment) + "/product-assortment-relay/inclusion"
 
     # Get body request
-    request_body = get_body_price_inclusion_request(
-        product_price_id, delivery_center_id)
+    request_body = get_body_price_inclusion_microservice_request(delivery_center_id)
 
     # Place request
     response = place_request("POST", request_url, request_body, request_headers)
 
     if response.status_code != 202:
-        print('- [Product] Something went wrong in post product SKU ' + str(sku_product) + ' on account middleware-relay')
+        print('- [Product] Something went wrong in post product SKU ' + str(sku_product) + ' on account product-assortment-relay')
         return 'false'
 
     return 'true'
 
+# Create body for product inclusion in account
+def get_body_price_inclusion_microservice_request(delivery_center_id):
+    body_price_inclusion = dumps({
+        "deliveryCenters": [delivery_center_id]
+    })
+
+    return body_price_inclusion
+
 # Get offers account in microservice
-def request_get_offers_microservice(accountId, zone, environment):
+def request_get_offers_microservice(accountId, zone, environment, deliveryCenterId):
 
     # Get header request
     headers = get_header_request(zone, 'true')
 
     # Get url base
-    request_url = get_microservice_base_url(environment) + "/middleware-relay/products/offers?accountId=" + accountId
-
+    # request_url = get_microservice_base_url(environment) + "/middleware-relay/products/offers?accountId=" + accountId
+    request_url = get_microservice_base_url(environment) + "/product-assortment/?accountId=accountId" + accountId + '&deliveryCenterId=' + deliveryCenterId
     # Get body request
     request_body = ""
 
@@ -405,6 +388,6 @@ def request_get_offers_microservice(accountId, zone, environment):
     
     if response.status_code == 200:
         json_data = loads(response.text)
-        return json_data
+        return json_data['skus']
     else:
         print('- [Product] Something went wrong in search products on middleware')

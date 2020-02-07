@@ -98,7 +98,7 @@ def place_request(request_type, request_url, request_body, request_headers):
     return response
 
 # Return jwt header request
-def get_header_request(header_country, useJwtAuthorization = 'false', useRootAuthentication = 'false'):
+def get_header_request(header_country, useJwtAuthorization='false', useRootAuthentication = 'false', useInclusionAuthentication = 'false', sku_product='false'):
     timezone = "UTC"
     header = {
         "Content-Type": "application/json",
@@ -113,8 +113,13 @@ def get_header_request(header_country, useJwtAuthorization = 'false', useRootAut
         header['Authorization'] = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYi1pbmJldiIsImF1ZCI6ImFiaS1taWNyb3NlcnZpY2VzIiwiZXhwIjoxNTg1NjEyODAwLCJ1cGRhdGVkX2F0IjoxNTY1NzkxODI0LCJpYXQiOjE1NjU3OTE4MjQsIm5hbWUiOiJ0ZXN0ZUB0ZXN0ZS5jb20iLCJhY2NvdW50SUQiOiIwMDAwMTAwMDA0IiwidXNlcklEIjoiMTYiLCJyb2xlcyI6WyJST0xFX0NVU1RPTUVSIl19.GUc9ssFyXle0F0W6LUU2amvZ-hm7TFIDteR50WlQFUE'
     elif useRootAuthentication == 'true':
         header['Authorization'] = 'Basic cm9vdDpyb290'
+    elif useInclusionAuthentication == 'true':
+        header['Authorization'] = 'Basic cmVsYXk6TVVRd3JENVplSEtB'
     else:
         header['Authorization'] = 'Basic cmVsYXk6cmVsYXk='
+    
+    if sku_product != 'false':
+        header['skuId'] = sku_product
 
     return header
 
@@ -710,7 +715,7 @@ def printAvailableOptions(selectionStructure):
 
 # Print welcome menu application
 def printWelcomeScript():
-    print(text.White + text.BackgroundBlue + " 🄰🄽🅃🄰🅁🄲🅃🄸🄲🄰 🄰🅄🅃🄾🄼🄰🅃🄸🄾🄽 🅂🄲🅁🄸🄿🅃 " + text.ResetAll)
+    print(text.White + " 🄰🄽🅃🄰🅁🄲🅃🄸🄲🄰 🄰🅄🅃🄾🄼🄰🅃🄸🄾🄽 🅂🄲🅁🄸🄿🅃 " + text.ResetAll)
     print(text.White + "Choose which backend you want to run a service for" + text.ResetAll)
 
 # Print structure menu application
