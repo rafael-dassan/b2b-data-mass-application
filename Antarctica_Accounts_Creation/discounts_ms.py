@@ -160,6 +160,14 @@ def inputFreeGoodsSelection(accounts, zone, environment, minimumQuantityPurchase
     response = place_request('PUT', request_url, request_body, request_headers)
 
     if response.status_code == 202:
-	    return 'success'
+        print(' -- Skus Need Purchase -- ')
+        print(skusPurchase)
+        print(' -- Skus quantity need purchase -- ')
+        print(minimumQuantityPurchase)
+        print(' -- Payment method applied -- ')
+        print(paymentMethod)
+        print(' -- Skus can be select -- ')
+        print(skusFreeGoods)
+        return 'success'
     else:
         return response.status_code

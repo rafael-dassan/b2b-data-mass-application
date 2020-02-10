@@ -66,19 +66,7 @@ def inputFreeGoodsSelectionMenu():
         printFinishApplicationMenu()
 
     accounts.append(abi_id)
-    moreAccounts = input(text.White + "Do you want to apply this same rule to another account: y/N ")
-    while moreAccounts.upper() != 'N':
-        abi_id = input(text.White + "Input account ID to apply free goods selection: ")
-        # Call check account exists function
-        account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
-        if account == 'false':
-            print(text.Red + '\n- [Account] The account ' + str(abi_id) + ' not exists')
-        else:
-            accounts.append(abi_id)
-
-        moreAccounts = input(text.White + "Do you want to apply this same rule to another account: y/N ")
-    
-    productOffers = request_get_offers_microservice(abi_id, zone, environment)
+    productOffers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'])
     if len(productOffers) == 0:
         print(text.Red + '\n- [Product Offers] The account ' + str(abi_id) + ' has no products available for purchase')
         printFinishApplicationMenu()
@@ -139,14 +127,14 @@ def inputFreeGoodsSelectionMenu():
     auxIndex = 0
     while auxIndex < minimumProductsPurchase:
         indexOffers = randint(0, (len(productOffers) - 1))
-        skusPurchase.append(productOffers[indexOffers]['sku'])
+        skusPurchase.append(productOffers[indexOffers])
         auxIndex = auxIndex + 1
     
     skusFreeGoods = list()
     auxIndex = 0
     while auxIndex < quantitySkusChoice:
         indexOffers = randint(0, (len(productOffers) - 1))
-        skusFreeGoods.append(productOffers[indexOffers]['sku'])
+        skusFreeGoods.append(productOffers[indexOffers])
         auxIndex = auxIndex + 1
     
     response = inputFreeGoodsSelection(accounts, zone.upper(), environment.upper(), int(minimumQuantityPurchase), int(quantitySkusEarn), int(quantityMultiplierSku), skusPurchase, skusFreeGoods, paymentMethod)
@@ -171,7 +159,7 @@ def inputDiscountBySkuMenu():
         printFinishApplicationMenu()
 
     accounts.append(abi_id)    
-    productOffers = request_get_offers_microservice(abi_id, zone, environment)
+    productOffers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'])
     if len(productOffers) == 0:
         print(text.Red + '\n- [Product Offers] The account ' + str(abi_id) + ' has no products available for purchase')
         printFinishApplicationMenu()
@@ -183,8 +171,8 @@ def inputDiscountBySkuMenu():
     lineSku = ''
     print(text.White + 'List product offers')
     while (indexOffers < len(productOffers)):
-        lineSku = lineSku + ' -- Sku: ' + productOffers[indexOffers]['sku'] + ' -- '
-        listSkuOffers.append(productOffers[indexOffers]['sku'])
+        lineSku = lineSku + ' -- Sku: ' + productOffers[indexOffers] + ' -- '
+        listSkuOffers.append(productOffers[indexOffers])
         indexOffers = indexOffers + 1
         indexLineOffers = indexLineOffers + 1        
         if indexLineOffers == 3:
@@ -203,10 +191,10 @@ def inputDiscountBySkuMenu():
     while moreSkus.upper() != 'N':
         print(text.White + 'List product offers')
         while (indexOffers < len(productOffers)):
-            lineSku = lineSku + ' -- Sku: ' + productOffers[indexOffers]['sku'] + ' -- '
+            lineSku = lineSku + ' -- Sku: ' + productOffers[indexOffers] + ' -- '
             indexOffers = indexOffers + 1
             indexLineOffers = indexLineOffers + 1
-            listSkuOffers.append(productOffers[indexOffers]['sku'])
+            listSkuOffers.append(productOffers[indexOffers])
             if indexLineOffers == 3:
                 indexLineOffers = 0
                 print(lineSku)
@@ -406,7 +394,7 @@ def inputProductsAccountMicroserviceMenu():
 
     if proceed.upper() == "Y":
         # Call add products to account function
-        addProducts = add_products_to_account_microservice(abi_id, zone.upper(), environment.upper())
+        addProducts = add_products_to_account_microservice(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'])
         if addProducts == 'success':
             print(text.Green + '\n- Products added successfully.')
         else:
@@ -594,7 +582,7 @@ def createAccountMsMenu():
     print ('\n')
 
     # Call add products to account function
-    products = add_products_to_account_microservice(abi_id, zone.upper(), environment.upper())
+    products = add_products_to_account_microservice(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'])
 
     if products == 'success':
         print(text.Green + '\n- Products added successfully.')
