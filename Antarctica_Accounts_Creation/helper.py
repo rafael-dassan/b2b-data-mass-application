@@ -756,15 +756,15 @@ def printNameMenu():
 # Print zone menu application
 def printZoneMenu(isMiddleware='true'):
     if isMiddleware == 'true':
-        zone = input("Zone (DO, ZA, AR, CL): ")
+        zone = input("Zone (ZA, AR, CL): ")
         while validateZone('true', zone.upper()) == 'false':
             print(text.Red + '\n- Invalid option')
-            zone = input(text.White + "Zone (DO, ZA, AR, CL): ")
+            zone = input(text.White + "Zone (ZA, AR, CL): ")
     else:
-        zone = input("Zone (DO, ZA, AR, CL, BR): ")
+        zone = input("Zone (ZA, AR, CL, BR): ")
         while validateZone('false', zone.upper()) == 'false':
             print(text.Red + '\n- Invalid option')
-            zone = input(text.White + "Zone (DO, ZA, AR, CL, BR): ")
+            zone = input(text.White + "Zone (ZA, AR, CL, BR): ")
 
     return zone
 
