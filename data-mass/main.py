@@ -655,6 +655,12 @@ def createAccountMsMenu():
 
     print ('\n')
 
+    # Call check account exists function
+    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+    if account == 'false':
+        print(text.Red + '\n- [Account] The account ' + str(abi_id) + ' not exists')
+        printFinishApplicationMenu()
+
     # Call add products to account function
     products = add_products_to_account_microservice(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'])
 

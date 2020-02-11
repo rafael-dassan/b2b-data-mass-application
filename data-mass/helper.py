@@ -764,7 +764,7 @@ def printZoneMenu(isMiddleware='true'):
             print(text.Red + '\n- Invalid option')
             zone = input(text.White + "Zone (ZA, AR, CL): ")
     else:
-        zone = input("Zone (ZA, AR, CL, BR): ")
+        zone = input("Zone (ZA, BR, DO): ")
         while validateZone('false', zone.upper()) == 'false':
             print(text.Red + '\n- Invalid option')
             zone = input(text.White + "Zone (ZA, AR, CL, BR): ")
