@@ -8,7 +8,7 @@ from products import *
 from credit import add_credit_to_account, add_credit_to_account_microservice
 from delivery_window import create_delivery_window_middleware, create_delivery_window_microservice, validateAlternativeDeliveryDate
 from account_ms import create_account_ms, check_account_exists_microservice
-from discounts_ms import inputDiscountByPaymentMethod, inputDiscountByDeliveryDate, inputDiscountBySku, inputFreeGoodsSelection
+from discounts_ms import inputDiscountByPaymentMethod, inputDiscountByDeliveryDate, inputDiscountBySku, inputFreeGoodsSelection, inputSteppedDiscount, inputSteppedFreeGood
 from helper import *
 from classes.text import text
 from random import randint
@@ -38,7 +38,9 @@ def showMenu():
             '6': inputDiscountByDeliveryDateMenu,
             '7': inputDiscountBySkuMenu,
             '8': inputFreeGoodsSelectionMenu,
-            '9': inputCombosMenu,
+            '9': inputSteppedDiscountMenu,
+            '10': inputSteppedFreeGoodMenu,
+            '11': inputCombosMenu 
         }
     elif selectionStructure == '3':
         switcher = {
@@ -218,6 +220,71 @@ def inputFreeGoodsSelectionMenu():
         print(text.Red + '\n- [Discount] Something went wrong, try again. (' + str(response) + ')')
         printFinishApplicationMenu()
 
+# Input stepped discount
+def inputSteppedDiscountMenu():
+    accounts = list()
+    skus = list()
+    abi_id = input(text.White + "Input account ID: ")
+    zone = printZoneMenu('false')
+    environment = printEnvironmentMenu()
+
+    # Call check account exists function
+    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+    if account == 'false':
+        print(text.Red + '\n- [Account] The account ' + str(abi_id) + ' not exists')
+        printFinishApplicationMenu()
+
+    accounts.append(abi_id)
+
+    productOffers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'])
+    if len(productOffers) == 0:
+        print(text.Red + '\n- [Product Offers] The account ' + str(abi_id) + ' has no products available for purchase')
+        printFinishApplicationMenu()
+
+    skuDiscount = None
+    indexOffers = randint(0, (len(productOffers) - 1))
+    skuDiscount = productOffers[indexOffers]
+    skus.append(skuDiscount)
+
+    response = inputSteppedDiscount(accounts, zone, environment, skus)
+    if response == 'success':
+        print(text.Green + '\n- Stepped discount successfully registered.')
+    else:
+        print(text.Red + '\n- [Discount] Something went wrong, try again. (' + str(response) + ')')
+        printFinishApplicationMenu()
+
+# Input stepped free good
+def inputSteppedFreeGoodMenu():
+    accounts = list()
+    skus = list()
+    abi_id = input(text.White + "Input account ID: ")
+    zone = printZoneMenu('false')
+    environment = printEnvironmentMenu()
+
+    # Call check account exists function
+    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+    if account == 'false':
+        print(text.Red + '\n- [Account] The account ' + str(abi_id) + ' not exists')
+        printFinishApplicationMenu()
+
+    accounts.append(abi_id)
+
+    productOffers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'])
+    if len(productOffers) == 0:
+        print(text.Red + '\n- [Product Offers] The account ' + str(abi_id) + ' has no products available for purchase')
+        printFinishApplicationMenu()
+
+    skuDiscount = None
+    indexOffers = randint(0, (len(productOffers) - 1))
+    skuDiscount = productOffers[indexOffers]
+    skus.append(skuDiscount)
+
+    response = inputSteppedFreeGood(accounts, zone, environment, skus)
+    if response == 'success':
+        print(text.Green + '\n- Stepped free good successfully registered.')
+    else:
+        print(text.Red + '\n- [Discount] Something went wrong, try again. (' + str(response) + ')')
+        printFinishApplicationMenu()
 
 # Input discount by sku
 def inputDiscountBySkuMenu():
