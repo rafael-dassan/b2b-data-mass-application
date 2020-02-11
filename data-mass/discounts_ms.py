@@ -171,3 +171,116 @@ def inputFreeGoodsSelection(accounts, zone, environment, minimumQuantityPurchase
         return 'success'
     else:
         return response.status_code
+
+# Input stepped discount for an account
+def inputSteppedDiscount(accounts, zone, environment, skuDiscount):
+    request_url = get_microservice_base_url(environment) + '/cart-calculation-relay/deals'
+
+    request_body = dumps({
+        "accounts": accounts,
+        "deals": [
+            {
+                "dealId": "ANTARCTICA-" + str(uuid1()) + '-SteppedD',
+                "dealRules": {
+                    "dealSKUScaledRule": {
+                        "skus": skuDiscount,
+                        "ranges": [
+                            {
+                                "rangeIndex": 0,
+                                "from": 10,
+                                "to": 20
+                            },
+                            {
+                                "rangeIndex": 1,
+                                "from": 21,
+                                "to": 30
+                            }
+                        ]
+                    }
+                },
+                "dealOutput": {
+                    "dealOutputSKUScaledDiscount": [
+                        {
+                            "rangeIndex": 0,
+                            "skus": skuDiscount,
+                            "percentOff": 10.0
+                        },
+                        {
+                            "rangeIndex": 1,
+                            "skus": skuDiscount,
+                            "percentOff": 20.0
+                        }
+                    ]
+                },
+                "externalId": "ANTARCTICA-" + str(uuid1()) + '-SteppedD'
+            }
+        ]
+    })
+
+    request_headers = get_header_request(zone, 'false', 'false')
+
+    response = place_request('PUT', request_url, request_body, request_headers)
+
+    if response.status_code == 202:
+        print('Skus you need to purchase: ' + str(skuDiscount))
+        print('Description: Buy from 10 to 20 and get 10% off. Buy from 21 to 30 and get 20%')
+        return 'success'
+    else:
+        return response.status_code
+
+# Input stepped discount for an account
+def inputSteppedFreeGood(accounts, zone, environment, skuFreeGood):
+    request_url = get_microservice_base_url(environment) + '/cart-calculation-relay/deals'
+
+    request_body = dumps({
+        "accounts": accounts,
+        "deals": [
+            {
+                "dealId": "ANTARCTICA-" + str(uuid1()) + '-SteppedFG',
+                "dealRules": {
+                    "dealSKUScaledRule": {
+                        "skus": skuFreeGood,
+                        "ranges": [
+                            {
+                                "rangeIndex": 0,
+                                "from": 10,
+                                "to": 20
+                            },
+                            {
+                                "rangeIndex": 1,
+                                "from": 21,
+                                "to": 30
+                            }
+                        ]
+                    }
+                },
+                "dealOutput": {
+                    "dealOutputScaledFreeGoods": [
+                        {
+                            "rangeIndex": 0,
+                            "skus": skuFreeGood,
+                            "quantity": 1,
+                            "measureUnit": "UNIT"
+                        },
+                        {
+                            "rangeIndex": 1,
+                            "skus": skuFreeGood,
+                            "quantity": 2,
+                            "measureUnit": "UNIT"
+                        }
+                    ]
+                },
+                "externalId": "ANTARCTICA-" + str(uuid1()) + '-SteppedFG'
+            }
+        ]
+    })
+
+    request_headers = get_header_request(zone, 'false', 'false')
+
+    response = place_request('PUT', request_url, request_body, request_headers)
+    if response.status_code == 202:
+        print('Skus you need to purchase: ' + str(skuFreeGood))
+        print('Descprition: Buy from 10 to 20 and get 1 item. Buy from 21 to 30 and get 2')
+        return 'success'
+    else:
+        return response.status_code
