@@ -34,13 +34,6 @@ def create_account_request(url, headers, id_abi, name, zone, environment):
 
     return response
 
-# Validate lenght account id
-def validate_id_abi(id_abi):
-    if len(id_abi) != 10:
-        return 'false'
-    
-    return 'true'
-
 # Help with how to use script
 def show_how_to_use():
     print ('\n|===== Create account - Middleware =====\n')
@@ -57,7 +50,7 @@ def show_how_to_use():
 def create_account(id_abi, name, zone, environment):
 
     # Validation of ID AB-Inbev
-    if validate_id_abi(id_abi) == 'false':
+    if validateAccount(id_abi) == 'false':
         print('\n- [Error] Incorrect parameter "ID AB-Inbev" (Must contain 10 characters)')
         return 'false'
  

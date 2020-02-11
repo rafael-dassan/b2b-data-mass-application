@@ -36,10 +36,10 @@ def validateOptionRequestSelection(option, isExtraStructure = 'false'):
 
 # Validate lenght account id
 def validateAccount(accountId):
-    if len(accountId) > 10 or len(accountId) == 0:
+    if len(accountId) < 10:
         return 'false'
     else:
-        return accountId.zfill(10)
+        return accountId
 
 # Validate lenght name account
 def validateName(name):
@@ -720,14 +720,14 @@ def printWelcomeScript():
 
 # Print structure menu application
 def printStructureMenu():
-    print(text.White + str(1), text.Yellow + "Middleware (ZA, DO, AR, CH)" + text.ResetAll)
+    print(text.White + str(1), text.Yellow + "Middleware (ZA, AR, CH)" + text.ResetAll)
     print(text.White + str(2), text.Yellow + "MicroService" + text.ResetAll)
     print(text.White + str(3), text.Yellow + "Extras" + text.ResetAll)
     print(text.White + str(4), text.Yellow + "Close application" + text.ResetAll)
     structure = input(text.White + "Choose which backend you want to run a service for: " + text.ResetAll)
     while validateStructure(structure) == 'false':
         print(text.Red + '\n- Invalid option')
-        print(text.White + str(1), text.Yellow + "Middleware (ZA, DO, AR, CH)" + text.ResetAll)
+        print(text.White + str(1), text.Yellow + "Middleware (ZA, AR, CH)" + text.ResetAll)
         print(text.White + str(2), text.Yellow + "MicroService" + text.ResetAll)
         print(text.White + str(3), text.Yellow + "Extras" + text.ResetAll)
         print(text.White + str(4), text.Yellow + "Close application" + text.ResetAll)
@@ -737,10 +737,10 @@ def printStructureMenu():
 
 # Print account id menu application
 def printAccountIdMenu():
-    abi_id = input("ID AB-Inbev (Must contain 10 characters): ")
+    abi_id = input("ID AB-Inbev (It must contain at least 10 characters): ")
     while validateAccount(abi_id) == 'false':
-        print(text.Red + '\n- Account ID not be empty or must contain 10 characters')
-        abi_id = input(text.White + "ID AB-Inbev (Must contain 10 characters): ")
+        print(text.Red + '\n- Account ID not be empty or it must contain at least 10 characters')
+        abi_id = input(text.White + "ID AB-Inbev (It must contain at least 10 characters): ")
 
     return abi_id
 

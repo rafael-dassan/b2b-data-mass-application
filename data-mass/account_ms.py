@@ -4,16 +4,10 @@ import json
 # Custom
 from helper import *
 
-def validate_id_abi(id_abi):
-    if len(id_abi) != 10:
-        return 'false'
-    
-    return 'true'
-
 def create_account_ms(accountId, name, zone, environment):
     
     # Validation of ID AB-Inbev
-    if validate_id_abi(accountId) == 'false':
+    if validateAccount(accountId) == 'false':
         print('\n- [Error] Incorrect parameter "ID AB-Inbev" (Must contain 10 characters)')
         sys.exit();
 
@@ -37,7 +31,7 @@ def create_account_ms(accountId, name, zone, environment):
 def check_account_exists_microservice(accountId, zone, environment):
     
     # Validation of ID AB-Inbev
-    if validate_id_abi(accountId) == 'false':
+    if validateAccount(accountId) == 'false':
         print('\n- [Error] Incorrect parameter "ID AB-Inbev" (Must contain 10 characters)')
         sys.exit()
 
