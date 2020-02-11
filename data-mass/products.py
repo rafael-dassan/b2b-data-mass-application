@@ -1,6 +1,5 @@
 import sys
-from random import uniform
-from random import randint
+from random import randint, uniform
 from json import dumps, loads
 from datetime import datetime
 

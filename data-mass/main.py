@@ -12,6 +12,7 @@ from discounts_ms import inputDiscountByPaymentMethod, inputDiscountByDeliveryDa
 from helper import *
 from classes.text import text
 from random import randint
+from combos import *
 
 def showMenu():
     clearTerminal()
@@ -36,7 +37,8 @@ def showMenu():
             '5': inputDiscountByPaymentMethodMenu,
             '6': inputDiscountByDeliveryDateMenu,
             '7': inputDiscountBySkuMenu,
-            '8': inputFreeGoodsSelectionMenu
+            '8': inputFreeGoodsSelectionMenu,
+            '9': inputCombosMenu,
         }
     elif selectionStructure == '3':
         switcher = {
@@ -51,6 +53,78 @@ def showMenu():
         function()
     
     printFinishApplicationMenu()
+
+#Input combos by account
+def inputCombosMenu():
+    accounts = list()
+    abi_id = input(text.White + "Input account ID to apply combos: ")
+    zone = printZoneMenu('false')
+    environment = printEnvironmentMenu()
+
+    # Call check account exists function
+    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+    if account == 'false':
+        print(text.Red + '\n- [Account] The account ' + str(abi_id) + ' not exists')
+        printFinishApplicationMenu()
+    
+    accounts.append(abi_id)
+    productOffers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'])
+    if len(productOffers) == 0:
+        print(text.Red + '\n- [Product Offers] The account ' + str(abi_id) + ' has no products available for purchase')
+        printFinishApplicationMenu()
+    
+    typeCombo = input(text.White + "Select which type of combo you want to register (1-Discount, 2-With Free Goods, 3-Only Free Goods): ")
+    while (str(typeCombo) != '1') and (str(typeCombo) != '2') and (str(typeCombo) != '3'):
+        print(text.Red + '\n- Invalid option')
+        typeCombo = input(text.White + "Select which type of combo you want to register (1-Discount, 2-With Free Goods, 3-Only Free Goods): ")
+
+    if (str(typeCombo) == '1'):
+
+        skuCombo = None
+        indexOffers = randint(0, (len(productOffers) - 1))
+        skuCombo = productOffers[indexOffers]
+        response = inputComboDiscount(accounts, zone, environment, skuCombo)
+        if response == 'success':
+            print(text.Green + '\n- Combo successfully registered.')
+        else:
+            print(text.Red + '\n- [Combo] Something went wrong, try again. (' + str(response) + ')')
+            printFinishApplicationMenu()
+
+    elif (str(typeCombo) == '2'):
+
+        skuCombo = None
+        indexOffers = randint(0, (len(productOffers) - 1))
+        skuCombo = productOffers[indexOffers]
+
+        skusFreeGoods = list()
+        auxIndex = 0
+        while auxIndex < 3:
+            indexOffers = randint(0, (len(productOffers) - 1))
+            skusFreeGoods.append(productOffers[indexOffers])
+            auxIndex = auxIndex + 1
+        
+        response = inputComboWithFreeGoods(accounts, zone, environment, skuCombo, skusFreeGoods)
+        if response == 'success':
+            print(text.Green + '\n- Combo successfully registered.')
+        else:
+            print(text.Red + '\n- [Combo] Something went wrong, try again. (' + str(response) + ')')
+            printFinishApplicationMenu()
+    
+    else:
+
+        skusFreeGoods = list()
+        auxIndex = 0
+        while auxIndex < 3:
+            indexOffers = randint(0, (len(productOffers) - 1))
+            skusFreeGoods.append(productOffers[indexOffers])
+            auxIndex = auxIndex + 1
+        
+        response = inputComboOnlyFreeGoods(accounts, zone, environment, skusFreeGoods)
+        if response == 'success':
+            print(text.Green + '\n- Combo successfully registered.')
+        else:
+            print(text.Red + '\n- [Combo] Something went wrong, try again. (' + str(response) + ')')
+            printFinishApplicationMenu()
 
 # Input free goods selection by account
 def inputFreeGoodsSelectionMenu():
@@ -148,7 +222,7 @@ def inputFreeGoodsSelectionMenu():
 # Input discount by sku
 def inputDiscountBySkuMenu():
     accounts = list()
-    abi_id = input(text.White + "Input account ID to apply discount by payment method: ")
+    abi_id = input(text.White + "Input account ID to apply discount by sku: ")
     zone = printZoneMenu('false')
     environment = printEnvironmentMenu()
 
@@ -240,7 +314,7 @@ def inputDiscountBySkuMenu():
 # Input discount account by delivery date
 def inputDiscountByDeliveryDateMenu():
     accounts = list()
-    abi_id = input(text.White + "Input account ID to apply discount by payment method: ")
+    abi_id = input(text.White + "Input account ID to apply discount by delivery date: ")
     zone = printZoneMenu('false')
     environment = printEnvironmentMenu()
 

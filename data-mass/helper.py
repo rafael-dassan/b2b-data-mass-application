@@ -20,6 +20,7 @@ def validateOptionRequestSelection(option, isExtraStructure = 'false'):
             '6': 'true',
             '7': 'true',
             '8': 'true',
+            '9': 'true',
         }
 
         value = switcher.get(option, 'false')
@@ -680,6 +681,7 @@ def printAvailableOptions(selectionStructure):
             print(text.White + str(6), text.Yellow + "Input Discount By Delivery Date" + text.ResetAll)
             print(text.White + str(7), text.Yellow + "Input Discount By Sku" + text.ResetAll)
             print(text.White + str(8), text.Yellow + "Input Free Goods Selection" + text.ResetAll)
+            print(text.White + str(9), text.Yellow + "Input Combos" + text.ResetAll)
 
         print(text.White + str(0), text.White + text.BackgroundRed + "Exit" + text.ResetAll)
         selection = input("Please select: ")
@@ -694,6 +696,7 @@ def printAvailableOptions(selectionStructure):
                 print(text.White + str(6), text.Yellow + "Input Discount By Delivery Date" + text.ResetAll)
                 print(text.White + str(7), text.Yellow + "Input Discount By Sku" + text.ResetAll)
                 print(text.White + str(8), text.Yellow + "Input Free Goods Selection" + text.ResetAll)
+                print(text.White + str(9), text.Yellow + "Input Combos" + text.ResetAll)
 
             print(text.White + str(0), text.White + text.BackgroundRed + "Exit" + text.ResetAll)
             selection = input("Please select: ")
