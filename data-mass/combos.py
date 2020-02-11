@@ -5,6 +5,7 @@ from random import randint, uniform
 
 # Custom
 from helper import *
+from classes.text import text
 
 #Input combo simple
 def inputComboDiscount(accounts, zone, environment, skuCombo):
@@ -32,7 +33,7 @@ def inputComboDiscount(accounts, zone, environment, skuCombo):
                     }
                 ],
                 "limit": {
-                    "daily": 100,
+                    "daily": 1000,
                     "monthly": 1000
                 },
                 "originalPrice": originalPrice,
@@ -54,6 +55,7 @@ def inputComboDiscount(accounts, zone, environment, skuCombo):
         print(skuCombo)
         print(' -- Discount Percent-- ')
         print(discountPercent)
+        turnComboAvailable(accounts, zone, environment, idComboDiscount)
         return 'success'
     else:
         return response.status_code
@@ -88,7 +90,7 @@ def inputComboWithFreeGoods(accounts, zone, environment, skuCombo, skusFreeGoods
                     }
                 ],
                 "limit": {
-                    "daily": 100,
+                    "daily": 1000,
                     "monthly": 1000
                 },
                 "originalPrice": originalPrice,
@@ -112,6 +114,7 @@ def inputComboWithFreeGoods(accounts, zone, environment, skuCombo, skusFreeGoods
         print(discountPercent)
         print(' -- Skus free goods included on combo -- ')
         print(skusFreeGoods)
+        turnComboAvailable(accounts, zone, environment, idComboWithFreeGoods)
         return 'success'
     else:
         return response.status_code
@@ -140,7 +143,7 @@ def inputComboOnlyFreeGoods(accounts, zone, environment, skusFreeGoods):
                     "skus": skusFreeGoods
                 },
                 "limit": {
-                    "daily": 100,
+                    "daily": 1000,
                     "monthly": 1000
                 },
                 "originalPrice": originalPrice,
@@ -162,6 +165,32 @@ def inputComboOnlyFreeGoods(accounts, zone, environment, skusFreeGoods):
         print(discountPercent)
         print(' -- Skus free goods included on combo -- ')
         print(skusFreeGoods)
+        turnComboAvailable(accounts, zone, environment, idComboOnlyFreeGoods)
         return 'success'
     else:
         return response.status_code
+
+#Turn combo quantity available
+def turnComboAvailable(accounts, zone, environment, idCombo):
+    accountId = accounts[0]
+    request_url = get_microservice_base_url(environment) + '/combo-relay/consumption'
+    request_body = dumps([{
+        "accountId": str(accountId),
+        "combos": [
+            {
+                "comboId": str(idCombo),
+                "consumedLimit": {
+                    "daily": 0,
+                    "monthly": 0
+                }
+            }
+        ]
+    }])
+
+    request_headers = get_header_request(zone, 'false', 'false', 'true')
+
+    response = place_request('POST', request_url, request_body, request_headers)
+    if response.status_code == 201:
+        print(text.Green + '-- Combo ' + idCombo + ' are available')
+    else:
+        print(text.Red + '-- [Combo] Something went wrong in turn combo ' + idCombo + ' available')

@@ -796,7 +796,7 @@ def printPaymentMethodMenu(zone):
         value = switcher.get(paymentMethod, 'false')
         return value
     elif zone == 'DR':
-        paymentMethod = input(text.White + "What payment method want apply this rule (1- CASH, 2- BANK SLIP): ")
+        paymentMethod = input(text.White + "What payment method want apply this rule (1- CASH, 2- CREDIT): ")
         while (int(paymentMethod) != 1 and int(paymentMethod) != 2):
             print(text.Red + '\n- Invalid option')
             paymentMethod = input(text.White + "What payment method want apply this rule (1- CASH, 2- CREDIT): ")
