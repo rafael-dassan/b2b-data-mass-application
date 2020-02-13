@@ -66,25 +66,26 @@ def get_body_price_middleware_request(body_id, price_list_id):
 
     return put_price_body
 
-# Post requests get products from middleware
+# Post request to get products from Middleware
 def request_get_products_middleware(zone, environment):
 
     # Get header request
-    headers = get_header_request(zone, 'false', 'true')
+    headers = get_header_request(zone, "false", "true")
     
-    # Get url base
-    request_url = get_middleware_base_url(zone, environment, 'v4') + "/products"
+    # Get base URL
+    request_url = get_middleware_base_url(zone, environment, "v4") + "/products"
 
     # Get body request
     request_body=""
 
-    # Place request
+    # Send request
     response = place_request("GET", request_url, request_body, headers)
+
     if response.status_code == 200:
         json_data = loads(response.text)
         return json_data
     else:
-        print('- [Product] Something went wrong in search products on middleware')
+        print("- [Product] Something went wrong, please try again")
 
 # Return only five items for add products account
 def slice_array_products(qtd, productsMiddleware):
@@ -235,7 +236,6 @@ def get_body_price_inclusion_request(product_price_id, delivery_center_id):
 
 #Add products in middleware account
 def add_products_to_account_middleware(abi_id, zone, environment):
-
     # Request get products middleware
     allProductsMiddleware = request_get_products_middleware(zone, environment)
 
@@ -243,7 +243,7 @@ def add_products_to_account_middleware(abi_id, zone, environment):
     if maximum > len(allProductsMiddleware):
         maximum = len(allProductsMiddleware)
 
-    qtd = input("Desire number of products (Maximum: " + str(len(allProductsMiddleware)) + " - Default " + str(maximum) + "):")
+    qtd = input("Number of products you want to add (Maximum: " + str(len(allProductsMiddleware)) + " - Default: " + str(maximum) + "): ")
     if qtd == "":
         qtd = maximum
 
