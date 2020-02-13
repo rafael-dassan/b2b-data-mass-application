@@ -8,88 +8,87 @@ from classes.text import text
 from datetime import date, datetime, timedelta
 
 # Validate option menu selection
-def validateOptionRequestSelection(option, isExtraStructure = 'false'):
-    if isExtraStructure == 'false':
+def validateOptionRequestSelection(option, isExtraStructure = "false"):
+    if isExtraStructure == "false":
         switcher = {
-            '0': 'true',
-            '1': 'true',
-            '2': 'true',
-            '3': 'true',
-            '4': 'true',
-            '5': 'true',
-            '6': 'true',
-            '7': 'true',
-            '8': 'true',
-            '9': 'true',
-            '10': 'true',
-            '11': 'true'
+            "0": "true",
+            "1": "true",
+            "2": "true",
+            "3": "true",
+            "4": "true",
+            "5": "true",
+            "6": "true",
+            "7": "true",
+            "8": "true",
+            "9": "true",
+            "10": "true",
+            "11": "true"
         }
 
-        value = switcher.get(option, 'false')
+        value = switcher.get(option, "false")
         return value
         
     else:
         switcher = {
-            '0': 'true',
-            '1': 'true',
+            "0": "true",
+            "1": "true"
         }
 
-        value = switcher.get(option, 'false')
+        value = switcher.get(option, "false")
         return value
 
-# Validate lenght account id
+# Validate lenght of Account ID
 def validateAccount(accountId):
     if len(accountId) < 10:
-        return 'false'
+        return "false"
     else:
         return accountId
 
-# Validate lenght name account
+# Validate lenght of account name
 def validateName(name):
     if len(name) == 0:
-        return 'false'
+        return "false"
     else:
         return name
 
-# Validate zone account
+# Validate zone
 def validateZone(isMiddleware, zone):
-    if isMiddleware == 'true':
+    if isMiddleware == "true":
         switcher = {
-            'DO': 'true',
-            'ZA': 'true',
-            'AR': 'true',
-            'CL': 'true',
+            "ZA": "true",
+            "AR": "true",
+            "CL": "true"
         }
 
-        value = switcher.get(zone, 'false')
+        value = switcher.get(zone, "false")
         return value
     else:
         switcher = {
-            'DO': 'true',
-            'ZA': 'true',
-            'AR': 'true',
-            'CL': 'true',
-            'BR': 'true',
+            "DO": "true",
+            "ZA": "true",
+            "AR": "true",
+            "CL": "true",
+            "BR": "true"
         }
 
-        value = switcher.get(zone, 'false')
+        value = switcher.get(zone, "false")
         return value
 
-# Validate structure account
+# Validate account structure
 def validateStructure(option):
-    if option == '1' or option == '2' or option == '3' or option == '4':
-        return 'true'
+    if option == "1" or option == "2" or option == "3" or option == "4":
+        return "true"
     else:
-        return 'false'
+        return "false"
 
 # Validate environment
 def validateEnvironment(environment):
-    if environment == 'QA' or environment == 'UAT':
-        return 'true'
+    if environment == "QA" or environment == "UAT":
+        return "true"
     else:
-        return 'false'
+        return "false"
 
-# Place request generic
+# Place generic request
 def place_request(request_type, request_url, request_body, request_headers):
     response = request(
         request_type,
@@ -100,9 +99,10 @@ def place_request(request_type, request_url, request_body, request_headers):
 
     return response
 
-# Return jwt header request
-def get_header_request(header_country, useJwtAuthorization='false', useRootAuthentication = 'false', useInclusionAuthentication = 'false', sku_product='false'):
+# Return JWT header request
+def get_header_request(header_country, useJwtAuthorization="false", useRootAuthentication="false", useInclusionAuthentication="false", sku_product="false"):
     timezone = "UTC"
+
     header = {
         "Content-Type": "application/json",
         "country": header_country.upper(),
@@ -112,35 +112,35 @@ def get_header_request(header_country, useJwtAuthorization='false', useRootAuthe
         "timezone": timezone
     }
 
-    if useJwtAuthorization == 'true':
-        header['Authorization'] = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYi1pbmJldiIsImF1ZCI6ImFiaS1taWNyb3NlcnZpY2VzIiwiZXhwIjoxNTg1NjEyODAwLCJ1cGRhdGVkX2F0IjoxNTY1NzkxODI0LCJpYXQiOjE1NjU3OTE4MjQsIm5hbWUiOiJ0ZXN0ZUB0ZXN0ZS5jb20iLCJhY2NvdW50SUQiOiIwMDAwMTAwMDA0IiwidXNlcklEIjoiMTYiLCJyb2xlcyI6WyJST0xFX0NVU1RPTUVSIl19.GUc9ssFyXle0F0W6LUU2amvZ-hm7TFIDteR50WlQFUE'
-    elif useRootAuthentication == 'true':
-        header['Authorization'] = 'Basic cm9vdDpyb290'
-    elif useInclusionAuthentication == 'true':
-        header['Authorization'] = 'Basic cmVsYXk6TVVRd3JENVplSEtB'
+    if useJwtAuthorization == "true":
+        header['Authorization'] = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYi1pbmJldiIsImF1ZCI6ImFiaS1taWNyb3NlcnZpY2VzIiwiZXhwIjoxNTg1NjEyODAwLCJ1cGRhdGVkX2F0IjoxNTY1NzkxODI0LCJpYXQiOjE1NjU3OTE4MjQsIm5hbWUiOiJ0ZXN0ZUB0ZXN0ZS5jb20iLCJhY2NvdW50SUQiOiIwMDAwMTAwMDA0IiwidXNlcklEIjoiMTYiLCJyb2xlcyI6WyJST0xFX0NVU1RPTUVSIl19.GUc9ssFyXle0F0W6LUU2amvZ-hm7TFIDteR50WlQFUE"
+    elif useRootAuthentication == "true":
+        header['Authorization'] = "Basic cm9vdDpyb290"
+    elif useInclusionAuthentication == "true":
+        header['Authorization'] = "Basic cmVsYXk6TVVRd3JENVplSEtB"
     else:
-        header['Authorization'] = 'Basic cmVsYXk6cmVsYXk='
+        header['Authorization'] = "Basic cmVsYXk6cmVsYXk="
     
-    if sku_product != 'false':
+    if sku_product != "false":
         header['skuId'] = sku_product
 
     return header
 
-# Return base url for middleware
+# Return base URL for Middleware
 def get_middleware_base_url(zone, environment, version_request):
     prefix_zone = zone.lower()
-    if zone == 'DO':
-        prefix_zone = 'dr'
-    elif zone == 'AR' or zone == 'CL':
-        prefix_zone = 'las'
+
+    if zone == "AR" or zone == "CL":
+        prefix_zone = "las"
     
     prefix_environment = environment.lower()
+
     if environment == "UAT":
         prefix_environment = "test"
 
     return "https://b2b-" + prefix_zone.lower() + "-" + prefix_environment.lower() + ".azurewebsites.net/api/" + version_request + "/" + zone.upper()
 
-# Return base url for microservice
+# Return base URL for Microservice
 def get_microservice_base_url(environment):
     return "https://b2b-services-" + environment.lower() + ".westeurope.cloudapp.azure.com/v1"
 
@@ -160,7 +160,7 @@ def get_middleware_payload_za_account(accountId, name, environment):
         "liquorLicense": [
             {
                 "description": null,
-                "expirationDate": "2022-12-31",
+                "expirationDate": "2040-12-31",
                 "number": "GAU/" + accountId,
                 "status": "VALID",
                 "type": "PERMANENT"
@@ -190,52 +190,13 @@ def get_middleware_payload_za_account(accountId, name, environment):
         "taxId": accountId
     })
 
-# Payload Middleware DR account
-def get_middleware_payload_dr_account(accountId, name, environment):
+# Payload Middleware LAS account
+def get_middleware_payload_las_account(accountId, name, environment):
     null = None
     return dumps({
         "accountId": accountId,
         "deliveryAddress": {
-            "address": "ROSA DUARTE:43504 Esq.13,  LOS MINAS SUR",
-            "city": "STO DGO  ESTE",
-            "state": "STO DGO",
-            "zipcode": null
-        },
-        "deliveryCenterId": accountId,
-        "deliveryScheduleId": accountId,
-        "liquorLicense": null,
-        "minimumOrder": null,
-        "paymentTerms": null,
-        "name": name,
-        "owner": {
-            "email": accountId + "@mailinator.com",
-            "firstName": name,
-            "lastName": environment.upper(),
-            "phone": 11999999999
-        },
-        "paymentMethods": [
-            "CASH",
-            "CREDIT"
-        ],
-        "priceListId": accountId,
-        "salesRepresentative": {
-            "email": "micerveceria@cnd.com.do",
-            "name": "TINKA",
-            "phone": "0227721277"
-        },
-        "segment": "16",
-        "subSegment": "00011",
-        "status": "ACTIVE",
-        "taxId": accountId
-    })
-
-# Payload Middleware AR account
-def get_middleware_payload_ar_account(accountId, name, environment):
-    null = None
-    return dumps({
-        "accountId": accountId,
-        "deliveryAddress": {
-            "address": "AVDA ALVAREZ THOMAS 1073, CAPITAL FEDERA",
+            "address": "AVDA ALVAREZ THOMAS 1073, CAPITAL FEDERAL",
             "city": "CAPITAL FEDERAL",
             "state": "CAPITAL FEDERAL",
             "zipcode": "C1427CCK"
@@ -245,7 +206,7 @@ def get_middleware_payload_ar_account(accountId, name, environment):
         "liquorLicense": [
             {
                 "description": null,
-                "expirationDate": "2020-12-31",
+                "expirationDate": "2040-12-31",
                 "number": accountId,
                 "status": "VALID",
                 "type": "PERMANENT"
@@ -270,52 +231,6 @@ def get_middleware_payload_ar_account(accountId, name, environment):
             "email": null,
             "name": "ARAMAYO JAVIER",
             "phone": null
-        },
-        "status": "ACTIVE",
-        "taxId": accountId
-    })
-
-# Payload Middleware CL account
-def get_middleware_payload_cl_account(accountId, name, environment):
-    null = None
-    return dumps({
-        "accountId": accountId,
-        "deliveryAddress": {
-            "address": "SANTA PETRONILA 230, ESTACION CTRAL.",
-            "city": "ESTACION CTRAL.",
-            "state": "METROPOLITANA",
-            "zipcode": null
-        },
-        "deliveryCenterId": accountId,
-        "deliveryScheduleId": accountId,
-        "liquorLicense": [
-            {
-                "description": null,
-                "expirationDate": "2020-12-31",
-                "number": accountId,
-                "status": "VALID",
-                "type": "PERMANENT"
-            }
-        ],
-        "minimumOrder": {
-            "type": "PRODUCT_QUANTITY",
-            "value": 5
-        },
-        "name": name,
-        "owner": {
-            "email": accountId + "@mailinator.com",
-            "firstName": name,
-            "lastName": environment.upper(),
-            "phone": 11999999999
-        },
-        "paymentMethods": [
-            "CASH"
-        ],
-        "priceListId": accountId,
-        "salesRepresentative": {
-            "email": null,
-            "name": "GENERICO MESA 8",
-            "phone": "08102221234"
         },
         "status": "ACTIVE",
         "taxId": accountId
@@ -424,14 +339,14 @@ def get_microservice_payload_dr_account(accountId, name, environment):
         "taxId": accountId
     })
 
-# Payload Microservice AR account
-def get_microservice_payload_ar_account(accountId, name, environment):
+# Payload Microservice LAS account
+def get_microservice_payload_las_account(accountId, name, environment):
     null = None
     return dumps({
         "accountId": accountId,
         "channel": null,
         "deliveryAddress": {
-            "address": "AVDA ALVAREZ THOMAS 1073, CAPITAL FEDERA",
+            "address": "AVDA ALVAREZ THOMAS 1073, CAPITAL FEDERAL",
             "city": "CAPITAL FEDERAL",
             "latitude": null,
             "longitude": null,
@@ -467,57 +382,6 @@ def get_microservice_payload_ar_account(accountId, name, environment):
             "email": null,
             "name": "ARAMAYO JAVIER",
             "phone": null
-        },
-        "salesRoute": null,
-        "segment": "16",
-        "status": "ACTIVE",
-        "subSegment": "00011",
-        "taxId": accountId
-    })
-
-# Payload Microservice CL account
-def get_microservice_payload_cl_account(accountId, name, environment):
-    null = None
-    return dumps({
-        "accountId": accountId,
-        "channel": null,
-        "deliveryAddress": {
-            "address": "SANTA PETRONILA 230, ESTACION CTRAL.",
-            "city": "ESTACION CTRAL.",
-            "latitude": null,
-            "longitude": null,
-            "state": "METROPOLITANA",
-            "zipcode": null
-        },
-        "deliveryCenterId": accountId,
-        "deliveryRegion": null,
-        "deliveryRoute": null,
-        "deliveryScheduleId": accountId,
-        "erpSalesCenter": null,
-        "liquorLicense": [],
-        "maximumOrder": {
-            "paymentMethods": "CASH",
-            "type": "ORDER_TOTAL",
-            "value": 10000
-        },
-        "minimumOrder": null,
-        "name": name,
-        "owner": {
-            "email": accountId + "@mailinator.com",
-            "firstName": name,
-            "lastName": environment.upper(),
-            "phone": 11999999999
-        },
-        "paymentMethods": [
-            "CASH"
-        ],
-        "paymentTerms": null,
-        "potential": null,
-        "priceListId": accountId,
-        "salesRepresentative": {
-            "email": null,
-            "name": "GENERICO MESA 8",
-            "phone": "08102221234"
         },
         "salesRoute": null,
         "segment": "16",
@@ -624,7 +488,7 @@ def get_microservice_payload_br_account(accountId, name, environment):
         "priceListId": accountId,
         "salesRepresentative": {
             "email": null,
-            "name": "VD AS CDD CAXIAS **cpf inext**",
+            "name": "VD AS CDD CAXIAS",
             "phone": "(00) 0000-0000"
         },
         "salesRoute": null,
@@ -634,210 +498,209 @@ def get_microservice_payload_br_account(accountId, name, environment):
         "taxId": accountId
     })
 
-# Return middleware payload create account
-# (DO, ZA, AR, CL)
+# Return middleware payload to create an account (ZA, AR, CL)
 def get_middleware_payload_create_account(zone, accountId, name, environment):
     switcher = {
-        'DO': get_middleware_payload_dr_account,
-        'ZA': get_middleware_payload_za_account,
-        'AR': get_middleware_payload_ar_account,
-        'CL': get_middleware_payload_cl_account,
+        "ZA": get_middleware_payload_za_account,
+        "AR": get_middleware_payload_las_account,
+        "CL": get_middleware_payload_las_account
     }
 
     function = switcher.get(zone, "")
-    if function != '':
+
+    if function != "":
         return function(accountId, name, environment)
 
-# Return microservice payload create account
-# (DO, ZA, AR, CL, BR)
+# Return microservice payload to create an account (DO, ZA, AR, CL, BR)
 def get_microservice_payload_create_account(zone, accountId, name, environment):
     switcher = {
-        'DO': get_microservice_payload_dr_account,
-        'ZA': get_microservice_payload_za_account,
-        'AR': get_microservice_payload_ar_account,
-        'CL': get_microservice_payload_cl_account,
-        'BR': get_microservice_payload_br_account,
+        "DO": get_microservice_payload_dr_account,
+        "ZA": get_microservice_payload_za_account,
+        "AR": get_microservice_payload_las_account,
+        "CL": get_microservice_payload_las_account,
+        "BR": get_microservice_payload_br_account
     }
 
     function = switcher.get(zone, "")
-    if function != '':
+    if function != "":
         return function(accountId, name, environment)
 
 # Clear terminal
 def clearTerminal():
-    os.system('clear')
+    os.system("clear")
 
-# kill application
+# Kill application
 def finishApplication():
     sys.exit()
 
-# Print init menu application
+# Print init menu
 def printAvailableOptions(selectionStructure):
-    if selectionStructure == '1' or selectionStructure == '2':
-        print(text.White + str(1), text.Yellow + "Create Account" + text.ResetAll)
-        print(text.White + str(2), text.Yellow + "Input Products In Account" + text.ResetAll)
-        print(text.White + str(3), text.Yellow + "Input Credit In Account" + text.ResetAll)
-        print(text.White + str(4), text.Yellow + "Input Delivery Window In Account" + text.ResetAll)
-        if selectionStructure == '2':
-            print(text.White + str(5), text.Yellow + "Input Discount By Payment Method" + text.ResetAll)
-            print(text.White + str(6), text.Yellow + "Input Discount By Delivery Date" + text.ResetAll)
-            print(text.White + str(7), text.Yellow + "Input Discount By Sku" + text.ResetAll)
-            print(text.White + str(8), text.Yellow + "Input Free Goods Selection" + text.ResetAll)
-            print(text.White + str(9), text.Yellow + "Input Stepped Discount" + text.ResetAll)
-            print(text.White + str(10), text.Yellow + "Input Stepped Free Good" + text.ResetAll)
-            print(text.White + str(11), text.Yellow + "Input Combos" + text.ResetAll)
+    if selectionStructure == "1" or selectionStructure == "2":
+        print(text.White + str(1), text.Yellow + "Create account" + text.ResetAll)
+        print(text.White + str(2), text.Yellow + "Input products to an account" + text.ResetAll)
+        print(text.White + str(3), text.Yellow + "Input credit to an account" + text.ResetAll)
+        print(text.White + str(4), text.Yellow + "Input delivery window to an account" + text.ResetAll)
+        if selectionStructure == "2":
+            print(text.White + str(5), text.Yellow + "Input discount by payment method" + text.ResetAll)
+            print(text.White + str(6), text.Yellow + "Input discount by delivery date" + text.ResetAll)
+            print(text.White + str(7), text.Yellow + "Input discount by SKU" + text.ResetAll)
+            print(text.White + str(8), text.Yellow + "Input stepped discount" + text.ResetAll)
+            print(text.White + str(9), text.Yellow + "Input free good selection" + text.ResetAll)
+            print(text.White + str(10), text.Yellow + "Input stepped free good" + text.ResetAll)
+            print(text.White + str(11), text.Yellow + "Input combos" + text.ResetAll)
             
 
         print(text.White + str(0), text.White + text.BackgroundRed + "Exit" + text.ResetAll)
-        selection = input("Please select: ")
-        while validateOptionRequestSelection(selection) == 'false':
-            print(text.Red + '\n- Invalid option')
-            print(text.White + str(1), text.Yellow + "Create Account" + text.ResetAll)
-            print(text.White + str(2), text.Yellow + "Input Products In Account" + text.ResetAll)
-            print(text.White + str(3), text.Yellow + "Input Credit In Account" + text.ResetAll)
-            print(text.White + str(4), text.Yellow + "Input Delivery Window In Account" + text.ResetAll)
-            if selectionStructure == '2':
-                print(text.White + str(5), text.Yellow + "Input Discount By Payment Method" + text.ResetAll)
-                print(text.White + str(6), text.Yellow + "Input Discount By Delivery Date" + text.ResetAll)
-                print(text.White + str(7), text.Yellow + "Input Discount By Sku" + text.ResetAll)
-                print(text.White + str(8), text.Yellow + "Input Free Goods Selection" + text.ResetAll)
-                print(text.White + str(9), text.Yellow + "Input Stepped Discount" + text.ResetAll)
-            print(text.White + str(10), text.Yellow + "Input Stepped Free Good" + text.ResetAll)
-            print(text.White + str(11), text.Yellow + "Input Combos" + text.ResetAll)
+        selection = input(text.White + "Please select: ")
+        while validateOptionRequestSelection(selection) == "false":
+            print(text.Red + "\n- Invalid option\n")
+            print(text.White + str(1), text.Yellow + "Create account" + text.ResetAll)
+            print(text.White + str(2), text.Yellow + "Input products to an account" + text.ResetAll)
+            print(text.White + str(3), text.Yellow + "Input credit to an account" + text.ResetAll)
+            print(text.White + str(4), text.Yellow + "Input delivery window to an account" + text.ResetAll)
+            if selectionStructure == "2":
+                print(text.White + str(5), text.Yellow + "Input discount by payment method" + text.ResetAll)
+                print(text.White + str(6), text.Yellow + "Input discount by delivery date" + text.ResetAll)
+                print(text.White + str(7), text.Yellow + "Input discount by SKU" + text.ResetAll)
+                print(text.White + str(8), text.Yellow + "Input stepped discount" + text.ResetAll)
+                print(text.White + str(9), text.Yellow + "Input free good selection" + text.ResetAll)
+                print(text.White + str(10), text.Yellow + "Input stepped free good" + text.ResetAll)
+                print(text.White + str(11), text.Yellow + "Input combos" + text.ResetAll)
 
             print(text.White + str(0), text.White + text.BackgroundRed + "Exit" + text.ResetAll)
-            selection = input("Please select: ")
+            selection = input(text.White + "Please select: ")
 
-    elif selectionStructure == '3':
+    elif selectionStructure == "3":
         print(text.White + str(1), text.Yellow + "Open Browser" + text.ResetAll)
         print(text.White + str(0), text.White + text.BackgroundRed + "Exit" + text.ResetAll)
-        selection = input("Please select: ")
-        while validateOptionRequestSelection(selection, 'true') == 'false':
-            print(text.Red + '\n- Invalid option')
+        selection = input(text.White + "Please select: ")
+        while validateOptionRequestSelection(selection, "true") == "false":
+            print(text.Red + "\n- Invalid option\n")
             print(text.White + str(1), text.Yellow + "Open Browser" + text.ResetAll)
             print(text.White + str(0), text.White + text.BackgroundRed + "Exit" + text.ResetAll)
-            selection = input("Please select: ")
+            selection = input(text.White + "Please select: ")
     
     else:
         finishApplication()
 
     return selection
 
-# Print welcome menu application
+# Print welcome menu
 def printWelcomeScript():
-    print(text.White + " 🄰🄽🅃🄰🅁🄲🅃🄸🄲🄰 🄰🅄🅃🄾🄼🄰🅃🄸🄾🄽 🅂🄲🅁🄸🄿🅃 " + text.ResetAll)
-    print(text.White + "Choose which backend you want to run a service for" + text.ResetAll)
+    print(text.White + "🄰🄽🅃🄰🅁🄲🅃🄸🄲🄰 🄰🅄🅃🄾🄼🄰🅃🄸🄾🄽 🅂🄲🅁🄸🄿🅃" + text.ResetAll)
 
-# Print structure menu application
+# Print structure menu
 def printStructureMenu():
-    print(text.White + str(1), text.Yellow + "Middleware (ZA, AR, CH)" + text.ResetAll)
+    print(text.White + str(1), text.Yellow + "Middleware (ZA, AR, CL)" + text.ResetAll)
     print(text.White + str(2), text.Yellow + "MicroService" + text.ResetAll)
     print(text.White + str(3), text.Yellow + "Extras" + text.ResetAll)
     print(text.White + str(4), text.Yellow + "Close application" + text.ResetAll)
-    structure = input(text.White + "Choose which backend you want to run a service for: " + text.ResetAll)
-    while validateStructure(structure) == 'false':
-        print(text.Red + '\n- Invalid option')
-        print(text.White + str(1), text.Yellow + "Middleware (ZA, AR, CH)" + text.ResetAll)
+    structure = input(text.White + "\nChoose which backend you want to run a service for: " + text.ResetAll)
+    while validateStructure(structure) == "false":
+        print(text.Red + "\n- Invalid option\n")
+        print(text.White + str(1), text.Yellow + "Middleware (ZA, AR, CL)" + text.ResetAll)
         print(text.White + str(2), text.Yellow + "MicroService" + text.ResetAll)
         print(text.White + str(3), text.Yellow + "Extras" + text.ResetAll)
         print(text.White + str(4), text.Yellow + "Close application" + text.ResetAll)
-        structure = input(text.White + "Choose which backend you want to run a service for: " + text.ResetAll)
+        structure = input(text.White + "\nChoose which backend you want to run a service for: " + text.ResetAll)
 
     return structure
 
-# Print account id menu application
-def printAccountIdMenu():
-    abi_id = input("ID AB-Inbev (It must contain at least 10 characters): ")
-    while validateAccount(abi_id) == 'false':
-        print(text.Red + '\n- Account ID not be empty or it must contain at least 10 characters')
-        abi_id = input(text.White + "ID AB-Inbev (It must contain at least 10 characters): ")
+# Print Account ID menu
+def printAccountIdMenu(zone):
+    abi_id = input(text.White + "Account ID: ")
+    while validateAccount(abi_id) == "false" and (zone == "BR" or zone == "DO"):
+        print(text.Red + "\n- Account ID should not be empty or it must contain at least 10 characters")
+        abi_id = input(text.White + "Account ID: ")
 
     return abi_id
 
-# Print name menu application
+# Print account name menu
 def printNameMenu():
-    name = input("Account Name: ")
-    while validateName(name) == 'false':
-        print(text.Red + '\n- Account Name not be empty')
-        name = input(text.White + "Account Name: ")
+    name = input(text.White + "Account name: ")
+    while validateName(name) == "false":
+        print(text.Red + "\n- The account name should not be empty")
+        name = input(text.White + "Account name: ")
 
     return name
 
-# Print zone menu application
-def printZoneMenu(isMiddleware='true'):
-    if isMiddleware == 'true':
+# Print zone menu
+def printZoneMenu(isMiddleware="true"):
+    if isMiddleware == "true":
         zone = input("Zone (ZA, AR, CL): ")
-        while validateZone('true', zone.upper()) == 'false':
-            print(text.Red + '\n- Invalid option')
+        while validateZone("true", zone.upper()) == "false":
+            print(text.Red + "\n- Invalid option\n")
             zone = input(text.White + "Zone (ZA, AR, CL): ")
     else:
-        zone = input("Zone (ZA, BR, DO): ")
-        while validateZone('false', zone.upper()) == 'false':
-            print(text.Red + '\n- Invalid option')
-            zone = input(text.White + "Zone (ZA, AR, CL, BR): ")
+        zone = input("Zone (ZA, AR, CL, DO, BR): ")
+        while validateZone("false", zone.upper()) == "false":
+            print(text.Red + "\n- Invalid option\n")
+            zone = input(text.White + "Zone (ZA, AR, CL, DO, BR): ")
 
     return zone
 
-# Print environment menu application
+# Print environment menu
 def printEnvironmentMenu():
     environment = input("Environment (QA, UAT): ")
-    while validateEnvironment(environment.upper()) == 'false':
-        print(text.Red + '\n- Invalid option')
+    while validateEnvironment(environment.upper()) == "false":
+        print(text.Red + "\n- Invalid option\n")
         environment = input(text.White + "Environment (QA, UAT): ")
 
     return environment
 
-# Print payment method menu application
+# Print payment method menu
 def printPaymentMethodMenu(zone):
-    if zone == 'BR':
-        paymentMethod = input(text.White + "What payment method want apply this rule (1- CASH, 2- BANK SLIP): ")
+    if zone == "BR":
+        paymentMethod = input(text.White + "For which payment method do you want to apply this rule (1- CASH, 2- BANK SLIP): ")
         while (int(paymentMethod) != 1 and int(paymentMethod) != 2):
-            print(text.Red + '\n- Invalid option')
-            paymentMethod = input(text.White + "What payment method want apply this rule (1- CASH, 2- BANK SLIP): ")
+            print(text.Red + "\n- Invalid option\n")
+            paymentMethod = input(text.White + "For which payment method do you want to apply this rule (1- CASH, 2- BANK SLIP): ")
         
         switcher = {
-            '1': 'CASH',
-            '2': 'BANK-SLIP',
+            "1": "CASH",
+            "2": "BANK-SLIP"
         }
 
-        value = switcher.get(paymentMethod, 'false')
+        value = switcher.get(paymentMethod, "false")
         return value
-    elif zone == 'DR':
-        paymentMethod = input(text.White + "What payment method want apply this rule (1- CASH, 2- CREDIT): ")
+
+    elif zone == "DO":
+        paymentMethod = input(text.White + "For which payment method do you want to apply this rule (1- CASH, 2- CREDIT): ")
         while (int(paymentMethod) != 1 and int(paymentMethod) != 2):
-            print(text.Red + '\n- Invalid option')
-            paymentMethod = input(text.White + "What payment method want apply this rule (1- CASH, 2- CREDIT): ")
+            print(text.Red + "\n- Invalid option\n")
+            paymentMethod = input(text.White + "For which payment method do you want to apply this rule (1- CASH, 2- CREDIT): ")
         
         switcher = {
-            '1': 'CASH',
-            '2': 'CREDIT',
+            "1": "CASH",
+            "2": "CREDIT"
         }
 
-        value = switcher.get(paymentMethod, 'false')
+        value = switcher.get(paymentMethod, "false")
         return value
+
     else:
-        return 'CASH'
+        return "CASH"
 
 # Print range delivery date menu
 def printDeliveryDateMenu():
     listDeliveryWindowDates = list()
-    startDeliveryDate = input(text.White + "Enter the start date to apply the discount(format required YYYY-mm-dd): ")
-    while validateDate(startDeliveryDate) == 'false':
-        print(text.Red + '\n- Invalid date')
-        startDeliveryDate = input(text.White + "Enter the start date to apply the discount(format required YYYY-mm-dd): ")
+    startDeliveryDate = input(text.White + "Enter the start date to apply the discount (YYYY-mm-dd): ")
+    while validateDate(startDeliveryDate) == "false":
+        print(text.Red + "\n- Invalid date\n")
+        startDeliveryDate = input(text.White + "Enter the start date to apply the discount (YYYY-mm-dd): ")
 
-    endDeliveryDate = input(text.White + "Enter the end date to apply the discount(format required YYYY-mm-dd): ")
-    while validateDate(endDeliveryDate) == 'false':
-        print(text.Red + '\n- Invalid date')
-        endDeliveryDate = input(text.White + "Enter the end date to apply the discount(format required YYYY-mm-dd): ")
+    endDeliveryDate = input(text.White + "Enter the end date to apply the discount (YYYY-mm-dd): ")
+    while validateDate(endDeliveryDate) == "false":
+        print(text.Red + "\n- Invalid date\n")
+        endDeliveryDate = input(text.White + "Enter the end date to apply the discount(YYYY-mm-dd): ")
     
     listDeliveryWindowDates.append({'startDate':startDeliveryDate, 'endDate':endDeliveryDate})
 
     return listDeliveryWindowDates
 
-# Validate if string it's a date
+# Validate date
 def validateDate(date):
     try:
-        datetime.strptime(date, '%Y-%m-%d')
+        datetime.strptime(date, "%Y-%m-%d")
     except ValueError:
-        return 'false'
+        return "false"
