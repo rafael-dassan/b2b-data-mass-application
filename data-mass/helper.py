@@ -83,8 +83,8 @@ def validateStructure(option):
 
 # Validate environment
 def validateEnvironment(environment):
-    if environment == "QA" or environment == "UAT":
-        return "true"
+    if environment == 'DEV' or environment == 'QA' or environment == 'UAT':
+        return 'true'
     else:
         return "false"
 
@@ -641,10 +641,10 @@ def printZoneMenu(isMiddleware="true"):
 
 # Print environment menu
 def printEnvironmentMenu():
-    environment = input("Environment (QA, UAT): ")
-    while validateEnvironment(environment.upper()) == "false":
-        print(text.Red + "\n- Invalid option\n")
-        environment = input(text.White + "Environment (QA, UAT): ")
+    environment = input("Environment (DEV, QA, UAT): ")
+    while validateEnvironment(environment.upper()) == 'false':
+        print(text.Red + '\n- Invalid option')
+        environment = input(text.White + "Environment (DEV, QA, UAT): ")
 
     return environment
 
