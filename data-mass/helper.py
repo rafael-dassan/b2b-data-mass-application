@@ -544,8 +544,8 @@ def printAvailableOptions(selectionStructure):
             print(text.White + str(5), text.Yellow + "Input discount by payment method" + text.ResetAll)
             print(text.White + str(6), text.Yellow + "Input discount by delivery date" + text.ResetAll)
             print(text.White + str(7), text.Yellow + "Input discount by SKU" + text.ResetAll)
-            print(text.White + str(8), text.Yellow + "Input stepped discount" + text.ResetAll)
-            print(text.White + str(9), text.Yellow + "Input free good selection" + text.ResetAll)
+            print(text.White + str(8), text.Yellow + "Input free good selection" + text.ResetAll)
+            print(text.White + str(9), text.Yellow + "Input stepped discount" + text.ResetAll)
             print(text.White + str(10), text.Yellow + "Input stepped free good" + text.ResetAll)
             print(text.White + str(11), text.Yellow + "Input combos" + text.ResetAll)
             
@@ -562,8 +562,8 @@ def printAvailableOptions(selectionStructure):
                 print(text.White + str(5), text.Yellow + "Input discount by payment method" + text.ResetAll)
                 print(text.White + str(6), text.Yellow + "Input discount by delivery date" + text.ResetAll)
                 print(text.White + str(7), text.Yellow + "Input discount by SKU" + text.ResetAll)
-                print(text.White + str(8), text.Yellow + "Input stepped discount" + text.ResetAll)
-                print(text.White + str(9), text.Yellow + "Input free good selection" + text.ResetAll)
+                print(text.White + str(8), text.Yellow + "Input free good selection" + text.ResetAll)
+                print(text.White + str(9), text.Yellow + "Input stepped discount" + text.ResetAll)
                 print(text.White + str(10), text.Yellow + "Input stepped free good" + text.ResetAll)
                 print(text.White + str(11), text.Yellow + "Input combos" + text.ResetAll)
 
