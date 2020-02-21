@@ -36,8 +36,8 @@ def showMenu():
             "5": inputDiscountByPaymentMethodMenu,
             "6": inputDiscountByDeliveryDateMenu,
             "7": inputDiscountBySkuMenu,
-            "8": inputFreeGoodsSelectionMenu,
-            "9": inputSteppedDiscountMenu,
+            "8": inputSteppedDiscountMenu,
+            "9": inputFreeGoodsSelectionMenu,
             "10": inputSteppedFreeGoodMenu,
             "11": inputCombosMenu 
         }
