@@ -1,6 +1,7 @@
 import sys
 from json import dumps
 from uuid import uuid1
+from random import randint, uniform
 
 # Custom
 from helper import *
@@ -18,7 +19,7 @@ def inputDiscountByPaymentMethod(accounts, zone, environment, paymentMethod, typ
         "accounts": accounts,
         "deals": [
             {
-                "dealId": "ANTARCTICA-" + str(uuid1()) + '-paymentMethod',
+                "dealId": "ANTARCTICA-" + str(randint(1, 100000)) + '-paymentMethod',
                 "dealRules": {
                     "dealPaymentMethodRule": {
                         "paymentMethod": paymentMethod
@@ -29,7 +30,7 @@ def inputDiscountByPaymentMethod(accounts, zone, environment, paymentMethod, typ
                         strTypeDiscount: valueDiscount
                     }
                 },
-                "externalId": "ANTARCTICA-" + str(uuid1()) + '-paymentMethod'
+                "externalId": "ANTARCTICA-" + str(randint(1, 100000)) + '-paymentMethod'
             }
         ]
     })
@@ -56,7 +57,7 @@ def inputDiscountByDeliveryDate(accounts, zone, environment, listDates, typeDisc
         "accounts": accounts,
         "deals": [
             {
-                "dealId": "ANTARCTICA-" + str(uuid1()) + '-deliveryDate',
+                "dealId": "ANTARCTICA-" + str(randint(1, 100000)) + '-deliveryDate',
                 "dealRules": {
                     "dealDeliveryDateRules": [
                         {
@@ -70,7 +71,7 @@ def inputDiscountByDeliveryDate(accounts, zone, environment, listDates, typeDisc
                         strTypeDiscount: valueDiscount
                     }
                 },
-                "externalId": "ANTARCTICA-" + str(uuid1()) + '-deliveryDate',
+                "externalId": "ANTARCTICA-" + str(randint(1, 100000)) + '-deliveryDate',
             }
         ]
     })
@@ -97,7 +98,7 @@ def inputDiscountBySku(accounts, zone, environment, listOffers, typeDiscount, va
         "accounts": accounts,
         "deals": [
             {
-                "dealId": "ANTARCTICA-" + str(uuid1()) + '-bySku',
+                "dealId": "ANTARCTICA-" + str(randint(1, 100000)) + '-bySku',
                 "dealRules": {
                     "dealSKURule": {
                         "skus": listOffers,
@@ -111,7 +112,7 @@ def inputDiscountBySku(accounts, zone, environment, listOffers, typeDiscount, va
                         "maxQuantity": 1000
                     }
                 },
-                "externalId": "ANTARCTICA-" + str(uuid1()) + '-bySku',
+                "externalId": "ANTARCTICA-" + str(randint(1, 100000)) + '-bySku',
             }
         ]
     })
@@ -133,7 +134,7 @@ def inputFreeGoodsSelection(accounts, zone, environment, minimumQuantityPurchase
         "accounts": accounts,
         "deals": [
             {
-                "dealId": "ANTARCTICA-" + str(uuid1()) + '-bySku',
+                "dealId": "ANTARCTICA-" + str(randint(1, 100000)) + '-bySku',
                 "dealRules": {
                     "dealSKURule": {
                         "skus": skusPurchase,

@@ -83,8 +83,8 @@ def validateStructure(option):
 
 # Validate environment
 def validateEnvironment(environment):
-    if environment == "QA" or environment == "UAT":
-        return "true"
+    if environment == 'DEV' or environment == 'QA' or environment == 'UAT':
+        return 'true'
     else:
         return "false"
 
@@ -544,8 +544,8 @@ def printAvailableOptions(selectionStructure):
             print(text.White + str(5), text.Yellow + "Input discount by payment method" + text.ResetAll)
             print(text.White + str(6), text.Yellow + "Input discount by delivery date" + text.ResetAll)
             print(text.White + str(7), text.Yellow + "Input discount by SKU" + text.ResetAll)
-            print(text.White + str(8), text.Yellow + "Input stepped discount" + text.ResetAll)
-            print(text.White + str(9), text.Yellow + "Input free good selection" + text.ResetAll)
+            print(text.White + str(8), text.Yellow + "Input free good selection" + text.ResetAll)
+            print(text.White + str(9), text.Yellow + "Input stepped discount" + text.ResetAll)
             print(text.White + str(10), text.Yellow + "Input stepped free good" + text.ResetAll)
             print(text.White + str(11), text.Yellow + "Input combos" + text.ResetAll)
             
@@ -562,8 +562,8 @@ def printAvailableOptions(selectionStructure):
                 print(text.White + str(5), text.Yellow + "Input discount by payment method" + text.ResetAll)
                 print(text.White + str(6), text.Yellow + "Input discount by delivery date" + text.ResetAll)
                 print(text.White + str(7), text.Yellow + "Input discount by SKU" + text.ResetAll)
-                print(text.White + str(8), text.Yellow + "Input stepped discount" + text.ResetAll)
-                print(text.White + str(9), text.Yellow + "Input free good selection" + text.ResetAll)
+                print(text.White + str(8), text.Yellow + "Input free good selection" + text.ResetAll)
+                print(text.White + str(9), text.Yellow + "Input stepped discount" + text.ResetAll)
                 print(text.White + str(10), text.Yellow + "Input stepped free good" + text.ResetAll)
                 print(text.White + str(11), text.Yellow + "Input combos" + text.ResetAll)
 
@@ -641,10 +641,10 @@ def printZoneMenu(isMiddleware="true"):
 
 # Print environment menu
 def printEnvironmentMenu():
-    environment = input("Environment (QA, UAT): ")
-    while validateEnvironment(environment.upper()) == "false":
-        print(text.Red + "\n- Invalid option\n")
-        environment = input(text.White + "Environment (QA, UAT): ")
+    environment = input("Environment (DEV, QA, UAT): ")
+    while validateEnvironment(environment.upper()) == 'false':
+        print(text.Red + '\n- Invalid option')
+        environment = input(text.White + "Environment (DEV, QA, UAT): ")
 
     return environment
 
