@@ -536,49 +536,49 @@ def finishApplication():
 # Print init menu
 def printAvailableOptions(selectionStructure):
     if selectionStructure == "1" or selectionStructure == "2":
-        print(text.White + str(1), text.Yellow + "Create account" + text.ResetAll)
-        print(text.White + str(2), text.Yellow + "Input products to an account" + text.ResetAll)
-        print(text.White + str(3), text.Yellow + "Input credit to an account" + text.ResetAll)
-        print(text.White + str(4), text.Yellow + "Input delivery window to an account" + text.ResetAll)
+        print(text.White + str(1), text.Yellow + "Create account")
+        print(text.White + str(2), text.Yellow + "Input products to an account")
+        print(text.White + str(3), text.Yellow + "Input credit to an account")
+        print(text.White + str(4), text.Yellow + "Input delivery window to an account")
         if selectionStructure == "2":
-            print(text.White + str(5), text.Yellow + "Input discount by payment method" + text.ResetAll)
-            print(text.White + str(6), text.Yellow + "Input discount by delivery date" + text.ResetAll)
-            print(text.White + str(7), text.Yellow + "Input discount by SKU" + text.ResetAll)
-            print(text.White + str(8), text.Yellow + "Input free good selection" + text.ResetAll)
-            print(text.White + str(9), text.Yellow + "Input stepped discount" + text.ResetAll)
-            print(text.White + str(10), text.Yellow + "Input stepped free good" + text.ResetAll)
-            print(text.White + str(11), text.Yellow + "Input combos" + text.ResetAll)
+            print(text.White + str(5), text.Yellow + "Input discount by payment method")
+            print(text.White + str(6), text.Yellow + "Input discount by delivery date")
+            print(text.White + str(7), text.Yellow + "Input discount by SKU")
+            print(text.White + str(8), text.Yellow + "Input free good selection")
+            print(text.White + str(9), text.Yellow + "Input stepped discount")
+            print(text.White + str(10), text.Yellow + "Input stepped free good")
+            print(text.White + str(11), text.Yellow + "Input combos")
             
 
-        print(text.White + str(0), text.White + text.BackgroundRed + "Exit" + text.ResetAll)
-        selection = input(text.White + "Please select: ")
+        print(text.White + str(0), text.Yellow + "Close application")
+        selection = input(text.White + "\nPlease select: ")
         while validateOptionRequestSelection(selection) == "false":
             print(text.Red + "\n- Invalid option\n")
-            print(text.White + str(1), text.Yellow + "Create account" + text.ResetAll)
-            print(text.White + str(2), text.Yellow + "Input products to an account" + text.ResetAll)
-            print(text.White + str(3), text.Yellow + "Input credit to an account" + text.ResetAll)
-            print(text.White + str(4), text.Yellow + "Input delivery window to an account" + text.ResetAll)
+            print(text.White + str(1), text.Yellow + "Create account")
+            print(text.White + str(2), text.Yellow + "Input products to an account")
+            print(text.White + str(3), text.Yellow + "Input credit to an account")
+            print(text.White + str(4), text.Yellow + "Input delivery window to an account")
             if selectionStructure == "2":
-                print(text.White + str(5), text.Yellow + "Input discount by payment method" + text.ResetAll)
-                print(text.White + str(6), text.Yellow + "Input discount by delivery date" + text.ResetAll)
-                print(text.White + str(7), text.Yellow + "Input discount by SKU" + text.ResetAll)
-                print(text.White + str(8), text.Yellow + "Input free good selection" + text.ResetAll)
-                print(text.White + str(9), text.Yellow + "Input stepped discount" + text.ResetAll)
-                print(text.White + str(10), text.Yellow + "Input stepped free good" + text.ResetAll)
-                print(text.White + str(11), text.Yellow + "Input combos" + text.ResetAll)
+                print(text.White + str(5), text.Yellow + "Input discount by payment method")
+                print(text.White + str(6), text.Yellow + "Input discount by delivery date")
+                print(text.White + str(7), text.Yellow + "Input discount by SKU")
+                print(text.White + str(8), text.Yellow + "Input free good selection")
+                print(text.White + str(9), text.Yellow + "Input stepped discount")
+                print(text.White + str(10), text.Yellow + "Input stepped free good")
+                print(text.White + str(11), text.Yellow + "Input combos")
 
-            print(text.White + str(0), text.White + text.BackgroundRed + "Exit" + text.ResetAll)
-            selection = input(text.White + "Please select: ")
+            print(text.White + str(0), text.Yellow + "Close application")
+            selection = input(text.White + "\nPlease select: ")
 
     elif selectionStructure == "3":
-        print(text.White + str(1), text.Yellow + "Open Browser" + text.ResetAll)
-        print(text.White + str(0), text.White + text.BackgroundRed + "Exit" + text.ResetAll)
-        selection = input(text.White + "Please select: ")
+        print(text.White + str(1), text.Yellow + "Open Browser")
+        print(text.White + str(0), text.Yellow + "Close application")
+        selection = input(text.White + "\nPlease select: ")
         while validateOptionRequestSelection(selection, "true") == "false":
             print(text.Red + "\n- Invalid option\n")
-            print(text.White + str(1), text.Yellow + "Open Browser" + text.ResetAll)
-            print(text.White + str(0), text.White + text.BackgroundRed + "Exit" + text.ResetAll)
-            selection = input(text.White + "Please select: ")
+            print(text.White + str(1), text.Yellow + "Open Browser")
+            print(text.White + str(0), text.Yellow + "Close application")
+            selection = input(text.White + "\nPlease select: ")
     
     else:
         finishApplication()
@@ -587,22 +587,22 @@ def printAvailableOptions(selectionStructure):
 
 # Print welcome menu
 def printWelcomeScript():
-    print(text.White + "🄰🄽🅃🄰🅁🄲🅃🄸🄲🄰 🄰🅄🅃🄾🄼🄰🅃🄸🄾🄽 🅂🄲🅁🄸🄿🅃" + text.ResetAll)
+    print(text.White + "🄰🄽🅃🄰🅁🄲🅃🄸🄲🄰 🄰🅄🅃🄾🄼🄰🅃🄸🄾🄽 🅂🄲🅁🄸🄿🅃\n")
 
 # Print structure menu
 def printStructureMenu():
-    print(text.White + str(1), text.Yellow + "Middleware (ZA, AR, CL)" + text.ResetAll)
-    print(text.White + str(2), text.Yellow + "MicroService" + text.ResetAll)
-    print(text.White + str(3), text.Yellow + "Extras" + text.ResetAll)
-    print(text.White + str(4), text.Yellow + "Close application" + text.ResetAll)
-    structure = input(text.White + "\nChoose which backend you want to run a service for: " + text.ResetAll)
+    print(text.White + str(1), text.Yellow + "Middleware (ZA, AR, CL)")
+    print(text.White + str(2), text.Yellow + "MicroService")
+    print(text.White + str(3), text.Yellow + "Extras")
+    print(text.White + str(4), text.Yellow + "Close application")
+    structure = input(text.White + "\nChoose which backend you want to run a service for: ")
     while validateStructure(structure) == "false":
         print(text.Red + "\n- Invalid option\n")
-        print(text.White + str(1), text.Yellow + "Middleware (ZA, AR, CL)" + text.ResetAll)
-        print(text.White + str(2), text.Yellow + "MicroService" + text.ResetAll)
-        print(text.White + str(3), text.Yellow + "Extras" + text.ResetAll)
-        print(text.White + str(4), text.Yellow + "Close application" + text.ResetAll)
-        structure = input(text.White + "\nChoose which backend you want to run a service for: " + text.ResetAll)
+        print(text.White + str(1), text.Yellow + "Middleware (ZA, AR, CL)")
+        print(text.White + str(2), text.Yellow + "MicroService")
+        print(text.White + str(3), text.Yellow + "Extras")
+        print(text.White + str(4), text.Yellow + "Close application")
+        structure = input(text.White + "\nChoose which backend you want to run a service for: ")
 
     return structure
 
