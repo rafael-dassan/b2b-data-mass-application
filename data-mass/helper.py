@@ -4,8 +4,11 @@ from time import time
 from json import dumps
 import os
 import sys
+import json
 from classes.text import text
 from datetime import date, datetime, timedelta
+from jsonpath_rw import Index, Fields
+from jsonpath_rw_ext import parse
 
 # Validate option menu selection
 def validateOptionRequestSelection(option, isExtraStructure = "false"):
@@ -143,98 +146,6 @@ def get_middleware_base_url(zone, environment, version_request):
 # Return base URL for Microservice
 def get_microservice_base_url(environment):
     return "https://b2b-services-" + environment.lower() + ".westeurope.cloudapp.azure.com/v1"
-
-# Payload Middleware ZA account
-def get_middleware_payload_za_account(accountId, name, environment):
-    null = None
-    return dumps({
-        "accountId": accountId,
-        "deliveryAddress": {
-            "address": "ERVEN 14-18",
-            "city": "CHAMDOR - ROODEKRANS",
-            "state": "Free State",
-            "zipcode": "9301"
-        },
-        "deliveryCenterId": accountId,
-        "deliveryScheduleId": accountId,
-        "liquorLicense": [
-            {
-                "description": null,
-                "expirationDate": "2040-12-31",
-                "number": "GAU/" + accountId,
-                "status": "VALID",
-                "type": "PERMANENT"
-            }
-        ],
-        "minimumOrder": {
-            "type": "PRODUCT_QUANTITY",
-            "value": 5
-        },
-        "name": name,
-        "owner": {
-            "email": accountId + "@mailinator.com",
-            "firstName": name,
-            "lastName": environment.upper(),
-            "phone": 11999999999
-        },
-        "paymentMethods": [
-            "CASH"
-        ],
-        "priceListId": accountId,
-        "salesRepresentative": {
-            "email": "N/A",
-            "name": "DORINAH",
-            "phone": "072 726 1722"
-        },
-        "status": "ACTIVE",
-        "taxId": accountId
-    })
-
-# Payload Middleware LAS account
-def get_middleware_payload_las_account(accountId, name, environment):
-    null = None
-    return dumps({
-        "accountId": accountId,
-        "deliveryAddress": {
-            "address": "AVDA ALVAREZ THOMAS 1073, CAPITAL FEDERAL",
-            "city": "CAPITAL FEDERAL",
-            "state": "CAPITAL FEDERAL",
-            "zipcode": "C1427CCK"
-        },
-        "deliveryCenterId": accountId,
-        "deliveryScheduleId": accountId,
-        "liquorLicense": [
-            {
-                "description": null,
-                "expirationDate": "2040-12-31",
-                "number": accountId,
-                "status": "VALID",
-                "type": "PERMANENT"
-            }
-        ],
-        "minimumOrder": {
-            "type": "PRODUCT_QUANTITY",
-            "value": 5
-        },
-        "name": name,
-        "owner": {
-            "email": accountId + "@mailinator.com",
-            "firstName": name,
-            "lastName": environment.upper(),
-            "phone": 11999999999
-        },
-        "paymentMethods": [
-            "CASH"
-        ],
-        "priceListId": accountId,
-        "salesRepresentative": {
-            "email": null,
-            "name": "ARAMAYO JAVIER",
-            "phone": null
-        },
-        "status": "ACTIVE",
-        "taxId": accountId
-    })
 
 # Payload Microservice ZA account
 def get_microservice_payload_za_account(accountId, name, environment):
@@ -498,19 +409,6 @@ def get_microservice_payload_br_account(accountId, name, environment):
         "taxId": accountId
     })
 
-# Return middleware payload to create an account (ZA, AR, CL)
-def get_middleware_payload_create_account(zone, accountId, name, environment):
-    switcher = {
-        "ZA": get_middleware_payload_za_account,
-        "AR": get_middleware_payload_las_account,
-        "CL": get_middleware_payload_las_account
-    }
-
-    function = switcher.get(zone, "")
-
-    if function != "":
-        return function(accountId, name, environment)
-
 # Return microservice payload to create an account (DO, ZA, AR, CL, BR)
 def get_microservice_payload_create_account(zone, accountId, name, environment):
     switcher = {
@@ -650,36 +548,46 @@ def printEnvironmentMenu():
 
 # Print payment method menu
 def printPaymentMethodMenu(zone):
+    payment_cash = ["CASH"]
+
     if zone == "BR":
-        paymentMethod = input(text.White + "For which payment method do you want to apply this rule (1- CASH, 2- BANK SLIP): ")
-        while (int(paymentMethod) != 1 and int(paymentMethod) != 2):
+        paymentMethod = input(text.White + "Choose the payment method (1. CASH / 2. BANK SLIP / 3. CASH, BANK SLIP): ")
+        while (int(paymentMethod) != 1 and int(paymentMethod) != 2 and int(paymentMethod) != 3):
             print(text.Red + "\n- Invalid option\n")
-            paymentMethod = input(text.White + "For which payment method do you want to apply this rule (1- CASH, 2- BANK SLIP): ")
+            paymentMethod = input(text.White + "Choose the payment method (1. CASH / 2. BANK SLIP / 3. CASH, BANK SLIP): ")
         
+        payment_credit = ["BANK_SLIP"]
+        payment_list = ["CASH", "BANK_SLIP"]
+
         switcher = {
-            "1": "CASH",
-            "2": "BANK-SLIP"
+            "1": payment_cash,
+            "2": payment_credit,
+            "3": payment_list
         }
 
         value = switcher.get(paymentMethod, "false")
         return value
 
     elif zone == "DO":
-        paymentMethod = input(text.White + "For which payment method do you want to apply this rule (1- CASH, 2- CREDIT): ")
-        while (int(paymentMethod) != 1 and int(paymentMethod) != 2):
+        paymentMethod = input(text.White + "Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ")
+        while (int(paymentMethod) != 1 and int(paymentMethod) != 2 and int(paymentMethod) != 3):
             print(text.Red + "\n- Invalid option\n")
-            paymentMethod = input(text.White + "For which payment method do you want to apply this rule (1- CASH, 2- CREDIT): ")
+            paymentMethod = input(text.White + "Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ")
+
+        payment_credit = ["CREDIT"]
+        payment_list = ["CASH", "CREDIT"]
         
         switcher = {
-            "1": "CASH",
-            "2": "CREDIT"
+            "1": payment_cash,
+            "2": payment_credit,
+            "3": payment_list
         }
 
         value = switcher.get(paymentMethod, "false")
         return value
 
     else:
-        return "CASH"
+        return payment_cash
 
 # Print range delivery date menu
 def printDeliveryDateMenu():
@@ -704,3 +612,28 @@ def validateDate(date):
         datetime.strptime(date, "%Y-%m-%d")
     except ValueError:
         return "false"
+
+def update_value_to_json(json_object, json_path, new_value):
+    """Update value to JSON using JSONPath
+    Arguments:
+        - json_object: json as a dictionary object.
+        - json_path: jsonpath expression
+        - new_value: value to update
+    Return new json_object
+    """
+    json_path_expr = parse(json_path)
+    for match in json_path_expr.find(json_object):
+        path = match.path
+        if isinstance(path, Index):
+            match.context.value[match.path.index] = new_value
+        elif isinstance(path, Fields):
+            match.context.value[match.path.fields[0]] = new_value
+    return json_object
+
+def convert_json_to_string(json_object):
+    """Convert JSON object to string
+    Arguments:
+        - json_object: json as a dictionary object.
+    Return new json_string
+    """
+    return json.dumps(json_object)

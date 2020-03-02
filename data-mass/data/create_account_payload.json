@@ -1,0 +1,51 @@
+{
+  "accountId": "string",
+  "channel": null,
+  "deliveryAddress": {
+      "address": "TEST DELIVERY ADDRESS",
+      "city": "TEST DELIVERY CITY",
+      "latitude": null,
+      "longitude": null,
+      "state": "TEST DELIVERY STATE",
+      "zipcode": "TEST DELIVERY ZIPCODE"
+  },
+  "deliveryCenterId": "string",
+  "deliveryRegion": null,
+  "deliveryRoute": null,
+  "deliveryScheduleId": "string",
+  "erpSalesCenter": null,
+  "liquorLicense": [
+    {
+        "description": null,
+        "expirationDate": "2040-12-31",
+        "number": "string",
+        "status": "VALID",
+        "type": "PERMANENT"
+    }
+  ],
+  "maximumOrder": null,
+  "minimumOrder": null,
+  "name": "string",
+  "owner": {
+      "email": "test@mailinator.com",
+      "firstName": "TEST OWNER FIRST NAME",
+      "lastName": "TEST OWNER LAST NAME",
+      "phone": 11999999999
+  },
+  "paymentMethods": [
+      "string"
+  ],
+  "paymentTerms": null,
+  "potential": null,
+  "priceListId": "string",
+  "salesRepresentative": {
+      "email": "test@zone.com",
+      "name": "TEST SALES REP NAME",
+      "phone": 11000000000
+  },
+  "salesRoute": null,
+  "segment": "16",
+  "status": "ACTIVE",
+  "subSegment": "00011",
+  "taxId": "string"
+}

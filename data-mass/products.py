@@ -243,7 +243,7 @@ def add_products_to_account_middleware(abi_id, zone, environment):
     if maximum > len(allProductsMiddleware):
         maximum = len(allProductsMiddleware)
 
-    qtd = input("Number of products you want to add (Maximum: " + str(len(allProductsMiddleware)) + " - Default: " + str(maximum) + "): ")
+    qtd = input(text.White + "\nDesired number of products (Maximum: " + str(len(allProductsMiddleware)) + " - Default: " + str(maximum) + "): ")
     if qtd == "":
         qtd = maximum
 
@@ -270,7 +270,7 @@ def add_products_to_account_microservice(abi_id, zone, environment, deliveryCent
     if maximum > len(allProductsMicroservice):
         maximum = len(allProductsMicroservice)
 
-    qtd = input("Desire number of products (Maximum: " + str(len(allProductsMicroservice)) + " - Default " + str(maximum) + "):")
+    qtd = input(text.White + "\nDesired number of products (Maximum: " + str(len(allProductsMicroservice)) + " - Default " + str(maximum) + "): ")
     if qtd == "":
         qtd = maximum
 

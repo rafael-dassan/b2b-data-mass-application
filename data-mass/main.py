@@ -546,9 +546,9 @@ def inputProductsAccountMicroserviceMenu():
         # Call add products to account function
         addProducts = add_products_to_account_microservice(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'])
         if addProducts == "success":
-            print(text.Green + "\n- Products added successfully")
+            print(text.Green + "\n\n- Products added successfully")
         else:
-            print(text.Red + "\n- [Products] Something went wrong, please try again")
+            print(text.Red + "\n\n- [Products] Something went wrong, please try again")
             printFinishApplicationMenu()
 
 def inputDeliveryWindowAccountMicroserviceMenu():
@@ -652,9 +652,9 @@ def inputProductsAccountMdwMenu():
             # Call add products to account function
             addProducts = add_products_to_account_middleware(abi_id, zone.upper(), environment.upper())
             if addProducts == "success":
-                print(text.Green + "\n- Products added successfully")
+                print(text.Green + "\n\n- Products added successfully")
             else:
-                print(text.Red + "\n- [Products] Something went wrong, please try again")
+                print(text.Red + "\n\n- [Products] Something went wrong, please try again")
                 printFinishApplicationMenu()
     elif account == "false":
         print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
@@ -669,9 +669,10 @@ def createAccountMdwMenu():
     environment = printEnvironmentMenu()
     abi_id = printAccountIdMenu(zone.upper())
     name = printNameMenu()
+    payment_method = printPaymentMethodMenu(zone.upper())
 
     # Call create account function
-    account = create_account(abi_id, name, zone.upper(), environment.upper())
+    account = create_account(abi_id, name, zone.upper(), payment_method, environment.upper())
 
     if account == "success":
         print(text.Green + "\n- Your account has been created! Now register on Web or Mobile applications")
@@ -683,9 +684,9 @@ def createAccountMdwMenu():
     products = add_products_to_account_middleware(abi_id, zone.upper(), environment.upper())
 
     if products == "success":
-        print(text.Green + "\n- Products added successfully")
+        print(text.Green + "\n\n- Products added successfully")
     else:
-        print(text.Red + "\n- [Products] Something went wrong, please try again")
+        print(text.Red + "\n\n- [Products] Something went wrong, please try again")
         printFinishApplicationMenu()
 
     # Call add credit to account function
@@ -714,9 +715,10 @@ def createAccountMsMenu():
     environment = printEnvironmentMenu()
     abi_id = printAccountIdMenu(zone.upper())
     name = printNameMenu()
+    payment_method = printPaymentMethodMenu(zone.upper())
 
     # Call create account function
-    account = create_account_ms(abi_id, name, zone.upper(), environment.upper())
+    account = create_account_ms(abi_id, name, payment_method, zone.upper(), environment.upper())
 
     if account == "success":
         print(text.Green + "\n- Your account has been created! Now register on Web or Mobile applications")
@@ -735,9 +737,9 @@ def createAccountMsMenu():
     products = add_products_to_account_microservice(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'])
 
     if products == "success":
-        print(text.Green + "\n- Products added successfully")
+        print(text.Green + "\n\n- Products added successfully")
     else:
-        print(text.Red + "\n- [Products] Something went wrong, please try again")
+        print(text.Red + "\n\n- [Products] Something went wrong, please try again")
         printFinishApplicationMenu()
     
     # Call check account exists function
@@ -795,10 +797,10 @@ def openWeb():
 # Print Finish Menu application
 def printFinishApplicationMenu():
     finish = input(
-        text.White + "Do you want to finish the application? y/N: ")
+        text.White + "\nDo you want to finish the application? y/N: ")
     while validateYesOrNotOption(finish.upper()) == "false":
         print(text.Red + "\n- Invalid option")
-        finish = input(text.White + "Do you want to finish the application? y/N: ")
+        finish = input(text.White + "\nDo you want to finish the application? y/N: ")
 
     if finish.upper() == "Y":
         finishApplication()
@@ -814,10 +816,10 @@ def validateYesOrNotOption(option):
 
 # Print alternative delivery date menu application
 def printAlternativeDeliveryDateMenu():
-    isAlternativeDeliveryDate = input(text.White + "Do you want to register an alternative delivery date? y/N: ")
+    isAlternativeDeliveryDate = input(text.White + "\nDo you want to register an alternative delivery date? y/N: ")
     while validateAlternativeDeliveryDate(isAlternativeDeliveryDate.upper()) == "false":
         print(text.Red + "\n- Invalid option")
-        isAlternativeDeliveryDate = input(text.White + "Want to register an alternative delivery date? y/N: ")
+        isAlternativeDeliveryDate = input(text.White + "\nDo you want to register an alternative delivery date? y/N: ")
 
     return isAlternativeDeliveryDate
 
