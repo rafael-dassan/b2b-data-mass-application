@@ -8,13 +8,15 @@ from products import *
 from credit import add_credit_to_account, add_credit_to_account_microservice
 from delivery_window import create_delivery_window_middleware, create_delivery_window_microservice, validateAlternativeDeliveryDate
 from discounts_ms import inputDiscountByPaymentMethod, inputDiscountByDeliveryDate, inputDiscountBySku, inputFreeGoodsSelection, inputSteppedDiscount, inputSteppedFreeGood
-from helper import *
+from helpers.common import *
+from helpers.dependencies_handling import *
 from classes.text import text
 from random import randint
 from combos import *
 
 def showMenu():
     clearTerminal()
+    install_dependencies()
     printWelcomeScript()
     selectionStructure = printStructureMenu()
     option = printAvailableOptions(selectionStructure)

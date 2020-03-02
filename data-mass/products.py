@@ -4,7 +4,7 @@ from json import dumps, loads
 from datetime import datetime
 
 # Custom
-from helper import *
+from helpers.common import *
 
 def check_products_account_exists_microservice(accountId, zone, environment):
     

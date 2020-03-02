@@ -1,0 +1,5 @@
+# Required libraries to run the Data Mass Scrip. Please, let us know if missing any dependencies.
+
+requests
+jsonpath-rw-ext
+jsonpath-rw

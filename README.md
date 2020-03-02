@@ -12,16 +12,29 @@ This repository contains the B2B Data Mass Script, aimed to those who want to cr
 * [Visual Studio Code][VisualStudioCode]
 * [Python 3.x.x][Python]
 
-## Directories Structure Organization
+## Required Libraries
+
+* [Requests][Requests]
+* [JSONPath-ext RW][JSONPath-ext RW]
+* [JSONPath RW][JSONPath RW]
+
+## Directories structure organization
 
 ```sh
 data-mass/
+├── classes
+    └── text.py
+├── data
+    └── create_account_payload.json
+├── helpers
+    └── common.py
+    └── dependencies_handling.py
+    └── required-libraries.txt
 ├── account.py
 ├── combos.py
 ├── credit.py
 ├── delivery_window.py
 ├── discounts_ms.py
-├── helper.py
 ├── products.py
 ├── main.py
 ```
@@ -58,19 +71,6 @@ python3 main.py
 ```
 By running this command, anyone will be able to see the application menu, and then choose any of the available options depending on the usage.
 
-Another way to run this script is by calling the functions directly, without using the main menu, for example:
-
-```sh
-cd <project-root-dir>/data-mass/
-python3 create_account.py 0000450023 AccountTest ZA UAT
-```
-Where:
-
-* `0000450023` is the **Account Id**
-* `AccountTest` is the **Account Name**
-* `ZA` is the **Zone**
-* `UAT` is the **Environment**
-
 ## Bug report, feedback & improvement requests
 
 This script was originally developed by the Antarctica Team (Checkout Experience), after they identified that the difficulty and the lack of knowledge for creating data mass for the development and testing were a need for every team involved in this project.
@@ -90,3 +90,6 @@ If you find any issue, please contact one of following people listed below:
 [GitDoc]: https://git-scm.com/doc
 [Python]: https://www.python.org/downloads/
 [VisualStudioCode]: https://code.visualstudio.com/download
+[Requests]: https://pypi.org/project/requests/
+[JSONPath-ext RW]: https://pypi.org/project/jsonpath-rw-ext/
+[JSONPath RW]: https://pypi.org/project/jsonpath-rw/

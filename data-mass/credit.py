@@ -2,7 +2,7 @@ import sys
 from json import dumps
 
 #Custom
-from helper import *
+from helpers.common import *
 
 # Include credit in middleware account
 def add_credit_to_account(accountId, zone, env):
