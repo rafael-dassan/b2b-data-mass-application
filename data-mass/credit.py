@@ -27,7 +27,7 @@ def add_credit_to_account(accountId, zone, env):
 	# Body request
 	request_body = dumps({
         "balance": balance,
-        "creditAvailable": credit,
+        "available": credit,
         "overdue": 0,
         "paymentTerms": "CASH",
         "total": (credit + balance)
@@ -45,6 +45,7 @@ def add_credit_to_account(accountId, zone, env):
 def add_credit_to_account_microservice(accountId, zone, environment):
 	credit = input("Desire credit (Default 5000):")
 	balance = input("Desire balance (Default 15000):")
+	
 	paymentMethod = printPaymentMethodMenu(zone)
 
 	if credit == "":
@@ -72,6 +73,7 @@ def add_credit_to_account_microservice(accountId, zone, environment):
     })
 
 	response = place_request('POST', request_url, request_body, request_headers)
+
 	if response.status_code == 202:
 		return 'success'
 	else:
