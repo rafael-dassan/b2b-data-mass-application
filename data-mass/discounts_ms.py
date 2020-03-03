@@ -4,7 +4,7 @@ from uuid import uuid1
 from random import randint, uniform
 
 # Custom
-from helper import *
+from helpers.common import *
 
 # Input discount rule by payment method
 def inputDiscountByPaymentMethod(accounts, zone, environment, paymentMethod, typeDiscount, valueDiscount):

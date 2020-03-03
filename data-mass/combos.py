@@ -4,7 +4,7 @@ from uuid import uuid1
 from random import randint, uniform
 
 # Custom
-from helper import *
+from helpers.common import *
 from classes.text import text
 
 #Input combo simple
