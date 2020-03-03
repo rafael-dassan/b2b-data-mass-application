@@ -162,3 +162,9 @@ dmypy.json
 .history
 
 # End of https://www.gitignore.io/api/linux,macos,python,visualstudiocode
+
+# PyCharm and other JetBrains IDEs
+.idea/
+
+# Python 3 venv directory
+venv/

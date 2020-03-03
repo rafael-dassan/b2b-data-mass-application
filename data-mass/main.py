@@ -1,5 +1,3 @@
-import os
-import sys
 import webbrowser
 
 # Custom
@@ -836,5 +834,7 @@ def validateSkuChosen(sku, listSkuOffers):
 
     return "false"
 
-# Init 
-showMenu()
+
+# Init
+if __name__ == '__main__':
+    showMenu()

@@ -1,10 +1,11 @@
-import sys
 from random import randint, uniform
-from json import dumps, loads
-from datetime import datetime
+from json import loads
+
+import concurrent.futures
 
 # Custom
 from helpers.common import *
+
 
 def check_products_account_exists_microservice(accountId, zone, environment):
     
@@ -42,16 +43,20 @@ def check_products_account_exists_middleware(abi_id, zone, environment):
     else:
         return response.status_code
 
+
 # Return array prices id's for products
 def generate_random_price_ids(qtd):
-    
-    array_random_ids = []
+    if qtd < 1:
+        return []
+
+    array_random_ids = set()
     prefix = "ANTARCTICA"
-    for _ in range(qtd):
+    while len(array_random_ids) < qtd:
         new_prefix = prefix + str(randint(10000, 99999))
-        array_random_ids.append(new_prefix)
-    
-    return array_random_ids
+        array_random_ids.add(new_prefix)
+
+    return list(array_random_ids)
+
 
 # Get body request for price product
 def get_body_price_middleware_request(body_id, price_list_id):
@@ -87,51 +92,54 @@ def request_get_products_middleware(zone, environment):
     else:
         print("- [Product] Something went wrong, please try again")
 
-# Return only five items for add products account
-def slice_array_products(qtd, productsMiddleware):
 
-    array_products = []
-    for x in range(qtd):
-        array_products.append(productsMiddleware[x])
+# Slices a list of products, returning the first X elements
+def slice_array_products(quantity, products):
+    return products[0: quantity]
 
-    return array_products
 
-# Post requests product price and product inclusion in account
-def request_post_products_account_middleware(abi_id, zone, environment, array_ids_new_products, productsInput):
-
+# Does the necessary requests to add a product in a middleware-based zone
+def product_post_requests_middleware(product_data, abi_id, zone, environment):
+    index, product = product_data
     price_list_id = abi_id
     delivery_center_id = abi_id
-    index = 0
-    while index < len(productsInput):
-        last = datetime.now()
 
-        result = request_post_price_middleware(
-            zone, environment, productsInput[index]['sku'], array_ids_new_products[index], price_list_id)
-        if result == 'false':
-            return result
-        result = request_post_price_inclusion_middleware(
-            zone, environment, productsInput[index]['sku'], array_ids_new_products[index], delivery_center_id)
-        if result == 'false':
-            return result
+    result = request_post_price_middleware(
+        zone, environment, product['sku'], index, price_list_id)
+    if result == 'false':
+        return result
+    result = request_post_price_inclusion_middleware(
+        zone, environment, product['sku'], index, delivery_center_id)
+    if result == 'false':
+        return result
 
-        # Workaround to prevent requests from CL to go to the Pricing Engine MS
-        if zone != 'CL':
-            result = request_post_price_microservice(
-                abi_id, zone, environment, productsInput[index]['sku'], array_ids_new_products[index])
+    # Workaround to prevent requests from CL to go to the Pricing Engine MS
+    if zone != 'CL':
+        result = request_post_price_microservice(
+            abi_id, zone, environment, product['sku'], index)
 
-        if result == 'false':
-            return result
-        index += 1
+    return 'true'
 
-        now = datetime.now()
-        lapsed = (now-last).seconds
-        est = lapsed * (len(productsInput) - index)
-        est = format_seconds_to_mmss(est)
 
-        sys.stdout.write("\r" + 'Added products: ' + str(index) + '/' + str(len(productsInput)) + ' - EST: ' + est)
-        sys.stdout.flush()
+# Post requests product price and product inclusion in account
+def request_post_products_account_middleware(abi_id, zone, environment, products_data):
+    results = []
 
+    print('\nAdding products. Please wait...')
+    last = datetime.now()
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = [executor.submit(product_post_requests_middleware, product_data, abi_id, zone, environment) for
+                   product_data in products_data]
+        for future in concurrent.futures.as_completed(futures):
+            results.append(future.result())
+
+    now = datetime.now()
+    lapsed = (now - last).seconds
+    print('{}\n- Products added: {} / failed: {}. Completed in {} seconds.'.format(text.LightGreen,
+                                                                                   results.count('true'),
+                                                                                   results.count('false'), lapsed))
     return 'success'
+
 
 def format_seconds_to_mmss(seconds):
     minutes = seconds // 60
@@ -234,56 +242,45 @@ def get_body_price_inclusion_request(product_price_id, delivery_center_id):
 
     return body_price_inclusion
 
-#Add products in middleware account
+
+# Add products in middleware account
 def add_products_to_account_middleware(abi_id, zone, environment):
     # Request get products middleware
-    allProductsMiddleware = request_get_products_middleware(zone, environment)
+    all_products_middleware = request_get_products_middleware(zone, environment)
+    maximum = min(15, len(all_products_middleware))
 
-    maximum = 15
-    if maximum > len(allProductsMiddleware):
-        maximum = len(allProductsMiddleware)
-
-    qtd = input(text.White + "\nDesired number of products (Maximum: " + str(len(allProductsMiddleware)) + " - Default: " + str(maximum) + "): ")
+    qtd = input("Number of products you want to add (Maximum: " + str(len(all_products_middleware)) + " - Default: " + str(maximum) + "): ")
     if qtd == "":
         qtd = maximum
 
     qtd = int(qtd)
-    
-    # Slice first products items
-    productsInput = slice_array_products(qtd, allProductsMiddleware)
 
-    # Array id's for post price and inclusion in account
-    array_ids_new_products = generate_random_price_ids(qtd)
+    # Builds a list of products to be posted, along with their generated random IDs for price and inclusion in account
+    products_data = list(zip(generate_random_price_ids(qtd), slice_array_products(qtd, all_products_middleware)))
 
     # Insert products in account
-    result = request_post_products_account_middleware(abi_id, zone, environment, array_ids_new_products, productsInput)
+    result = request_post_products_account_middleware(abi_id, zone, environment, products_data)
 
     return result
 
-#Add products in microservice account
-def add_products_to_account_microservice(abi_id, zone, environment, deliveryCenterId):
 
+# Add products in microservice account
+def add_products_to_account_microservice(abi_id, zone, environment, delivery_center_id):
     # Request get products microservice
-    allProductsMicroservice = request_get_products_microservice(zone, environment)
+    all_products_microservice = request_get_products_microservice(zone, environment)
+    maximum = min(15, len(all_products_microservice))
 
-    maximum = 15
-    if maximum > len(allProductsMicroservice):
-        maximum = len(allProductsMicroservice)
-
-    qtd = input(text.White + "\nDesired number of products (Maximum: " + str(len(allProductsMicroservice)) + " - Default " + str(maximum) + "): ")
+    qtd = input("Number of products you want to add (Maximum: " + str(len(all_products_microservice)) + " - Default " + str(maximum) + "):")
     if qtd == "":
         qtd = maximum
 
     qtd = int(qtd)
-    
-    # Slice first products items
-    productsInput = slice_array_products(qtd, allProductsMicroservice)
 
-    # Array id's for post price and inclusion in account
-    array_ids_new_products = generate_random_price_ids(qtd)
+    # Builds a list of products to be posted, along with their generated random IDs for price and inclusion in account
+    products_data = list(zip(generate_random_price_ids(qtd), slice_array_products(qtd, all_products_microservice)))
 
     # Insert products in account
-    result = request_post_products_account_microservice(abi_id, zone, environment, array_ids_new_products, productsInput, deliveryCenterId)
+    result = request_post_products_account_microservice(abi_id, zone, environment, delivery_center_id, products_data)
 
     return result
 
@@ -307,38 +304,44 @@ def request_get_products_microservice(zone, environment):
     else:
         print('- [Product] Something went wrong in search products on microservice')
 
+
+# Does the necessary requests to add a product in a microservice-based zone
+def product_post_requests_microservice(product_data, abi_id, zone, environment, delivery_center_id):
+    index, product = product_data
+
+    result = request_post_price_inclusion_microservice(zone, environment, product['sku'], index, delivery_center_id)
+    if result == 'false':
+        return result
+
+    # Post price product in Price Engine Microservice
+    # Workaround to prevent requests from CL to go to the Pricing Engine MS
+    if zone != 'CL':
+        result = request_post_price_microservice(abi_id, zone, environment, product['sku'], index)
+    if result == 'false':
+        return result
+
+    return 'true'
+
+
 # Post requests product price and product inclusion in account
-def request_post_products_account_microservice(abi_id, zone, environment, array_ids_new_products, productsInput, deliveryCenterId):
-    
-    delivery_center_id = deliveryCenterId
-    index = 0
-    while index < len(productsInput):
+def request_post_products_account_microservice(abi_id, zone, environment, delivery_center_id, products_data):
+    results = []
+    print('\nAdding products. Please wait...')
+    last = datetime.now()
 
-        last = datetime.now()
-        # Sync products with account
-        result = request_post_price_inclusion_microservice(zone, environment, productsInput[index]['sku'], array_ids_new_products[index], delivery_center_id)
-        if result == 'false':
-            return result
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = [executor.submit(product_post_requests_microservice, product_data, abi_id, zone, environment,
+                                   delivery_center_id) for product_data in products_data]
+        for future in concurrent.futures.as_completed(futures):
+            results.append(future.result())
 
-        # Post price product in Price Engine Microservice
-        # Workaround to prevent requests from CL to go to the Pricing Engine MS
-        if zone != 'CL':
-            result = request_post_price_microservice(abi_id, zone, environment, productsInput[index]['sku'], array_ids_new_products[index])
-
-        if result == 'false':
-            return result
-
-        index += 1
-        now = datetime.now()
-        lapsed = (now-last).seconds
-        est = lapsed * (len(productsInput) - index)
-        est = format_seconds_to_mmss(est)
-
-        sys.stdout.write("\r" + 'Added products: ' + str(index) +
-                         '/' + str(len(productsInput)) + ' - EST: ' + est)
-        sys.stdout.flush()
-
+    now = datetime.now()
+    lapsed = (now - last).seconds
+    print('{}\n- Products added: {} / failed: {}. Completed in {} seconds.'.format(text.LightGreen,
+                                                                                   results.count('true'),
+                                                                                   results.count('false'), lapsed))
     return 'success'
+
 
 # Post request product inclusion microservice
 def request_post_price_inclusion_microservice(zone, environment, sku_product, product_price_id, delivery_center_id):
