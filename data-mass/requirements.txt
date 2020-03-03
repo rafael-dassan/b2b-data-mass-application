@@ -1,2 +1,2 @@
 requests>=2.23.0
-jsonpath-rw-ext-1.2.2>=0
+jsonpath-rw-ext>=1.2.2
