@@ -2,7 +2,7 @@ import subprocess
 import sys
 import os
 
-#from helpers.common import clearTerminal
+from helpers.common import clearTerminal
 from classes.text import text
 
 def install_dependencies():
@@ -19,4 +19,4 @@ def install_dependencies():
     if "requests" and "jsonpath-rw-ext" and "jsonpath-rw" not in installed_packages:
         print(text.Red + "Dependencies are not installed!" + text.White +  "\nRunning installation...")
         os.system("pip3 install -r" + file_path)
-        #SclearTerminal()
+        SclearTerminal()
