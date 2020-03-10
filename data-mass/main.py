@@ -11,6 +11,7 @@ from helpers.dependencies_handling import *
 from classes.text import text
 from random import randint
 from combos import *
+from deals import *
 
 def showMenu():
     clearTerminal()
@@ -39,7 +40,8 @@ def showMenu():
             "8": inputSteppedDiscountMenu,
             "9": inputFreeGoodsSelectionMenu,
             "10": inputSteppedFreeGoodMenu,
-            "11": inputCombosMenu 
+            "11": inputCombosMenu,
+            "12": inputDealsAutoMenu
         }
     elif selectionStructure == "3":
         switcher = {
@@ -54,6 +56,101 @@ def showMenu():
         function()
     
     printFinishApplicationMenu()
+
+def inputDealsAutoMenu():
+    zone = printZoneMenu("false")
+    environment = printEnvironmentMenu()
+    abi_id = printAccountIdMenu(zone.upper())
+    typeDiscount = 1
+    valueDiscount = 10
+
+    # Call check account exists function
+    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+
+    if account == "false":
+        print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
+        printFinishApplicationMenu()
+
+    accounts = list()
+    accounts.append(abi_id)
+
+    productOffers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'])
+
+    if len(productOffers) == 0:
+        print(text.Red + "\n- [Products] The account " + str(abi_id) + " has no available products for purchase")
+        printFinishApplicationMenu()
+
+    indexOffers = randint(0, (len(productOffers) - 1))
+    sku_discount = productOffers[indexOffers]
+
+    skus = list()
+    skus.append(sku_discount)
+
+    promotion_response = create_discount_auto(abi_id, sku_discount, zone.upper(), environment.upper())
+    cart_response = input_discount_by_sku(accounts, zone.upper(), environment.upper(), skus, typeDiscount, valueDiscount)
+
+    if promotion_response == "false" and cart_response != "success":
+        print(text.Red + "\n- [Deals] Something went wrong, please try again")
+        printFinishApplicationMenu()
+    else:
+        print(text.Green + "\n- Discount successfully registered")
+        print(text.White + "- Rule " + promotion_response + " applied")
+        print(text.White + "- 10% off for the SKU: " + sku_discount)
+
+# Input deals to an account
+def inputDealsMenu():
+    zone = printZoneMenu("false")
+    environment = printEnvironmentMenu()
+    abi_id = printAccountIdMenu(zone.upper())
+    title = printTitleMenu()
+    description = printDescriptionMenu()
+
+    # Call check account exists function
+    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+
+    if account == "false":
+        print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
+        printFinishApplicationMenu()
+
+    productOffers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'])
+
+    if len(productOffers) == 0:
+        print(text.Red + "\n- [Products] The account " + str(abi_id) + " has no available products for purchase")
+        printFinishApplicationMenu()
+
+    listOffers = list()
+    listSkuOffers = list()
+    indexOffers = 0
+    indexLineOffers = 0
+    lineSku = ""
+    print(text.White + "List of available SKUs: \n")
+    while (indexOffers < len(productOffers)):
+        lineSku = lineSku + " Sku: " + productOffers[indexOffers] + " -- "
+        listSkuOffers.append(productOffers[indexOffers])
+        indexOffers = indexOffers + 1
+        indexLineOffers = indexLineOffers + 1        
+        if indexLineOffers == 3:
+            indexLineOffers = 0
+            print(lineSku)
+            print("\n")
+            lineSku = ""
+    
+    sku = input(text.White + "Choose the SKU to apply the discount: ")
+    while validateSkuChosen(sku, listSkuOffers) == "false":
+        print(text.Red + "\n- The SKU " + str(sku) + " is invalid")
+        sku = input(text.White + "\nChoose the SKU to apply the discount: ")
+
+    listOffers.append(sku)
+    
+    promo_type = input(text.White + "Promotion type (1. Discount / 2. Free Good / 3. Stepped Discount / 4. Stepped Free Good): ")
+
+    while (str(promo_type) != "1") and (str(promo_type) != "2") and (str(promo_type) != "3") and (str(promo_type) != "4"):
+        print(text.Red + "\n- Invalid option")
+        promo_type = input(text.White + "\nPromotion type (1. Discount / 2. Free Good / 3. Stepped Discount / 4. Stepped Free Good): ")
+
+    list_dates = printDeliveryDateMenu()
+
+    create_promotion_discount = (abi_id, zone.upper(), environment.upper(), title, description, listOffers, list_dates)
 
 # Input combos by account
 def inputCombosMenu():
@@ -796,8 +893,7 @@ def openWeb():
 
 # Print Finish Menu application
 def printFinishApplicationMenu():
-    finish = input(
-        text.White + "\nDo you want to finish the application? y/N: ")
+    finish = input(text.White + "\nDo you want to finish the application? y/N: ")
     while validateYesOrNotOption(finish.upper()) == "false":
         print(text.Red + "\n- Invalid option")
         finish = input(text.White + "\nDo you want to finish the application? y/N: ")
