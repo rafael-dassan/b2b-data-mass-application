@@ -82,7 +82,7 @@ def check_account_exists_microservice(accountId, zone, environment):
     # Place request
     response = place_request("GET", request_url, "", request_headers)
 
-    if response.status_code == 200 and response.text != "":
+    if response.status_code == 200 and response.text != "[]":
         return loads(response.text)
     else:
         return "false"

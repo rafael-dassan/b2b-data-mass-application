@@ -25,7 +25,8 @@ def validateOptionRequestSelection(option, isExtraStructure = "false"):
             "8": "true",
             "9": "true",
             "10": "true",
-            "11": "true"
+            "11": "true",
+            "12": "true"
         }
 
         value = switcher.get(option, "false")
@@ -53,6 +54,20 @@ def validateName(name):
         return "false"
     else:
         return name
+
+# Validate length of title
+def validateTitle(title):
+    if len(title) > 150:
+        return "false"
+    else:
+        return title
+
+# Validate length of description
+def validateDescription(description):
+    if len(description) > 150:
+        return "false"
+    else:
+        return description
 
 # Validate zone
 def validateZone(isMiddleware, zone):
@@ -170,6 +185,7 @@ def printAvailableOptions(selectionStructure):
             print(text.White + str(9), text.Yellow + "Input stepped discount")
             print(text.White + str(10), text.Yellow + "Input stepped free good")
             print(text.White + str(11), text.Yellow + "Input combos")
+            print(text.White + str(12), text.Yellow + "Input Deals")
             
 
         print(text.White + str(0), text.Yellow + "Close application")
@@ -188,6 +204,7 @@ def printAvailableOptions(selectionStructure):
                 print(text.White + str(9), text.Yellow + "Input stepped discount")
                 print(text.White + str(10), text.Yellow + "Input stepped free good")
                 print(text.White + str(11), text.Yellow + "Input combos")
+                print(text.White + str(12), text.Yellow + "Input Deals")
 
             print(text.White + str(0), text.Yellow + "Close application")
             selection = input(text.White + "\nPlease select: ")
@@ -227,6 +244,26 @@ def printStructureMenu():
         structure = input(text.White + "\nChoose which backend you want to run a service for: ")
 
     return structure
+
+# Print Title menu
+def printTitleMenu():
+    title = input(text.White + "Title: ")
+
+    while validateTitle(title) == "false":
+        print(text.Red + "\n- Title should contain a max of 150 characters")
+        title = input(text.White + "Title: ")
+
+    return title
+
+# Print Description menu
+def printDescriptionMenu():
+    description = input(text.White + "Description: ")
+
+    while validateDescription(description) == "false":
+        print(text.Red + "\n- Description should contain a max of 150 characters")
+        description = input(text.White + "Description: ")
+
+    return description
 
 # Print Account ID menu
 def printAccountIdMenu(zone):
@@ -361,3 +398,10 @@ def convert_json_to_string(json_object):
     Return new json_string
     """
     return json.dumps(json_object)
+
+def create_list(*items):
+    """Returns a list containing given items.
+    The returned list can be assigned both to ``${scalar}`` and ``@{list}``
+    variables.
+    """
+    return list(items)

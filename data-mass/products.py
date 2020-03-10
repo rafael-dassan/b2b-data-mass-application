@@ -375,21 +375,20 @@ def get_body_price_inclusion_microservice_request(delivery_center_id):
 
 # Get offers account in microservice
 def request_get_offers_microservice(accountId, zone, environment, deliveryCenterId):
-
     # Get header request
     headers = get_header_request(zone, 'true')
 
     # Get url base
-    # request_url = get_microservice_base_url(environment) + "/middleware-relay/products/offers?accountId=" + accountId
     request_url = get_microservice_base_url(environment) + "/product-assortment/?accountId=accountId" + accountId + '&deliveryCenterId=' + deliveryCenterId
+
     # Get body request
     request_body = ""
 
     # Place request
     response = place_request("GET", request_url, request_body, headers)
     
-    if response.status_code == 200:
+    if response.status_code == 200 and response.text != "":
         json_data = loads(response.text)
         return json_data['skus']
     else:
-        print('- [Product] Something went wrong in search products on middleware')
+        print('- [Products] Something went wrong when searching for products')
