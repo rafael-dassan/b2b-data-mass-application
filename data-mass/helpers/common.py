@@ -9,6 +9,7 @@ from classes.text import text
 from datetime import date, datetime, timedelta
 from jsonpath_rw import Index, Fields
 from jsonpath_rw_ext import parse
+import logging
 
 # Validate option menu selection
 def validateOptionRequestSelection(option, isExtraStructure = "false"):
@@ -108,6 +109,17 @@ def validateEnvironment(environment):
 
 # Place generic request
 def place_request(request_type, request_url, request_body, request_headers):
+
+    LOG_FILENAME = 'var/debug.log'
+    logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
+
+    logging.debug('= Init LOG =')
+    logging.debug('TYPE=' + request_type)
+    logging.debug('HEADERS=' + json.dumps(request_headers))
+    logging.debug('URL=' + request_url)
+    logging.debug('BODY=' + request_body)
+    logging.debug('= / Finish LOG =')
+    
     response = request(
         request_type,
         request_url,
