@@ -50,20 +50,6 @@ def validateName(name):
     else:
         return name
 
-# Validate length of title
-def validateTitle(title):
-    if len(title) > 150:
-        return "false"
-    else:
-        return title
-
-# Validate length of description
-def validateDescription(description):
-    if len(description) > 150:
-        return "false"
-    else:
-        return description
-
 def validateDealType(deal_type):
     if deal_type == "1" or deal_type == "2" or deal_type == "3" or deal_type == "4":
         return "true"
