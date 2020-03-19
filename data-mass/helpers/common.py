@@ -21,13 +21,7 @@ def validateOptionRequestSelection(option, isExtraStructure = "false"):
             "3": "true",
             "4": "true",
             "5": "true",
-            "6": "true",
-            "7": "true",
-            "8": "true",
-            "9": "true",
-            "10": "true",
-            "11": "true",
-            "12": "true"
+            "6": "true"
         }
 
         value = switcher.get(option, "false")
@@ -70,6 +64,12 @@ def validateDescription(description):
     else:
         return description
 
+def validateDealType(deal_type):
+    if deal_type == "1" or deal_type == "2" or deal_type == "3" or deal_type == "4":
+        return "true"
+    else:
+        return "false"
+
 # Validate zone
 def validateZone(isMiddleware, zone):
     if isMiddleware == "true":
@@ -102,8 +102,8 @@ def validateStructure(option):
 
 # Validate environment
 def validateEnvironment(environment):
-    if environment == 'DEV' or environment == 'QA' or environment == 'UAT':
-        return 'true'
+    if environment == "DEV" or environment == "QA" or environment == "UAT":
+        return "true"
     else:
         return "false"
 
@@ -186,37 +186,24 @@ def finishApplication():
 def printAvailableOptions(selectionStructure):
     if selectionStructure == "1" or selectionStructure == "2":
         print(text.White + str(1), text.Yellow + "Create account")
-        print(text.White + str(2), text.Yellow + "Input products to an account")
-        print(text.White + str(3), text.Yellow + "Input credit to an account")
-        print(text.White + str(4), text.Yellow + "Input delivery window to an account")
+        print(text.White + str(2), text.Yellow + "Input products")
+        print(text.White + str(3), text.Yellow + "Input credit")
+        print(text.White + str(4), text.Yellow + "Input delivery window")
         if selectionStructure == "2":
-            print(text.White + str(5), text.Yellow + "Input discount by payment method")
-            print(text.White + str(6), text.Yellow + "Input discount by delivery date")
-            print(text.White + str(7), text.Yellow + "Input discount by SKU")
-            print(text.White + str(8), text.Yellow + "Input free good selection")
-            print(text.White + str(9), text.Yellow + "Input stepped discount")
-            print(text.White + str(10), text.Yellow + "Input stepped free good")
-            print(text.White + str(11), text.Yellow + "Input combos")
-            print(text.White + str(12), text.Yellow + "Input Deals")
-            
+            print(text.White + str(5), text.Yellow + "Input deals")
+            print(text.White + str(6), text.Yellow + "Input combos")
 
         print(text.White + str(0), text.Yellow + "Close application")
         selection = input(text.White + "\nPlease select: ")
         while validateOptionRequestSelection(selection) == "false":
             print(text.Red + "\n- Invalid option\n")
             print(text.White + str(1), text.Yellow + "Create account")
-            print(text.White + str(2), text.Yellow + "Input products to an account")
-            print(text.White + str(3), text.Yellow + "Input credit to an account")
-            print(text.White + str(4), text.Yellow + "Input delivery window to an account")
+            print(text.White + str(2), text.Yellow + "Input products")
+            print(text.White + str(3), text.Yellow + "Input credit")
+            print(text.White + str(4), text.Yellow + "Input delivery window")
             if selectionStructure == "2":
-                print(text.White + str(5), text.Yellow + "Input discount by payment method")
-                print(text.White + str(6), text.Yellow + "Input discount by delivery date")
-                print(text.White + str(7), text.Yellow + "Input discount by SKU")
-                print(text.White + str(8), text.Yellow + "Input free good selection")
-                print(text.White + str(9), text.Yellow + "Input stepped discount")
-                print(text.White + str(10), text.Yellow + "Input stepped free good")
-                print(text.White + str(11), text.Yellow + "Input combos")
-                print(text.White + str(12), text.Yellow + "Input Deals")
+                print(text.White + str(5), text.Yellow + "Input deals")
+                print(text.White + str(6), text.Yellow + "Input combos")
 
             print(text.White + str(0), text.Yellow + "Close application")
             selection = input(text.White + "\nPlease select: ")
@@ -238,7 +225,7 @@ def printAvailableOptions(selectionStructure):
 
 # Print welcome menu
 def printWelcomeScript():
-    print(text.White + "🄰🄽🅃🄰🅁🄲🅃🄸🄲🄰 🄰🅄🅃🄾🄼🄰🅃🄸🄾🄽 🅂🄲🅁🄸🄿🅃\n")
+    print(text.White + "🄰🅄🅃🄾🄼🄰🅃🄸🄾🄽 🅂🄲🅁🄸🄿🅃\n")
 
 # Print structure menu
 def printStructureMenu():
@@ -257,25 +244,118 @@ def printStructureMenu():
 
     return structure
 
-# Print Title menu
-def printTitleMenu():
-    title = input(text.White + "Title: ")
+# Print deals menu
+def printDealsMenu():
+    print(text.White + "\nWhich type of deal do you want to create?")
+    print(text.White + str(1), text.Yellow + "Input deal type discount")
+    print(text.White + str(2), text.Yellow + "Input deal type stepped discount")
+    print(text.White + str(3), text.Yellow + "Input deal type free good")
+    print(text.White + str(4), text.Yellow + "Input deal type stepped free good")
+    structure = input(text.White + "\nPlease select: ")
+    while validateStructure(structure) == "false":
+        print(text.Red + "\n- Invalid option")
+        print(text.White + "\nWhich type of deal do you want to create?")
+        print(text.White + str(1), text.Yellow + "Input deal type discount")
+        print(text.White + str(2), text.Yellow + "Input deal type stepped discount")
+        print(text.White + str(3), text.Yellow + "Input deal type free good")
+        print(text.White + str(4), text.Yellow + "Input deal type stepped free good")
 
-    while validateTitle(title) == "false":
-        print(text.Red + "\n- Title should contain a max of 150 characters")
-        title = input(text.White + "Title: ")
+    return structure
 
-    return title
+# Print Discount type menu
+def printDiscountTypeMenu():
+    discount_type = input(text.White + "What type of discount do you want to apply (1. Percentage / 2. Fixed amount): ")
+    while discount_type != "1" and discount_type != "2":
+        print(text.Red + "\n- Invalid option")
+        discount_type = input(text.White + "What type of discount do you want to apply (1. Percentage / 2. Fixed amount): ")
 
-# Print Description menu
-def printDescriptionMenu():
-    description = input(text.White + "Description: ")
+    switcher = {
+        "1": "percentOff",
+        "2": "amountOff"
+    }
 
-    while validateDescription(description) == "false":
-        print(text.Red + "\n- Description should contain a max of 150 characters")
-        description = input(text.White + "Description: ")
+    value = switcher.get(discount_type, "true")
 
-    return description
+    return value
+
+# Print Discount value menu
+def printDiscountValueMenu(discount_type):
+    if discount_type == "percentOff":
+        while True:
+            try:
+                discount_value = float(input(text.White + "Discount percentage (%): "))
+                break
+            except ValueError:
+                print(text.Red + "\n- Invalid value")
+    else:
+        while True:
+            try:
+                discount_value = float(input(text.White + "Discount amount: "))
+                break
+            except ValueError:
+                print(text.Red + "\n- Invalid value")
+
+    return discount_value
+
+# Print range index menu
+def printIndexRangeMenu():
+    index_list = list()
+
+    for x in range(4):
+        range_index = input(text.White + "Range index #" + str(x) + ": ")
+        while range_index == "" or int(range_index) <= 0:
+            print(text.Red + "\n- Range index must be greater than 0")
+            range_index = input(text.White + "\nRange index #" + str(x) + ": ")
+
+        index_list.append(range_index)
+    
+    return index_list
+
+# Print discount range menu
+def printDiscountRangeMenu():
+    index_list = list()
+
+    for x in range(2):
+        discount_value = input(text.White + "Discount value for index #" + str(x) + ": ")
+        while discount_value == "" or float(discount_value) <= 0:
+            print(text.Red + "\n- Discount value must be greater than 0")
+            discount_value = input(text.White + "\nDiscount value for index #" + str(x) + ": ")
+
+        index_list.append(discount_value)
+
+    return index_list
+
+# Print quantity range menu
+def printQuantityRangeMenu():
+    index_list = list()
+
+    for x in range(2):
+        quantity_value = input(text.White + "SKU quantity for index #" + str(x) + ": ")
+        while quantity_value == "" or int(quantity_value) <= 0:
+            print(text.Red + "\n- SKU quantity must be greater than 0")
+            quantity_value = input(text.White + "\nSKU quantity for index #" + str(x) + ": ")
+
+        index_list.append(quantity_value)
+
+    return index_list
+
+# Print minimum quantity menu
+def printMinimumQuantityMenu():
+    minimum_quantity = input(text.White + "Desired quantity needed to buy to get a discount: ")
+    while minimum_quantity == "" or int(minimum_quantity) <= 0:
+            print(text.Red + "\n- Minimum quantity must be greater than 0")
+            minimum_quantity = input(text.White + "Desired quantity needed to buy to get a discount: ")
+
+    return minimum_quantity
+
+# Print quantity menu
+def printQuantityMenu():
+    quantity = input(text.White + "Desired quantity of free goods to offer: ")
+    while quantity == "" or int(quantity) <= 0:
+        print(text.Red + "\n- SKU quantity must be greater than 0")
+        quantity = input(text.White + "Desired quantity of free goods to offer: ")
+
+    return quantity
 
 # Print Account ID menu
 def printAccountIdMenu(zone):
@@ -325,7 +405,7 @@ def printPaymentMethodMenu(zone):
 
     if zone == "BR":
         paymentMethod = input(text.White + "Choose the payment method (1. CASH / 2. BANK SLIP / 3. CASH, BANK SLIP): ")
-        while (int(paymentMethod) != 1 and int(paymentMethod) != 2 and int(paymentMethod) != 3):
+        while paymentMethod == "" or (int(paymentMethod) != 1 and int(paymentMethod) != 2 and int(paymentMethod) != 3):
             print(text.Red + "\n- Invalid option\n")
             paymentMethod = input(text.White + "Choose the payment method (1. CASH / 2. BANK SLIP / 3. CASH, BANK SLIP): ")
         
@@ -343,7 +423,7 @@ def printPaymentMethodMenu(zone):
 
     elif zone == "DO":
         paymentMethod = input(text.White + "Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ")
-        while (int(paymentMethod) != 1 and int(paymentMethod) != 2 and int(paymentMethod) != 3):
+        while paymentMethod == "" or (int(paymentMethod) != 1 and int(paymentMethod) != 2 and int(paymentMethod) != 3):
             print(text.Red + "\n- Invalid option\n")
             paymentMethod = input(text.White + "Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ")
 
