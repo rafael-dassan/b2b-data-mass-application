@@ -5,7 +5,6 @@ from account import create_account, check_account_exists_middleware, create_acco
 from products import *
 from credit import add_credit_to_account, add_credit_to_account_microservice
 from delivery_window import create_delivery_window_middleware, create_delivery_window_microservice, validateAlternativeDeliveryDate
-from discounts_ms import inputDiscountByPaymentMethod, inputDiscountByDeliveryDate, inputDiscountBySku, inputFreeGoodsSelection, inputSteppedDiscount, inputSteppedFreeGood
 from helpers.common import *
 from helpers.dependencies_handling import *
 from classes.text import text
@@ -34,14 +33,8 @@ def showMenu():
             "2": inputProductsAccountMicroserviceMenu,
             "3": inputCreditAccountMicroserviceMenu,
             "4": inputDeliveryWindowAccountMicroserviceMenu,
-            "5": inputDiscountByPaymentMethodMenu,
-            "6": inputDiscountByDeliveryDateMenu,
-            "7": inputDiscountBySkuMenu,
-            "8": inputSteppedDiscountMenu,
-            "9": inputFreeGoodsSelectionMenu,
-            "10": inputSteppedFreeGoodMenu,
-            "11": inputCombosMenu,
-            "12": inputDealsAutoMenu
+            "5": inputDealsMenu,
+            "6": inputCombosMenu
         }
     elif selectionStructure == "3":
         switcher = {
@@ -57,12 +50,21 @@ def showMenu():
     
     printFinishApplicationMenu()
 
-def inputDealsAutoMenu():
+# Input Deals to an account
+def inputDealsMenu():
+    selectionStructure = printDealsMenu()
     zone = printZoneMenu("false")
     environment = printEnvironmentMenu()
     abi_id = printAccountIdMenu(zone.upper())
-    typeDiscount = 1
-    valueDiscount = 10
+
+    switcher = {
+        "1": "DISCOUNT",
+        "2": "STEPPED_DISCOUNT",
+        "3": "FREE_GOOD",
+        "4": "STEPPED_FREE_GOOD"
+    }
+
+    deal_type = switcher.get(selectionStructure, "false")
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
@@ -81,77 +83,22 @@ def inputDealsAutoMenu():
         printFinishApplicationMenu()
 
     indexOffers = randint(0, (len(productOffers) - 1))
-    sku_discount = productOffers[indexOffers]
+    deal_sku = productOffers[indexOffers]
 
     skus = list()
-    skus.append(sku_discount)
-
-    promotion_response = create_discount_auto(abi_id, sku_discount, zone.upper(), environment.upper())
-    cart_response = input_discount_by_sku(accounts, zone.upper(), environment.upper(), skus, typeDiscount, valueDiscount)
-
-    if promotion_response == "false" and cart_response != "success":
-        print(text.Red + "\n- [Deals] Something went wrong, please try again")
-        printFinishApplicationMenu()
+    skus.append(deal_sku)
+    
+    if selectionStructure == "1": 
+        input_discount_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(), environment.upper())
+    elif selectionStructure == "2":
+        input_stepped_discount_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(), environment.upper()) 
+    elif selectionStructure == "3":
+        input_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(), environment.upper())
     else:
-        print(text.Green + "\n- Discount successfully registered")
-        print(text.White + "- Rule " + promotion_response + " applied")
-        print(text.White + "- 10% off for the SKU: " + sku_discount)
+        input_stepped_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(), environment.upper())
 
-# Input deals to an account
-def inputDealsMenu():
-    zone = printZoneMenu("false")
-    environment = printEnvironmentMenu()
-    abi_id = printAccountIdMenu(zone.upper())
-    title = printTitleMenu()
-    description = printDescriptionMenu()
-
-    # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
-
-    if account == "false":
-        print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
-        printFinishApplicationMenu()
-
-    productOffers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'])
-
-    if len(productOffers) == 0:
-        print(text.Red + "\n- [Products] The account " + str(abi_id) + " has no available products for purchase")
-        printFinishApplicationMenu()
-
-    listOffers = list()
-    listSkuOffers = list()
-    indexOffers = 0
-    indexLineOffers = 0
-    lineSku = ""
-    print(text.White + "List of available SKUs: \n")
-    while (indexOffers < len(productOffers)):
-        lineSku = lineSku + " Sku: " + productOffers[indexOffers] + " -- "
-        listSkuOffers.append(productOffers[indexOffers])
-        indexOffers = indexOffers + 1
-        indexLineOffers = indexLineOffers + 1        
-        if indexLineOffers == 3:
-            indexLineOffers = 0
-            print(lineSku)
-            print("\n")
-            lineSku = ""
-    
-    sku = input(text.White + "Choose the SKU to apply the discount: ")
-    while validateSkuChosen(sku, listSkuOffers) == "false":
-        print(text.Red + "\n- The SKU " + str(sku) + " is invalid")
-        sku = input(text.White + "\nChoose the SKU to apply the discount: ")
-
-    listOffers.append(sku)
-    
-    promo_type = input(text.White + "Promotion type (1. Discount / 2. Free Good / 3. Stepped Discount / 4. Stepped Free Good): ")
-
-    while (str(promo_type) != "1") and (str(promo_type) != "2") and (str(promo_type) != "3") and (str(promo_type) != "4"):
-        print(text.Red + "\n- Invalid option")
-        promo_type = input(text.White + "\nPromotion type (1. Discount / 2. Free Good / 3. Stepped Discount / 4. Stepped Free Good): ")
-
-    list_dates = printDeliveryDateMenu()
-
-    create_promotion_discount = (abi_id, zone.upper(), environment.upper(), title, description, listOffers, list_dates)
-
+    printFinishApplicationMenu()
+            
 # Input combos by account
 def inputCombosMenu():
     zone = printZoneMenu("false")
@@ -223,374 +170,6 @@ def inputCombosMenu():
         else:
             print(text.Red + "\n- [Combo] Something went wrong, please try again")
             printFinishApplicationMenu()
-
-# Input free goods selection by account
-def inputFreeGoodsSelectionMenu():
-    zone = printZoneMenu('false')
-    environment = printEnvironmentMenu()
-    accounts = list()
-    abi_id = printAccountIdMenu(zone.upper())
-    
-    # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
-
-    if account == "false":
-        print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
-        printFinishApplicationMenu()
-
-    accounts.append(abi_id)
-    productOffers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'])
-
-    if len(productOffers) == 0:
-        print(text.Red + "\n- [ProductOffers] The account " + str(abi_id) + " has no products available for purchase")
-        printFinishApplicationMenu()
-
-    minimumProductsPurchase = None
-    while True:
-        try:
-            minimumProductsPurchase = int(input(text.White + "Quantity of products that will result in the free goods selection (Recommended 1): "))
-            if minimumProductsPurchase == 0:
-                minimumProductsPurchase = 1
-            break
-        except ValueError:
-            print(text.Red + "\n- Invalid value")
-
-    minimumQuantityPurchase = None
-    while True:
-        try:
-            minimumQuantityPurchase = int(input(text.White + "Minimum quantity value (Example: you need to buy 5 items of this sku to grant free good access): "))
-            if minimumQuantityPurchase == 0:
-                minimumQuantityPurchase = 1
-            break
-        except ValueError:
-            print(text.Red + "\n- Invalid value")
-    
-    quantitySkusChoice = None
-    while True:
-        try:
-            quantitySkusChoice = int(input(text.White + "Define how many skus will be displayed for choosing free goods (Example: you can select from 4 different skus): "))
-            if quantitySkusChoice == 0:
-                quantitySkusChoice = 1
-            break
-        except ValueError:
-            print(text.Red + "\n- Invalid value")
-    
-    quantitySkusEarn = None
-    while True:
-        try:
-            quantitySkusEarn = int(input(text.White + "Define how many skus you will earn in the bonus (Example: you can earn and choose 3 skus): "))
-            if quantitySkusEarn == 0:
-                quantitySkusEarn = 1
-            break
-        except ValueError:
-            print(text.Red + "\n- Invalid value")
-
-    quantityMultiplierSku = None
-    while True:
-        try:
-            quantityMultiplierSku = int(input(text.White + "Set the bonus gain multiplier (Example: for every 10 skus on the cart you can choose 1 sku): "))
-            if quantityMultiplierSku == 0:
-                quantityMultiplierSku = 1
-            break
-        except ValueError:
-            print(text.Red + "\n- Invalid value")
-    
-    paymentMethod = printPaymentMethodMenu(zone.upper())
-
-    skusPurchase = list()
-    auxIndex = 0
-    while auxIndex < minimumProductsPurchase:
-        indexOffers = randint(0, (len(productOffers) - 1))
-        skusPurchase.append(productOffers[indexOffers])
-        auxIndex = auxIndex + 1
-    
-    skusFreeGoods = list()
-    auxIndex = 0
-    while auxIndex < quantitySkusChoice:
-        indexOffers = randint(0, (len(productOffers) - 1))
-        skusFreeGoods.append(productOffers[indexOffers])
-        auxIndex = auxIndex + 1
-    
-    response = inputFreeGoodsSelection(accounts, zone.upper(), environment.upper(), int(minimumQuantityPurchase), int(quantitySkusEarn), int(quantityMultiplierSku), skusPurchase, skusFreeGoods, paymentMethod)
-    if response == "success":
-        print(text.Green + "\n- Rule of discount applied successfully")
-    else:
-        print(text.Red + "\n- [Discount] Something went wrong, please try again")
-        printFinishApplicationMenu()
-
-# Input stepped discount
-def inputSteppedDiscountMenu():
-    zone = printZoneMenu("false")
-    environment = printEnvironmentMenu()
-    accounts = list()
-    skus = list()
-    abi_id = printAccountIdMenu(zone.upper())
-    
-    # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
-
-    if account == "false":
-        print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
-        printFinishApplicationMenu()
-
-    accounts.append(abi_id)
-    productOffers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'])
-
-    if len(productOffers) == 0:
-        print(text.Red + "\n- [ProductOffers] The account " + str(abi_id) + " has no products available for purchase")
-        printFinishApplicationMenu()
-
-    skuDiscount = None
-    indexOffers = randint(0, (len(productOffers) - 1))
-    skuDiscount = productOffers[indexOffers]
-    skus.append(skuDiscount)
-
-    response = inputSteppedDiscount(accounts, zone, environment, skus)
-    if response == "success":
-        print(text.Green + "\n- Stepped discount successfully registered")
-    else:
-        print(text.Red + "\n- [Discount] Something went wrong, please try again")
-        printFinishApplicationMenu()
-
-# Input stepped free good
-def inputSteppedFreeGoodMenu():
-    zone = printZoneMenu("false")
-    environment = printEnvironmentMenu()
-    accounts = list()
-    skus = list()
-    abi_id = printAccountIdMenu(zone.upper())
-
-    # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
-
-    if account == "false":
-        print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
-        printFinishApplicationMenu()
-
-    accounts.append(abi_id)
-    productOffers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'])
-
-    if len(productOffers) == 0:
-        print(text.Red + "\n- [ProductOffers] The account " + str(abi_id) + " has no products available for purchase")
-        printFinishApplicationMenu()
-
-    skuDiscount = None
-    indexOffers = randint(0, (len(productOffers) - 1))
-    skuDiscount = productOffers[indexOffers]
-    skus.append(skuDiscount)
-
-    response = inputSteppedFreeGood(accounts, zone, environment, skus)
-
-    if response == "success":
-        print(text.Green + "\n- Stepped free good successfully registered")
-    else:
-        print(text.Red + "\n- [Discount] Something went wrong, please try again")
-        printFinishApplicationMenu()
-
-# Input discount by sku
-def inputDiscountBySkuMenu():
-    accounts = list()
-    zone = printZoneMenu("false")
-    environment = printEnvironmentMenu()
-    abi_id = printAccountIdMenu(zone.upper())
-
-    # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
-
-    if account == "false":
-        print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
-        printFinishApplicationMenu()
-
-    accounts.append(abi_id)    
-    productOffers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'])
-    if len(productOffers) == 0:
-        print(text.Red + "\n- [ProductOffers] The account " + str(abi_id) + " has no products available for purchase")
-        printFinishApplicationMenu()
-    
-    listOffers = list()
-    listSkuOffers = list()
-    indexOffers = 0
-    indexLineOffers = 0
-    lineSku = ""
-    print(text.White + "List product offers")
-    while (indexOffers < len(productOffers)):
-        lineSku = lineSku + " -- Sku: " + productOffers[indexOffers] + " -- "
-        listSkuOffers.append(productOffers[indexOffers])
-        indexOffers = indexOffers + 1
-        indexLineOffers = indexLineOffers + 1        
-        if indexLineOffers == 3:
-            indexLineOffers = 0
-            print(lineSku)
-            print("\n")
-            lineSku = ""
-    
-    sku = input(text.White + "Choose the sku to apply discount (enter one at a time): ")
-    while validateSkuChosen(sku, listSkuOffers) == "false":
-        print(text.Red + "\n- The sku " + str(sku) + " is invalid")
-        sku = input(text.White + "Choose the sku to apply discount (enter one at a time): ")
-
-    listOffers.append(sku)
-    moreSkus = input(text.White + "Do you want to apply this same rule to another sku? y/N: ")
-    while moreSkus.upper() != "N":
-        print(text.White + "List product offers")
-        while (indexOffers < len(productOffers)):
-            lineSku = lineSku + " -- Sku: " + productOffers[indexOffers] + " -- "
-            indexOffers = indexOffers + 1
-            indexLineOffers = indexLineOffers + 1
-            listSkuOffers.append(productOffers[indexOffers])
-            if indexLineOffers == 3:
-                indexLineOffers = 0
-                print(lineSku)
-                print("\n")
-                lineSku = ""
-        
-        sku = input(text.White + "Choose the sku to apply discount (enter one at a time): ")
-        while validateSkuChosen(sku, listSkuOffers) == "false":
-            print(text.Red + "\n- The sku " + str(sku) + " is invalid")
-            sku = input(text.White + "Choose the sku to apply discount (enter one at a time): ")
-
-        listOffers.append(sku)
-        moreSkus = input(text.White + "Do you want to apply this same rule to another sku? y/N: ")
-    
-    typeDiscount = input(text.White + "What kind of discount do you want to apply (1- Percentage, 2- Fixed amount): ")
-    while (int(typeDiscount) != 1 and int(typeDiscount) != 2):
-        print(text.Red + "\n- Invalid option")
-        typeDiscount = input(text.White + "What kind of discount do you want to apply (1- Percentage, 2- Fixed amount): ")
-
-    valueDiscount = None
-    if int(typeDiscount) == 1:
-        while True:
-            try:
-                valueDiscount = float(input(text.White + "Value of discount percentage (%): "))
-                break
-            except ValueError:
-                print(text.Red + "\n- Invalid value")
-    else:
-        while True:
-            try:
-                valueDiscount = float(input(text.White + "Value of discount amount: "))
-                break
-            except ValueError:
-                print(text.Red + "\n- Invalid value")
-    
-    response = inputDiscountBySku(accounts, zone.upper(), environment.upper(), listOffers, int(typeDiscount), float(valueDiscount))
-    if response == "success":
-        print(text.Green + "\n- Rule of discount applied successfully")
-    else:
-        print(text.Red + "\n- [Discount] Something went wrong, please try again")
-        printFinishApplicationMenu()
-
-# Input discount account by delivery date
-def inputDiscountByDeliveryDateMenu():
-    accounts = list()
-    zone = printZoneMenu("false")
-    environment = printEnvironmentMenu()
-    abi_id = printAccountIdMenu(zone.upper())
-
-    # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
-
-    if account == "false":
-        print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
-        printFinishApplicationMenu()
-
-    accounts.append(abi_id)
-    moreAccounts = input(text.White + "Do you want to apply this same rule to another account? y/N: ")
-    while moreAccounts.upper() != "N":
-        abi_id = printAccountIdMenu(zone.upper())
-        # Call check account exists function
-        account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
-        if account == "false":
-            print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
-        else:
-            accounts.append(abi_id)
-
-        moreAccounts = input(text.White + "Do you want to apply this same rule to another account? y/N: ")
-
-    listDates = printDeliveryDateMenu()
-    typeDiscount = input(text.White + "What kind of discount do you want to apply (1- Percentage, 2- Fixed amount): ")
-    while (int(typeDiscount) != 1 and int(typeDiscount) != 2):
-        print(text.Red + "\n- Invalid option")
-        typeDiscount = input(text.White + "What kind of discount do you want to apply (1- Percentage, 2- Fixed amount): ")
-
-    valueDiscount = None
-    if int(typeDiscount) == 1:
-        while True:
-            try:
-                valueDiscount = float(input(text.White + "Value of discount percentage (%): "))
-                break
-            except ValueError:
-                print(text.Red + "\n- Invalid value")
-    else:
-        while True:
-            try:
-                valueDiscount = float(input(text.White + "Value of discount amount: "))
-                break
-            except ValueError:
-                print(text.Red + "\n- Invalid value")
-
-    response = inputDiscountByDeliveryDate(accounts, zone.upper(), environment.upper(), listDates[0], int(typeDiscount), float(valueDiscount))
-    if response == "success":
-        print(text.Green + "\n- Rule of discount applied successfully")
-    else:
-        print(text.Red + "\n- [Discount] Something went wrong, please try again")
-        printFinishApplicationMenu()
-
-# Input discount account by payment method
-def inputDiscountByPaymentMethodMenu():
-    zone = printZoneMenu("false")
-    environment = printEnvironmentMenu()
-    accounts = list()
-    abi_id = printAccountIdMenu(zone.upper())
-
-    # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
-
-    if account == "false":
-        print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
-        printFinishApplicationMenu()
-    
-    accounts.append(abi_id)
-    moreAccounts = input(text.White + "Do you want to apply this same rule to another account? y/N: ")
-    while moreAccounts.upper() != "N":
-        abi_id = printAccountIdMenu(zone.upper())
-        # Call check account exists function
-        account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
-        if account == "false":
-            print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
-        else:
-            accounts.append(abi_id)
-        
-        moreAccounts = input(text.White + "Do you want to apply this same rule to another account? y/N: ")
-    
-    paymentMethod = printPaymentMethodMenu(zone.upper())
-    typeDiscount = input(text.White + "What kind of discount do you want to apply (1- Percentage, 2- Fixed amount): ")
-    while (int(typeDiscount) != 1 and int(typeDiscount) != 2):
-        print(text.Red + "\n- Invalid option")
-        typeDiscount = input(text.White + "What kind of discount do you want to apply (1- Percentage, 2- Fixed amount): ")
-    
-    valueDiscount = None
-    if int(typeDiscount) == 1:
-        while True:
-            try:
-                valueDiscount = float(input(text.White + "Value of discount percentage (%): "))
-                break
-            except ValueError:
-                print(text.Red + "\n- Invalid value")
-    else:
-        while True:
-            try:
-                valueDiscount = float(input(text.White + "Value of discount amount: "))
-                break
-            except ValueError:
-                print(text.Red + "\n- Invalid value")
-    
-    response = inputDiscountByPaymentMethod(accounts, zone.upper(), environment.upper(), paymentMethod.upper(), int(typeDiscount), float(valueDiscount))
-    if response == "success":
-        print(text.Green + "\n- Rule of discount applied successfully")
-    else:
-        print(text.Red + "\n- [Discount] Something went wrong, please try again")
-        printFinishApplicationMenu()
 
 # Input credit account on microservice
 def inputCreditAccountMicroserviceMenu():
