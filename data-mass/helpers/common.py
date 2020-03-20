@@ -73,7 +73,8 @@ def validateZone(isMiddleware, zone):
             "ZA": "true",
             "AR": "true",
             "CL": "true",
-            "BR": "true"
+            "BR": "true",
+            "CO": "true"
         }
 
         value = switcher.get(zone, "false")
@@ -201,7 +202,7 @@ def printAvailableOptions(selectionStructure):
 
 # Print welcome menu
 def printWelcomeScript():
-    print(text.White + "🄰🅄🅃🄾🄼🄰🅃🄸🄾🄽 🅂🄲🅁🄸🄿🅃\n")
+    print(text.White + "🄰🄽🅃🄰🅁🄲🅃🄸🄲🄰 🄰🅄🅃🄾🄼🄰🅃🄸🄾🄽 🅂🄲🅁🄸🄿🅃\n")
 
 # Print structure menu
 def printStructureMenu():
@@ -359,10 +360,10 @@ def printZoneMenu(isMiddleware="true"):
             print(text.Red + "\n- Invalid option\n")
             zone = input(text.White + "Zone (ZA, AR, CL): ")
     else:
-        zone = input("Zone (ZA, AR, CL, DO, BR): ")
+        zone = input("Zone (ZA, AR, CL, DO, BR, CO): ")
         while validateZone("false", zone.upper()) == "false":
             print(text.Red + "\n- Invalid option\n")
-            zone = input(text.White + "Zone (ZA, AR, CL, DO, BR): ")
+            zone = input(text.White + "Zone (ZA, AR, CL, DO, BR, CO): ")
 
     return zone
 
