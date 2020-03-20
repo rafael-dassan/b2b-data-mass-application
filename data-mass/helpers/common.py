@@ -103,23 +103,6 @@ def place_request(request_type, request_url, request_body, request_headers):
         headers=request_headers
     )
     
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    logs_dir = os.path.join(path, "logs")
-    os.makedirs(logs_dir, exist_ok=True)
-    file_path = os.path.join(logs_dir, "debug.log")
-
-    logging.basicConfig(filename=file_path,level=logging.DEBUG)
-
-    # Log basic request/response information
-    logging.debug('= Init LOG =')
-    logging.debug('TYPE=' + request_type)
-    logging.debug('HEADERS=' + json.dumps(request_headers))
-    logging.debug('URL=' + request_url)
-    logging.debug('BODY=' + request_body)
-    logging.debug('RESPONSE=' + str(response))
-    logging.debug('= / Finish LOG =\n')
-    
     return response
 
 # Return JWT header request

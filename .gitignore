@@ -168,6 +168,3 @@ dmypy.json
 
 # Python 3 venv directory
 venv/
-
-# Logging information
-logs/
