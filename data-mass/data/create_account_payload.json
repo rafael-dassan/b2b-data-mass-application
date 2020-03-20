@@ -24,7 +24,10 @@
     }
   ],
   "maximumOrder": null,
-  "minimumOrder": null,
+  "minimumOrder": {
+    "type": "string",
+    "value": 0
+  },
   "name": "string",
   "owner": {
       "email": "test@mailinator.com",

@@ -347,8 +347,18 @@ def createAccountMdwMenu():
     name = printNameMenu()
     payment_method = printPaymentMethodMenu(zone.upper())
 
+    option_include = input(text.White + "Do you want to include the minimum order parameter? y/N: ")
+    while option_include == "" or validateYesOrNotOption(option_include.upper()) == "false":
+        print(text.Red + "\n- Invalid option\n")
+        option_include = input(text.White + "Do you want to include the minimum order parameter? y/N: ")
+
+    if option_include.upper() == "Y":
+        minimum_order = printMinimumOrderMenu()
+    else:
+        minimum_order = None
+
     # Call create account function
-    account = create_account(abi_id, name, zone.upper(), payment_method, environment.upper())
+    account = create_account(abi_id, name, zone.upper(), payment_method, environment.upper(), minimum_order)
 
     if account == "success":
         print(text.Green + "\n- Your account has been created! Now register on Web or Mobile applications")
@@ -393,8 +403,18 @@ def createAccountMsMenu():
     name = printNameMenu()
     payment_method = printPaymentMethodMenu(zone.upper())
 
+    option_include = input(text.White + "Do you want to include the minimum order parameter? y/N: ")
+    while option_include == "" or validateYesOrNotOption(option_include.upper()) == "false":
+        print(text.Red + "\n- Invalid option\n")
+        option_include = input(text.White + "Do you want to include the minimum order parameter? y/N: ")
+
+    if option_include.upper() == "Y":
+        minimum_order = printMinimumOrderMenu()
+    else:
+        minimum_order = None
+
     # Call create account function
-    account = create_account_ms(abi_id, name, payment_method, zone.upper(), environment.upper())
+    account = create_account_ms(abi_id, name, payment_method, minimum_order, zone.upper(), environment.upper())
 
     if account == "success":
         print(text.Green + "\n- Your account has been created! Now register on Web or Mobile applications")
@@ -481,13 +501,6 @@ def printFinishApplicationMenu():
         finishApplication()
     else:
         showMenu()
-
-# Validate the option to finish application
-def validateYesOrNotOption(option):
-    if option == "Y" or option == "N":
-        return "true"
-    else:
-        return "false"
 
 # Print alternative delivery date menu application
 def printAlternativeDeliveryDateMenu():
