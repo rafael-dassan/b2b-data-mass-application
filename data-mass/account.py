@@ -25,7 +25,33 @@ def check_account_exists_middleware(abi_id, zone, environment):
         return response.status_code
 
 # Create account request on Middleware
-def create_account_request(url, headers, abi_id, name, payment_method, zone, environment):
+def create_account_request(url, headers, abi_id, name, payment_method, minimum_order, zone, environment):
+    if minimum_order != None:
+        dict_values = {
+            'accountId': abi_id,
+            'deliveryCenterId': abi_id,
+            'deliveryScheduleId': abi_id,
+            'liquorLicense[0].number': abi_id,
+            'minimumOrder.type': minimum_order[0],
+            'minimumOrder.value': int(minimum_order[1]),
+            'priceListId': abi_id,
+            'taxId': abi_id,
+            'name': name,
+            'paymentMethods': payment_method
+        }
+    else:
+        dict_values = {
+            'accountId': abi_id,
+            'deliveryCenterId': abi_id,
+            'deliveryScheduleId': abi_id,
+            'liquorLicense[0].number': abi_id,
+            'minimumOrder': minimum_order,
+            'priceListId': abi_id,
+            'taxId': abi_id,
+            'name': name,
+            'paymentMethods': payment_method
+        }
+
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
     file_path = os.path.join(path, "data/create_account_payload.json")
@@ -33,17 +59,6 @@ def create_account_request(url, headers, abi_id, name, payment_method, zone, env
     # Load JSON file
     with open(file_path) as file:
         json_data = json.load(file)
-
-    dict_values = {
-        'accountId': abi_id,
-        'deliveryCenterId': abi_id,
-        'deliveryScheduleId': abi_id,
-        'liquorLicense[0].number': abi_id,
-        'priceListId': abi_id,
-        'taxId': abi_id,
-        'name': name,
-        'paymentMethods': payment_method
-    }
 
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
@@ -57,7 +72,7 @@ def create_account_request(url, headers, abi_id, name, payment_method, zone, env
     return response
 
 # Create account on Middleware
-def create_account(abi_id, name, zone, payment_method, environment):
+def create_account(abi_id, name, zone, payment_method, environment, minimum_order):
     # Define headers
     headers = get_header_request(zone, "false", "true", "false", "false")
 
@@ -65,7 +80,7 @@ def create_account(abi_id, name, zone, payment_method, environment):
     url = get_middleware_base_url(zone, environment, "v5") + "/accounts"
     
     # Send request
-    response = create_account_request(url, headers, abi_id, name, payment_method, zone, environment)
+    response = create_account_request(url, headers, abi_id, name, payment_method, minimum_order, zone, environment)
 
     if response.status_code == 202:
         return "success"
@@ -87,11 +102,37 @@ def check_account_exists_microservice(accountId, zone, environment):
     else:
         return "false"
 
-def create_account_ms(accountId, name, payment_method, zone, environment):
+def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environment):
     # Validation of Account ID for BR
-    if (validateAccount(accountId) == "false") and (zone == "BR" or zone == "DO"):
+    if (validateAccount(abi_id) == "false") and (zone == "BR" or zone == "DO"):
         print(text.Yellow + "\n- Account ID should not be empty or it must contain at least 10 characters")
         finishApplication()
+
+    if minimum_order != None:
+        dict_values = {
+            'accountId': abi_id,
+            'deliveryCenterId': abi_id,
+            'deliveryScheduleId': abi_id,
+            'liquorLicense[0].number': abi_id,
+            'minimumOrder.type': minimum_order[0],
+            'minimumOrder.value': int(minimum_order[1]),
+            'priceListId': abi_id,
+            'taxId': abi_id,
+            'name': name,
+            'paymentMethods': payment_method
+        }
+    else:
+        dict_values = {
+            'accountId': abi_id,
+            'deliveryCenterId': abi_id,
+            'deliveryScheduleId': abi_id,
+            'liquorLicense[0].number': abi_id,
+            'minimumOrder': minimum_order,
+            'priceListId': abi_id,
+            'taxId': abi_id,
+            'name': name,
+            'paymentMethods': payment_method
+        }
 
     # Get header request
     request_headers = get_header_request(zone, "false", "true", "false", "false")
@@ -106,17 +147,6 @@ def create_account_ms(accountId, name, payment_method, zone, environment):
     # Load JSON file
     with open(file_path) as file:
         json_data = json.load(file)
-
-    dict_values = {
-        'accountId': accountId,
-        'deliveryCenterId': accountId,
-        'deliveryScheduleId': accountId,
-        'liquorLicense[0].number': accountId,
-        'priceListId': accountId,
-        'taxId': accountId,
-        'name': name,
-        'paymentMethods': payment_method
-    }
 
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])

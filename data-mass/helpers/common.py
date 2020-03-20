@@ -435,6 +435,38 @@ def printDeliveryDateMenu():
 
     return listDeliveryWindowDates
 
+def printMinimumOrderMenu():
+    option_type = input(text.White + "Minimum order type (1. Poduct quantity / 2. Order volume / 3. Order total): ")
+    while option_type == "" or (int(option_type) != 1 and int(option_type) != 2 and int(option_type) != 3): 
+        print(text.Red + "\n- Invalid option\n")
+        option_type = input(text.White + "Minimum order type (1. Poduct quantity / 2. Order volume / 3. Order total): ")
+
+    switcher = {
+        "1": "PRODUCT_QUANTITY",
+        "2": "ORDER_VOLUME",
+        "3": "ORDER_TOTAL"
+    }
+
+    minimum_order_type = switcher.get(option_type, "false")
+
+    option_value = input(text.White + "Minimum order value: ")
+    while option_value == "" or int(option_value) <= 0:
+        print(text.Red + "\n- SKU quantity must be greater than 0\n")
+        option_value = input(text.White + "Minimum order value: ")
+
+    minimum_order_values = list()
+    minimum_order_values.append(minimum_order_type)
+    minimum_order_values.append(option_value)
+
+    return minimum_order_values
+
+# Validate the option to finish application
+def validateYesOrNotOption(option):
+    if option == "Y" or option == "N":
+        return "true"
+    else:
+        return "false"
+
 # Validate date
 def validateDate(date):
     try:
