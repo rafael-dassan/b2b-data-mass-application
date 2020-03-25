@@ -1,8 +1,6 @@
 import sys
 from json import dumps
-
-#Custom
-from helpers.common import *
+from common import *
 
 # Include credit for account on middleware
 def add_credit_to_account(accountId, zone, env):

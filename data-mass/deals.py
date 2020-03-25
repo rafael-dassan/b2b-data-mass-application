@@ -2,9 +2,7 @@ import sys
 from json import dumps
 from uuid import uuid1
 from random import randint, uniform
-
-# Custom
-from helpers.common import *
+from common import *
 
 def input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone, environment):
     account_group_id = list()

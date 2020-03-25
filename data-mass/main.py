@@ -1,12 +1,9 @@
 import webbrowser
-
-# Custom
 from account import create_account, check_account_exists_middleware, create_account_ms, check_account_exists_microservice
 from products import *
 from credit import add_credit_to_account, add_credit_to_account_microservice
 from delivery_window import create_delivery_window_middleware, create_delivery_window_microservice, validateAlternativeDeliveryDate
-from helpers.common import *
-from helpers.dependencies_handling import *
+from common import *
 from classes.text import text
 from random import randint
 from combos import *
@@ -14,7 +11,6 @@ from deals import *
 
 def showMenu():
     clearTerminal()
-    install_dependencies()
     printWelcomeScript()
     selectionStructure = printStructureMenu()
     option = printAvailableOptions(selectionStructure)
@@ -521,7 +517,6 @@ def validateSkuChosen(sku, listSkuOffers):
         countItems = countItems + 1
 
     return "false"
-
 
 # Init
 if __name__ == '__main__':

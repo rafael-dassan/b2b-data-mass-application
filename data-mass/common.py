@@ -103,6 +103,20 @@ def place_request(request_type, request_url, request_body, request_headers):
         data=request_body,
         headers=request_headers
     )
+
+    # Create file path
+    path = os.path.abspath(os.path.dirname(__file__))
+    LOG_FILENAME = os.path.join(path, "logs/debug.log")
+
+    # Log request data to debug.log file
+    logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
+    logging.debug("= Init LOG =")
+    logging.debug("REQUEST TYPE= " + request_type)
+    logging.debug("HEADERS= " + json.dumps(request_headers))
+    logging.debug("URL= " + request_url)
+    logging.debug("BODY= " + request_body)
+    logging.debug("RESPONSE= " + str(response))
+    logging.debug('= / Finish LOG =\n')
     
     return response
 
@@ -318,10 +332,10 @@ def printQuantityRangeMenu():
 
 # Print minimum quantity menu
 def printMinimumQuantityMenu():
-    minimum_quantity = input(text.White + "Desired quantity needed to buy to get a discount: ")
+    minimum_quantity = input(text.White + "Desired quantity needed to buy to get a discount/free good: ")
     while minimum_quantity == "" or int(minimum_quantity) <= 0:
             print(text.Red + "\n- Minimum quantity must be greater than 0")
-            minimum_quantity = input(text.White + "Desired quantity needed to buy to get a discount: ")
+            minimum_quantity = input(text.White + "Desired quantity needed to buy to get a discount/free good: ")
 
     return minimum_quantity
 

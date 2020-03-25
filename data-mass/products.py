@@ -1,10 +1,7 @@
 from random import randint, uniform
 from json import loads
-
 import concurrent.futures
-
-# Custom
-from helpers.common import *
+from common import *
 
 
 def check_products_account_exists_microservice(accountId, zone, environment):

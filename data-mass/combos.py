@@ -2,9 +2,7 @@ import sys
 from json import dumps
 from uuid import uuid1
 from random import randint, uniform
-
-# Custom
-from helpers.common import *
+from common import *
 from classes.text import text
 
 #Input combo simple
