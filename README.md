@@ -26,17 +26,18 @@ data-mass/
     └── text.py
 ├── data
     └── create_account_payload.json
-├── helpers
-    └── common.py
-    └── dependencies_handling.py
-    └── required-libraries.txt
+├── logs
+    └── debug.log
 ├── account.py
 ├── combos.py
+├── common.py
 ├── credit.py
 ├── deals.py
 ├── delivery_window.py
 ├── main.py
 ├── products.py
+├── requirements.txt
+├── run.sh
 ```
 
 | Directory | Description |
@@ -47,14 +48,16 @@ data-mass/
 
 | File | Description |
 | ------ | ------ |
-| [data-mass/main.py](main.py) | Holds menus and sub-menus for each available operation. It is also used for calling external functions and API requests. |
-| [.gitignore](.gitignore) | Holds all files that shouldn't be tracked by system version control. |
+| [data-mass/run.sh](data-mass/run.sh) | Creates debug log directory and file. It also executes the script. |
+| [data-mass/main.py](data-mass/main.py) | Holds menus and sub-menus for each available operation.  |
+| [data-mass/common.py](data-mass/common.py) | Holds validation and external functions, and API requests. |
+| [.gitignore](.gitignore) | Holds all files that should not be tracked by system version control. |
 
 ## Visual Studio Code plugins
 
 Install the IDE plugins for Visual Studio Code.
 
-> Plugins features and usage reference:
+> Plugins features and usage reference
 
 | Plugins |
 | ------ |
@@ -78,7 +81,7 @@ pip3 install -r requirements.txt
 And then you can finally execute the script:
 
 ```sh
-python3 main.py
+./run.sh
 ```
 
 By running this command, anyone will be able to see the application menu, and then choose any of the available options depending on the usage.

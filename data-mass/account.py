@@ -1,9 +1,7 @@
 import sys
 from json import loads
 import json
-
-# Custom
-from helpers.common import *
+from common import *
 
 # Validate if account exists on Middleware
 def check_account_exists_middleware(abi_id, zone, environment):

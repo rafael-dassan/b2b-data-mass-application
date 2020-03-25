@@ -3,9 +3,7 @@ from json import dumps
 import time
 from datetime import date, datetime, timedelta
 import calendar
-
-#Custom
-from helpers.common import *
+from common import *
 
 # Create delivery window on middleware
 def create_delivery_window_middleware(abi_id, zone, environment):

@@ -1,2 +1,5 @@
+# Required libraries to run the Data Mass Script. Please, let us know if missing any dependencies.
+
 requests>=2.23.0
 jsonpath-rw-ext>=1.2.2
+jsonpath-rw>=1.4.0
