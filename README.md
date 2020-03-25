@@ -37,7 +37,6 @@ data-mass/
 ├── main.py
 ├── products.py
 ├── requirements.txt
-├── run.sh
 ```
 
 | Directory | Description |
@@ -48,8 +47,7 @@ data-mass/
 
 | File | Description |
 | ------ | ------ |
-| [data-mass/run.sh](data-mass/run.sh) | Creates debug log directory and file. It also executes the script. |
-| [data-mass/main.py](data-mass/main.py) | Holds menus and sub-menus for each available operation.  |
+| [data-mass/main.py](data-mass/main.py) | Holds menus and sub-menus for each available operation. It also executes the script.  |
 | [data-mass/common.py](data-mass/common.py) | Holds validation and external functions, and API requests. |
 | [.gitignore](.gitignore) | Holds all files that should not be tracked by system version control. |
 
@@ -81,7 +79,7 @@ pip3 install -r requirements.txt
 And then you can finally execute the script:
 
 ```sh
-./run.sh
+python3 main.py
 ```
 
 By running this command, anyone will be able to see the application menu, and then choose any of the available options depending on the usage.
