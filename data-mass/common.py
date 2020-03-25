@@ -10,6 +10,8 @@ from datetime import date, datetime, timedelta
 from jsonpath_rw import Index, Fields
 from jsonpath_rw_ext import parse
 import logging
+import subprocess
+from os import path
 
 # Validate option menu selection
 def validateOptionRequestSelection(option, isExtraStructure = "false"):
@@ -104,12 +106,21 @@ def place_request(request_type, request_url, request_body, request_headers):
         headers=request_headers
     )
 
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    LOG_FILENAME = os.path.join(path, "logs/debug.log")
+    # Create dir and file paths
+    dir_project = os.path.abspath(os.path.dirname(__file__))
+    dir_logs = os.path.join(dir_project, "logs")
+    file_debug = os.path.join(dir_logs, "debug.log")
+
+    # If the logs directory does not exist, create it
+    if path.exists(dir_logs) == False:
+        subprocess.call(["mkdir", "-p", dir_logs])
+
+    # If the debug.log file does not exist, create it
+    if path.exists(file_debug) == False:
+        subprocess.call(["touch", file_debug])
 
     # Log request data to debug.log file
-    logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
+    logging.basicConfig(filename=file_debug,level=logging.DEBUG)
     logging.debug("= Init LOG =")
     logging.debug("REQUEST TYPE= " + request_type)
     logging.debug("HEADERS= " + json.dumps(request_headers))
