@@ -6,34 +6,31 @@ import calendar
 from products import *
 
 
-#Custom
-#from helpers.common import *
-
 
 # Create beer recommender in microservice
-def create_beer_recommender_microservice(accountId, zone, environment, deliveryCenterId):
+def create_beer_recommender_microservice(account_Id, zone, environment, deliveryCenter_Id):
     # Define headers
-    request_headers = get_header_request(zone, 'false', 'true')
+    request_headers = get_header_request(zone, "false", "true")
 
     # Define url request
     request_url = get_microservice_base_url(environment) + "/global-recommendation-relay"
 
     # Retrieve all SKUs of the specified Account and DeliveryCenter IDs
-    productOffers = request_get_offers_microservice(accountId, zone, environment, deliveryCenterId)
+    productOffers = request_get_offers_microservice(account_Id, zone, environment, deliveryCenter_Id)
 
     # Check if the account has at least 25 SKUs added to it
     if len(productOffers) >= 25:
 
-        print('\nAdding beer recommenders. Please wait...')
+        print("\nAdding beer recommenders. Please wait...")
 
         # Get body request for Quick Order
-        request_body_quick_order = create_file_request_quick_order(request_url, request_headers, accountId, zone, productOffers)
+        request_body_quick_order = create_file_request_quick_order(request_url, request_headers, account_Id, zone, productOffers)
 
         # Get body request for Forgotten Items
-        request_body_forgotten_items = create_file_request_forgotten_items(request_url, request_headers, accountId, zone, productOffers)
+        request_body_forgotten_items = create_file_request_forgotten_items(request_url, request_headers, account_Id, zone, productOffers)
 
         # Get body request Sell Up
-        request_body_sell_up = create_file_request_sell_up(request_url, request_headers, accountId, zone, productOffers)
+        request_body_sell_up = create_file_request_sell_up(request_url, request_headers, account_Id, zone, productOffers)
 
 
         if (request_body_quick_order.status_code == 202 and request_body_quick_order.text != "[]"):
@@ -98,22 +95,22 @@ def create_file_request_quick_order(url, headers, abi_id, zone, productList):
         json_data = json.load(file)
 
     dict_values  = {
-        'recommendationId': "QUICK ORDER RECOMMENDATION FOR ACCOUNT " + str(abi_id),
-        'useCase': "QUICK_ORDER",
-        'useCaseId': abi_id,
-        'items[0].sku': sku[0],
-        'items[1].sku': sku[1],
-        'items[2].sku': sku[2],
-        'items[3].sku': sku[3],
-        'items[4].sku': sku[4],
-        'items[5].sku': sku[5],
-        'items[6].sku': sku[6],
-        'items[7].sku': sku[7],
-        'items[8].sku': sku[8],
-        'items[9].sku': sku[9],
-        'descriptions[0].language': language,
-        'descriptions[0].text': text,
-        'descriptions[0].description': text_description
+        "recommendationId": "QUICK ORDER RECOMMENDATION FOR ACCOUNT " + str(abi_id),
+        "useCase": "QUICK_ORDER",
+        "useCaseId": abi_id,
+        "items[0].sku": sku[0],
+        "items[1].sku": sku[1],
+        "items[2].sku": sku[2],
+        "items[3].sku": sku[3],
+        "items[4].sku": sku[4],
+        "items[5].sku": sku[5],
+        "items[6].sku": sku[6],
+        "items[7].sku": sku[7],
+        "items[8].sku": sku[8],
+        "items[9].sku": sku[9],
+        "descriptions[0].language": language,
+        "descriptions[0].text": text,
+        "descriptions[0].description": text_description
     }
 
     for key in dict_values.keys():
@@ -163,22 +160,22 @@ def create_file_request_forgotten_items(url, headers, abi_id, zone, productList)
         json_data = json.load(file)
 
     dict_values  = {
-        'recommendationId': "FORGOTTEN ITEMS RECOMMENDATION FOR ACCOUNT " + str(abi_id),
-        'useCase': "FORGOTTEN_ITEMS",
-        'useCaseId': abi_id,
-        'items[0].sku': sku[0],
-        'items[1].sku': sku[1],
-        'items[2].sku': sku[2],
-        'items[3].sku': sku[3],
-        'items[4].sku': sku[4],
-        'items[5].sku': sku[5],
-        'items[6].sku': sku[6],
-        'items[7].sku': sku[7],
-        'items[8].sku': sku[8],
-        'items[9].sku': sku[9],
-        'descriptions[0].language': language,
-        'descriptions[0].text': text,
-        'descriptions[0].description': text_description
+        "recommendationId": "FORGOTTEN ITEMS RECOMMENDATION FOR ACCOUNT " + str(abi_id),
+        "useCase": "FORGOTTEN_ITEMS",
+        "useCaseId": abi_id,
+        "items[0].sku": sku[0],
+        "items[1].sku": sku[1],
+        "items[2].sku": sku[2],
+        "items[3].sku": sku[3],
+        "items[4].sku": sku[4],
+        "items[5].sku": sku[5],
+        "items[6].sku": sku[6],
+        "items[7].sku": sku[7],
+        "items[8].sku": sku[8],
+        "items[9].sku": sku[9],
+        "descriptions[0].language": language,
+        "descriptions[0].text": text,
+        "descriptions[0].description": text_description
     }
 
     for key in dict_values.keys():
@@ -228,16 +225,16 @@ def create_file_request_sell_up(url, headers, abi_id, zone, productList):
 
 
     dict_values  = {
-        'recommendationId': "SELL UP RECOMMENDATION FOR ACCOUNT " + str(abi_id),
-        'descriptions[0].language': language,
-        'descriptions[0].text': text,
-        'descriptions[0].description': text_description,
-        'useCaseId': abi_id,
-        'items[0].sku': sku[0],
-        'items[1].sku': sku[1],
-        'items[2].sku': sku[2],
-        'items[3].sku': sku[3],
-        'items[4].sku': sku[4]
+        "recommendationId": "SELL UP RECOMMENDATION FOR ACCOUNT " + str(abi_id),
+        "descriptions[0].language": language,
+        "descriptions[0].text": text,
+        "descriptions[0].description": text_description,
+        "useCaseId": abi_id,
+        "items[0].sku": sku[0],
+        "items[1].sku": sku[1],
+        "items[2].sku": sku[2],
+        "items[3].sku": sku[3],
+        "items[4].sku": sku[4]
     }
 
     for key in dict_values.keys():
