@@ -68,6 +68,7 @@ def inputBeerRecommenderAccountMicroserviceMenu():
 
     if beer_recommender == "true":
         print(text.Green + "\n- [Beer Recommender] Recommenders added successfull")
+        print(text.Yellow+ "\n- [Beer Recommender] **  SELL UP TRIGGERS: Products Added to Cart: 03  /  Cart Viewed with Products: 01  **")
     else:
         if beer_recommender == "error25":
             print(text.Red + "\n- [BeerRecommender] The account must have at least 25 products added to proceed")
