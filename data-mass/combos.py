@@ -5,178 +5,183 @@ from random import randint, uniform
 from common import *
 from classes.text import text
 
-#Input combo simple
-def inputComboDiscount(accounts, zone, environment, skuCombo):
-
-    request_url = get_microservice_base_url(environment) + '/combo-relay/accounts'
-    idComboDiscount = 'AntD-' + str(randint(1, 100000))
-    price = round(uniform(1, 2000), 2)
-    originalPrice = round(price / 2, 2)
+def input_combo_type_discount(abi_id, zone, environment, combo_item, discount_value):
+    combo_id = "DM-" + str(randint(1, 100000))
+    accounts = list()
+    accounts.append(abi_id)
+    
+    # Get base URL
+    request_url = get_microservice_base_url(environment) + "/combo-relay/accounts"
+    
+    original_price = get_sku_price(abi_id, combo_item, zone, environment)
+    price = round(original_price - original_price * (discount_value/100), 2)
     score = randint(1, 100)
-    discountPercent = randint(1, 25)
-    comboDescription = str("Combo Antarctica " + accounts[0] + " Discount")
+
+    # Create body
     request_body = dumps({
         "accounts": accounts,
         "combos": [
             {
-                "description": comboDescription,
-                "discountPercentOff": discountPercent,
+                "description": "Combo " + combo_id + " type discount",
+                "discountPercentOff": discount_value,
                 "endDate": "2045-02-28T00:00:00Z",
-                "id": str(idComboDiscount),
+                "id": combo_id,
                 "image": "http://www.ab-inbev.com/b2b/files/combo-icon.png",
                 "items": [
                     {
-                        "quantity": 100,
-                        "sku": skuCombo
+                        "quantity": 1,
+                        "sku": combo_item
                     }
                 ],
                 "limit": {
-                    "daily": 1000,
-                    "monthly": 1000
+                    "daily": 500,
+                    "monthly": 500
                 },
-                "originalPrice": originalPrice,
+                "originalPrice": original_price,
                 "price": price,
                 "score": score,
                 "startDate": "2019-02-01T00:00:00Z",
-                "title": comboDescription,
-                "type": "D"
+                "title": "Combo " + combo_id + " type discount",
+                "type": "D",
+                "enabled": "true"
             }
         ]
     })
 
-    request_headers = get_header_request(zone, 'false', 'false', 'true')
+    # Get header request
+    request_headers = get_header_request(zone, "false", "false", "true", "false")
 
-    response = place_request('POST', request_url, request_body, request_headers)
+    # Send request
+    response = place_request("POST", request_url, request_body, request_headers)
 
     if response.status_code == 201:
-        print(' -- Skus included on combo -- ')
-        print(skuCombo)
-        print(' -- Discount Percent-- ')
-        print(discountPercent)
-        turnComboAvailable(accounts, zone, environment, idComboDiscount)
-        return 'success'
+        print(text.Green + "\n- Combo successfully registered")
+        print(text.White + "\n- Combo ID: " + combo_id)
+        update_combo_consumption(abi_id, zone, environment, combo_id)
+        return "success"
     else:
         return response.status_code
 
-#Input combo with free goods
-def inputComboWithFreeGoods(accounts, zone, environment, skuCombo, skusFreeGoods):
+def input_combo_type_free_good(abi_id, zone, environment, combo_item, combo_free_good):
+    combo_id = "DM-" + str(randint(1, 100000))
+    accounts = list()
+    accounts.append(abi_id)
 
-    request_url = get_microservice_base_url(environment) + '/combo-relay/accounts'
-    idComboWithFreeGoods = 'AntWF-' + str(randint(1, 100000))
-    price = round(uniform(1, 2000), 2)
-    originalPrice = round(price / 2, 2)
+    # Get base URL
+    request_url = get_microservice_base_url(environment) + "/combo-relay/accounts"
+
+    price = get_sku_price(abi_id, combo_item, zone, environment)
     score = randint(1, 100)
-    discountPercent = randint(1, 25)
-    comboDescription = str("Combo Antarctica " + accounts[0] + " With FreeGoods")
+
+    # Create body
     request_body = dumps({
         "accounts": accounts,
         "combos": [
             {
-                "description": comboDescription,
-                "discountPercentOff": discountPercent,
+                "description": "Combo " + combo_id + " type free good",
+                "discountPercentOff": 0,
                 "endDate": "2045-02-28T00:00:00Z",
-                "id": str(idComboWithFreeGoods),
+                "id": combo_id,
                 "image": "http://www.ab-inbev.com/b2b/files/combo-icon.png",
                 "freeGoods": {
                     "quantity": 1,
-                    "skus": skusFreeGoods
+                    "skus": combo_free_good
                 },
                 "items": [
                     {
-                        "quantity": 100,
-                        "sku": skuCombo
+                        "quantity": 1,
+                        "sku": combo_item
                     }
                 ],
                 "limit": {
-                    "daily": 1000,
-                    "monthly": 1000
+                    "daily": 500,
+                    "monthly": 500
                 },
-                "originalPrice": originalPrice,
+                "originalPrice": price,
                 "price": price,
                 "score": score,
                 "startDate": "2019-02-01T00:00:00Z",
-                "title": comboDescription,
+                "title": "Combo " + combo_id + " type free good",
                 "type": "FG"
             }
         ]
     })
 
-    request_headers = get_header_request(zone, 'false', 'false', 'true')
+    # Get header request
+    request_headers = get_header_request(zone, "false", "false", "true", "false")
 
-    response = place_request('POST', request_url, request_body, request_headers)
+    # Send request
+    response = place_request("POST", request_url, request_body, request_headers)
 
     if response.status_code == 201:
-        print(' -- Skus included on combo -- ')
-        print(skuCombo)
-        print(' -- Discount Percent-- ')
-        print(discountPercent)
-        print(' -- Skus free goods included on combo -- ')
-        print(skusFreeGoods)
-        turnComboAvailable(accounts, zone, environment, idComboWithFreeGoods)
-        return 'success'
+        print(text.Green + "\n- Combo successfully registered")
+        print(text.White + "\n- Combo ID: " + combo_id)
+        update_combo_consumption(abi_id, zone, environment, combo_id)
+        return "success"
     else:
         return response.status_code
 
-#Input combo only free goods
-def inputComboOnlyFreeGoods(accounts, zone, environment, skusFreeGoods):
-
-    request_url = get_microservice_base_url(environment) + '/combo-relay/accounts'
-    idComboOnlyFreeGoods = 'AntOF-' + str(randint(1, 100000))
-    price = round(uniform(1, 2000), 2)
-    originalPrice = round(price / 2, 2)
+def input_combo_free_good_only(abi_id, zone, environment, combo_free_good):
+    combo_id = "DM-" + str(randint(1, 100000))
+    accounts = list()
+    accounts.append(abi_id)
     score = randint(1, 100)
-    discountPercent = randint(1, 25)
-    comboDescription = str("Combo Antarctica " + accounts[0] + " Only FreeGoods")
+
+    # Get base URL
+    request_url = get_microservice_base_url(environment) + "/combo-relay/accounts"
+    
+    # Create body
     request_body = dumps({
         "accounts": accounts,
         "combos": [
             {
-                "description": comboDescription,
-                "discountPercentOff": discountPercent,
+                "description": "Combo " + combo_id + " with only free goods",
+                "discountPercentOff": 0,
                 "endDate": "2045-02-28T00:00:00Z",
-                "id": str(idComboOnlyFreeGoods),
+                "id": combo_id,
                 "image": "http://www.ab-inbev.com/b2b/files/combo-icon.png",
                 "freeGoods": {
                     "quantity": 1,
-                    "skus": skusFreeGoods
+                    "skus": combo_free_good
                 },
                 "limit": {
-                    "daily": 1000,
-                    "monthly": 1000
+                    "daily": 500,
+                    "monthly": 500
                 },
-                "originalPrice": originalPrice,
-                "price": price,
+                "originalPrice": 0,
+                "price": 0,
                 "score": score,
                 "startDate": "2019-02-01T00:00:00Z",
-                "title": comboDescription,
+                "title": "Combo " + combo_id + " with only free goods",
                 "type": "FG"
             }
         ]
     })
 
-    request_headers = get_header_request(zone, 'false', 'false', 'true')
+    # Get header request
+    request_headers = get_header_request(zone, "false", "false", "true", "false")
 
-    response = place_request('POST', request_url, request_body, request_headers)
+    # Send request
+    response = place_request("POST", request_url, request_body, request_headers)
 
     if response.status_code == 201:
-        print(' -- Discount Percent-- ')
-        print(discountPercent)
-        print(' -- Skus free goods included on combo -- ')
-        print(skusFreeGoods)
-        turnComboAvailable(accounts, zone, environment, idComboOnlyFreeGoods)
-        return 'success'
+        print(text.Green + "\n- Combo successfully registered")
+        print(text.White + "\n- Combo ID: " + combo_id)
+        update_combo_consumption(abi_id, zone, environment, combo_id)
+        return "success"
     else:
         return response.status_code
 
-#Turn combo quantity available
-def turnComboAvailable(accounts, zone, environment, idCombo):
-    accountId = accounts[0]
-    request_url = get_microservice_base_url(environment) + '/combo-relay/consumption'
+# Turn combo quantity available
+def update_combo_consumption(abi_id, zone, environment, combo_id):
+    # Get base URL
+    request_url = get_microservice_base_url(environment) + "/combo-relay/consumption"
+    
     request_body = dumps([{
-        "accountId": str(accountId),
+        "accountId": abi_id,
         "combos": [
             {
-                "comboId": str(idCombo),
+                "comboId": combo_id,
                 "consumedLimit": {
                     "daily": 0,
                     "monthly": 0
@@ -185,10 +190,9 @@ def turnComboAvailable(accounts, zone, environment, idCombo):
         ]
     }])
 
-    request_headers = get_header_request(zone, 'false', 'false', 'true')
+    request_headers = get_header_request(zone, "false", "false", "true", "false")
 
-    response = place_request('POST', request_url, request_body, request_headers)
-    if response.status_code == 201:
-        print(text.Green + '-- Combo ' + idCombo + ' are available')
-    else:
-        print(text.Red + '-- [Combo] Something went wrong in turn combo ' + idCombo + ' available')
+    response = place_request("POST", request_url, request_body, request_headers)
+
+    if response.status_code != 201:
+        print(text.Red + "\n- [Combo] Something went wrong while updating the combo consumption")

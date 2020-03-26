@@ -263,8 +263,33 @@ def printDealsMenu():
         print(text.White + str(2), text.Yellow + "Input deal type stepped discount")
         print(text.White + str(3), text.Yellow + "Input deal type free good")
         print(text.White + str(4), text.Yellow + "Input deal type stepped free good")
+        structure = input(text.White + "\nPlease select: ")
 
     return structure
+
+# Print combos menu
+def printCombosMenu():
+    print(text.White + "\nWhich type of combo do you want to create?")
+    print(text.White + str(1), text.Yellow + "Input combo type discount")
+    print(text.White + str(2), text.Yellow + "Input combo type free good")
+    print(text.White + str(3), text.Yellow + "Input combo with only free goods")
+    structure = input(text.White + "\nPlease select: ")
+    while validateComboStructure(structure) == "false":
+        print(text.Red + "\n- Invalid option")
+        print(text.White + "\nWhich type of combo do you want to create?")
+        print(text.White + str(1), text.Yellow + "Input combo type discount")
+        print(text.White + str(2), text.Yellow + "Input combo type free good")
+        print(text.White + str(3), text.Yellow + "Input combo with only free goods")
+        structure = input(text.White + "\nPlease select: ")
+
+    return structure
+
+# Validate combo type structure
+def validateComboStructure(option):
+    if option != "1" or option != "2" or option != "3":
+        return "true"
+    else:
+        return "false"
 
 # Print Discount type menu
 def printDiscountTypeMenu():
@@ -501,6 +526,27 @@ def validateDate(date):
         datetime.strptime(date, "%Y-%m-%d")
     except ValueError:
         return "false"
+
+def get_sku_price(abi_id, combo_item, zone, environment):
+    # Get base URL
+    request_url = get_microservice_base_url(environment) + "/cart-calculator/prices?accountID=" + abi_id
+
+    # Get header request
+    request_headers = get_header_request(zone, "true", "false", "false", "false")
+
+    # Get body request
+    request_body = ""
+
+    # Send request
+    response = place_request("GET", request_url, request_body, request_headers)
+
+    if response.status_code == 200 and response.text != "":
+        json_data = json.loads(response.text)
+        for dict in json_data:
+            if dict['sku'] == combo_item:
+                return dict['price']
+    else:
+        print("\n- [Pricing Engine] Something went wrong when searching for prices")
 
 def update_value_to_json(json_object, json_path, new_value):
     """Update value to JSON using JSONPath
