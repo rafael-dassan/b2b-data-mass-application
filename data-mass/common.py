@@ -23,7 +23,8 @@ def validateOptionRequestSelection(option, isExtraStructure = "false"):
             "3": "true",
             "4": "true",
             "5": "true",
-            "6": "true"
+            "6": "true",
+            "7": "true",
         }
 
         value = switcher.get(option, "false")
@@ -192,8 +193,9 @@ def printAvailableOptions(selectionStructure):
         print(text.White + str(3), text.Yellow + "Input credit")
         print(text.White + str(4), text.Yellow + "Input delivery window")
         if selectionStructure == "2":
-            print(text.White + str(5), text.Yellow + "Input deals")
-            print(text.White + str(6), text.Yellow + "Input combos")
+            print(text.White + str(5), text.Yellow + "Input beer recommender")
+            print(text.White + str(6), text.Yellow + "Input deals")
+            print(text.White + str(7), text.Yellow + "Input combos")
 
         print(text.White + str(0), text.Yellow + "Close application")
         selection = input(text.White + "\nPlease select: ")

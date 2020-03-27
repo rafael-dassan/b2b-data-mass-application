@@ -1,0 +1,62 @@
+{
+    "recommendationId": "string",
+    "useCase": "CROSS_SELL_UP_SELL",
+    "useCaseId": "string",
+    "useCaseType": "ACCOUNT",
+    "descriptions": [
+        {
+            "language": "string",
+            "text": "string",
+            "description": "string"
+        }
+    ],
+    "images": [
+        {
+            "key": "WEB",
+            "value": "https://b2bfilemgmtsagbprod.blob.core.windows.net/global-recommender/do/Presidente_Reg_Caja_NEW.jpeg"
+        },
+        {
+            "key": "APP",
+            "value": "https://b2bfilemgmtsagbprod.blob.core.windows.net/global-recommender/do/Presidente_Reg_Caja_NEW.jpeg"
+        }
+    ],
+    "items": [
+        {
+            "sku": "string",
+            "quantity": 10,
+            "score": 1
+        },
+        {
+            "sku": "string",
+            "quantity": 10,
+            "score": 2
+        },
+        {
+            "sku": "string",
+            "quantity": 10,
+            "score": 3
+        },
+        {
+            "sku": "string",
+            "quantity": 10,
+            "score": 4
+        },
+        {
+            "sku": "string",
+            "quantity": 10,
+            "score": 5
+        }
+    ],
+    "exclusiveTriggers": [
+        {
+            "event": "PRODUCT_ADDED",
+            "key": "UNIQUE_SKUS",
+            "value": "3"
+        },
+        {
+            "event": "CART_VIEWED",
+            "key": "UNIQUE_SKUS",
+            "value": "1"
+        }
+    ]
+}
