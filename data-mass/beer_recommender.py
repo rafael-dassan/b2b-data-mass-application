@@ -8,7 +8,7 @@ from products import *
 
 
 # Create beer recommender in microservice
-def create_beer_recommender_microservice(account_Id, zone, environment, deliveryCenter_Id):
+def create_beer_recommender_microservice(account_id, zone, environment, delivery_center_id):
     # Define headers
     request_headers = get_header_request(zone, "false", "true")
 
@@ -16,21 +16,21 @@ def create_beer_recommender_microservice(account_Id, zone, environment, delivery
     request_url = get_microservice_base_url(environment) + "/global-recommendation-relay"
 
     # Retrieve all SKUs of the specified Account and DeliveryCenter IDs
-    productOffers = request_get_offers_microservice(account_Id, zone, environment, deliveryCenter_Id)
+    product_offers = request_get_offers_microservice(account_id, zone, environment, delivery_center_id)
 
     # Check if the account has at least 25 SKUs added to it
-    if len(productOffers) >= 25:
+    if len(product_offers) >= 25:
 
         print("\nAdding beer recommenders. Please wait...")
 
         # Get body request for Quick Order
-        request_body_quick_order = create_file_request_quick_order(request_url, request_headers, account_Id, zone, productOffers)
+        request_body_quick_order = create_file_request_quick_order(request_url, request_headers, account_id, zone, product_offers)
 
         # Get body request for Forgotten Items
-        request_body_forgotten_items = create_file_request_forgotten_items(request_url, request_headers, account_Id, zone, productOffers)
+        request_body_forgotten_items = create_file_request_forgotten_items(request_url, request_headers, account_id, zone, product_offers)
 
         # Get body request Sell Up
-        request_body_sell_up = create_file_request_sell_up(request_url, request_headers, account_Id, zone, productOffers)
+        request_body_sell_up = create_file_request_sell_up(request_url, request_headers, account_id, zone, product_offers)
 
 
         if (request_body_quick_order.status_code == 202 and request_body_quick_order.text != "[]"):
@@ -63,7 +63,7 @@ def create_beer_recommender_microservice(account_Id, zone, environment, delivery
 
 
 # Define JSON to submmit QUICK ORDER recommendation type
-def create_file_request_quick_order(url, headers, abi_id, zone, productList):
+def create_file_request_quick_order(url, headers, abi_id, zone, product_list):
     if (zone == "DO") or (zone == "CL") or (zone == "AR"):
         language = "es"
         text = "Pedido Facil"
@@ -80,10 +80,10 @@ def create_file_request_quick_order(url, headers, abi_id, zone, productList):
 
     # Retrieve the first ten SKUs of the account
     sku = []
-    auxIndex = 0
-    while auxIndex <= 9:
-        sku.append(productList[auxIndex])
-        auxIndex = auxIndex + 1
+    aux_index = 0
+    while aux_index <= 9:
+        sku.append(product_list[aux_index])
+        aux_index = aux_index + 1
     
     
     # Create file path
@@ -128,7 +128,7 @@ def create_file_request_quick_order(url, headers, abi_id, zone, productList):
 
 
 # Define JSON to submmit FORGOTTEN ITEMS recommendation type
-def create_file_request_forgotten_items(url, headers, abi_id, zone, productList):
+def create_file_request_forgotten_items(url, headers, abi_id, zone, product_list):
     if (zone == "DO") or (zone == "CL") or (zone == "AR"):
         language = "es"
         text = "Productos Populares para Negocios como el tuyo"
@@ -145,10 +145,10 @@ def create_file_request_forgotten_items(url, headers, abi_id, zone, productList)
 
     #Retrieve the first ten SKUs after the eleven one of the account
     sku = []
-    auxIndex = 10
-    while auxIndex <= 19:
-        sku.append(productList[auxIndex])
-        auxIndex = auxIndex + 1
+    aux_index = 10
+    while aux_index <= 19:
+        sku.append(product_list[aux_index])
+        aux_index = aux_index + 1
     
     
     # Create file path
@@ -192,7 +192,7 @@ def create_file_request_forgotten_items(url, headers, abi_id, zone, productList)
     return response
 
 # Define JSON to submmit SELL UP recommendation type
-def create_file_request_sell_up(url, headers, abi_id, zone, productList):
+def create_file_request_sell_up(url, headers, abi_id, zone, product_list):
     if (zone == "DO") or (zone == "CL") or (zone == "AR"):
         language = "es"
         text = "Productos Populares para Negocios como el tuyo"
@@ -209,10 +209,10 @@ def create_file_request_sell_up(url, headers, abi_id, zone, productList):
 
     #Retrieve the first five SKUs after the twenty one of the account
     sku = []
-    auxIndex = 20
-    while auxIndex <= 24:
-        sku.append(productList[auxIndex])
-        auxIndex = auxIndex + 1
+    aux_index = 20
+    while aux_index <= 24:
+        sku.append(product_list[aux_index])
+        aux_index = aux_index + 1
     
 
     # Create file path
