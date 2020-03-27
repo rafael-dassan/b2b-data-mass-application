@@ -42,8 +42,7 @@ def input_combo_type_discount(abi_id, zone, environment, combo_item, discount_va
                 "score": score,
                 "startDate": "2019-02-01T00:00:00Z",
                 "title": "Combo " + combo_id + " type discount",
-                "type": "D",
-                "enabled": "true"
+                "type": "D"
             }
         ]
     })
