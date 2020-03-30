@@ -4,6 +4,8 @@ from uuid import uuid1
 from random import randint, uniform
 from common import *
 
+default_text_color = text.Cyan
+
 def input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone, environment):
     account_group_id = list()
     sku_group_id = list()
@@ -314,8 +316,8 @@ def input_discount_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone,
         print(text.Red + "\n- [Deals] Something went wrong, please try again")
     else:
         print(text.Green + "\n- Deal successfully registered")
-        print(text.White + "\n- Deal ID: " + promotion_response[0]["id"])
-        print(text.White + "- Buy at least " + str(minimum_quantity) + " of " + deal_sku + " and get " + str(discount_value) + " " + str(discount_type) + " discount")
+        print(default_text_color + "\n- Deal ID: " + promotion_response[0]["id"])
+        print(default_text_color + "- Buy at least " + str(minimum_quantity) + " of " + deal_sku + " and get " + str(discount_value) + " " + str(discount_type) + " discount")
 
 def input_stepped_discount_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone, environment):
     free_good_sku = []
@@ -329,9 +331,9 @@ def input_stepped_discount_to_account(abi_id, accounts, deal_sku, skus, deal_typ
         print(text.Red + "\n- [Deals] Something went wrong, please try again")
     else:
         print(text.Green + "\n- Deal successfully registered")
-        print(text.White + "\n- Deal ID: " + promotion_response[0]["id"])
-        print(text.White + "- Buy from " + str(index_range[0]) + " to " + str(index_range[1]) + " of " + deal_sku + " and get " + str(discount_range[0]) + " " + str(discount_type) + " discount")
-        print(text.White + "- Buy from " + str(index_range[2]) + " to " + str(index_range[3]) + " of " + deal_sku + " and get " + str(discount_range[1]) + " " + str(discount_type) + " discount")
+        print(default_text_color + "\n- Deal ID: " + promotion_response[0]["id"])
+        print(default_text_color + "- Buy from " + str(index_range[0]) + " to " + str(index_range[1]) + " of " + deal_sku + " and get " + str(discount_range[0]) + " " + str(discount_type) + " discount")
+        print(default_text_color + "- Buy from " + str(index_range[2]) + " to " + str(index_range[3]) + " of " + deal_sku + " and get " + str(discount_range[1]) + " " + str(discount_type) + " discount")
 
 def input_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone, environment):
     free_good_sku = deal_sku
@@ -344,8 +346,8 @@ def input_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone
         print(text.Red + "\n- [Deals] Something went wrong, please try again")
     else:
         print(text.Green + "\n- Deal successfully registered")
-        print(text.White + "\n- Deal ID: " + promotion_response[0]["id"])
-        print(text.White + "- Buy at least " + str(minimum_quantity) + " of " + deal_sku + " and get " + str(quantity) + " of " + deal_sku + " for free")
+        print(default_text_color + "\n- Deal ID: " + promotion_response[0]["id"])
+        print(default_text_color + "- Buy at least " + str(minimum_quantity) + " of " + deal_sku + " and get " + str(quantity) + " of " + deal_sku + " for free")
 
 def input_stepped_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone, environment):
     free_good_sku = deal_sku
@@ -358,6 +360,6 @@ def input_stepped_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_ty
         print(text.Red + "\n- [Deals] Something went wrong, please try again")
     else:
         print(text.Green + "\n- Deal successfully registered")
-        print(text.White + "\n- Deal ID: " + promotion_response[0]["id"])
-        print(text.White + "- Buy from " + str(index_range[0]) + " to " + str(index_range[1]) + " of " + deal_sku + " and get " + str(quantity_range[0]) + " of " + deal_sku + " for free")
-        print(text.White + "- Buy from " + str(index_range[2]) + " to " + str(index_range[3]) + " of " + deal_sku + " and get " + str(quantity_range[1]) + " of " + deal_sku + " for free")
+        print(default_text_color + "\n- Deal ID: " + promotion_response[0]["id"])
+        print(default_text_color + "- Buy from " + str(index_range[0]) + " to " + str(index_range[1]) + " of " + deal_sku + " and get " + str(quantity_range[0]) + " of " + deal_sku + " for free")
+        print(default_text_color + "- Buy from " + str(index_range[2]) + " to " + str(index_range[3]) + " of " + deal_sku + " and get " + str(quantity_range[1]) + " of " + deal_sku + " for free")

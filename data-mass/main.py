@@ -9,6 +9,9 @@ from classes.text import text
 from random import randint
 from combos import *
 from deals import *
+from user import *
+
+default_text_color = text.Cyan
 
 def showMenu():
     clearTerminal()
@@ -32,7 +35,8 @@ def showMenu():
             "4": inputDeliveryWindowAccountMicroserviceMenu,
             "5": inputBeerRecommenderAccountMicroserviceMenu,
             "6": inputDealsMenu,
-            "7": inputCombosMenu
+            "7": inputCombosMenu,
+            "8": createUserMsMenu
         }
     elif selectionStructure == "3":
         switcher = {
@@ -396,10 +400,10 @@ def createAccountMdwMenu():
     name = printNameMenu()
     payment_method = printPaymentMethodMenu(zone.upper())
 
-    option_include = input(text.White + "Do you want to include the minimum order parameter? y/N: ")
+    option_include = input(default_text_color + "Do you want to include the minimum order parameter? y/N: ")
     while option_include == "" or validateYesOrNotOption(option_include.upper()) == "false":
         print(text.Red + "\n- Invalid option\n")
-        option_include = input(text.White + "Do you want to include the minimum order parameter? y/N: ")
+        option_include = input(default_text_color + "Do you want to include the minimum order parameter? y/N: ")
 
     if option_include.upper() == "Y":
         minimum_order = printMinimumOrderMenu()
@@ -452,10 +456,10 @@ def createAccountMsMenu():
     name = printNameMenu()
     payment_method = printPaymentMethodMenu(zone.upper())
 
-    option_include = input(text.White + "Do you want to include the minimum order parameter? y/N: ")
+    option_include = input(default_text_color + "Do you want to include the minimum order parameter? y/N: ")
     while option_include == "" or validateYesOrNotOption(option_include.upper()) == "false":
         print(text.Red + "\n- Invalid option\n")
-        option_include = input(text.White + "Do you want to include the minimum order parameter? y/N: ")
+        option_include = input(default_text_color + "Do you want to include the minimum order parameter? y/N: ")
 
     if option_include.upper() == "Y":
         minimum_order = printMinimumOrderMenu()
@@ -512,6 +516,44 @@ def createAccountMsMenu():
 
     printFinishApplicationMenu()
 
+
+# Create User for zones in Microservice
+def createUserMsMenu():
+    country = printCountryMenuInUserCreation()
+    env = printEnvironmentMenuInUserCreation()
+    account_id = printAccountIdMenuForUser()
+    email = print_input_email()
+    password = print_input_password()
+
+    account_id_list = authenticate_user(env, country, email, password)
+
+    if len(account_id_list) > 0:
+        if account_id in account_id_list:
+            print(text.Green + "\n- The user already exists with the same accountId: " + account_id)
+        else:
+            print(text.Red +
+                  "\n- The user already exists but without the accountId informed: " + account_id)
+        printFinishApplicationMenu()
+
+    account_result = check_account_exists_microservice(account_id, country, env)
+    if account_result == "false":
+        print(text.Red + "\n- The account doesn't exist.")
+        printFinishApplicationMenu()
+    else:
+        if account_result[0].get("status") != "ACTIVE":
+            print(text.Red + "\n- The account isn't ACTIVE.")
+            printFinishApplicationMenu()
+
+    status_response = create_user(env, country, email, password, account_result[0])
+    if status_response == "success":
+        print(text.Green + "\n- User created successfully")
+    else:
+        print(text.Red + "\n- [User] Something went wrong, please try again")
+        printFinishApplicationMenu()
+
+    printFinishApplicationMenu()
+
+
 # Open browser with correct environment
 def openWeb():
     zone = printZoneMenu('false')
@@ -541,10 +583,10 @@ def openWeb():
 
 # Print Finish Menu application
 def printFinishApplicationMenu():
-    finish = input(text.White + "\nDo you want to finish the application? y/N: ")
+    finish = input(default_text_color + "\nDo you want to finish the application? y/N: ")
     while validateYesOrNotOption(finish.upper()) == "false":
         print(text.Red + "\n- Invalid option")
-        finish = input(text.White + "\nDo you want to finish the application? y/N: ")
+        finish = input(default_text_color + "\nDo you want to finish the application? y/N: ")
 
     if finish.upper() == "Y":
         finishApplication()
@@ -553,10 +595,10 @@ def printFinishApplicationMenu():
 
 # Print alternative delivery date menu application
 def printAlternativeDeliveryDateMenu():
-    isAlternativeDeliveryDate = input(text.White + "\nDo you want to register an alternative delivery date? y/N: ")
+    isAlternativeDeliveryDate = input(default_text_color + "\nDo you want to register an alternative delivery date? y/N: ")
     while validateAlternativeDeliveryDate(isAlternativeDeliveryDate.upper()) == "false":
         print(text.Red + "\n- Invalid option")
-        isAlternativeDeliveryDate = input(text.White + "\nDo you want to register an alternative delivery date? y/N: ")
+        isAlternativeDeliveryDate = input(default_text_color + "\nDo you want to register an alternative delivery date? y/N: ")
 
     return isAlternativeDeliveryDate
 
