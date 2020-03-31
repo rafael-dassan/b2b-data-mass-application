@@ -146,7 +146,7 @@ def get_header_request(header_country, useJwtAuthorization="false", useRootAuthe
     }
 
     if useJwtAuthorization == "true":
-        header['Authorization'] = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYi1pbmJldiIsImF1ZCI6ImFiaS1taWNyb3NlcnZpY2VzIiwiZXhwIjoxNTg1NjEyODAwLCJ1cGRhdGVkX2F0IjoxNTY1NzkxODI0LCJpYXQiOjE1NjU3OTE4MjQsIm5hbWUiOiJ0ZXN0ZUB0ZXN0ZS5jb20iLCJhY2NvdW50SUQiOiIwMDAwMTAwMDA0IiwidXNlcklEIjoiMTYiLCJyb2xlcyI6WyJST0xFX0NVU1RPTUVSIl19.GUc9ssFyXle0F0W6LUU2amvZ-hm7TFIDteR50WlQFUE"
+        header['Authorization'] = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYi1pbmJldiIsImF1ZCI6ImFiaS1taWNyb3NlcnZpY2VzIiwiZXhwIjoxNjE2MjM5MDIyLCJpYXQiOjE1MTYyMzkwMjIsInVwZGF0ZWRfYXQiOjExMTExMTEsIm5hbWUiOiJ1c2VyQGFiLWluYmV2LmNvbSIsImFjY291bnRJRCI6IiIsInVzZXJJRCI6IjIxMTgiLCJyb2xlcyI6WyJST0xFX0FETUlOIiwiUk9MRV9DVVNUT01FUiJdfQ.syDWOpGsH7ivV-gou7zE0eBB8yltsH-PEIEqo3oJmHo"
     elif useRootAuthentication == "true":
         header['Authorization'] = "Basic cm9vdDpyb290"
     elif useInclusionAuthentication == "true":
