@@ -113,9 +113,7 @@ def create_sku_group(sku, zone, environment):
         return sku_group_id
 
 # Input discount business rules to Cart Calculation microservice
-def input_discount_to_cart_calculation(accounts, zone, environment, skus, discount_type, discount_value, minimum_quantity):
-    deal_id = "DM-" + str(randint(1, 100000))
-
+def input_discount_to_cart_calculation(deal_id, accounts, zone, environment, skus, discount_type, discount_value, minimum_quantity):
     # Get base URL
     request_url = get_microservice_base_url(environment) + "/cart-calculation-relay/deals"
 
@@ -152,9 +150,7 @@ def input_discount_to_cart_calculation(accounts, zone, environment, skus, discou
     else:
         return response.status_code
 
-def input_stepped_discount_to_cart_calculation(accounts, zone, environment, skus, discount_type, index_range, discount_range):
-    deal_id = "DM-" + str(randint(1, 100000))
-
+def input_stepped_discount_to_cart_calculation(deal_id, accounts, zone, environment, skus, discount_type, index_range, discount_range):
     # Get base URL
     request_url = get_microservice_base_url(environment) + "/cart-calculation-relay/deals"
 
@@ -210,9 +206,7 @@ def input_stepped_discount_to_cart_calculation(accounts, zone, environment, skus
     else:
         return response.status_code
 
-def input_free_good_to_cart_calculation(accounts, zone, environment, skus, minimum_quantity, quantity):
-    deal_id = "DM-" + str(randint(1, 100000))
-
+def input_free_good_to_cart_calculation(deal_id, accounts, zone, environment, skus, minimum_quantity, quantity):
     # Get base URL
     request_url = get_microservice_base_url(environment) + "/cart-calculation-relay/deals"
 
@@ -250,9 +244,7 @@ def input_free_good_to_cart_calculation(accounts, zone, environment, skus, minim
     else:
         return response.status_code
 
-def input_stepped_free_good_to_cart_calculation(accounts, zone, environment, skus, index_range, quantity_range):
-    deal_id = "DM-" + str(randint(1, 100000))
-
+def input_stepped_free_good_to_cart_calculation(deal_id, accounts, zone, environment, skus, index_range, quantity_range):
     # Get base URL
     request_url = get_microservice_base_url(environment) + "/cart-calculation-relay/deals"
 
@@ -316,7 +308,7 @@ def input_discount_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone,
     discount_type = printDiscountTypeMenu()
     discount_value = printDiscountValueMenu(discount_type)
     promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
-    cart_response = input_discount_to_cart_calculation(accounts, zone.upper(), environment.upper(), skus, discount_type, discount_value, minimum_quantity)
+    cart_response = input_discount_to_cart_calculation(promotion_response[0]["id"], accounts, zone.upper(), environment.upper(), skus, discount_type, discount_value, minimum_quantity)
 
     if promotion_response == "false" and cart_response != "success":
         print(text.Red + "\n- [Deals] Something went wrong, please try again")
@@ -331,7 +323,7 @@ def input_stepped_discount_to_account(abi_id, accounts, deal_sku, skus, deal_typ
     discount_type = printDiscountTypeMenu()
     discount_range = printDiscountRangeMenu()
     promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
-    cart_response = input_stepped_discount_to_cart_calculation(accounts, zone.upper(), environment.upper(), skus, discount_type, index_range, discount_range)
+    cart_response = input_stepped_discount_to_cart_calculation(promotion_response[0]["id"], accounts, zone.upper(), environment.upper(), skus, discount_type, index_range, discount_range)
 
     if promotion_response == "false" and cart_response != "success":
         print(text.Red + "\n- [Deals] Something went wrong, please try again")
@@ -346,7 +338,7 @@ def input_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone
     minimum_quantity = printMinimumQuantityMenu()
     quantity = printQuantityMenu()
     promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
-    cart_response = input_free_good_to_cart_calculation(accounts, zone.upper(), environment.upper(), skus, minimum_quantity, quantity)
+    cart_response = input_free_good_to_cart_calculation(promotion_response[0]["id"], accounts, zone.upper(), environment.upper(), skus, minimum_quantity, quantity)
 
     if promotion_response == "false" and cart_response != "success":
         print(text.Red + "\n- [Deals] Something went wrong, please try again")
@@ -360,7 +352,7 @@ def input_stepped_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_ty
     index_range = printIndexRangeMenu()
     quantity_range = printQuantityRangeMenu()
     promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
-    cart_response = input_stepped_free_good_to_cart_calculation(accounts, zone.upper(), environment.upper(), skus, index_range, quantity_range)
+    cart_response = input_stepped_free_good_to_cart_calculation(promotion_response[0]["id"], accounts, zone.upper(), environment.upper(), skus, index_range, quantity_range)
 
     if promotion_response == "false" and cart_response != "success":
         print(text.Red + "\n- [Deals] Something went wrong, please try again")
