@@ -3,15 +3,12 @@ from json import dumps
 from common import *
 
 # Include credit for account on middleware
-def add_credit_to_account(accountId, zone, env):
+def add_credit_to_account(accountId, zone, env, credit, balance):
 	# Define headers
 	header = get_header_request(zone, "false", "true")
 
 	# Define URL Middleware
 	url = get_middleware_base_url(zone, env, "v5") + "/accounts/" + accountId + "/credit"
-
-	credit = input("Desire credit (Default 5000): ")
-	balance = input("Desire balance (Default 15000): ")
 
 	if credit == "":
 		credit = "5000"
@@ -39,16 +36,14 @@ def add_credit_to_account(accountId, zone, env):
 	else:
 		return response.status_code
 
+
 # Include credit for account on microservice
-def add_credit_to_account_microservice(accountId, zone, environment):
+def add_credit_to_account_microservice(accountId, zone, environment, credit, balance):
 	# Define headers
 	request_headers = get_header_request(zone, "false", "true")
 
 	# Define URL Microservice
 	request_url = get_microservice_base_url(environment) + 	"/account-relay/credits"
-
-	credit = input("Desire credit (Default 5000): ")
-	balance = input("Desire balance (Default 15000): ")
 
 	if credit == "":
 		credit = "5000"
@@ -58,7 +53,7 @@ def add_credit_to_account_microservice(accountId, zone, environment):
 
 	credit = int(credit)
 	balance = int(balance)
-	
+
 	# Body request
 	request_body = dumps({
 		"accountId": accountId,
@@ -68,7 +63,7 @@ def add_credit_to_account_microservice(accountId, zone, environment):
 		"overdue": 0,
 		"paymentTerms": None,
 		"total": (credit + balance)
-    })
+	})
 
 	# Send request
 	response = place_request("POST", request_url, request_body, request_headers)

@@ -236,9 +236,12 @@ def inputCreditAccountMicroserviceMenu():
     if account == "false":
         print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
         printFinishApplicationMenu()
-    
+
+    credit = input("Desire credit (Default 5000): ")
+    balance = input("Desire balance (Default 15000): ")
+
     # Call add credit to account function
-    credit = add_credit_to_account_microservice(abi_id, zone.upper(), environment.upper())
+    credit = add_credit_to_account_microservice(abi_id, zone.upper(), environment.upper(), credit, balance)
 
     if credit == "success":
         print(text.Green + "\n- Credit added successfully")
@@ -342,8 +345,11 @@ def inputCreditAccountMdwMenu():
     account = check_account_exists_middleware(abi_id, zone.upper(), environment.upper())
 
     if account == "success":
+        credit = input("Desire credit (Default 5000): ")
+        balance = input("Desire balance (Default 15000): ")
+
         # Call add credit to account function
-        credit = add_credit_to_account(abi_id, zone.upper(), environment.upper())
+        credit = add_credit_to_account(abi_id, zone.upper(), environment.upper(), credit, balance)
         if credit == "success":
             print(text.Green + "\n- Credit added successfully")
         else:
@@ -428,8 +434,11 @@ def createAccountMdwMenu():
         print(text.Red + "\n\n- [Products] Something went wrong, please try again")
         printFinishApplicationMenu()
 
+    credit = input("Desire credit (Default 5000): ")
+    balance = input("Desire balance (Default 15000): ")
+
     # Call add credit to account function
-    credit = add_credit_to_account(abi_id, zone.upper(), environment.upper())
+    credit = add_credit_to_account(abi_id, zone.upper(), environment.upper(), credit, balance)
 
     if credit == "success":
         print(text.Green + "\n- Credit added successfully")
