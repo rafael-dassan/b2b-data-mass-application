@@ -50,7 +50,7 @@ if __name__ == '__main__':
             raise ValueError("Execution Type is not valid", execution_type)
 
         if environment == "SIT":
-            environment = "UAT"
+            environment = "QA"
 
         execute(country, environment, execution_type)
     except Exception as err:
