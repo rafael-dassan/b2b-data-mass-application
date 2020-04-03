@@ -389,3 +389,26 @@ def request_get_offers_microservice(accountId, zone, environment, deliveryCenter
         return json_data['skus']
     else:
         print('- [Products] Something went wrong when searching for products')
+
+def check_item_enabled(sku, zone, environment):
+    # Get base URL
+    request_url = "https://b2b-services-uat.westeurope.cloudapp.azure.com/api/items/" + sku + "?includeDisabled=false"
+
+    # Get header request
+    request_headers = get_header_request(zone, "true", "false", "false", "false")
+
+    # Get body request
+    request_body = ""
+
+    # Send request
+    response = place_request("GET", request_url, request_body, request_headers)
+
+    if response.status_code == 200 and response.text != "":
+        json_data = json.loads(response.text)
+        if json_data["enabled"] == True:
+            return json_data["sku"]
+    elif response.status_code == 404:
+        return False
+    else:
+        print(text.Red + "\n- [Items] Something went wrong when searching for items")
+        finishApplication()

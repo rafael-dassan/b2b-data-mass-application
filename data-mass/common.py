@@ -543,10 +543,11 @@ def get_sku_price(abi_id, combo_item, zone, environment):
     if response.status_code == 200 and response.text != "":
         json_data = json.loads(response.text)
         for dict in json_data:
-            if dict['sku'] == combo_item:
-                return dict['price']
+            if dict["sku"] == combo_item:
+                return dict["price"]
     else:
-        print("\n- [Pricing Engine] Something went wrong when searching for prices")
+        print(text.Red + "\n- [Pricing Engine] Something went wrong when searching for prices")
+        finishApplication()
 
 def update_value_to_json(json_object, json_path, new_value):
     """Update value to JSON using JSONPath

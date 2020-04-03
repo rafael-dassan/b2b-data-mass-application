@@ -34,8 +34,8 @@ def input_combo_type_discount(abi_id, zone, environment, combo_item, discount_va
                     }
                 ],
                 "limit": {
-                    "daily": 500,
-                    "monthly": 500
+                    "daily": 200,
+                    "monthly": 200
                 },
                 "originalPrice": original_price,
                 "price": price,
@@ -93,8 +93,8 @@ def input_combo_type_free_good(abi_id, zone, environment, combo_item, combo_free
                     }
                 ],
                 "limit": {
-                    "daily": 500,
-                    "monthly": 500
+                    "daily": 200,
+                    "monthly": 200
                 },
                 "originalPrice": price,
                 "price": price,
@@ -144,8 +144,8 @@ def input_combo_free_good_only(abi_id, zone, environment, combo_free_good):
                     "skus": combo_free_good
                 },
                 "limit": {
-                    "daily": 500,
-                    "monthly": 500
+                    "daily": 200,
+                    "monthly": 200
                 },
                 "originalPrice": 0,
                 "price": 0,

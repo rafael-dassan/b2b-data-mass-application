@@ -48,7 +48,6 @@ def showMenu():
     
     printFinishApplicationMenu()
 
-
 # Input beer recommender by account on Microservice
 def inputBeerRecommenderAccountMicroserviceMenu():
     zone = printZoneMenu("false")
@@ -75,7 +74,6 @@ def inputBeerRecommenderAccountMicroserviceMenu():
         else:
             print(text.Red + "\n- [BeerRecommender] Something went wrong, please try again")
             
-
 # Input Deals to an account
 def inputDealsMenu():
     selectionStructure = printDealsMenu()
@@ -109,7 +107,14 @@ def inputDealsMenu():
         printFinishApplicationMenu()
 
     indexOffers = randint(0, (len(productOffers) - 1))
-    deal_sku = productOffers[indexOffers]
+    sku = productOffers[indexOffers]
+
+    # Check if the SKU is enabled on Items MS
+    deal_sku = check_item_enabled(sku, zone.upper(), environment.upper())
+    while deal_sku == False:
+        indexOffers = randint(0, (len(productOffers) - 1))
+        sku = productOffers[indexOffers]
+        deal_sku = check_item_enabled(sku, zone.upper(), environment.upper())
 
     skus = list()
     skus.append(deal_sku)
@@ -146,12 +151,19 @@ def inputCombosMenu():
         printFinishApplicationMenu()
 
     indexOffers = randint(0, (len(productOffers) - 1))
-    combo_item = productOffers[indexOffers]
+    sku = productOffers[indexOffers]
 
+    # Check if the SKU is enabled on Items MS
+    combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
+    while combo_item == False:
+        indexOffers = randint(0, (len(productOffers) - 1))
+        sku = productOffers[indexOffers]
+        combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
+    
     if selectionStructure == "1":
         while True:
             try:
-                discount_value = float(input(text.White + "Discount percentage (%): "))
+                discount_value = int(input(text.White + "Discount percentage (%): "))
                 break
             except ValueError:
                 print(text.Red + "\n- Invalid value")
@@ -161,12 +173,22 @@ def inputCombosMenu():
         if response != "success":
             print(text.Red + "\n- [Combo] Something went wrong while creating the combo")
             printFinishApplicationMenu()
+
     elif selectionStructure == "2":
         combo_free_good = list()
         auxIndex = 0
         while auxIndex < 3:
             indexOffers = randint(0, (len(productOffers) - 1))
-            combo_free_good.append(productOffers[indexOffers])
+            sku = productOffers[indexOffers]
+
+            # Check if the SKU is enabled on Items MS
+            combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
+            while combo_item == False:
+                indexOffers = randint(0, (len(productOffers) - 1))
+                sku = productOffers[indexOffers]
+                combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
+
+            combo_free_good.append(combo_item)
             auxIndex = auxIndex + 1
 
         response = input_combo_type_free_good(abi_id, zone, environment, combo_item, combo_free_good)
@@ -174,12 +196,22 @@ def inputCombosMenu():
         if response != "success":
             print(text.Red + "\n- [Combo] Something went wrong while creating the combo")
             printFinishApplicationMenu()
+
     else:
         combo_free_good = list()
         auxIndex = 0
         while auxIndex < 3:
             indexOffers = randint(0, (len(productOffers) - 1))
-            combo_free_good.append(productOffers[indexOffers])
+            sku = productOffers[indexOffers]
+
+            # Check if the SKU is enabled on Items MS
+            combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
+            while combo_item == False:
+                indexOffers = randint(0, (len(productOffers) - 1))
+                sku = productOffers[indexOffers]
+                combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
+                
+            combo_free_good.append(combo_item)
             auxIndex = auxIndex + 1
 
         response = input_combo_free_good_only(abi_id, zone, environment, combo_free_good)
