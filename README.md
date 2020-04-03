@@ -29,6 +29,7 @@ data-mass/
 ├── logs
     └── debug.log
 ├── account.py
+├── beer_recommender.py
 ├── combos.py
 ├── common.py
 ├── credit.py
@@ -96,7 +97,7 @@ If you find any issue, please contact one of following people listed below:
 | ------ |
 | [Eduardo Oliveira](eduardo.oliveira@ab-inbev.com) - Checkout Experience |
 | [José Vieira](jose.vieirajunior@ab-inbev.com) - Quality Management | 
-| [Alexandre Rebouças](alexandre.reboucas@ab-inbev.com) Quality Management | 
+| [Alexandre Rebouças](alexandre.reboucas@ab-inbev.com) - Quality Management | 
 
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
 

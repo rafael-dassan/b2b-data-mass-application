@@ -48,7 +48,6 @@ def showMenu():
     
     printFinishApplicationMenu()
 
-
 # Input beer recommender by account on Microservice
 def inputBeerRecommenderAccountMicroserviceMenu():
     zone = printZoneMenu("false")
@@ -75,7 +74,6 @@ def inputBeerRecommenderAccountMicroserviceMenu():
         else:
             print(text.Red + "\n- [BeerRecommender] Something went wrong, please try again")
             
-
 # Input Deals to an account
 def inputDealsMenu():
     selectionStructure = printDealsMenu()
@@ -109,7 +107,14 @@ def inputDealsMenu():
         printFinishApplicationMenu()
 
     indexOffers = randint(0, (len(productOffers) - 1))
-    deal_sku = productOffers[indexOffers]
+    sku = productOffers[indexOffers]
+
+    # Check if the SKU is enabled on Items MS
+    deal_sku = check_item_enabled(sku, zone.upper(), environment.upper())
+    while deal_sku == False:
+        indexOffers = randint(0, (len(productOffers) - 1))
+        sku = productOffers[indexOffers]
+        deal_sku = check_item_enabled(sku, zone.upper(), environment.upper())
 
     skus = list()
     skus.append(deal_sku)
@@ -127,9 +132,9 @@ def inputDealsMenu():
             
 # Input combos by account
 def inputCombosMenu():
+    selectionStructure = printCombosMenu()
     zone = printZoneMenu("false")
     environment = printEnvironmentMenu()
-    accounts = list()
     abi_id = printAccountIdMenu(zone.upper())
     
     # Call check account exists function
@@ -138,63 +143,81 @@ def inputCombosMenu():
     if account == "false":
         print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
         printFinishApplicationMenu()
-    
-    accounts.append(abi_id)
+
     productOffers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'])
 
     if len(productOffers) == 0:
-        print(text.Red + "\n- [ProductOffers] The account " + str(abi_id) + " has no products available for purchase")
+        print(text.Red + "\n- [Products] The account " + str(abi_id) + " has no products available for purchase")
         printFinishApplicationMenu()
-    
-    typeCombo = input(text.White + "Select which type of combo you want to register (1-Discount, 2-With Free Goods, 3-Only Free Goods): ")
 
-    while (str(typeCombo) != "1") and (str(typeCombo) != "2") and (str(typeCombo) != "3"):
-        print(text.Red + "\n- Invalid option")
-        typeCombo = input(text.White + "Select which type of combo you want to register (1-Discount, 2-With Free Goods, 3-Only Free Goods): ")
+    indexOffers = randint(0, (len(productOffers) - 1))
+    sku = productOffers[indexOffers]
 
-    if (str(typeCombo) == "1"):
-        skuCombo = None
+    # Check if the SKU is enabled on Items MS
+    combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
+    while combo_item == False:
         indexOffers = randint(0, (len(productOffers) - 1))
-        skuCombo = productOffers[indexOffers]
-        response = inputComboDiscount(accounts, zone, environment, skuCombo)
-        if response == "success":
-            print(text.Green + "\n- Combo successfully registered")
-        else:
-            print(text.Red + "\n- [Combo] Something went wrong, please try again")
+        sku = productOffers[indexOffers]
+        combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
+    
+    if selectionStructure == "1":
+        while True:
+            try:
+                discount_value = int(input(text.White + "Discount percentage (%): "))
+                break
+            except ValueError:
+                print(text.Red + "\n- Invalid value")
+
+        response = input_combo_type_discount(abi_id, zone, environment, combo_item, discount_value)
+
+        if response != "success":
+            print(text.Red + "\n- [Combo] Something went wrong while creating the combo")
             printFinishApplicationMenu()
 
-    elif (str(typeCombo) == "2"):
-        skuCombo = None
-        indexOffers = randint(0, (len(productOffers) - 1))
-        skuCombo = productOffers[indexOffers]
-
-        skusFreeGoods = list()
+    elif selectionStructure == "2":
+        combo_free_good = list()
         auxIndex = 0
         while auxIndex < 3:
             indexOffers = randint(0, (len(productOffers) - 1))
-            skusFreeGoods.append(productOffers[indexOffers])
+            sku = productOffers[indexOffers]
+
+            # Check if the SKU is enabled on Items MS
+            combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
+            while combo_item == False:
+                indexOffers = randint(0, (len(productOffers) - 1))
+                sku = productOffers[indexOffers]
+                combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
+
+            combo_free_good.append(combo_item)
             auxIndex = auxIndex + 1
-        
-        response = inputComboWithFreeGoods(accounts, zone, environment, skuCombo, skusFreeGoods)
-        if response == "success":
-            print(text.Green + "\n- Combo successfully registered")
-        else:
-            print(text.Red + "\n- [Combo] Something went wrong, please try again")
+
+        response = input_combo_type_free_good(abi_id, zone, environment, combo_item, combo_free_good)
+
+        if response != "success":
+            print(text.Red + "\n- [Combo] Something went wrong while creating the combo")
             printFinishApplicationMenu()
-    
+
     else:
-        skusFreeGoods = list()
+        combo_free_good = list()
         auxIndex = 0
         while auxIndex < 3:
             indexOffers = randint(0, (len(productOffers) - 1))
-            skusFreeGoods.append(productOffers[indexOffers])
+            sku = productOffers[indexOffers]
+
+            # Check if the SKU is enabled on Items MS
+            combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
+            while combo_item == False:
+                indexOffers = randint(0, (len(productOffers) - 1))
+                sku = productOffers[indexOffers]
+                combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
+                
+            combo_free_good.append(combo_item)
             auxIndex = auxIndex + 1
-        
-        response = inputComboOnlyFreeGoods(accounts, zone, environment, skusFreeGoods)
-        if response == "success":
-            print(text.Green + "\n- Combo successfully registered")
-        else:
-            print(text.Red + "\n- [Combo] Something went wrong, please try again")
+
+        response = input_combo_free_good_only(abi_id, zone, environment, combo_free_good)
+
+        if response != "success":
+            print(text.Red + "\n- [Combo] Something went wrong while creating the combo")
             printFinishApplicationMenu()
 
 # Input credit account on microservice
