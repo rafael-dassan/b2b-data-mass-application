@@ -104,7 +104,12 @@ def inputDealsMenu():
     accounts = list()
     accounts.append(abi_id)
 
-    productOffers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'])
+    if zone.upper() == "ZA":
+        # For Zones which use the middleware integration
+        productOffers = request_get_offers_middleware(abi_id, zone.upper(), environment.upper())
+    else:
+        # For Zones which use the microservice integration
+        productOffers = request_get_offers_microservice(abi_id, zone, environment, account[0]["deliveryCenterId"])
 
     if len(productOffers) == 0:
         print(text.Red + "\n- [Products] The account " + str(abi_id) + " has no available products for purchase")
