@@ -50,3 +50,6 @@ class text:
     BackgroundLightMagenta = "\033[105m"
     BackgroundLightCyan = "\033[106m"
     BackgroundWhite = "\033[107m"
+
+    # Default text color
+    default_text_color = Cyan

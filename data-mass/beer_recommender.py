@@ -5,8 +5,6 @@ from datetime import date, datetime, timedelta
 import calendar
 from products import *
 
-
-
 # Create beer recommender in microservice
 def create_beer_recommender_microservice(account_id, zone, environment, delivery_center_id):
     # Define headers
@@ -21,7 +19,7 @@ def create_beer_recommender_microservice(account_id, zone, environment, delivery
     # Check if the account has at least 25 SKUs added to it
     if len(product_offers) >= 25:
 
-        print("\nAdding beer recommenders. Please wait...")
+        print(text.default_text_color + "\nAdding recommended products. Please wait...")
 
         # Get body request for Quick Order
         request_body_quick_order = create_file_request_quick_order(request_url, request_headers, account_id, zone, product_offers)
@@ -35,24 +33,24 @@ def create_beer_recommender_microservice(account_id, zone, environment, delivery
 
         if (request_body_quick_order.status_code == 202 and request_body_quick_order.text != "[]"):
                 quick_order = "true"
-                print("\nQuick Order Items added successfull...")
+                print(text.Green + "\nQuick Order Items added successfully")
         else:
                 quick_order = "false"
-                print(text.Red + "\n- [BeerRecommender] Failed to add Quick Order Items")
+                print(text.Red + "\n- [Algo Selling] Failed to add Quick Order Items")
 
         if (request_body_forgotten_items.status_code == 202 and request_body_forgotten_items.text != "[]"):
                 forgotten_items = "true"
-                print("\nForgotten Items added successfull...")
+                print(text.Green + "\nForgotten Items added successfully")
         else:
                 forgotten_items = "false"
-                print(text.Red + "\n- [BeerRecommender] Failed to add Forgotten Items")
+                print(text.Red + "\n- [Algo Selling] Failed to add Forgotten Items")
 
         if (request_body_sell_up.status_code == 202 and request_body_sell_up.text != "[]"):
                 sell_up = "true"
-                print("\nSell Up Items added successfull...")
+                print(text.Green + "\nUp Sell Items added successfully")
         else:
                 sell_up = "false"
-                print(text.Red + "\n- [BeerRecommender] Failed to add Sell Up Items")
+                print(text.Red + "\n- [Algo Selling] Failed to add Up Sell Items")
 
         if (quick_order == "true") and (forgotten_items == "true") and (sell_up == "true"):
             return "true"

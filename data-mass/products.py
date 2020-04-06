@@ -87,7 +87,7 @@ def request_get_products_middleware(zone, environment):
         json_data = loads(response.text)
         return json_data
     else:
-        print("- [Product] Something went wrong, please try again")
+        print(text.Red + "\n- [Product] Something went wrong, please try again")
 
 
 # Slices a list of products, returning the first X elements
@@ -122,7 +122,7 @@ def product_post_requests_middleware(product_data, abi_id, zone, environment):
 def request_post_products_account_middleware(abi_id, zone, environment, products_data):
     results = []
 
-    print('\nAdding products. Please wait...')
+    print(text.default_text_color + '\nAdding products. Please wait...')
     last = datetime.now()
     with concurrent.futures.ThreadPoolExecutor() as executor:
         futures = [executor.submit(product_post_requests_middleware, product_data, abi_id, zone, environment) for
@@ -132,7 +132,7 @@ def request_post_products_account_middleware(abi_id, zone, environment, products
 
     now = datetime.now()
     lapsed = (now - last).seconds
-    print('{}\n- Products added: {} / failed: {}. Completed in {} seconds.'.format(text.LightGreen,
+    print(text.default_text_color + '{}\n- Products added: {} / failed: {}. Completed in {} seconds.'.format(text.Green,
                                                                                    results.count('true'),
                                                                                    results.count('false'), lapsed))
     return 'success'
@@ -157,7 +157,7 @@ def request_post_price_microservice(abi_id, zone, environment, sku_product, prod
     # Place request
     response = place_request("PUT", request_url, request_body, request_headers)
     if response.status_code != 202:
-        print('- [Product] Something went wrong in define product price SKU ' + str(sku_product) + ' on microservice price engine')
+        print(text.Red + '\n- [Product] Something went wrong in define product price SKU ' + str(sku_product) + ' on microservice price engine')
         return 'false'
     
     return 'true'
@@ -205,7 +205,7 @@ def request_post_price_middleware(zone, environment, sku_product, product_price_
     # Place request
     response = place_request("POST", request_url, request_body, request_headers)
     if response.status_code != 202:
-        print('- [Product] Something went wrong in define product price SKU ' + str(sku_product) + ' on middleware')
+        print(text.Red + '\n- [Product] Something went wrong in define product price SKU ' + str(sku_product) + ' on middleware')
         return 'false'
     
     return 'true'
@@ -225,7 +225,7 @@ def request_post_price_inclusion_middleware(zone, environment, sku_product, prod
     # Place request
     response = place_request("POST", request_url, request_body, request_headers)
     if response.status_code != 202:
-        print('- [Product] Something went wrong in post product SKU ' + str(sku_product) + ' on account')
+        print(text.Red + '\n- [Product] Something went wrong in post product SKU ' + str(sku_product) + ' on account')
         return 'false'
     
     return 'true'
@@ -246,7 +246,7 @@ def add_products_to_account_middleware(abi_id, zone, environment):
     all_products_middleware = request_get_products_middleware(zone, environment)
     maximum = min(15, len(all_products_middleware))
 
-    qtd = input("Number of products you want to add (Maximum: " + str(len(all_products_middleware)) + " - Default: " + str(maximum) + "): ")
+    qtd = input(text.default_text_color + "Number of products you want to add (Maximum: " + str(len(all_products_middleware)) + " - Default: " + str(maximum) + "): ")
     if qtd == "":
         qtd = maximum
 
@@ -267,7 +267,7 @@ def add_products_to_account_microservice(abi_id, zone, environment, delivery_cen
     all_products_microservice = request_get_products_microservice(zone, environment)
     maximum = min(15, len(all_products_microservice))
 
-    qtd = input("Number of products you want to add (Maximum: " + str(len(all_products_microservice)) + " - Default " + str(maximum) + "):")
+    qtd = input(text.default_text_color + "Number of products you want to add (Maximum: " + str(len(all_products_microservice)) + " - Default " + str(maximum) + "):")
     if qtd == "":
         qtd = maximum
 
@@ -299,7 +299,7 @@ def request_get_products_microservice(zone, environment):
         json_data = loads(response.text)
         return json_data['items']
     else:
-        print('- [Product] Something went wrong in search products on microservice')
+        print(text.Red + '\n- [Product] Something went wrong in search products on microservice')
 
 
 # Does the necessary requests to add a product in a microservice-based zone
@@ -323,7 +323,7 @@ def product_post_requests_microservice(product_data, abi_id, zone, environment, 
 # Post requests product price and product inclusion in account
 def request_post_products_account_microservice(abi_id, zone, environment, delivery_center_id, products_data):
     results = []
-    print('\nAdding products. Please wait...')
+    print(text.default_text_color + '\nAdding products. Please wait...')
     last = datetime.now()
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -334,7 +334,7 @@ def request_post_products_account_microservice(abi_id, zone, environment, delive
 
     now = datetime.now()
     lapsed = (now - last).seconds
-    print('{}\n- Products added: {} / failed: {}. Completed in {} seconds.'.format(text.LightGreen,
+    print(text.default_text_color + '{}\n- Products added: {} / failed: {}. Completed in {} seconds.'.format(text.Green,
                                                                                    results.count('true'),
                                                                                    results.count('false'), lapsed))
     return 'success'
@@ -357,7 +357,7 @@ def request_post_price_inclusion_microservice(zone, environment, sku_product, pr
     response = place_request("POST", request_url, request_body, request_headers)
 
     if response.status_code != 202:
-        print('- [Product] Something went wrong in post product SKU ' + str(sku_product) + ' on account product-assortment-relay')
+        print(text.Red + '\n- [Product] Something went wrong in post product SKU ' + str(sku_product) + ' on account product-assortment-relay')
         return 'false'
 
     return 'true'
@@ -388,7 +388,7 @@ def request_get_offers_microservice(accountId, zone, environment, deliveryCenter
         json_data = loads(response.text)
         return json_data['skus']
     else:
-        print('- [Products] Something went wrong when searching for products')
+        print(text.Red + '\n- [Products] Something went wrong when searching for products')
 
 # Get offers by account on middleware
 def request_get_offers_middleware(abi_id, zone, environment):
