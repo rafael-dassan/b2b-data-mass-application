@@ -55,7 +55,7 @@ def input_combo_type_discount(abi_id, zone, environment, combo_item, discount_va
 
     if response.status_code == 201:
         print(text.Green + "\n- Combo successfully registered")
-        print(text.White + "\n- Combo ID: " + combo_id)
+        print(text.default_text_color + "\n- Combo ID: " + combo_id)
         update_combo_consumption(abi_id, zone, environment, combo_id)
         return "success"
     else:
@@ -114,7 +114,7 @@ def input_combo_type_free_good(abi_id, zone, environment, combo_item, combo_free
 
     if response.status_code == 201:
         print(text.Green + "\n- Combo successfully registered")
-        print(text.White + "\n- Combo ID: " + combo_id)
+        print(text.default_text_color + "\n- Combo ID: " + combo_id)
         update_combo_consumption(abi_id, zone, environment, combo_id)
         return "success"
     else:
@@ -165,7 +165,7 @@ def input_combo_free_good_only(abi_id, zone, environment, combo_free_good):
 
     if response.status_code == 201:
         print(text.Green + "\n- Combo successfully registered")
-        print(text.White + "\n- Combo ID: " + combo_id)
+        print(text.default_text_color + "\n- Combo ID: " + combo_id)
         update_combo_consumption(abi_id, zone, environment, combo_id)
         return "success"
     else:

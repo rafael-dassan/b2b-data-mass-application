@@ -1,4 +1,3 @@
-import webbrowser
 from account import create_account, check_account_exists_middleware, create_account_ms, check_account_exists_microservice
 from products import *
 from credit import add_credit_to_account, add_credit_to_account_microservice
@@ -10,8 +9,6 @@ from random import randint
 from combos import *
 from deals import *
 from user import *
-
-default_text_color = text.Cyan
 
 def showMenu():
     clearTerminal()
@@ -37,11 +34,6 @@ def showMenu():
             "6": inputDealsMenu,
             "7": inputCombosMenu,
             "8": createUserMsMenu
-        }
-    elif selectionStructure == "3":
-        switcher = {
-            "0": finishApplication,
-            "1": openWeb
         }
     else:
         finishApplication()
@@ -70,13 +62,13 @@ def inputBeerRecommenderAccountMicroserviceMenu():
     beer_recommender = create_beer_recommender_microservice(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'])
 
     if beer_recommender == "true":
-        print(text.Green + "\n- [Beer Recommender] Recommenders added successfull")
-        print(text.Yellow+ "\n- [Beer Recommender] **  SELL UP TRIGGERS: Products Added to Cart: 03  /  Cart Viewed with Products: 01  **")
+        print(text.Green + "\n- [Algo Selling] Recommended products added successfully")
+        print(text.Yellow+ "\n- [Algo Selling] **  UP SELL TRIGGERS: Products Added to Cart: 03  /  Cart Viewed with Products: 01  **")
     else:
         if beer_recommender == "error25":
-            print(text.Red + "\n- [BeerRecommender] The account must have at least 25 products added to proceed")
+            print(text.Red + "\n- [Algo Selling] The account must have at least 25 products added to proceed")
         else:
-            print(text.Red + "\n- [BeerRecommender] Something went wrong, please try again")
+            print(text.Red + "\n- [Algo Selling] Something went wrong, please try again")
             
 # Input Deals to an account
 def inputDealsMenu():
@@ -172,7 +164,7 @@ def inputCombosMenu():
     if selectionStructure == "1":
         while True:
             try:
-                discount_value = int(input(text.White + "Discount percentage (%): "))
+                discount_value = int(input(text.default_text_color + "Discount percentage (%): "))
                 break
             except ValueError:
                 print(text.Red + "\n- Invalid value")
@@ -242,8 +234,8 @@ def inputCreditAccountMicroserviceMenu():
         print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
         printFinishApplicationMenu()
 
-    credit = input("Desire credit (Default 5000): ")
-    balance = input("Desire balance (Default 15000): ")
+    credit = input(text.default_text_color + "Desire credit (Default 5000): ")
+    balance = input(text.default_text_color + "Desire balance (Default 15000): ")
 
     # Call add credit to account function
     credit = add_credit_to_account_microservice(abi_id, zone.upper(), environment.upper(), credit, balance)
@@ -350,8 +342,8 @@ def inputCreditAccountMdwMenu():
     account = check_account_exists_middleware(abi_id, zone.upper(), environment.upper())
 
     if account == "success":
-        credit = input("Desire credit (Default 5000): ")
-        balance = input("Desire balance (Default 15000): ")
+        credit = input(text.default_text_color + "Desire credit (Default 5000): ")
+        balance = input(text.default_text_color + "Desire balance (Default 15000): ")
 
         # Call add credit to account function
         credit = add_credit_to_account(abi_id, zone.upper(), environment.upper(), credit, balance)
@@ -411,10 +403,10 @@ def createAccountMdwMenu():
     name = printNameMenu()
     payment_method = printPaymentMethodMenu(zone.upper())
 
-    option_include = input(default_text_color + "Do you want to include the minimum order parameter? y/N: ")
+    option_include = input(text.default_text_color + "Do you want to include the minimum order parameter? y/N: ")
     while option_include == "" or validateYesOrNotOption(option_include.upper()) == "false":
         print(text.Red + "\n- Invalid option\n")
-        option_include = input(default_text_color + "Do you want to include the minimum order parameter? y/N: ")
+        option_include = input(text.default_text_color + "Do you want to include the minimum order parameter? y/N: ")
 
     if option_include.upper() == "Y":
         minimum_order = printMinimumOrderMenu()
@@ -439,8 +431,8 @@ def createAccountMdwMenu():
         print(text.Red + "\n\n- [Products] Something went wrong, please try again")
         printFinishApplicationMenu()
 
-    credit = input("Desire credit (Default 5000): ")
-    balance = input("Desire balance (Default 15000): ")
+    credit = input(text.default_text_color + "Desire credit (Default 5000): ")
+    balance = input(text.default_text_color + "Desire balance (Default 15000): ")
 
     # Call add credit to account function
     credit = add_credit_to_account(abi_id, zone.upper(), environment.upper(), credit, balance)
@@ -470,10 +462,10 @@ def createAccountMsMenu():
     name = printNameMenu()
     payment_method = printPaymentMethodMenu(zone.upper())
 
-    option_include = input(default_text_color + "Do you want to include the minimum order parameter? y/N: ")
+    option_include = input(text.default_text_color + "Do you want to include the minimum order parameter? y/N: ")
     while option_include == "" or validateYesOrNotOption(option_include.upper()) == "false":
         print(text.Red + "\n- Invalid option\n")
-        option_include = input(default_text_color + "Do you want to include the minimum order parameter? y/N: ")
+        option_include = input(text.default_text_color + "Do you want to include the minimum order parameter? y/N: ")
 
     if option_include.upper() == "Y":
         minimum_order = printMinimumOrderMenu()
@@ -567,40 +559,12 @@ def createUserMsMenu():
 
     printFinishApplicationMenu()
 
-
-# Open browser with correct environment
-def openWeb():
-    zone = printZoneMenu('false')
-    environment = printEnvironmentMenu()
-    if environment.upper() == "UAT":
-        environment = "test"
-        if zone.upper() == "AR":
-            zone = "las-ar"
-        elif zone.upper() == "CL":
-            zone = "conv-cl-mitienda"
-        elif zone.upper() == "DO":
-            zone = "conv-micerveceria"
-        elif zone.upper() == "ZA":
-            zone = "conv-sabconnect"
-
-    elif environment.upper() == "QA":
-        environment = "qa-se"
-        if zone.upper() == "AR":
-            zone = "las-ar"
-        elif zone.upper() == "CL":
-            zone = "las-ch"
-        elif zone.upper() == "DO":
-            zone = "dr"
-
-    url = "https://" + environment + "-" + zone.lower() + ".abi-sandbox.net"
-    webbrowser.open(url)
-
 # Print Finish Menu application
 def printFinishApplicationMenu():
-    finish = input(default_text_color + "\nDo you want to finish the application? y/N: ")
+    finish = input(text.default_text_color + "\nDo you want to finish the application? y/N: ")
     while validateYesOrNotOption(finish.upper()) == "false":
         print(text.Red + "\n- Invalid option")
-        finish = input(default_text_color + "\nDo you want to finish the application? y/N: ")
+        finish = input(text.default_text_color + "\nDo you want to finish the application? y/N: ")
 
     if finish.upper() == "Y":
         finishApplication()
@@ -609,10 +573,10 @@ def printFinishApplicationMenu():
 
 # Print alternative delivery date menu application
 def printAlternativeDeliveryDateMenu():
-    isAlternativeDeliveryDate = input(default_text_color + "\nDo you want to register an alternative delivery date? y/N: ")
+    isAlternativeDeliveryDate = input(text.default_text_color + "\nDo you want to register an alternative delivery date? y/N: ")
     while validateAlternativeDeliveryDate(isAlternativeDeliveryDate.upper()) == "false":
         print(text.Red + "\n- Invalid option")
-        isAlternativeDeliveryDate = input(default_text_color + "\nDo you want to register an alternative delivery date? y/N: ")
+        isAlternativeDeliveryDate = input(text.default_text_color + "\nDo you want to register an alternative delivery date? y/N: ")
 
     return isAlternativeDeliveryDate
 
