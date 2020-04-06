@@ -390,6 +390,31 @@ def request_get_offers_microservice(accountId, zone, environment, deliveryCenter
     else:
         print('- [Products] Something went wrong when searching for products')
 
+# Get offers by account on middleware
+def request_get_offers_middleware(abi_id, zone, environment):
+    # Get base URL
+    request_url = "https://b2b-services-uat.westeurope.cloudapp.azure.com/api/v1/middleware-relay/products/offers?accountId=" + abi_id
+
+    # Get header request
+    headers = get_header_request(zone, "true", "false", "false", "false")
+
+    # Get body request
+    request_body = ""
+
+    # Place request
+    response = place_request("GET", request_url, request_body, headers)
+    
+    if response.status_code == 200 and response.text != "":
+        json_data = loads(response.text)
+        sku_list = list()
+        for dict in json_data:
+            sku = dict["sku"]
+            sku_list.append(sku)
+        return sku_list
+    else:
+        print(text.Red + "\n- [Products] Something went wrong when searching for products")
+        finishApplication()
+
 def check_item_enabled(sku, zone, environment):
     # Get base URL
     request_url = "https://b2b-services-uat.westeurope.cloudapp.azure.com/api/items/" + sku + "?includeDisabled=false"
