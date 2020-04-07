@@ -84,6 +84,36 @@ def validateCountryInUserCreation(country):
     value = switcher.get(country, "false")
     return value
 
+def validate_zone_for_deals(zone):
+    switcher = {
+        "BR": "true",
+        "CO": "true",
+        "DO": "true",
+        "ZA": "true"
+    }
+
+    value = switcher.get(zone, "false")
+    return value
+
+def validate_zone_for_combos(zone):
+    switcher = {
+        "BR": "true",
+        "DO": "true"
+    }
+
+    value = switcher.get(zone, "false")
+    return value
+
+def validate_zone_for_recommender(zone):
+    switcher = {
+        "BR": "true",
+        "DO": "true",
+        "ZA": "true"
+    }
+
+    value = switcher.get(zone, "false")
+    return value
+
 # Validate account structure
 def validateStructure(option):
     if option == "1" or option == "2" or option == "3" or option == "4":
@@ -154,7 +184,7 @@ def get_header_request(header_country, useJwtAuthorization="false", useRootAuthe
     }
 
     if useJwtAuthorization == "true":
-        header['Authorization'] = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYi1pbmJldiIsImF1ZCI6ImFiaS1taWNyb3NlcnZpY2VzIiwiZXhwIjoxNjE2MjM5MDIyLCJpYXQiOjE1MTYyMzkwMjIsInVwZGF0ZWRfYXQiOjExMTExMTEsIm5hbWUiOiJ1c2VyQGFiLWluYmV2LmNvbSIsImFjY291bnRJRCI6IiIsInVzZXJJRCI6IjIxMTgiLCJyb2xlcyI6WyJST0xFX0FETUlOIiwiUk9MRV9DVVNUT01FUiJdfQ.syDWOpGsH7ivV-gou7zE0eBB8yltsH-PEIEqo3oJmHo"
+        header['Authorization'] = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYi1pbmJldiIsImF1ZCI6ImFiaS1taWNyb3NlcnZpY2VzIiwiZXhwIjoxNjA2Njk0NDAwLCJpYXQiOjE1MzY5NjMyNTcsInVwZGF0ZWRfYXQiOjE1MzY5NjMyNTcsIm5hbWUiOiJmaWxpcGVyaWJlaXJvKzFAY2lhbmR0LmNvbSIsImFjY291bnRJRCI6IjU1MDE1MCIsInVzZXJJRCI6IjExIiwicm9sZXMiOlsiUk9MRV9DVVNUT01FUiJdfQ.q1kb8Kb6OO9ewNo82WQdNwmrfgZtI_0dB9jq3j0XOUk"
     elif useRootAuthentication == "true":
         header['Authorization'] = "Basic cm9vdDpyb290"
     elif useInclusionAuthentication == "true":
@@ -449,6 +479,33 @@ def printZoneMenu(isMiddleware="true"):
         while validateZone("false", zone.upper()) == "false":
             print(text.Red + "\n- Invalid option\n")
             zone = input(text.default_text_color + "Zone (ZA, AR, CL, DO, BR, CO): ")
+
+    return zone.upper()
+
+# Print zone menu for deals
+def print_zone_menu_for_deals():
+    zone = input(text.default_text_color + "Zone (BR, CO, DO, ZA): ")
+    while validate_zone_for_deals(zone.upper()) == "false":
+        print(text.Red + "\n- Invalid option\n")
+        zone = input(text.default_text_color + "Zone (BR, CO, DO, ZA): ")
+
+    return zone.upper()
+
+# Print zone menu for combos
+def print_zone_menu_for_combos():
+    zone = input(text.default_text_color + "Zone (BR, DO): ")
+    while validate_zone_for_combos(zone.upper()) == "false":
+        print(text.Red + "\n- Invalid option\n")
+        zone = input(text.default_text_color + "Zone (BR, DO): ")
+
+    return zone.upper()
+
+# Print zone menu for recommender
+def print_zone_menu_for_recommender():
+    zone = input(text.default_text_color + "Zone (BR, DO, ZA): ")
+    while validate_zone_for_recommender(zone.upper()) == "false":
+        print(text.Red + "\n- Invalid option\n")
+        zone = input(text.default_text_color + "Zone (BR, DO, ZA): ")
 
     return zone.upper()
 
