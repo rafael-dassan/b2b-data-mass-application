@@ -26,6 +26,9 @@ data-mass/
     └── text.py
 ├── data
     └── create_account_payload.json
+    └── create_beer_recommender_payload.json
+    └── create_beer_recommender_sell_up_payload.json
+├── mass_populator
 ├── logs
     └── debug.log
 ├── account.py
@@ -36,8 +39,10 @@ data-mass/
 ├── deals.py
 ├── delivery_window.py
 ├── main.py
+├── populate.py
 ├── products.py
 ├── requirements.txt
+├── user.py
 ```
 
 | Directory | Description |

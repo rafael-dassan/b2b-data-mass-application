@@ -46,7 +46,7 @@ def showMenu():
 
 # Input beer recommender by account on Microservice
 def inputBeerRecommenderAccountMicroserviceMenu():
-    zone = printZoneMenu("false")
+    zone = print_zone_menu_for_recommender()
     environment = printEnvironmentMenu()
     abi_id = printAccountIdMenu(zone.upper())
 
@@ -57,23 +57,24 @@ def inputBeerRecommenderAccountMicroserviceMenu():
         print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
         printFinishApplicationMenu()
 
-    
     # Call function to add Beer Recommender to the account
     beer_recommender = create_beer_recommender_microservice(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'])
 
     if beer_recommender == "true":
-        print(text.Green + "\n- [Algo Selling] Recommended products added successfully")
+        print(text.Green + "\n- [Algo Selling] All recommended products were added successfully")
         print(text.Yellow+ "\n- [Algo Selling] **  UP SELL TRIGGERS: Products Added to Cart: 03  /  Cart Viewed with Products: 01  **")
     else:
         if beer_recommender == "error25":
-            print(text.Red + "\n- [Algo Selling] The account must have at least 25 products added to proceed")
+            print(text.Red + "\n- [Algo Selling] The account must have at least 25 enabled products to proceed")
+            printFinishApplicationMenu()
         else:
             print(text.Red + "\n- [Algo Selling] Something went wrong, please try again")
+            printFinishApplicationMenu()
             
 # Input Deals to an account
 def inputDealsMenu():
     selectionStructure = printDealsMenu()
-    zone = printZoneMenu("false")
+    zone = print_zone_menu_for_deals()
     environment = printEnvironmentMenu()
     abi_id = printAccountIdMenu(zone.upper())
 
@@ -134,7 +135,7 @@ def inputDealsMenu():
 # Input combos by account
 def inputCombosMenu():
     selectionStructure = printCombosMenu()
-    zone = printZoneMenu("false")
+    zone = print_zone_menu_for_combos()
     environment = printEnvironmentMenu()
     abi_id = printAccountIdMenu(zone.upper())
     

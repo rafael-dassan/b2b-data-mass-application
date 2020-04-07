@@ -285,10 +285,10 @@ def add_products_to_account_microservice(abi_id, zone, environment, delivery_cen
 def request_get_products_microservice(zone, environment):
 
     # Get header request
-    request_headers = get_header_request(zone, 'true')
+    request_headers = get_header_request(zone, "true", "false", "false", "false")
 
     # Get url base
-    request_url = get_microservice_base_url(environment) + "/items"
+    request_url = get_microservice_base_url(environment) + "/items/?includeDeleted=false&includeDisabled=false"
 
     # Get body request
     request_body = ""
@@ -393,7 +393,7 @@ def request_get_offers_microservice(accountId, zone, environment, deliveryCenter
 # Get offers by account on middleware
 def request_get_offers_middleware(abi_id, zone, environment):
     # Get base URL
-    request_url = "https://b2b-services-uat.westeurope.cloudapp.azure.com/api/v1/middleware-relay/products/offers?accountId=" + abi_id
+    request_url = "https://b2b-services-" + environment.lower() + ".westeurope.cloudapp.azure.com/api/v1/middleware-relay/products/offers?accountId=" + abi_id
 
     # Get header request
     headers = get_header_request(zone, "true", "false", "false", "false")
@@ -417,7 +417,7 @@ def request_get_offers_middleware(abi_id, zone, environment):
 
 def check_item_enabled(sku, zone, environment):
     # Get base URL
-    request_url = "https://b2b-services-uat.westeurope.cloudapp.azure.com/api/items/" + sku + "?includeDisabled=false"
+    request_url = get_microservice_base_url(environment) + "/items/" + sku + "?includeDisabled=false"
 
     # Get header request
     request_headers = get_header_request(zone, "true", "false", "false", "false")
