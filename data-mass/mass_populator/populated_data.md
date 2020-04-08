@@ -18,28 +18,33 @@ Only ZA has also the two Accounts created for Microservice and Middleware (check
 
 #### AR
 
-- Account 1 created with ID <**386041**>, products <>, name <**NO RUTEAR B2B**>, payment method <**CASH**> and with liquor license.
-- Account 2 created with ID <**0000000001**>, products <>, name <**ACCOUNT 01**>, payment method <**CASH**> and with liquor license.
+- Account 1: created with ID **5444385012**, name **AR_POC_001**, payment method **[CASH]** and with liquor license.
+- Account 2: created with ID **9932094352**, name **AR_POC_002**, payment method **[CASH]** and with liquor license.
+- Account 3: created with ID **1669325565**, name **AR_POC_003**, payment method **[CASH]** and with liquor license.
 
 #### BR
 
-- Account 1 created with ID <**0501000002**>, products <>, name <**BR_WEB_MULTI**>, payment method <**CASH,BANK_SLIP**> and with liquor license.
-- Account 2 created with ID <**0501999999**>, products <>, name <**BR_ASSOC_01**>, payment method <**CASH,BANK_SLIP**> and with liquor license.
+- Account 1: created with ID **99481543000135**, name **BR_POC_001**, payment method **[CASH, BANK_SLIP]** and with liquor license.
+- Account 2: created with ID **56338831000122**, name **BR_POC_001**, payment method **[CASH, BANK_SLIP]** and with liquor license.
+- Account 3: created with ID **42282891000166**, name **BR_POC_001**, payment method **[CASH, BANK_SLIP]** and with liquor license.
 
 #### CL
 
-- Account 1 created with ID <**100006**>, products <>, name <**NO RUTEAR B2B**>, payment method <**CASH**> and with liquor license.
-- Account 2 created with ID <**0301999999**>, products <>, name <**CL_ASSOC_01**>, payment method <**CASH**> and with liquor license.
+- Account 1: created with ID **2323434554**, name **CL_POC_001**, payment method **[CASH]** and with liquor license.
+- Account 2: created with ID **1020303040**, name **CL_POC_002**, payment method **[CASH]** and with liquor license.
+- Account 3: created with ID **3325534210**, name **CL_POC_003**, payment method **[CASH]** and with liquor license.
 
 #### DO
 
-- Account 1 created with ID <**0101000002**>, products <>, name <**DR_WEB_MULTI**>, payment method <**CASH,CREDIT**> and with liquor license.
-- Account 2 created with ID <**0101999999**>, products <>, name <**DR_ASSOC_01**>, payment method <**CASH,CREDIT**> and with liquor license.
+- Account 1: created with ID **9883300001**, name **DO_POC_001**, payment method **[CASH, CREDIT]** and with liquor license.
+- Account 2: created with ID **9883300002**, name **DO_POC_002**, payment method **[CASH, CREDIT]** and with liquor license.
+- Account 3: created with ID **9883300003**, name **DO_POC_003**, payment method **[CASH, CREDIT]** and with liquor license.
 
 #### ZA
 
-- Account 1 created with ID <**0201000002**>, products <>, name <**ZA_WEB_MULTI**>, payment method <**CASH**> and with liquor license.
-- Account 2 created with ID <**0201999999**>, products <>, name <**ZA_ASSOC_01**>, payment method <**CASH**> and with liquor license.
+- Account 1: created with ID **9883300101**, name **ZA_POC_001**, payment method **[CASH]** and with liquor license.
+- Account 2: created with ID **9883300102**, name **ZA_POC_002**, payment method **[CASH]** and with liquor license.
+- Account 3: created with ID **9883300103**, name **ZA_POC_003**, payment method **[CASH]** and with liquor license.
 
 ### Products
 
