@@ -48,7 +48,7 @@ def showMenu():
 
 # Input SKU products by account on Microservice
 def inputProductsInventoryAccountMicroserviceMenu():
-    zone = printZoneMenu("false")
+    zone = print_zone_menu_for_inventory()
     environment = printEnvironmentMenu()
     abi_id = printAccountIdMenu(zone.upper())
 
@@ -67,9 +67,14 @@ def inputProductsInventoryAccountMicroserviceMenu():
         product_offers = display_available_products_account(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'])
 
         if product_offers == "true":
-            print("OK")
+            print(text.Green + "\n- [Products Inventory] The inventory of the SKU has been added successfully")
         else:
-            print("Not OK")
+            if product_offers == "error_len":
+                print(text.Red + "\n- [Products Inventory] There are no products available in the chosen account")
+                printFinishApplicationMenu()
+            else:
+                print(text.Red + "\n- [Products Inventory] Something went wrong, please try again")
+                printFinishApplicationMenu()
     else:
         print(text.Red + "\n- [Products Inventory] The account has no products inside. Use the menu option 02 to add them first.")
         printFinishApplicationMenu()

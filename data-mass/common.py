@@ -84,6 +84,14 @@ def validateCountryInUserCreation(country):
     value = switcher.get(country, "false")
     return value
 
+def validate_zone_for_inventory(zone):
+    switcher = {
+        "ZA": "true",
+    }
+
+    value = switcher.get(zone, "false")
+    return value
+
 def validate_zone_for_deals(zone):
     switcher = {
         "BR": "true",
@@ -480,6 +488,15 @@ def printZoneMenu(isMiddleware="true"):
         while validateZone("false", zone.upper()) == "false":
             print(text.Red + "\n- Invalid option\n")
             zone = input(text.default_text_color + "Zone (ZA, AR, CL, DO, BR, CO): ")
+
+    return zone.upper()
+
+# Print zone menu for inventory
+def print_zone_menu_for_inventory():
+    zone = input(text.default_text_color + "Zone (ZA): ")
+    while validate_zone_for_inventory(zone.upper()) == "false":
+        print(text.Red + "\n- Invalid option\n")
+        zone = input(text.default_text_color + "Zone (ZA): ")
 
     return zone.upper()
 
