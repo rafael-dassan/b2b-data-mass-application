@@ -258,9 +258,10 @@ def printAvailableOptions(selectionStructure):
         print(text.default_text_color + str(4), text.Yellow + "Input delivery window")
         if selectionStructure == "2":
             print(text.default_text_color + str(5), text.Yellow + "Input recommended products")
-            print(text.default_text_color + str(6), text.Yellow + "Input deals")
-            print(text.default_text_color + str(7), text.Yellow + "Input combos")
-            print(text.default_text_color + str(8), text.Yellow + "Create User")
+            print(text.default_text_color + str(6), text.Yellow + "Input quantity to product")
+            print(text.default_text_color + str(7), text.Yellow + "Input deals")
+            print(text.default_text_color + str(8), text.Yellow + "Input combos")
+            print(text.default_text_color + str(9), text.Yellow + "Create User")
 
         print(text.default_text_color + str(0), text.Yellow + "Close application")
         selection = input(text.default_text_color + "\nPlease select: ")
