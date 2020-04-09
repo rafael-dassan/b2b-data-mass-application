@@ -1,27 +1,54 @@
 from account import create_account_ms
 from account import create_account
+from delivery_window import create_delivery_window_microservice
+from delivery_window import create_delivery_window_middleware
 
 
 def populate_accounts(country, environment):
-    if "success" != create_account_ms("9883300101", "ZA_POC_001", ["CASH"], None, country, environment):
-        print("Fail on populate account 9883300101 on Microservice.")
-
-    if "success" != create_account_ms("9883300102", "ZA_POC_002", ["CASH"], None, country, environment):
-        print("Fail on populate account 9883300102 on Microservice.")
-
-    if "success" != create_account_ms("9883300103", "ZA_POC_003", ["CASH"], None, country, environment):
-        print("Fail on populate account 9883300103 on Microservice.")
-
-    if "success" != create_account("9883300101", "ZA_POC_001", country, ["CASH"], environment, None):
-        print("Fail on populate account 9883300101 on Middleware.")
-
-    if "success" != create_account("9883300102", "ZA_POC_002", country, ["CASH"], environment, None):
-        print("Fail on populate account 9883300102 on Middleware.")
-
-    if "success" != create_account("9883300103", "ZA_POC_003", country, ["CASH"], environment, None):
-        print("Fail on populate account 9883300103 on Middleware.")
+    populate_poc1(country, environment)
+    populate_poc2(country, environment)
+    populate_poc3(country, environment)
 
     print("Accounts populating finalized.")
 
 
+# Populate an account
+def populate_account(country, environment, account_id, account_name):
+    if "success" != create_account_ms(account_id, account_name, ["CASH"], None, country, environment):
+        print("Fail on populate account " + account_id + ".")
+
+    if "success" != create_account(account_id, account_name, country, ["CASH"], environment, None):
+        print("Fail on populate account " + account_id + " on Middleware.")
+
+
+# Populate the delivery window for an account
+def populate_delivery_window(country, environment, account_id):
+    account_data = {
+        "deliveryScheduleId": account_id,
+        "accountId": account_id
+    }
+    if "success" != create_delivery_window_microservice(account_id, country, environment, account_data, "false"):
+        print("Fail on populate delivery window for account " + account_id + ".")
+
+    if "success" != create_delivery_window_middleware(account_id, country, environment):
+        print("Fail on populate delivery window for account " + account_id + " on Middleware.")
+
+
+# Populate the POC 1
+def populate_poc1(country, environment):
+    account_id = "9883300101"
+    populate_account(country, environment, account_id, "ZA_POC_001")
+    populate_delivery_window(country, environment, account_id)
+
+
+# Populate the POC 2
+def populate_poc2(country, environment):
+    account_id = "9883300102"
+    populate_account(country, environment, account_id, "ZA_POC_002")
+    populate_delivery_window(country, environment, account_id)
+
+
+# Populate the POC 3
+def populate_poc3(country, environment):
+    populate_account(country, environment, "9883300103", "ZA_POC_003")
 
