@@ -3,6 +3,7 @@ from products import *
 from credit import add_credit_to_account, add_credit_to_account_microservice
 from delivery_window import create_delivery_window_middleware, create_delivery_window_microservice, validateAlternativeDeliveryDate
 from beer_recommender import *
+from inventory import *
 from common import *
 from classes.text import text
 from random import randint
@@ -31,9 +32,10 @@ def showMenu():
             "3": inputCreditAccountMicroserviceMenu,
             "4": inputDeliveryWindowAccountMicroserviceMenu,
             "5": inputBeerRecommenderAccountMicroserviceMenu,
-            "6": inputDealsMenu,
-            "7": inputCombosMenu,
-            "8": createUserMsMenu
+            "6": inputInventoryToProduct,
+            "7": inputDealsMenu,
+            "8": inputCombosMenu,
+            "9": createUserMsMenu
         }
     else:
         finishApplication()
@@ -43,6 +45,39 @@ def showMenu():
         function()
     
     printFinishApplicationMenu()
+
+# Input Inventory to a SKU
+def inputInventoryToProduct():
+    zone = print_zone_menu_for_inventory()
+    environment = printEnvironmentMenu()
+    abi_id = printAccountIdMenu(zone.upper())
+
+    # Call check account exists function
+    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+
+    if account == "false":
+        print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
+        printFinishApplicationMenu()
+
+    # Call function to check if the account has products inside
+    products_inventory_account = check_products_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+
+    if products_inventory_account == "success":
+        # Call function to display the SKUs on the screen
+        product_offers = display_available_products_account(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'])
+
+        if product_offers == "true":
+            print(text.Green + "\n- [Inventory] The inventory of the SKU has been added successfully.")
+        else:
+            if product_offers == "error_len":
+                print(text.Red + "\n- [Inventory] There are no products available in the chosen account.")
+                printFinishApplicationMenu()
+            else:
+                print(text.Red + "\n- [Inventory] Something went wrong, please try again.")
+                printFinishApplicationMenu()
+    else:
+        print(text.Red + "\n- [Inventory] The account has no products inside. Use the menu option 02 to add them first.")
+        printFinishApplicationMenu()
 
 # Input beer recommender by account on Microservice
 def inputBeerRecommenderAccountMicroserviceMenu():

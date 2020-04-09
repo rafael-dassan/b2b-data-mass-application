@@ -84,6 +84,14 @@ def validateCountryInUserCreation(country):
     value = switcher.get(country, "false")
     return value
 
+def validate_zone_for_inventory(zone):
+    switcher = {
+        "ZA": "true",
+    }
+
+    value = switcher.get(zone, "false")
+    return value
+
 def validate_zone_for_deals(zone):
     switcher = {
         "BR": "true",
@@ -258,9 +266,10 @@ def printAvailableOptions(selectionStructure):
         print(text.default_text_color + str(4), text.Yellow + "Input delivery window")
         if selectionStructure == "2":
             print(text.default_text_color + str(5), text.Yellow + "Input recommended products")
-            print(text.default_text_color + str(6), text.Yellow + "Input deals")
-            print(text.default_text_color + str(7), text.Yellow + "Input combos")
-            print(text.default_text_color + str(8), text.Yellow + "Create User")
+            print(text.default_text_color + str(6), text.Yellow + "Input inventory to product")
+            print(text.default_text_color + str(7), text.Yellow + "Input deals")
+            print(text.default_text_color + str(8), text.Yellow + "Input combos")
+            print(text.default_text_color + str(9), text.Yellow + "Create User")
 
         print(text.default_text_color + str(0), text.Yellow + "Close application")
         selection = input(text.default_text_color + "\nPlease select: ")
@@ -272,8 +281,9 @@ def printAvailableOptions(selectionStructure):
             print(text.default_text_color + str(4), text.Yellow + "Input delivery window")
             if selectionStructure == "2":
                 print(text.default_text_color + str(5), text.Yellow + "Input recommended products")
-                print(text.default_text_color + str(6), text.Yellow + "Input deals")
-                print(text.default_text_color + str(7), text.Yellow + "Input combos")
+                print(text.default_text_color + str(6), text.Yellow + "Input inventory to product")
+                print(text.default_text_color + str(7), text.Yellow + "Input deals")
+                print(text.default_text_color + str(8), text.Yellow + "Input combos")
                 print(text.default_text_color + str(8), text.Yellow + "Create User")
 
             print(text.default_text_color + str(0), text.Yellow + "Close application")
@@ -479,6 +489,15 @@ def printZoneMenu(isMiddleware="true"):
         while validateZone("false", zone.upper()) == "false":
             print(text.Red + "\n- Invalid option\n")
             zone = input(text.default_text_color + "Zone (ZA, AR, CL, DO, BR, CO): ")
+
+    return zone.upper()
+
+# Print zone menu for inventory
+def print_zone_menu_for_inventory():
+    zone = input(text.default_text_color + "Zone (ZA): ")
+    while validate_zone_for_inventory(zone.upper()) == "false":
+        print(text.Red + "\n- Invalid option\n")
+        zone = input(text.default_text_color + "Zone (ZA): ")
 
     return zone.upper()
 
