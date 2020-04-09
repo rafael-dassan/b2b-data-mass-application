@@ -46,7 +46,7 @@ def showMenu():
     
     printFinishApplicationMenu()
 
-# Input SKU products by account on Microservice
+# Input Inventory to a SKU
 def inputInventoryToProduct():
     zone = print_zone_menu_for_inventory()
     environment = printEnvironmentMenu()

@@ -94,7 +94,7 @@ def update_sku_inventory_microservice(account_id, zone, environment, delivery_ce
     else:
         return "false"
 
-# Update SKU inventory
+# Validate SKU inventory
 def validate_sku(sku_id, enabled_skus):
         aux_index = 0
         while aux_index < len(enabled_skus):
