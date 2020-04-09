@@ -32,7 +32,7 @@ def showMenu():
             "3": inputCreditAccountMicroserviceMenu,
             "4": inputDeliveryWindowAccountMicroserviceMenu,
             "5": inputBeerRecommenderAccountMicroserviceMenu,
-            "6": inputProductsInventoryAccountMicroserviceMenu,
+            "6": inputInventoryToProduct,
             "7": inputDealsMenu,
             "8": inputCombosMenu,
             "9": createUserMsMenu
@@ -47,7 +47,7 @@ def showMenu():
     printFinishApplicationMenu()
 
 # Input SKU products by account on Microservice
-def inputProductsInventoryAccountMicroserviceMenu():
+def inputInventoryToProduct():
     zone = print_zone_menu_for_inventory()
     environment = printEnvironmentMenu()
     abi_id = printAccountIdMenu(zone.upper())
