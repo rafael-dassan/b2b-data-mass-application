@@ -3,7 +3,7 @@ from products import *
 from credit import add_credit_to_account, add_credit_to_account_microservice
 from delivery_window import create_delivery_window_middleware, create_delivery_window_microservice, validateAlternativeDeliveryDate
 from beer_recommender import *
-from products_inventory import *
+from inventory import *
 from common import *
 from classes.text import text
 from random import randint

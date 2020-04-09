@@ -5,8 +5,6 @@ from datetime import date, datetime, timedelta
 import calendar
 from products import *
 
-
-
 # Show all available SKUs of the account in the screen
 def display_available_products_account(account_id, zone, environment, delivery_center_id):
     
@@ -42,7 +40,7 @@ def display_available_products_account(account_id, zone, environment, delivery_c
 
         aux_index = 0
         while aux_index < quantity_product_offers:
-            print(text.default_text_color + "\n SKU: " + text.White + enabled_skus[aux_index])
+            print(text.default_text_color + "\n SKU: " + text.Blue + enabled_skus[aux_index])
             aux_index = aux_index + 1
 
         sku_id = input(text.default_text_color + "\n Type here the SKU from the list above you want to add inventory: ")
@@ -91,7 +89,7 @@ def update_sku_inventory_microservice(account_id, zone, environment, delivery_ce
     # Send request
     response = place_request("PUT", request_url, request_body, request_headers)
     
-    if (response.status_code == 202) or (response.status_code == 200):
+    if (response.status_code == 202):
         return "true"
     else:
         return "false"
