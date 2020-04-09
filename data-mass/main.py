@@ -67,16 +67,16 @@ def inputProductsInventoryAccountMicroserviceMenu():
         product_offers = display_available_products_account(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'])
 
         if product_offers == "true":
-            print(text.Green + "\n- [Products Inventory] The inventory of the SKU has been added successfully")
+            print(text.Green + "\n- [Inventory] The inventory of the SKU has been added successfully.")
         else:
             if product_offers == "error_len":
-                print(text.Red + "\n- [Products Inventory] There are no products available in the chosen account")
+                print(text.Red + "\n- [Inventory] There are no products available in the chosen account.")
                 printFinishApplicationMenu()
             else:
-                print(text.Red + "\n- [Products Inventory] Something went wrong, please try again")
+                print(text.Red + "\n- [Inventory] Something went wrong, please try again.")
                 printFinishApplicationMenu()
     else:
-        print(text.Red + "\n- [Products Inventory] The account has no products inside. Use the menu option 02 to add them first.")
+        print(text.Red + "\n- [Inventory] The account has no products inside. Use the menu option 02 to add them first.")
         printFinishApplicationMenu()
 
 # Input beer recommender by account on Microservice

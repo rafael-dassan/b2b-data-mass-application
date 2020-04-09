@@ -13,19 +13,19 @@ def display_available_products_account(account_id, zone, environment, delivery_c
     # Retrieve all SKUs for the specified Account and DeliveryCenter IDs
     product_offers = request_get_offers_microservice(account_id, zone, environment, delivery_center_id)
 
-    print(text.default_text_color + "\n[Products Inventory] Checking enabled products available in the account " + account_id + ". It may take a while...")
+    print(text.default_text_color + "\n[Inventory] Checking enabled products available in the account " + account_id + ". It may take a while...")
 
     enabled_skus = list()
     aux_index = 0
 
     while aux_index < len(product_offers):
         # Check if the SKU is enabled on Items MS
-        recommended_sku = check_item_enabled(product_offers[aux_index], zone, environment)
-        while recommended_sku == False:
+        sku_enable = check_item_enabled(product_offers[aux_index], zone, environment)
+        while sku_enable == False:
             aux_index = aux_index + 1
-            recommended_sku = check_item_enabled(product_offers[aux_index], zone, environment)
+            sku_enable = check_item_enabled(product_offers[aux_index], zone, environment)
             
-        enabled_skus.append(recommended_sku)
+        enabled_skus.append(sku_enable)
         aux_index = aux_index + 1
 
     # Check if the account has at least one SKU added to it
@@ -45,16 +45,16 @@ def display_available_products_account(account_id, zone, environment, delivery_c
             print(text.default_text_color + "\n SKU: " + text.White + enabled_skus[aux_index])
             aux_index = aux_index + 1
 
-        sku_id = input(text.default_text_color + "\n Type here the SKU from the list above you want to add quantity: ")
+        sku_id = input(text.default_text_color + "\n Type here the SKU from the list above you want to add inventory: ")
         
         while validate_sku(sku_id, enabled_skus) != "true":
-            print(text.Red + "\n[Products Inventory] Invalid SKU. Please check the list above and try again.")
-            sku_id = input(text.default_text_color + "\n Type here the SKU from the list above you want to add quantity: ")
+            print(text.Red + "\n[Inventory] Invalid SKU. Please check the list above and try again.")
+            sku_id = input(text.default_text_color + "\n Type here the SKU from the list above you want to add inventory: ")
         
         sku_quantity = input(text.default_text_color + "\n Type here the quantity you want to add to it: ")
 
         while sku_quantity.isdigit() == False:
-            print(text.Red + "\n[Products Inventory] Invalid option")
+            print(text.Red + "\n[Inventory] Invalid option.")
             sku_quantity = input(text.default_text_color + "\n Type here the quantity you want to add to it: ")
 
         update_sku = update_sku_inventory_microservice(account_id, zone, environment, delivery_center_id, sku_id, sku_quantity)
@@ -91,7 +91,7 @@ def update_sku_inventory_microservice(account_id, zone, environment, delivery_ce
     # Send request
     response = place_request("PUT", request_url, request_body, request_headers)
     
-    if (response.status_code == 202) or (response.status_code == 202):
+    if (response.status_code == 202) or (response.status_code == 200):
         return "true"
     else:
         return "false"
