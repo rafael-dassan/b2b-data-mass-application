@@ -43,7 +43,8 @@ data-mass/
 ├── populate.py
 ├── products.py
 ├── requirements.txt
-├── user.py
+├── user_creation_v2.py
+├── user_creation_v3.py
 ```
 
 | Directory | Description |
@@ -57,6 +58,28 @@ data-mass/
 | [data-mass/main.py](data-mass/main.py) | Holds menus and sub-menus for each available operation. It also executes the script.  |
 | [data-mass/common.py](data-mass/common.py) | Holds validation and external functions, and API requests. |
 | [.gitignore](.gitignore) | Holds all files that should not be tracked by system version control. |
+
+## Important Notes
+
+### Azure IAM
+
+This script are also capable to create Azure IAM (Identity and Access Management) Users.
+
+One user could be created at a time using Option "Create User IAM" under "Microservice" menu from "main.py" Script.
+
+There's an Integration between Azure and Magento to create a new User in Magento after an Azure IAM User is created. The time to this happen may vary but you should expect to wait around 30 seconds for the synchronization.
+
+At this this time, there's only one Country (DO - Dominican Republic) and two Environments Enabled with IAM Feature:
+- DEV for Web
+- UAT for Mobile
+
+Here we have a list of fields to create an IAM User:
+- A valid E-mail Address - Ex: abiuser@mail.com
+- Password - Ex: Magento123
+- First Name - Email Prefix - Ex: abiuser
+- Last Name - Email Prefix - Ex: abiuser
+- Account ID - Ex: 0000248660
+- Tax ID - Ex: 00300489572
 
 ## Visual Studio Code plugins
 
