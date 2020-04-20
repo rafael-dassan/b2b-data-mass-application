@@ -137,12 +137,14 @@ def validateEnvironment(environment):
     else:
         return "false"
 
+
 # Validate environment to User creation
 def validateEnvironmentInUserCreation(environment):
-    if environment == "UAT":
+    if environment == "UAT" or environment == "SIT":
         return "true"
     else:
         return "false"
+
 
 # Place generic request
 def place_request(request_type, request_url, request_body, request_headers):
@@ -223,7 +225,10 @@ def get_middleware_base_url(zone, environment, version_request):
 
 # Return base URL for Microservice
 def get_microservice_base_url(environment):
-    return "https://b2b-services-" + environment.lower() + ".westeurope.cloudapp.azure.com/v1"
+    if environment == "SIT":
+        return "https://b2b-services-qa.westeurope.cloudapp.azure.com/v1"
+    else:
+        return "https://b2b-services-" + environment.lower() + ".westeurope.cloudapp.azure.com/v1"
 
 
 # Return base URL for Magento
@@ -232,6 +237,10 @@ def get_magento_base_url(environment, country):
         "UAT": {
             "BR": "https://test-br.abi-sandbox.net",
             "DO": "https://test-conv-micerveceria.abi-sandbox.net"
+        },
+        "SIT": {
+            "BR": "https://sit-br.abi-sandbox.net",
+            "DO": "https://sit-dr.abi-sandbox.net"
         }
     }
 
@@ -242,6 +251,10 @@ def get_magento_base_url(environment, country):
 def get_magento_access_token(environment, country):
     access_token = {
         "UAT": {
+            "BR": "qq8t0w0tvz7nbn4gxo5jh9u62gohvjrw",
+            "DO": "56jqtzzto7tw9uox8nr3eckoeup53dt2"
+        },
+        "SIT": {
             "BR": "qq8t0w0tvz7nbn4gxo5jh9u62gohvjrw",
             "DO": "56jqtzzto7tw9uox8nr3eckoeup53dt2"
         }
@@ -540,10 +553,10 @@ def printEnvironmentMenu():
 
 # Print environment menu for User creation
 def printEnvironmentMenuInUserCreation():
-    environment = input(text.default_text_color + "Environment (UAT): ")
+    environment = input(text.default_text_color + "Environment (UAT, SIT): ")
     while validateEnvironmentInUserCreation(environment.upper()) == 'false':
         print(text.Red + '\n- Invalid option')
-        environment = input(text.default_text_color + "Environment (UAT): ")
+        environment = input(text.default_text_color + "Environment (UAT, SIT): ")
 
     return environment.upper()
 
