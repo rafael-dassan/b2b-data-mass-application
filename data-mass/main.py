@@ -50,7 +50,7 @@ def showMenu():
 def inputInventoryToProduct():
     zone = print_zone_menu_for_inventory()
     environment = printEnvironmentMenu()
-    abi_id = printAccountIdMenu(zone.upper())
+    abi_id = print_account_id_menu()
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
@@ -83,7 +83,7 @@ def inputInventoryToProduct():
 def inputBeerRecommenderAccountMicroserviceMenu():
     zone = print_zone_menu_for_recommender()
     environment = printEnvironmentMenu()
-    abi_id = printAccountIdMenu(zone.upper())
+    abi_id = print_account_id_menu()
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
@@ -111,7 +111,7 @@ def inputDealsMenu():
     selectionStructure = printDealsMenu()
     zone = print_zone_menu_for_deals()
     environment = printEnvironmentMenu()
-    abi_id = printAccountIdMenu(zone.upper())
+    abi_id = print_account_id_menu()
 
     switcher = {
         "1": "DISCOUNT",
@@ -172,7 +172,7 @@ def inputCombosMenu():
     selectionStructure = printCombosMenu()
     zone = print_zone_menu_for_combos()
     environment = printEnvironmentMenu()
-    abi_id = printAccountIdMenu(zone.upper())
+    abi_id = print_account_id_menu()
     
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
@@ -261,7 +261,7 @@ def inputCombosMenu():
 def inputCreditAccountMicroserviceMenu():
     zone = printZoneMenu("false")
     environment = printEnvironmentMenu()
-    abi_id = printAccountIdMenu(zone.upper())
+    abi_id = print_account_id_menu()
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
@@ -286,7 +286,7 @@ def inputCreditAccountMicroserviceMenu():
 def inputProductsAccountMicroserviceMenu():
     zone = printZoneMenu("false")
     environment = printEnvironmentMenu()
-    abi_id = printAccountIdMenu(zone.upper())
+    abi_id = print_account_id_menu()
     
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
@@ -319,7 +319,7 @@ def inputProductsAccountMicroserviceMenu():
 def inputDeliveryWindowAccountMicroserviceMenu():
     zone = printZoneMenu("false")
     environment = printEnvironmentMenu()
-    abi_id = printAccountIdMenu(zone.upper())
+    abi_id = print_account_id_menu()
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
@@ -349,7 +349,7 @@ def inputDeliveryWindowAccountMicroserviceMenu():
 def inputDeliveryWindowAccountMdwMenu():
     zone = printZoneMenu()
     environment = printEnvironmentMenu()
-    abi_id = printAccountIdMenu(zone.upper())
+    abi_id = print_account_id_menu()
 
     # Call check account exists function
     account = check_account_exists_middleware(abi_id, zone.upper(), environment.upper())
@@ -372,7 +372,7 @@ def inputDeliveryWindowAccountMdwMenu():
 def inputCreditAccountMdwMenu():
     zone = printZoneMenu()
     environment = printEnvironmentMenu()
-    abi_id = printAccountIdMenu(zone.upper())
+    abi_id = print_account_id_menu()
     
     # Call check account exists function
     account = check_account_exists_middleware(abi_id, zone.upper(), environment.upper())
@@ -398,7 +398,7 @@ def inputCreditAccountMdwMenu():
 def inputProductsAccountMdwMenu():
     zone = printZoneMenu()
     environment = printEnvironmentMenu()
-    abi_id = printAccountIdMenu(zone.upper())
+    abi_id = print_account_id_menu()
 
     # Call check account exists function
     account = check_account_exists_middleware(abi_id, zone.upper(), environment.upper())
@@ -435,7 +435,7 @@ def inputProductsAccountMdwMenu():
 def createAccountMdwMenu():
     zone = printZoneMenu()
     environment = printEnvironmentMenu()
-    abi_id = printAccountIdMenu(zone.upper())
+    abi_id = print_account_id_menu()
     name = printNameMenu()
     payment_method = printPaymentMethodMenu(zone.upper())
 
@@ -494,7 +494,7 @@ def createAccountMdwMenu():
 def createAccountMsMenu():
     zone = printZoneMenu("false")
     environment = printEnvironmentMenu()
-    abi_id = printAccountIdMenu(zone.upper())
+    abi_id = print_account_id_menu()
     name = printNameMenu()
     payment_method = printPaymentMethodMenu(zone.upper())
 
@@ -563,7 +563,7 @@ def createAccountMsMenu():
 def createUserMsMenu():
     country = printCountryMenuInUserCreation()
     env = printEnvironmentMenuInUserCreation()
-    account_id = printAccountIdMenuForUser()
+    account_id = print_account_id_menu()
     email = print_input_email()
     password = print_input_password()
 

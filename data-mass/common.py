@@ -452,22 +452,13 @@ def printQuantityMenu():
     return quantity
 
 # Print Account ID menu
-def printAccountIdMenu(zone):
+def print_account_id_menu():
     abi_id = input(text.default_text_color + "Account ID: ")
-    while validateAccount(abi_id) == "false" and (zone == "BR" or zone == "DO"):
+    while validateAccount(abi_id) == "false":
         print(text.Red + "\n- Account ID should not be empty and it must contain at least 10 characters")
-        abi_id = input(text.default_text_color + "Account ID: ")
+        abi_id = input(text.default_text_color + "\nAccount ID: ")
 
     return abi_id
-
-# Print Account ID menu in User creation
-def printAccountIdMenuForUser():
-    account_id = input(text.default_text_color + "Account ID: ")
-    while validateAccount(account_id) == "false" :
-        print(text.Red + "\n- Account ID should not be empty and it must contain at least 10 characters")
-        account_id = input(text.default_text_color + "Account ID: ")
-
-    return account_id
 
 # Print account name menu
 def printNameMenu():
