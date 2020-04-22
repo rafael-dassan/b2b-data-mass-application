@@ -3,39 +3,36 @@ from json import loads
 import concurrent.futures
 from common import *
 
-
-def check_products_account_exists_microservice(accountId, zone, environment):
-    
+def check_products_account_exists_microservice(abi_id, zone, environment):
     # Define headers
-    request_headers = get_header_request(zone, 'true')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
 
     # Define URL Middleware
-    request_url = get_microservice_base_url(environment) + '/middleware-relay/products/offers?accountId=' + accountId
+    request_url = get_microservice_base_url(environment) + '/catalog-service/catalog?accountId=' + abi_id + '&projection=SMALL' 
 
     # Send request
-    response = place_request("GET", request_url, "", request_headers)
+    response = place_request('GET', request_url, '', request_headers)
     json_data = loads(response.text)
-    if response.status_code == 200 and len(json_data) > 0:
+    if response.status_code == 200 and json_data != '[]':
         return 'success'
-    elif response.status_code == 200 and len(json_data) == 0:
+    elif response.status_code == 200 and json_data == '[]':
         return 'false'
     else:
         return response.status_code
-
 
 def check_products_account_exists_middleware(abi_id, zone, environment):
     # Define headers
     headers = get_header_request(zone, 'false', 'true')
     
     # Define URL Middleware
-    url = get_middleware_base_url(zone, environment, "v4") + "/products/offers?accountId=" + abi_id
+    url = get_middleware_base_url(zone, environment, 'v4') + '/products/offers?accountId=' + abi_id
     
     # Send request
-    response = place_request("GET", url, "", headers)
+    response = place_request('GET', url, '', headers)
     json_data = loads(response.text)
-    if response.status_code == 200 and json_data != '':
+    if response.status_code == 200 and json_data != '[]':
         return 'success'
-    elif response.status_code == 200 and json_data == '':
+    elif response.status_code == 200 and json_data == '[]':
         return 'false'
     else:
         return response.status_code
@@ -83,11 +80,12 @@ def request_get_products_middleware(zone, environment):
     # Send request
     response = place_request("GET", request_url, request_body, headers)
 
-    if response.status_code == 200:
+    if response.status_code == 200 and response.text != "[]":
         json_data = loads(response.text)
         return json_data
     else:
         print(text.Red + "\n- [Product] Something went wrong, please try again")
+        finishApplication()
 
 
 # Slices a list of products, returning the first X elements
@@ -300,6 +298,7 @@ def request_get_products_microservice(zone, environment):
         return json_data['items']
     else:
         print(text.Red + '\n- [Product] Something went wrong in search products on microservice')
+        finishApplication()
 
 
 # Does the necessary requests to add a product in a microservice-based zone
@@ -347,7 +346,6 @@ def request_post_price_inclusion_microservice(zone, environment, sku_product, pr
     request_headers = get_header_request(zone, 'false', 'false', 'true', sku_product)
 
     # Get url base
-    #request_url = get_microservice_base_url(environment) + "/middleware-relay/products/" + str(sku_product) + "/inclusions"
     request_url = get_microservice_base_url(environment) + "/product-assortment-relay/inclusion"
 
     # Get body request

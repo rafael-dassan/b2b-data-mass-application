@@ -532,13 +532,6 @@ def createAccountMsMenu():
     else:
         print(text.Red + "\n\n- [Products] Something went wrong, please try again")
         printFinishApplicationMenu()
-    
-    # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
-
-    if account == "false":
-        print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
-        printFinishApplicationMenu()
 
     # Validate if it is alternative delivery window
     isAlternativeDeliveryDate = printAlternativeDeliveryDateMenu()
