@@ -477,10 +477,10 @@ def printZoneMenu(isMiddleware="true"):
             print(text.Red + "\n- Invalid option\n")
             zone = input(text.default_text_color + "Zone (ZA, AR, CL): ")
     else:
-        zone = input(text.default_text_color + "Zone (ZA, AR, CL, DO, BR, CO): ")
+        zone = input(text.default_text_color + "Zone (ZA, AR, CL, DO, BR): ")
         while validateZone("false", zone.upper()) == "false":
             print(text.Red + "\n- Invalid option\n")
-            zone = input(text.default_text_color + "Zone (ZA, AR, CL, DO, BR, CO): ")
+            zone = input(text.default_text_color + "Zone (ZA, AR, CL, DO, BR): ")
 
     return zone.upper()
 
@@ -495,10 +495,10 @@ def print_zone_menu_for_inventory():
 
 # Print zone menu for deals
 def print_zone_menu_for_deals():
-    zone = input(text.default_text_color + "Zone (BR, CO, DO, ZA): ")
+    zone = input(text.default_text_color + "Zone (BR, DO, ZA): ")
     while validate_zone_for_deals(zone.upper()) == "false":
         print(text.Red + "\n- Invalid option\n")
-        zone = input(text.default_text_color + "Zone (BR, CO, DO, ZA): ")
+        zone = input(text.default_text_color + "Zone (BR, DO, ZA): ")
 
     return zone.upper()
 
