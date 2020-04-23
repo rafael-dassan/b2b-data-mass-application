@@ -652,6 +652,21 @@ def print_input_password():
 
     return password
 
+# Validate State in registration flow
+def validateState(zone):
+    if (zone == "BR"):
+        state = "RS"
+    
+    elif (zone == "DO"):
+        state = "STO DGO"
+
+    elif (zone == "ZA"):
+        state = "Free State"
+
+    else:
+        state = "CAPITAL FEDERAL"
+            
+    return state
 
 # Validate the option to finish application
 def validateYesOrNotOption(option):

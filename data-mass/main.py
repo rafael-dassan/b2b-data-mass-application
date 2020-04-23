@@ -438,6 +438,7 @@ def createAccountMdwMenu():
     abi_id = print_account_id_menu()
     name = printNameMenu()
     payment_method = printPaymentMethodMenu(zone.upper())
+    state = validateState(zone)
 
     option_include = input(text.default_text_color + "Do you want to include the minimum order parameter? y/N: ")
     while option_include == "" or validateYesOrNotOption(option_include.upper()) == "false":
@@ -450,7 +451,7 @@ def createAccountMdwMenu():
         minimum_order = None
 
     # Call create account function
-    account = create_account(abi_id, name, zone.upper(), payment_method, environment.upper(), minimum_order)
+    account = create_account(abi_id, name, zone.upper(), payment_method, environment.upper(), minimum_order, state)
 
     if account == "success":
         print(text.Green + "\n- Your account has been created! Now register on Web or Mobile applications")
@@ -497,6 +498,7 @@ def createAccountMsMenu():
     abi_id = print_account_id_menu()
     name = printNameMenu()
     payment_method = printPaymentMethodMenu(zone.upper())
+    state = validateState(zone)
 
     option_include = input(text.default_text_color + "Do you want to include the minimum order parameter? y/N: ")
     while option_include == "" or validateYesOrNotOption(option_include.upper()) == "false":
@@ -509,7 +511,7 @@ def createAccountMsMenu():
         minimum_order = None
 
     # Call create account function
-    account = create_account_ms(abi_id, name, payment_method, minimum_order, zone.upper(), environment.upper())
+    account = create_account_ms(abi_id, name, payment_method, minimum_order, zone.upper(), environment.upper(), state)
 
     if account == "success":
         print(text.Green + "\n- Your account has been created! Now register on Web or Mobile applications")

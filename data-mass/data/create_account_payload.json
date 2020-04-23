@@ -6,7 +6,7 @@
       "city": "TEST DELIVERY CITY",
       "latitude": null,
       "longitude": null,
-      "state": "TEST DELIVERY STATE",
+      "state": "string",
       "zipcode": "TEST DELIVERY ZIPCODE"
   },
   "deliveryCenterId": "string",
