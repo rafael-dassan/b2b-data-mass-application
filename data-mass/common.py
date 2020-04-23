@@ -653,7 +653,7 @@ def print_input_password():
     return password
 
 # Validate State in registration flow
-def validateState(zone):
+def validate_state(zone):
     if (zone == "BR"):
         state = "RS"
     
