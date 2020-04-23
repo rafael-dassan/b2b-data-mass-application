@@ -49,9 +49,6 @@ if __name__ == '__main__':
         if not valid_execution_type(execution_type):
             raise ValueError("Execution Type is not valid", execution_type)
 
-        if environment == "SIT":
-            environment = "QA"
-
         execute(country, environment, execution_type)
     except Exception as err:
         logging.error("Exception: {}".format(err))
