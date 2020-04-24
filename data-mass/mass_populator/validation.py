@@ -3,7 +3,6 @@ def valid_country(country):
         "AR": True,
         "BR": True,
         "CL": True,
-        "CO": True,
         "DO": True,
         "ZA": True
     }
