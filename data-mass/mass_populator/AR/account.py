@@ -1,6 +1,7 @@
 from account import create_account_ms
 from delivery_window import create_delivery_window_microservice
 from credit import add_credit_to_account_microservice
+from common import validate_state
 
 
 def populate_accounts(country, environment):
@@ -23,7 +24,9 @@ def populate_delivery_window(country, environment, account_id):
 
 # Populate account for AR environment
 def populate_account(country, environment, account_id, account_name):
-    if "success" != create_account_ms(account_id, account_name, ["CASH"], None, country, environment):
+    state = validate_state(country)
+
+    if "success" != create_account_ms(account_id, account_name, ["CASH"], None, country, environment, state):
         print("Fail on populate account " + account_id + ".")
 
 
