@@ -438,7 +438,7 @@ def createAccountMdwMenu():
     abi_id = print_account_id_menu()
     name = printNameMenu()
     payment_method = printPaymentMethodMenu(zone.upper())
-    state = validateState(zone)
+    state = validate_state(zone)
 
     option_include = input(text.default_text_color + "Do you want to include the minimum order parameter? y/N: ")
     while option_include == "" or validateYesOrNotOption(option_include.upper()) == "false":
@@ -498,7 +498,7 @@ def createAccountMsMenu():
     abi_id = print_account_id_menu()
     name = printNameMenu()
     payment_method = printPaymentMethodMenu(zone.upper())
-    state = validateState(zone)
+    state = validate_state(zone)
 
     option_include = input(text.default_text_color + "Do you want to include the minimum order parameter? y/N: ")
     while option_include == "" or validateYesOrNotOption(option_include.upper()) == "false":
