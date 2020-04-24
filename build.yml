@@ -8,10 +8,23 @@ name: $(Date:yyyyMMdd)-$(Rev:r)
 
 steps:
 - task: Docker@2
-  displayName: "Build and push docker image"
+  displayName: "Build and push master branch"
   inputs:
     containerRegistry: 'Azure-Container-Registry-NonPROD-b2bgbacrint'
     repository: 'b2b-data-mass-application'
     Dockerfile: Dockerfile
     buildContext: ./
-    tags: '$(build.buildNumber)'
+    tags: |
+      latest
+      $(build.buildNumber)
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+
+- task: Docker@2
+  displayName: "Build and push development branch"
+  inputs:
+    containerRegistry: 'Azure-Container-Registry-NonPROD-b2bgbacrint'
+    repository: 'b2b-data-mass-application'
+    Dockerfile: Dockerfile
+    buildContext: ./
+    tags: dev-$(build.buildNumber)
+  condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
