@@ -23,7 +23,7 @@ def check_account_exists_middleware(abi_id, zone, environment):
         return response.status_code
 
 # Create account request on Middleware
-def create_account_request(url, headers, abi_id, name, payment_method, minimum_order, zone, environment):
+def create_account_request(url, headers, abi_id, name, payment_method, minimum_order, zone, environment, state):
     if minimum_order != None:
         dict_values = {
             'accountId': abi_id,
@@ -35,7 +35,8 @@ def create_account_request(url, headers, abi_id, name, payment_method, minimum_o
             'priceListId': abi_id,
             'taxId': abi_id,
             'name': name,
-            'paymentMethods': payment_method
+            'paymentMethods': payment_method,
+            'deliveryAddress.state': state
         }
     else:
         dict_values = {
@@ -47,7 +48,8 @@ def create_account_request(url, headers, abi_id, name, payment_method, minimum_o
             'priceListId': abi_id,
             'taxId': abi_id,
             'name': name,
-            'paymentMethods': payment_method
+            'paymentMethods': payment_method,
+            'deliveryAddress.state': state
         }
 
     # Create file path
@@ -70,7 +72,7 @@ def create_account_request(url, headers, abi_id, name, payment_method, minimum_o
     return response
 
 # Create account on Middleware
-def create_account(abi_id, name, zone, payment_method, environment, minimum_order):
+def create_account(abi_id, name, zone, payment_method, environment, minimum_order, state):
     # Define headers
     headers = get_header_request(zone, "false", "true", "false", "false")
 
@@ -78,7 +80,7 @@ def create_account(abi_id, name, zone, payment_method, environment, minimum_orde
     url = get_middleware_base_url(zone, environment, "v5") + "/accounts"
     
     # Send request
-    response = create_account_request(url, headers, abi_id, name, payment_method, minimum_order, zone, environment)
+    response = create_account_request(url, headers, abi_id, name, payment_method, minimum_order, zone, environment, state)
 
     if response.status_code == 202:
         return "success"
@@ -100,7 +102,7 @@ def check_account_exists_microservice(accountId, zone, environment):
     else:
         return "false"
 
-def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environment):
+def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environment, state):
     # Validation of Account ID for BR
     if (validateAccount(abi_id) == "false") and (zone == "BR" or zone == "DO"):
         print(text.Yellow + "\n- Account ID should not be empty or it must contain at least 10 characters")
@@ -117,7 +119,8 @@ def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environ
             'priceListId': abi_id,
             'taxId': abi_id,
             'name': name,
-            'paymentMethods': payment_method
+            'paymentMethods': payment_method,
+            'deliveryAddress.state': state,
         }
     else:
         dict_values = {
@@ -129,7 +132,8 @@ def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environ
             'priceListId': abi_id,
             'taxId': abi_id,
             'name': name,
-            'paymentMethods': payment_method
+            'paymentMethods': payment_method,
+            'deliveryAddress.state': state,
         }
 
     # Get header request
