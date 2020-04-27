@@ -1,6 +1,7 @@
 from account import create_account_ms
 from delivery_window import create_delivery_window_microservice
 from credit import add_credit_to_account_microservice
+from common import validate_state
 
 
 # Populate the accounts for BR
@@ -14,7 +15,8 @@ def populate_accounts(country, environment):
 
 # Populate an account
 def populate_account(country, environment, account_id, account_name):
-    if "success" != create_account_ms(account_id, account_name, ["CASH", "BANK_SLIP"], None, country, environment):
+    state = validate_state(country)
+    if "success" != create_account_ms(account_id, account_name, ["CASH", "BANK_SLIP"], None, country, environment, state):
         print("Fail on populate account " + account_id + ".")
 
 
@@ -55,3 +57,4 @@ def populate_poc3(country, environment):
     account_id = "42282891000166"
     populate_account(country, environment, account_id, "BR_POC_003")
     populate_credit(country, environment, account_id, "45000", "45000")
+
