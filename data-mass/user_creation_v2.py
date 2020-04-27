@@ -8,7 +8,6 @@ from common import *
 def authenticate_user(environment, country, user_name, password):
     url = get_magento_base_url(environment, country) + "/rest/V1/facade/authentication"
 
-    # Define headers
     headers = {
         "Content-Type": "application/json"
     }
@@ -18,7 +17,6 @@ def authenticate_user(environment, country, user_name, password):
         "password": password
     }
 
-    # Send request
     response = place_request("POST", url, convert_json_to_string(body), headers)
     json_data = loads(response.text)
 
@@ -38,13 +36,11 @@ def create_user(environment, country, email, password, account):
 
     access_token = get_magento_access_token(environment, country)
 
-    # Define headers
     headers = {
         "Content-Type": "application/json",
         "x-access-token": access_token
     }
 
-    # Send request
     response = create_user_request(url, account, headers, email, password)
 
     if response.status_code == 200:
@@ -67,5 +63,4 @@ def create_user_request(url, account, headers, email, password):
         "account": account
     }
 
-    # Send request
     return place_request("POST", url, convert_json_to_string(data), headers)

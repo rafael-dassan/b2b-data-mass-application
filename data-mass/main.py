@@ -9,7 +9,8 @@ from classes.text import text
 from random import randint
 from combos import *
 from deals import *
-from user import *
+import user_creation_v2 as user_v2
+import user_creation_v3 as user_v3
 
 def showMenu():
     clearTerminal()
@@ -35,7 +36,8 @@ def showMenu():
             "6": inputInventoryToProduct,
             "7": inputDealsMenu,
             "8": inputCombosMenu,
-            "9": createUserMsMenu
+            "9": createUserMsMenu,
+            "10": registration_user_iam
         }
     else:
         finishApplication()
@@ -562,7 +564,7 @@ def createUserMsMenu():
     email = print_input_email()
     password = print_input_password()
 
-    account_id_list = authenticate_user(env, country, email, password)
+    account_id_list = user_v2.authenticate_user(env, country, email, password)
 
     if len(account_id_list) > 0:
         if account_id in account_id_list:
@@ -581,7 +583,7 @@ def createUserMsMenu():
             print(text.Red + "\n- The account isn't ACTIVE.")
             printFinishApplicationMenu()
 
-    status_response = create_user(env, country, email, password, account_result[0])
+    status_response = user_v2.create_user(env, country, email, password, account_result[0])
     if status_response == "success":
         print(text.Green + "\n- User created successfully")
     else:
@@ -622,6 +624,51 @@ def validateSkuChosen(sku, listSkuOffers):
 
     return "false"
 
+def registration_user_iam():
+    """Flow to register user IAM
+    Input Arguments:
+        - Country
+        - Environment
+        - Email
+        - Password
+        - Account ID
+        - Tax ID
+    """
+    country = print_country_menu_in_user_create_iam()
+    environment = print_environment_menu_in_user_create_iam()
+    email = print_input_email()
+    password = print_input_password()
+
+    authenticate_response = user_v3.authenticate_user_iam(environment, country, email, password)
+
+    if authenticate_response == "wrong_password":
+        print(text.Green + "\n- The user already exists, but the password is wrong.")
+        printFinishApplicationMenu()
+
+    if authenticate_response != "fail":
+        print(text.Green + "\n- The user already exists.")
+        printFinishApplicationMenu()
+
+    account_id = print_account_id_menu()
+    tax_id = print_input_tax_id()
+
+    account_result = check_account_exists_microservice(account_id, country, environment)
+    if account_result == "false":
+        print(text.Red + "\n- The account doesn't exist.")
+        printFinishApplicationMenu()
+    else:
+        if account_result[0].get("status") != "ACTIVE":
+            print(text.Red + "\n- The account isn't ACTIVE.")
+            printFinishApplicationMenu()
+    
+    status_response = user_v3.create_user(environment, country, email, password, account_result[0], tax_id)
+    if status_response == "success":
+        print(text.Green + "\n- User IAM created successfully")
+    else:
+        print(text.Red + "\n- [User] Something went wrong, please try again")
+        printFinishApplicationMenu()
+
 # Init
 if __name__ == '__main__':
     showMenu()
+
