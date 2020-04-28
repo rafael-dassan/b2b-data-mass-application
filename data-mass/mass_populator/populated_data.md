@@ -46,6 +46,32 @@ Only ZA has also the two Accounts created for Microservice and Middleware (check
 - Account 2: created with ID **9883300102**, name **ZA_POC_002**, payment method **[CASH]**, with liquor license, with delivery window, credit **45000**, balance **45000**.
 - Account 3: created with ID **9883300103**, name **ZA_POC_003**, payment method **[CASH]**, with liquor license, without delivery window, credit **45000**, balance **45000**.
 
+### User
+
+The countries BR and DO will have the Users created with the following Accounts in microservice:
+
+#### DO
+
+- User created with email: **abiautotest+2@mailinator.com**, password: **Password1**, with Account ID **9883300001**
+- User created with email: **abiautotest+100@mailinator.com**, password: **Pass()12**, with Account ID **9883300001**
+ 
+
+- User created with email: **abiautotest+1@gmail.com**, password: **Password1**, with Account ID **9883300002**
+- User created with email: **abiautotest+2@gmail.com**, password: **Password1**, with Account ID **9883300002**
+- User created with email: **abiautotest+100@gmail.com**, password: **Pass()12**, with Account ID **9883300002**
+
+
+#### BR
+
+- User created with email: **abiautotest+2@mailinator.com**, password: **Password1**, with Account ID **99481543000135** 
+- User created with email: **abiautotest+100@mailinator.com**, password: **Pass()12**, with Account ID **99481543000135** 
+
+
+- User created with email: **abiautotest+1@gmail.com**, password: **Password1**, with Account ID **56338831000122** 
+- User created with email: **abiautotest+2@gmail.com**, password: **Password1**, with Account ID **56338831000122** 
+- User created with email: **abiautotest+100@gmail.com**, password: **Pass()12**, with Account ID **56338831000122** 
+ 
+ 
 ### Products
 
 ## All

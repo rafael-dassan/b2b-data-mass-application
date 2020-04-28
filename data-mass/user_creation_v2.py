@@ -64,3 +64,14 @@ def create_user_request(url, account, headers, email, password):
     }
 
     return place_request("POST", url, convert_json_to_string(data), headers)
+
+
+def user_already_exists_with_account(environment, country, username, password, account_id):
+    account_id_list = authenticate_user(environment, country, username, password)
+
+    if len(account_id_list) > 0:
+        if account_id in account_id_list:
+            return True
+
+    return False
+
