@@ -1,4 +1,4 @@
-from user import create_user, user_already_exists_with_account
+from user_creation_v2 import create_user, user_already_exists_with_account
 from account import check_account_exists_microservice
 from mass_populator.log import logging
 
