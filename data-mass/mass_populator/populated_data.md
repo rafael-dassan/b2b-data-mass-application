@@ -53,23 +53,23 @@ The countries BR and DO will have the Users created with the following Accounts 
 #### DO
 
 - User created with email: **abiautotest+2@mailinator.com**, password: **Password1**, with Account ID **9883300001**
-- User created with email: **abiautotest+100@mailinator.com**, password: **Pass()12**, with Account ID **9883300001**
+- User created with email: **abiautotest+100@mailinator.com**, password: **Pass()12**, with Account ID **9883300001** and **9883300003**
  
 
 - User created with email: **abiautotest+1@gmail.com**, password: **Password1**, with Account ID **9883300002**
-- User created with email: **abiautotest+2@gmail.com**, password: **Password1**, with Account ID **9883300002**
-- User created with email: **abiautotest+100@gmail.com**, password: **Pass()12**, with Account ID **9883300002**
+- User created with email: **abiautotest+2@gmail.com**, password: **Password1**, with Account ID **9883300002** and **9883300003**
+- User created with email: **abiautotest+100@gmail.com**, password: **Pass()12**, with Account ID **9883300002** and **9883300003**
 
 
 #### BR
 
 - User created with email: **abiautotest+2@mailinator.com**, password: **Password1**, with Account ID **99481543000135** 
-- User created with email: **abiautotest+100@mailinator.com**, password: **Pass()12**, with Account ID **99481543000135** 
+- User created with email: **abiautotest+100@mailinator.com**, password: **Pass()12**, with Account ID **99481543000135** and **42282891000166**
 
 
 - User created with email: **abiautotest+1@gmail.com**, password: **Password1**, with Account ID **56338831000122** 
-- User created with email: **abiautotest+2@gmail.com**, password: **Password1**, with Account ID **56338831000122** 
-- User created with email: **abiautotest+100@gmail.com**, password: **Pass()12**, with Account ID **56338831000122** 
+- User created with email: **abiautotest+2@gmail.com**, password: **Password1**, with Account ID **56338831000122** and **42282891000166**
+- User created with email: **abiautotest+100@gmail.com**, password: **Pass()12**, with Account ID **56338831000122** and **42282891000166** 
  
  
 ### Products
