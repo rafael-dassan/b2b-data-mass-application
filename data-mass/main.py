@@ -9,7 +9,7 @@ from classes.text import text
 from random import randint
 from combos import *
 from deals import *
-import user_creation_v2 as user_v2
+import user_creation_magento as user_magento
 import user_creation_v3 as user_v3
 
 def showMenu():
@@ -36,8 +36,12 @@ def showMenu():
             "6": inputInventoryToProduct,
             "7": inputDealsMenu,
             "8": inputCombosMenu,
-            "9": createUserMsMenu,
-            "10": registration_user_iam
+            "9": registration_user_iam
+        }
+    elif selectionStructure == "3":
+        switcher = {
+            "1": create_user_v2_menu,
+            "2": associateUserToAccount
         }
     else:
         finishApplication()
@@ -557,15 +561,14 @@ def createAccountMsMenu():
 
 
 # Create User for zones in Microservice
-def createUserMsMenu():
+def create_user_v2_menu():
     country = printCountryMenuInUserCreation()
     env = printEnvironmentMenuInUserCreation()
     account_id = print_account_id_menu()
     email = print_input_email()
     password = print_input_password()
 
-    account_id_list = user_v2.authenticate_user(env, country, email, password)
-
+    account_id_list = user_magento.get_user_accounts(env, country, email, password)
     if len(account_id_list) > 0:
         if account_id in account_id_list:
             print(text.Green + "\n- The user already exists with the same accountId: " + account_id)
@@ -583,7 +586,7 @@ def createUserMsMenu():
             print(text.Red + "\n- The account isn't ACTIVE.")
             printFinishApplicationMenu()
 
-    status_response = user_v2.create_user(env, country, email, password, account_result[0])
+    status_response = user_magento.create_user(env, country, email, password, account_result[0])
     if status_response == "success":
         print(text.Green + "\n- User created successfully")
     else:
@@ -591,6 +594,47 @@ def createUserMsMenu():
         printFinishApplicationMenu()
 
     printFinishApplicationMenu()
+
+def associateUserToAccount():
+    """ Associate user to account
+    Input Arguments:
+        - Country
+        - Environment
+        - Account ID
+        - Email
+        - Password
+    """
+    country     = printCountryMenuInUserCreation()
+    env         = printEnvironmentMenuInUserCreation()
+    accountId   = print_account_id_menu()
+    email       = print_input_email()
+    password    = print_input_password()
+
+    # Check if user has already associated to account
+    account_id_list = user_magento.get_user_accounts(env, country, email, password)
+    if len(account_id_list) > 0:
+        if accountId in account_id_list:
+            print(text.Green + "\n- The user already exists with the same accountId: " + accountId)
+            printFinishApplicationMenu()
+
+    # Check if account exists and is active
+    account_result = check_account_exists_microservice(accountId, country, env)
+    if account_result == "false":
+        print(text.Red + "\n- The account doesn't exist.")
+        printFinishApplicationMenu()
+    else:
+        if account_result[0].get("status") != "ACTIVE":
+            print(text.Red + "\n- The account isn't ACTIVE.")
+            printFinishApplicationMenu()
+    account = account_result[0]
+    
+    # Check if user exists
+    user = user_magento.authenticate_user(env, country, email, password)
+    if user == "fail":
+        print(text.Red + "\n- Fail to authenticate user.")
+        printFinishApplicationMenu()
+
+    print(user_magento.associate_user_to_account(env, country, user, account))
 
 # Print Finish Menu application
 def printFinishApplicationMenu():

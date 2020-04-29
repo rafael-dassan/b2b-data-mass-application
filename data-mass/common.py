@@ -77,12 +77,24 @@ def validateOptionRequestSelection(option):
         "6": "true",
         "7": "true",
         "8": "true",
-        "9": "true",
-        "10": "true"
+        "9": "true"
     }
 
     value = switcher.get(option, "false")
     return value
+
+
+# Validate option menu selection
+def validate_option_request_selection_for_structure_3(option):
+    switcher = {
+        "0": "true",
+        "1": "true",
+        "2": "true"
+    }
+
+    value = switcher.get(option, "false")
+    return value
+
 
 # Validate lenght of Account ID
 def validateAccount(accountId):
@@ -299,6 +311,15 @@ def get_magento_base_url(environment, country):
 
     return magento_url.get(environment).get(country)
 
+
+def get_region_id(country):
+    region_id = {
+        "BR": "PT_BR",
+        "DO": "ES_DO"
+    }
+    return region_id.get(country)
+
+
 # Return base URL for Azure IAM
 def get_azure_iam_base_url(environment, country):
     iam_url = {
@@ -349,8 +370,7 @@ def printAvailableOptions(selectionStructure):
             print(text.default_text_color + str(6), text.Yellow + "Input inventory to product")
             print(text.default_text_color + str(7), text.Yellow + "Input deals")
             print(text.default_text_color + str(8), text.Yellow + "Input combos")
-            print(text.default_text_color + str(9), text.Yellow + "Create User")
-            print(text.default_text_color + str(10), text.Yellow + "Create User IAM")
+            print(text.default_text_color + str(9), text.Yellow + "Create User IAM")
 
         print(text.default_text_color + str(0), text.Yellow + "Close application")
         selection = input(text.default_text_color + "\nPlease select: ")
@@ -365,8 +385,19 @@ def printAvailableOptions(selectionStructure):
                 print(text.default_text_color + str(6), text.Yellow + "Input inventory to product")
                 print(text.default_text_color + str(7), text.Yellow + "Input deals")
                 print(text.default_text_color + str(8), text.Yellow + "Input combos")
-                print(text.default_text_color + str(9), text.Yellow + "Create User")
-                print(text.default_text_color + str(10), text.Yellow + "Create User IAM")
+                print(text.default_text_color + str(9), text.Yellow + "Create User IAM")
+
+            print(text.default_text_color + str(0), text.Yellow + "Close application")
+            selection = input(text.default_text_color + "\nPlease select: ")
+    elif selectionStructure == "3":
+        print(text.default_text_color + str(1), text.Yellow + "Create User")
+        print(text.default_text_color + str(2), text.Yellow + "Associate Account to user")
+
+        print(text.default_text_color + str(0), text.Yellow + "Close application")
+        selection = input(text.default_text_color + "\nPlease select: ")
+        while validate_option_request_selection_for_structure_3(selection) == "false":
+            print(text.default_text_color + str(1), text.Yellow + "Create User")
+            print(text.default_text_color + str(2), text.Yellow + "Associate Account to user")
 
             print(text.default_text_color + str(0), text.Yellow + "Close application")
             selection = input(text.default_text_color + "\nPlease select: ")
@@ -385,13 +416,16 @@ def printWelcomeScript():
 def printStructureMenu():
     print(text.default_text_color + str(1), text.Yellow + "Middleware (ZA, AR, CL)")
     print(text.default_text_color + str(2), text.Yellow + "MicroService")
-    print(text.default_text_color + str(3), text.Yellow + "Close application")
+    print(text.default_text_color + str(3), text.Yellow + "Magento (BR, DR)")
+
+    print(text.default_text_color + str(4), text.Yellow + "Close application")
     structure = input(text.default_text_color + "\nChoose which backend you want to run a service for: ")
     while validateStructure(structure) == "false":
         print(text.Red + "\n- Invalid option\n")
         print(text.default_text_color + str(1), text.Yellow + "Middleware (ZA, AR, CL)")
         print(text.default_text_color + str(2), text.Yellow + "MicroService")
-        print(text.default_text_color + str(3), text.Yellow + "Close application")
+        print(text.default_text_color + str(3), text.Yellow + "Magento (BR, DR)")
+        print(text.default_text_color + str(4), text.Yellow + "Close application")
         structure = input(text.default_text_color + "\nChoose which backend you want to run a service for: ")
 
     return structure
