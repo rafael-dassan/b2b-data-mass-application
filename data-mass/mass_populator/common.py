@@ -46,7 +46,7 @@ def populate_users_v2(country, environment):
     allowed_environments = ["UAT", "SIT"]
 
     if (country not in allowed_countries) or (environment not in allowed_environments):
-        print("Skipping populate users v2, because the country or environment are not supported!")
+        print("Skipping create user, functionality is not supported yet for country or environment.")
         return False
 
     populate_users_v2_switcher = {
