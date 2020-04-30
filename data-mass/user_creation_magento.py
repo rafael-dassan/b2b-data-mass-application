@@ -75,16 +75,6 @@ def create_user_request(url, account, headers, email, password):
     return place_request("POST", url, convert_json_to_string(data), headers)
 
 
-def user_already_exists_with_account(environment, country, username, password, account_id):
-    account_id_list = get_user_accounts(environment, country, username, password)
-
-    if len(account_id_list) > 0:
-        if account_id in account_id_list:
-            return True
-
-    return False
-
-
 def associate_user_to_account(environment, country, user, account):
     response = associate_user_to_account_request(environment, country, user, account)
     if response.status_code == 200:
@@ -120,3 +110,52 @@ def associate_user_to_account_request(environment, country, user, account):
     base_url = get_magento_base_url(environment, country)
 
     return place_request("POST", base_url + "/rest/V1/facade/accounts/connect", convert_json_to_string(data), headers)
+
+
+class UserCheckDict:
+    USER_AND_OR_PASSWORD_INCORRECT = -2
+    USER_DOESNT_EXISTS = -1
+    USER_EXISTS_AND_HAS_ACCOUNT = 0
+    USER_EXISTS_BUT_WITHOUT_THE_ACCOUNT = 1
+
+
+# Returns a value from UserCheckDict class
+def check_user(environment, country, username, password, account_id):
+    url = get_magento_base_url(environment, country) + "/rest/V1/facade/authentication"
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    body = {
+        "userName": username,
+        "password": password
+    }
+
+    response = place_request("POST", url, convert_json_to_string(body), headers)
+    json_data = loads(response.text)
+
+    if response.status_code == 200 and json_data != "":
+        account_id_list = []
+        accounts = json_data.get("user").get("accounts")
+
+        for account in accounts:
+            account_id_list.append(account.get("custID"))
+
+            if account_id in account_id_list:
+                return UserCheckDict.USER_EXISTS_AND_HAS_ACCOUNT
+            else:
+                return UserCheckDict.USER_EXISTS_BUT_WITHOUT_THE_ACCOUNT
+    else:
+        if response.status_code == 401:
+            if response.text == "":
+                return UserCheckDict.USER_DOESNT_EXISTS
+            else:
+                return UserCheckDict.USER_AND_OR_PASSWORD_INCORRECT
+
+
+def user_already_exists_with_account(environment, country, username, password, account_id):
+    result = check_user(environment, country, username, password, account_id)
+
+    return result == UserCheckDict.USER_EXISTS_AND_HAS_ACCOUNT
+
