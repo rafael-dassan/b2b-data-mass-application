@@ -20,15 +20,17 @@ def populate_users(environment):
 
 
 def populate_user(environment, username, password, account_ids):
-    create_user_br(environment, username, password, account_ids[0])
-    for account_id in account_ids[1:]:
-        associate_user_br(environment, username, password, account_id)
+    if "success" != create_user_br(environment, username, password, account_ids[0]):
+        logging.error("Fail on populate user.")
+    else:
+        for account_id in account_ids[1:]:
+            associate_user_br(environment, username, password, account_id)
 
 
 def associate_user_br(environment, username, password, account_id):
     if not user_already_exists_with_account(environment, "BR", username, password, account_id):
         logging.debug(
-            "Creating User: {user}/{password}/{account}".format(user=username, password=password, account=account_id))
+            "Associating User: {user}/{password}/{account}".format(user=username, password=password, account=account_id))
 
         user = authenticate_user(environment, "BR", username, password)
         account_result = check_account_exists_microservice(account_id, "BR", environment)
@@ -41,21 +43,21 @@ def create_user_br(environment, username, password, account_id):
 
     if result == UserCheckDict.USER_EXISTS_AND_HAS_ACCOUNT:
         log_user_already_exists_with_informed_account(username, password, account_id)
+        return "success"
     else:
         if result == UserCheckDict.USER_EXISTS_BUT_WITHOUT_THE_ACCOUNT:
             log_user_already_exists_without_informed_account(username, password, account_id)
+            return "fail"
         else:
             if result == UserCheckDict.USER_AND_OR_PASSWORD_INCORRECT:
                 log_user_and_or_passord_incorrect(username, password, account_id)
+                return "fail"
             else:
                 if result == UserCheckDict.USER_DOESNT_EXISTS:
-                    create_user(environment, username, password, account_id)
-
-
-def create_user(environment, username, password, account_id):
-    account_result = check_account_exists_microservice(account_id, "BR", environment)
-    if "success" != create_user(environment, "BR", username, password, account_result[0]):
-        logging.error("Fail on populate user.")
+                    account_result = check_account_exists_microservice(account_id, "BR", environment)
+                    if "success" != create_user(environment, "BR", username, password, account_result[0]):
+                        return "fail"
+                    return "success"
 
 
 def log_user_already_exists_with_informed_account(username, password, account_id):

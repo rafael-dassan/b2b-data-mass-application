@@ -142,10 +142,10 @@ def check_user(environment, country, username, password, account_id):
         for account in accounts:
             account_id_list.append(account.get("custID"))
 
-            if account_id in account_id_list:
-                return UserCheckDict.USER_EXISTS_AND_HAS_ACCOUNT
-            else:
-                return UserCheckDict.USER_EXISTS_BUT_WITHOUT_THE_ACCOUNT
+        if account_id in account_id_list:
+            return UserCheckDict.USER_EXISTS_AND_HAS_ACCOUNT
+        else:
+            return UserCheckDict.USER_EXISTS_BUT_WITHOUT_THE_ACCOUNT
     else:
         if response.status_code == 401:
             if response.text == "":
