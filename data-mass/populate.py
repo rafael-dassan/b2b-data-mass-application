@@ -1,22 +1,24 @@
 import sys
 
-from mass_populator.log import log, logging
+from mass_populator.log import *
 from mass_populator.all import execute_all
 from mass_populator.common import execute_common
 from mass_populator.validation import *
 
+logger = logging.getLogger(__name__)
+
 def common(country, environment):
-    logging.debug("COMMON method executed with Country/Environment: {a}/{b}".format(a=country, b=environment))
+    logger.debug("COMMON method executed with Country/Environment: {a}/{b}".format(a=country, b=environment))
     execute_common(country, environment)
 
 def all(country, environment):
-    logging.debug("ALL method executed with Country/Environment: {a}/{b}".format(a=country, b=environment))
+    logger.debug("ALL method executed with Country/Environment: {a}/{b}".format(a=country, b=environment))
     execute_all(country, environment)
 
 def execute(country, environment, execution_type):
-    log("Country", country)
-    log("Environment", environment)
-    log("Execution type", execution_type)
+    logger.info("Country: %s", country)
+    logger.info("Environment: %s", environment)
+    logger.info("Execution type: %s", execution_type)
 
     # to discover wich function to call
     switcher = {

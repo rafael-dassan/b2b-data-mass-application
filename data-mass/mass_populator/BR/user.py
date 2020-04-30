@@ -1,9 +1,10 @@
-from mass_populator.log import logging
+from mass_populator.log import *
 from user_creation_magento import \
     create_user, user_already_exists_with_account, check_user, UserCheckDict, authenticate_user, \
     associate_user_to_account
 from account import check_account_exists_microservice
 
+logger = logging.getLogger(__name__)
 
 def populate_users(environment):
     account_id_poc_1 = "99481543000135"
@@ -16,12 +17,12 @@ def populate_users(environment):
     populate_user(environment, "abiautotest+2@gmail.com", "Password1", [account_id_poc_2, account_id_poc_3])
     populate_user(environment, "abiautotest+100@gmail.com", "Pass()12", [account_id_poc_2, account_id_poc_3])
 
-    print("Users populating finalized.")
+    logger.info("Users populating finalized.")
 
 
 def populate_user(environment, username, password, account_ids):
     if "success" != create_user_br(environment, username, password, account_ids[0]):
-        logging.error("Fail on populate user.")
+        logger.error("Fail on populate user.")
     else:
         for account_id in account_ids[1:]:
             associate_user_br(environment, username, password, account_id)
@@ -29,13 +30,13 @@ def populate_user(environment, username, password, account_ids):
 
 def associate_user_br(environment, username, password, account_id):
     if not user_already_exists_with_account(environment, "BR", username, password, account_id):
-        logging.debug(
+        logger.debug(
             "Associating User: {user}/{password}/{account}".format(user=username, password=password, account=account_id))
 
         user = authenticate_user(environment, "BR", username, password)
         account_result = check_account_exists_microservice(account_id, "BR", environment)
         if "success" != associate_user_to_account(environment, "BR", user, account_result[0]):
-            logging.error("Fail on associate account.")
+            logger.error("Fail on associate account.")
 
 
 def create_user_br(environment, username, password, account_id):
@@ -61,16 +62,16 @@ def create_user_br(environment, username, password, account_id):
 
 
 def log_user_already_exists_with_informed_account(username, password, account_id):
-    logging.debug("User {user}/{password} already exists with the informed account: {account}".format(
+    logger.debug("User {user}/{password} already exists with the informed account: {account}".format(
             user=username, password=password, account=account_id))
 
 
 def log_user_already_exists_without_informed_account(username, password, account_id):
-    logging.warning("User {user}/{password} already exists but doesn't have the informed account: {account}".format(
+    logger.warning("User {user}/{password} already exists but doesn't have the informed account: {account}".format(
             user=username, password=password, account=account_id))
 
 
 def log_user_and_or_passord_incorrect(username, password, account_id):
-    logging.warning("User {user}/{password} already exists but was unable to check account information: {account}".format(
+    logger.warning("User {user}/{password} already exists but was unable to check account information: {account}".format(
             user=username, password=password, account=account_id))
 
