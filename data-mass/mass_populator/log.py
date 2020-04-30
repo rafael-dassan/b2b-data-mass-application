@@ -1,15 +1,18 @@
+from enum import Enum
 import logging
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s :: %(levelname)s :: %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s :: %(name)s :: %(levelname)s :: %(message)s')
 
-MAX_KEY_LENGTH = 30
+def log(message, kwargs):
+    if isinstance(message, Enum):
+        message = message.value
 
-def log(key, message):
-    key_length = MAX_KEY_LENGTH - len(key)
+    return message.format(**kwargs)
 
-    key_complement = repeat_to_length(".", key_length)
-    
-    logging.info("{a}{b}: {c}".format(a=key, b=key_complement.strip(), c=message))
-
-def repeat_to_length(string_to_expand, length):
-    return (string_to_expand * (int(length/len(string_to_expand))+1))[:length]
+class Message(Enum):
+    ACCOUNT_ERROR = "Fail on populate account {account_id}."
+    ACCOUNT_ERROR_MIDDLEWARE = "Fail on populate account {account_id} on Middleware."
+    CREDIT_ERROR = "Fail on populate credit for account {account_id}."
+    CREDIT_ERROR_MIDDLEWARE = "Fail on populate credit for account {account_id} on Middleware."
+    DELIVERY_WINDOW_ERROR = "Fail on populate delivery window for account {account_id}."
+    DELIVERY_WINDOW_ERROR_MIDDLEWARE = "Fail on populate delivery window for account {account_id} on Middleware."

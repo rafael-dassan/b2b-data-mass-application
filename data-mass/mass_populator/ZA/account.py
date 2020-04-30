@@ -4,6 +4,9 @@ from delivery_window import create_delivery_window_microservice
 from delivery_window import create_delivery_window_middleware
 from credit import add_credit_to_account, add_credit_to_account_microservice
 from common import validate_state
+from mass_populator.log import *
+
+logger = logging.getLogger(__name__)
 
 
 def populate_accounts(country, environment):
@@ -11,17 +14,17 @@ def populate_accounts(country, environment):
     populate_poc2(country, environment)
     populate_poc3(country, environment)
 
-    print("Accounts populating finalized.")
+    logger.info("Accounts populating finalized.")
 
 
 # Populate an account
 def populate_account(country, environment, account_id, account_name):
     state = validate_state(country)
     if "success" != create_account_ms(account_id, account_name, ["CASH"], None, country, environment, state):
-        print("Fail on populate account " + account_id + ".")
+        logger.info(log(Message.ACCOUNT_ERROR, {"account_id": account_id}))
 
     if "success" != create_account(account_id, account_name, country, ["CASH"], environment, None, state):
-        print("Fail on populate account " + account_id + " on Middleware.")
+        logger.info(log(Message.ACCOUNT_ERROR_MIDDLEWARE, {"account_id": account_id}))
 
 
 # Populate the delivery window for an account
@@ -31,19 +34,19 @@ def populate_delivery_window(country, environment, account_id):
         "accountId": account_id
     }
     if "success" != create_delivery_window_microservice(account_id, country, environment, account_data, "false"):
-        print("Fail on populate delivery window for account " + account_id + ".")
+        logger.info(log(Message.DELIVERY_WINDOW_ERROR, {"account_id": account_id}))
 
     if "success" != create_delivery_window_middleware(account_id, country, environment):
-        print("Fail on populate delivery window for account " + account_id + " on Middleware.")
+        logger.info(log(Message.DELIVERY_WINDOW_ERROR_MIDDLEWARE, {"account_id": account_id}))
 
 
 # Include credit on ZA Account
 def populate_credit(account_id, country, environment, credit, balance):
     if "success" != add_credit_to_account_microservice(account_id, country, environment, credit, balance):
-        print("Fail on populate credit for account " + account_id + ".")
+        logger.info(log(Message.CREDIT_ERROR, {"account_id": account_id}))
 
     if "success" != add_credit_to_account(account_id, country, environment, credit, balance):
-        print("Fail on populate credit for account " + account_id + " on Middleware.")
+        logger.info(log(Message.CREDIT_ERROR_MIDDLEWARE, {"account_id": account_id}))
 
 
 # Populate the POC 1
