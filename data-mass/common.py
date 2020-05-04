@@ -326,7 +326,10 @@ def get_magento_base_url(environment, country):
 def get_region_id(country):
     region_id = {
         "BR": "PT_BR",
-        "DO": "ES_DO"
+        "DO": "ES_DO",
+        "AR": "ES_AR",
+        "CL": "ES_CL",
+        "ZA": "EN_ZA"
     }
     return region_id.get(country)
 
