@@ -148,10 +148,7 @@ def check_user(environment, country, username, password, account_id):
             return UserCheckDict.USER_EXISTS_BUT_WITHOUT_THE_ACCOUNT
     else:
         if response.status_code == 401:
-            if response.text == "":
-                return UserCheckDict.USER_DOESNT_EXISTS
-            else:
-                return UserCheckDict.USER_AND_OR_PASSWORD_INCORRECT
+            return UserCheckDict.USER_AND_OR_PASSWORD_INCORRECT
 
 
 def user_already_exists_with_account(environment, country, username, password, account_id):

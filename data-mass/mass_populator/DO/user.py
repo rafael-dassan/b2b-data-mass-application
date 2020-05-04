@@ -6,6 +6,7 @@ from account import check_account_exists_microservice
 
 logger = logging.getLogger(__name__)
 
+
 def populate_users(environment):
     account_id_poc_1 = "9883300001"
     account_id_poc_2 = "9883300002"
@@ -50,15 +51,11 @@ def create_user_do(environment, username, password, account_id):
             log_user_already_exists_without_informed_account(username, password, account_id)
             return "fail"
         else:
-            if result == UserCheckDict.USER_AND_OR_PASSWORD_INCORRECT:
+            account_result = check_account_exists_microservice(account_id, "DO", environment)
+            if "success" != create_user(environment, "DO", username, password, account_result[0]):
                 log_user_and_or_passord_incorrect(username, password, account_id)
                 return "fail"
-            else:
-                if result == UserCheckDict.USER_DOESNT_EXISTS:
-                    account_result = check_account_exists_microservice(account_id, "DO", environment)
-                    if "success" != create_user(environment, "DO", username, password, account_result[0]):
-                        return "fail"
-                    return "success"
+            return "success"
 
 
 def log_user_already_exists_with_informed_account(username, password, account_id):
