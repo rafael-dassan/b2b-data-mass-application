@@ -4,7 +4,7 @@ import json
 from common import *
 
 # Validate if account exists on Middleware
-def check_account_exists_middleware(abi_id, zone, environment):
+def check_account_exists_middleware(abi_id, zone, environment, return_account_data = "false"):
     # Define headers
     headers = get_header_request(zone, "false", "true", "false", "false")
     
@@ -15,7 +15,9 @@ def check_account_exists_middleware(abi_id, zone, environment):
     response = place_request("GET", url, "", headers)
     json_data = loads(response.text)
     
-    if response.status_code == 200 and json_data != "":
+    if response.status_code == 200 and json_data != "" and return_account_data == "true":
+        return json_data
+    elif response.status_code == 200 and json_data != "":
         return "success"
     elif response.status_code == 404:
         return "false"

@@ -1,0 +1,18 @@
+{
+	"accountId": "string",
+	"paymentMethod": "string",
+	"empties": {
+		"extraAmount": 0,
+		"minimumRequired": 0,
+		"totalAmount": 0,
+		"groupIds": [
+			{
+				"groupId": null,
+				"quantity": 0
+			}
+		]
+	},
+	"deliveryDate": "string",
+	"deliveryWindowId": null,
+	"items": "string"
+}
