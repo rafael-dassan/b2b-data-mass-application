@@ -11,6 +11,7 @@ from jsonpath_rw import Index, Fields
 from jsonpath_rw_ext import parse
 import logging
 import subprocess
+from unicodedata import numeric
 from os import path
 
 
@@ -77,7 +78,8 @@ def validateOptionRequestSelection(option):
         "6": "true",
         "7": "true",
         "8": "true",
-        "9": "true"
+        "9": "true",
+        "10": "true",
     }
 
     value = switcher.get(option, "false")
@@ -365,12 +367,15 @@ def printAvailableOptions(selectionStructure):
         print(text.default_text_color + str(2), text.Yellow + "Input products")
         print(text.default_text_color + str(3), text.Yellow + "Input credit")
         print(text.default_text_color + str(4), text.Yellow + "Input delivery window")
-        if selectionStructure == "2":
+        if selectionStructure == "1":
+            print(text.default_text_color + str(5), text.Yellow + "(Beta) - Check Simulation Service")
+        elif selectionStructure == "2":
             print(text.default_text_color + str(5), text.Yellow + "Input recommended products")
             print(text.default_text_color + str(6), text.Yellow + "Input inventory to product")
             print(text.default_text_color + str(7), text.Yellow + "Input deals")
             print(text.default_text_color + str(8), text.Yellow + "Input combos")
             print(text.default_text_color + str(9), text.Yellow + "Create User IAM")
+            print(text.default_text_color + str(10), text.Yellow + "(Beta) - Check Simulation Service")
 
         print(text.default_text_color + str(0), text.Yellow + "Close application")
         selection = input(text.default_text_color + "\nPlease select: ")
@@ -380,13 +385,16 @@ def printAvailableOptions(selectionStructure):
             print(text.default_text_color + str(2), text.Yellow + "Input products")
             print(text.default_text_color + str(3), text.Yellow + "Input credit")
             print(text.default_text_color + str(4), text.Yellow + "Input delivery window")
-            if selectionStructure == "2":
+            if selectionStructure == "1":
+                print(text.default_text_color + str(5), text.Yellow + "(Beta) - Check Simulation Service")
+            elif selectionStructure == "2":
                 print(text.default_text_color + str(5), text.Yellow + "Input recommended products")
                 print(text.default_text_color + str(6), text.Yellow + "Input inventory to product")
                 print(text.default_text_color + str(7), text.Yellow + "Input deals")
                 print(text.default_text_color + str(8), text.Yellow + "Input combos")
                 print(text.default_text_color + str(9), text.Yellow + "Create User IAM")
-
+                print(text.default_text_color + str(10), text.Yellow + "(Beta) - Check Simulation Service")
+            
             print(text.default_text_color + str(0), text.Yellow + "Close application")
             selection = input(text.default_text_color + "\nPlease select: ")
     elif selectionStructure == "3":
@@ -568,11 +576,20 @@ def printQuantityMenu():
     return quantity
 
 # Print Account ID menu
-def print_account_id_menu():
+#   validate_string_account -- For microservices, a character number pattern was determined 
+#       for account creation, however not all zones use this pattern (e.g. AR, CH, CO). 
+#       Therefore, for simulation, this parameter was created to allow using accounts that do not 
+#       follow this pattern of more than 10 characters
+def print_account_id_menu(validate_string_account="true"):
     abi_id = input(text.default_text_color + "Account ID: ")
-    while validateAccount(abi_id) == "false":
-        print(text.Red + "\n- Account ID should not be empty and it must contain at least 10 characters")
-        abi_id = input(text.default_text_color + "\nAccount ID: ")
+    if validate_string_account == "true":
+        while validateAccount(abi_id) == "false":
+            print(text.Red + "\n- Account ID should not be empty and it must contain at least 10 characters")
+            abi_id = input(text.default_text_color + "\nAccount ID: ")
+    else:
+        while len(abi_id) == 0:
+            print(text.Red + "\n- Account ID should not be empty.")
+            abi_id = input(text.default_text_color + "\nAccount ID: ")
 
     return abi_id
 
@@ -912,3 +929,82 @@ def print_environment_menu_in_user_create_iam():
         print(text.Red + '\n- Invalid option')
         environment = input(text.default_text_color + "Environment (DEV, UAT): ")
     return environment.upper()
+
+# Print zone simulation menu
+def print_zone_simulation_menu(is_middleware="true"):
+    if is_middleware == "true":
+        zone = input(text.default_text_color + "Zone (AR, CL): ")
+        while validateZone("true", zone.upper()) == "false":
+            print(text.Red + "\n- Invalid option\n")
+            zone = input(text.default_text_color + "Zone (AR, CL): ")
+    else:
+        zone = input(text.default_text_color + "Zone (ZA, DO, BR, CO): ")
+        while validateZone("false", zone.upper()) == "false":
+            print(text.Red + "\n- Invalid option\n")
+            zone = input(text.default_text_color + "Zone (ZA, DO, BR, CO): ")
+
+    return zone.upper()
+
+# Validate zone simulation
+def validate_zone_simulation_service(is_middleware, zone):
+    if is_middleware == "true":
+        switcher = {
+            "AR": "true",
+            "CL": "true"
+        }
+
+        value = switcher.get(zone, "false")
+        return value
+    else:
+        switcher = {
+            "DO": "true",
+            "ZA": "true",
+            "BR": "true"
+        }
+
+        value = switcher.get(zone, "false")
+        return value
+
+# Validate if value is a number
+def is_number(s):
+    try:
+        float(s)
+        return "true"
+    except ValueError:
+        pass
+ 
+    try:
+        numeric(s)
+        return "true"
+    except (TypeError, ValueError):
+        pass
+ 
+    return "false"
+
+# Menu for payment method simulation
+def print_payment_method_simulation_menu(zone):
+    if zone == "BR":
+        payment_choice = input(text.default_text_color + "Select payment method for simulation: 1 - CASH, 2 - BANK_SLIP ")
+        while payment_choice != "1" and payment_choice != "2":
+            print(text.Red + "\n- Invalid option\n")
+            payment_choice = input(text.default_text_color + "Select payment method for simulation: 1 - CASH, 2 - BANK_SLIP ")
+
+        if payment_choice == "1":
+            payment_method = "CASH"
+        else:
+            payment_method = "BANK_SLIP"
+
+    elif zone == "DO":
+        payment_choice = input(text.default_text_color + "Select payment method for simulation: 1 - CASH, 2 - CREDIT ")
+        while payment_choice != "1" and payment_choice != "2":
+            print(text.Red + "\n- Invalid option\n")
+            payment_choice = input(text.default_text_color + "Select payment method for simulation: 1 - CASH, 2 - CREDIT")
+
+        if payment_choice == "1":
+            payment_method = "CASH"
+        else:
+            payment_method = "CREDIT"
+    else:
+        payment_method = "CASH"
+    
+    return payment_method

@@ -1,0 +1,10 @@
+{
+    "accountId": "string",
+    "deliveryCenterId": "string",
+    "paymentMethod": "string",
+    "paymentTerm": "string",
+    "lineItems": "string",
+    "combos": "string",
+    "deliveryDate": "string",
+    "empties": "string"
+}

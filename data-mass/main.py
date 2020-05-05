@@ -11,6 +11,7 @@ from combos import *
 from deals import *
 import user_creation_magento as user_magento
 import user_creation_v3 as user_v3
+from simulation import process_simulation_microservice, process_simulation_middleware
 
 def showMenu():
     clearTerminal()
@@ -23,7 +24,8 @@ def showMenu():
             "1": createAccountMdwMenu,
             "2": inputProductsAccountMdwMenu,
             "3": inputCreditAccountMdwMenu,
-            "4": inputDeliveryWindowAccountMdwMenu
+            "4": inputDeliveryWindowAccountMdwMenu,
+            "5": check_simulation_service_mdw_menu
         }
     elif selectionStructure == "2":
         switcher = {
@@ -36,7 +38,8 @@ def showMenu():
             "6": inputInventoryToProduct,
             "7": inputDealsMenu,
             "8": inputCombosMenu,
-            "9": registration_user_iam
+            "9": registration_user_iam,
+            "10": check_simulation_service_account_microservice_menu
         }
     elif selectionStructure == "3":
         switcher = {
@@ -50,6 +53,129 @@ def showMenu():
     if function != "":
         function()
     
+    printFinishApplicationMenu()
+
+# Place request for simulation service in microservice
+def check_simulation_service_account_microservice_menu():
+    zone = print_zone_simulation_menu("false")
+    environment = printEnvironmentMenu()
+    abi_id = print_account_id_menu()
+    
+    # Call check account exists function
+    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+    if account == "false":
+        print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
+        printFinishApplicationMenu()
+    
+    order_items = list()
+    order_combos = list()
+    empties_skus = list()
+
+    # input normal sku in simulation
+    input_order_item = input(text.default_text_color + "Would you like to include a new sku for simulation? (y/n) ")
+    while input_order_item.upper() != "Y" and input_order_item.upper() != "N":
+        print(text.Red + "\n- Invalid option\n")
+        input_order_item = input(text.default_text_color + "Would you like to include a new sku for simulation? (y/n) ")
+    
+    if input_order_item.upper() == "Y":
+        more_sku = "Y"
+        while more_sku.upper() == "Y":
+            sku = input(text.default_text_color + "Inform sku for simulation: ")
+            quantity = input(text.default_text_color + "Inform sku quantity for simulation: ")
+            while is_number(quantity) == "false":
+                print(text.Red + "\n- Invalid quantity\n")
+                quantity = input(text.default_text_color + "Inform sku quantity for simulation: ")
+
+            temp_product_data = {"sku": sku, "itemQuantity": quantity}
+            order_items.append(temp_product_data)
+            more_sku = input(text.default_text_color + "Would you like to include more skus for simulation? (y/N) ")
+    
+    # input combo sku in simulation
+    input_order_combo = input(text.default_text_color + "Would you like to include a new combo for simulation? (y/n) ")
+    while input_order_combo.upper() != "Y" and input_order_combo.upper() != "N":
+        print(text.Red + "\n- Invalid option\n")
+        input_order_combo = input(text.default_text_color + "Would you like to include a new combo for simulation? (y/n) ")
+    
+    if input_order_combo.upper() == "Y":
+        more_combo = "Y"
+        while more_combo.upper() == "Y":
+            sku = input(text.default_text_color + "Inform combo sku for simulation: ")
+            quantity = input(text.default_text_color + "Inform combo sku quantity for simulation: ")
+            while is_number(quantity) == "false":
+                print(text.Red + "\n- Invalid quantity\n")
+                quantity = input(text.default_text_color + "Inform combo sku quantity for simulation: ")
+
+            temp_combo_data = {"comboId": sku, "quantity": quantity}
+            order_combos.append(temp_combo_data)
+            more_combo = input(text.default_text_color + "Would you like to include more skus for simulation? (y/N) ")
+    
+    # input combo sku in simulation
+    input_order_empties = input(text.default_text_color + "Would you like to include a new empties sku for simulation? (y/n) ")
+    while input_order_empties.upper() != "Y" and input_order_empties.upper() != "N":
+        print(text.Red + "\n- Invalid option\n")
+        input_order_empties = input(text.default_text_color + "Would you like to include a new empties sku for simulation? (y/n) ")
+    
+    if input_order_empties.upper() == "Y":
+        more_empties = "Y"
+        while more_empties.upper() == "Y":
+            sku = input(text.default_text_color + "Inform combo sku for simulation: ")
+            quantity = input(text.default_text_color + "Inform combo sku quantity for simulation: ")
+            while is_number(quantity) == "false":
+                print(text.Red + "\n- Invalid quantity\n")
+                quantity = input(text.default_text_color + "Inform combo sku quantity for simulation: ")
+
+            temp_empties_data = {"groupId": sku, "quantity": quantity}
+            empties_skus.append(temp_empties_data)
+            more_empties = input(text.default_text_color + "Would you like to include more skus for simulation? (y/N) ")
+    
+    #Payment Method menu
+    payment_method = print_payment_method_simulation_menu(zone.upper())
+    if payment_method.upper() == "BANK_SLIP":
+        payment_term = input(text.default_text_color + "Enter the number of days the bill will expire: ")
+        while is_number(payment_term) == "false":
+            print(text.Red + "\n- Invalid number\n")
+            payment_term = input(text.default_text_color + "Enter the number of days the bill will expire: ")
+    else:
+        payment_term = 0
+
+    process_simulation_microservice(zone, environment, abi_id, account, order_items, order_combos, empties_skus, payment_method, payment_term)
+    printFinishApplicationMenu()
+
+# Place request for simulation service in middleware
+def check_simulation_service_mdw_menu():
+    zone = print_zone_simulation_menu("true")
+    environment = printEnvironmentMenu()
+    abi_id = print_account_id_menu("false")
+
+    # Call check account exists function
+    account = check_account_exists_middleware(abi_id, zone.upper(), environment.upper(), "true")
+    if account == "false":
+        print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
+        printFinishApplicationMenu()
+    
+    order_items = list()
+    # input normal sku in simulation
+    input_order_item = input(text.default_text_color + "Would you like to include a new sku for simulation? (y/n) ")
+    while input_order_item.upper() != "Y" and input_order_item.upper() != "N":
+        print(text.Red + "\n- Invalid option\n")
+        input_order_item = input(text.default_text_color + "Would you like to include a new sku for simulation? (y/n) ")
+    
+    if input_order_item.upper() == "Y":
+        more_sku = "Y"
+        while more_sku.upper() == "Y":
+            sku = input(text.default_text_color + "Inform sku for simulation: ")
+            quantity = input(text.default_text_color + "Inform sku quantity for simulation: ")
+            while is_number(quantity) == "false":
+                print(text.Red + "\n- Invalid quantity\n")
+                quantity = input(text.default_text_color + "Inform sku quantity for simulation: ")
+
+            temp_product_data = {"sku": sku, "quantity": quantity}
+            order_items.append(temp_product_data)
+            more_sku = input(text.default_text_color + "Would you like to include more skus for simulation? (y/N) ")
+    
+    #Payment Method menu
+    payment_method = print_payment_method_simulation_menu(zone.upper())
+    process_simulation_middleware(zone, environment, abi_id, account, order_items, payment_method)
     printFinishApplicationMenu()
 
 # Input Inventory to a SKU
