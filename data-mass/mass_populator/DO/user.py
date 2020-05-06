@@ -14,15 +14,15 @@ def populate_users(environment):
 
     populate_user(environment, "abiautotest+2@mailinator.com", "Password1", [account_id_poc_1])
     populate_user(environment, "abiautotest+100@mailinator.com", "Pass()12", [account_id_poc_1, account_id_poc_3])
-    populate_user(environment, "abiautotest+1@gmail.com", "Password1", [account_id_poc_2])
+    populate_user(environment, "abiautotest+1@gmail.com", "Password1", [account_id_poc_2], "+5519992666528")
     populate_user(environment, "abiautotest+2@gmail.com", "Password1", [account_id_poc_2, account_id_poc_3])
     populate_user(environment, "abiautotest+100@gmail.com", "Pass()12", [account_id_poc_2, account_id_poc_3])
 
     logger.info("Users populating finalized.")
 
 
-def populate_user(environment, username, password, account_ids):
-    if "success" != create_user_do(environment, username, password, account_ids[0]):
+def populate_user(environment, username, password, account_ids, phone=""):
+    if "success" != create_user_do(environment, username, password, account_ids[0], phone):
         logger.error("Fail on populate user.")
     else:
         for account_id in account_ids[1:]:
@@ -40,7 +40,7 @@ def associate_user_do(environment, username, password, account_id):
             logger.error("Fail on associate account.")
 
 
-def create_user_do(environment, username, password, account_id):
+def create_user_do(environment, username, password, account_id, phone):
     result = check_user(environment, "DO", username, password, account_id)
 
     if result == UserCheckDict.USER_EXISTS_AND_HAS_ACCOUNT:
@@ -52,7 +52,7 @@ def create_user_do(environment, username, password, account_id):
             return "fail"
         else:
             account_result = check_account_exists_microservice(account_id, "DO", environment)
-            if "success" != create_user(environment, "DO", username, password, account_result[0]):
+            if "success" != create_user(environment, "DO", username, password, account_result[0], phone):
                 log_user_and_or_passord_incorrect(username, password, account_id)
                 return "fail"
             return "success"

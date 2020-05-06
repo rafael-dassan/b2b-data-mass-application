@@ -800,6 +800,12 @@ def print_input_password():
 
     return password
 
+
+# Print user phone menu
+def print_input_phone():
+    return input(text.default_text_color + "User phone (optional): ")
+
+
 # Validate State in registration flow
 def validate_state(zone):
     if (zone == "BR"):
