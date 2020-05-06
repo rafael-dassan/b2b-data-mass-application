@@ -133,8 +133,6 @@ def validateZone(isMiddleware, zone):
         switcher = {
             "DO": "true",
             "ZA": "true",
-            "AR": "true",
-            "CL": "true",
             "BR": "true",
             "CO": "true"
         }
@@ -163,24 +161,13 @@ def validate_zone_for_inventory(zone):
 def validate_zone_for_deals(zone):
     switcher = {
         "BR": "true",
-        "CO": "true",
-        "DO": "true",
-        "ZA": "true"
-    }
-
-    value = switcher.get(zone, "false")
-    return value
-
-def validate_zone_for_combos(zone):
-    switcher = {
-        "BR": "true",
         "DO": "true"
     }
 
     value = switcher.get(zone, "false")
     return value
 
-def validate_zone_for_recommender(zone):
+def validate_zone_for_ms(zone):
     switcher = {
         "BR": "true",
         "DO": "true",
@@ -422,7 +409,7 @@ def printWelcomeScript():
 
 # Print structure menu
 def printStructureMenu():
-    print(text.default_text_color + str(1), text.Yellow + "Middleware (ZA, AR, CL)")
+    print(text.default_text_color + str(1), text.Yellow + "Middleware")
     print(text.default_text_color + str(2), text.Yellow + "MicroService")
     print(text.default_text_color + str(3), text.Yellow + "Magento (BR, DR)")
 
@@ -430,7 +417,7 @@ def printStructureMenu():
     structure = input(text.default_text_color + "\nChoose which backend you want to run a service for: ")
     while validateStructure(structure) == "false":
         print(text.Red + "\n- Invalid option\n")
-        print(text.default_text_color + str(1), text.Yellow + "Middleware (ZA, AR, CL)")
+        print(text.default_text_color + str(1), text.Yellow + "Middleware")
         print(text.default_text_color + str(2), text.Yellow + "MicroService")
         print(text.default_text_color + str(3), text.Yellow + "Magento (BR, DR)")
         print(text.default_text_color + str(4), text.Yellow + "Close application")
@@ -605,15 +592,24 @@ def printNameMenu():
 # Print zone menu
 def printZoneMenu(isMiddleware="true"):
     if isMiddleware == "true":
-        zone = input(text.default_text_color + "Zone (ZA, AR, CL): ")
+        zone = input(text.default_text_color + "Zone (ZA): ")
         while validateZone("true", zone.upper()) == "false":
             print(text.Red + "\n- Invalid option\n")
-            zone = input(text.default_text_color + "Zone (ZA, AR, CL): ")
+            zone = input(text.default_text_color + "Zone (ZA): ")
     else:
-        zone = input(text.default_text_color + "Zone (ZA, AR, CL, DO, BR): ")
+        zone = input(text.default_text_color + "Zone (ZA, DO, BR): ")
         while validateZone("false", zone.upper()) == "false":
             print(text.Red + "\n- Invalid option\n")
-            zone = input(text.default_text_color + "Zone (ZA, AR, CL, DO, BR): ")
+            zone = input(text.default_text_color + "Zone (ZA, DO, BR): ")
+
+    return zone.upper()
+
+# Print zone menu for Microservice
+def print_zone_menu_for_ms():
+    zone = input(text.default_text_color + "Zone (BR, DO, ZA): ")
+    while validate_zone_for_ms(zone.upper()) == "false":
+        print(text.Red + "\n- Invalid option\n")
+        zone = input(text.default_text_color + "Zone (BR, DO, ZA): ")
 
     return zone.upper()
 
@@ -628,28 +624,10 @@ def print_zone_menu_for_inventory():
 
 # Print zone menu for deals
 def print_zone_menu_for_deals():
-    zone = input(text.default_text_color + "Zone (BR, DO, ZA): ")
+    zone = input(text.default_text_color + "Zone (BR, DO): ")
     while validate_zone_for_deals(zone.upper()) == "false":
         print(text.Red + "\n- Invalid option\n")
-        zone = input(text.default_text_color + "Zone (BR, DO, ZA): ")
-
-    return zone.upper()
-
-# Print zone menu for combos
-def print_zone_menu_for_combos():
-    zone = input(text.default_text_color + "Zone (BR, DO): ")
-    while validate_zone_for_combos(zone.upper()) == "false":
-        print(text.Red + "\n- Invalid option\n")
         zone = input(text.default_text_color + "Zone (BR, DO): ")
-
-    return zone.upper()
-
-# Print zone menu for recommender
-def print_zone_menu_for_recommender():
-    zone = input(text.default_text_color + "Zone (BR, DO, ZA): ")
-    while validate_zone_for_recommender(zone.upper()) == "false":
-        print(text.Red + "\n- Invalid option\n")
-        zone = input(text.default_text_color + "Zone (BR, DO, ZA): ")
 
     return zone.upper()
 

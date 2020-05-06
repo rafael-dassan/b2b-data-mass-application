@@ -213,7 +213,7 @@ def inputInventoryToProduct():
 
 # Input beer recommender by account on Microservice
 def inputBeerRecommenderAccountMicroserviceMenu():
-    zone = print_zone_menu_for_recommender()
+    zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu()
 
@@ -302,7 +302,7 @@ def inputDealsMenu():
 # Input combos by account
 def inputCombosMenu():
     selectionStructure = printCombosMenu()
-    zone = print_zone_menu_for_combos()
+    zone = print_zone_menu_for_deals()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu()
     
@@ -391,7 +391,7 @@ def inputCombosMenu():
 
 # Input credit account on microservice
 def inputCreditAccountMicroserviceMenu():
-    zone = printZoneMenu("false")
+    zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu()
 
@@ -416,7 +416,7 @@ def inputCreditAccountMicroserviceMenu():
     printFinishApplicationMenu()
 
 def inputProductsAccountMicroserviceMenu():
-    zone = printZoneMenu("false")
+    zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu()
     
@@ -449,7 +449,7 @@ def inputProductsAccountMicroserviceMenu():
             printFinishApplicationMenu()
 
 def inputDeliveryWindowAccountMicroserviceMenu():
-    zone = printZoneMenu("false")
+    zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu()
 
@@ -625,7 +625,7 @@ def createAccountMdwMenu():
 
 # Create Account menu for Zones using MS
 def createAccountMsMenu():
-    zone = printZoneMenu("false")
+    zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu()
     name = printNameMenu()
