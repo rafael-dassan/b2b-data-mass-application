@@ -43,7 +43,7 @@ def showMenu():
         }
     elif selectionStructure == "3":
         switcher = {
-            "1": create_user_v2_menu,
+            "1": create_user_magento_menu,
             "2": associateUserToAccount
         }
     else:
@@ -687,7 +687,7 @@ def createAccountMsMenu():
 
 
 # Create User for zones in Microservice
-def create_user_v2_menu():
+def create_user_magento_menu():
     country = printCountryMenuInUserCreation()
     env = printEnvironmentMenuInUserCreation()
     account_id = print_account_id_menu()
