@@ -501,7 +501,7 @@ def input_stepped_free_good_to_cart_calculation(deal_id, accounts, zone, environ
 def input_discount_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone, environment):
     free_good_sku = []
     minimum_quantity = printMinimumQuantityMenu()
-    discount_type = printDiscountTypeMenu()
+    discount_type = print_discount_type_menu()
     discount_value = printDiscountValueMenu(discount_type)
 
     # ZA is still using middleware for deal creation
@@ -521,9 +521,9 @@ def input_discount_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone,
 
 def input_stepped_discount_with_qtd_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone, environment):
     free_good_sku = []
-    index_range = printIndexRangeMenuOne()
-    discount_type = printDiscountTypeMenu()
-    discount_range = printDiscountRangeMenuOne()
+    index_range = print_index_range_menu(2)
+    discount_type = print_discount_type_menu()
+    discount_range = print_discount_range_menu(1)
     quantity = input(text.default_text_color + "Quantity: ")
 
     # ZA is still using middleware for deal creation
@@ -544,9 +544,9 @@ def input_stepped_discount_with_qtd_to_account(abi_id, accounts, deal_sku, skus,
 
 def input_stepped_discount_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone, environment):
     free_good_sku = []
-    index_range = printIndexRangeMenu()
-    discount_type = printDiscountTypeMenu()
-    discount_range = printDiscountRangeMenu()
+    index_range = print_index_range_menu()
+    discount_type = print_discount_type_menu()
+    discount_range = print_discount_range_menu()
 
     # ZA is still using middleware for deal creation
     if zone == "ZA":
@@ -586,7 +586,7 @@ def input_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone
 
 def input_stepped_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone, environment):
     free_good_sku = deal_sku
-    index_range = printIndexRangeMenu()
+    index_range = print_index_range_menu()
     quantity_range = printQuantityRangeMenu()
 
     # ZA is still using middleware for deal creation

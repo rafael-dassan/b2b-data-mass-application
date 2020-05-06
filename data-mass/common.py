@@ -201,7 +201,7 @@ def validateStructure(option):
         return "false"
 
 # Validate deals
-def validateDeals(option):
+def validate_deals(option):
     if option == "1" or option == "2" or option == "3" or option == "4" or option == "5":
         return "true"
     else:
@@ -475,7 +475,7 @@ def printDealsMenu():
     print(text.default_text_color + str(4), text.Yellow + "Input deal type stepped free good")
     print(text.default_text_color + str(5), text.Yellow + "Input deal type stepped discount with quantity")
     structure = input(text.default_text_color + "\nPlease select: ")
-    while validateDeals(structure) == "false":
+    while validate_deals(structure) == "false":
         print(text.Red + "\n- Invalid option")
         print(text.default_text_color + "\nWhich type of deal do you want to create?")
         print(text.default_text_color + str(1), text.Yellow + "Input deal type discount")
@@ -511,7 +511,7 @@ def validateComboStructure(option):
         return "false"
 
 # Print Discount type menu
-def printDiscountTypeMenu():
+def print_discount_type_menu():
     discount_type = input(text.default_text_color + "What type of discount do you want to apply (1. Percentage / 2. Fixed amount): ")
     while discount_type != "1" and discount_type != "2":
         print(text.Red + "\n- Invalid option")
@@ -546,24 +546,10 @@ def printDiscountValueMenu(discount_type):
     return discount_value
 
 # Print range index menu
-def printIndexRangeMenu():
+def print_index_range_menu(indexs=4):
     index_list = list()
 
-    for x in range(4):
-        range_index = input(text.default_text_color + "Range index #" + str(x) + ": ")
-        while range_index == "" or int(range_index) <= 0:
-            print(text.Red + "\n- Range index must be greater than 0")
-            range_index = input(text.default_text_color + "\nRange index #" + str(x) + ": ")
-
-        index_list.append(range_index)
-    
-    return index_list
-
-# Print range index menu
-def printIndexRangeMenuOne():
-    index_list = list()
-
-    for x in range(2):
+    for x in range(indexs):
         range_index = input(text.default_text_color + "Range index #" + str(x) + ": ")
         while range_index == "" or int(range_index) <= 0:
             print(text.Red + "\n- Range index must be greater than 0")
@@ -574,10 +560,10 @@ def printIndexRangeMenuOne():
     return index_list
 
 # Print discount range menu
-def printDiscountRangeMenu():
+def print_discount_range_menu(indexs=2):
     index_list = list()
 
-    for x in range(2):
+    for x in range(indexs):
         discount_value = input(text.default_text_color + "Discount value for index #" + str(x) + ": ")
         while discount_value == "" or float(discount_value) <= 0:
             print(text.Red + "\n- Discount value must be greater than 0")
@@ -586,15 +572,6 @@ def printDiscountRangeMenu():
         index_list.append(discount_value)
 
     return index_list
-
-# Print discount range menu
-def printDiscountRangeMenuOne():
-    discount_value = input(text.default_text_color + "Discount value: ")
-    while discount_value == "" or float(discount_value) <= 0:
-        print(text.Red + "\n- Discount value must be greater than 0")
-        discount_value = input(text.default_text_color + "\nDiscount value: ")
-
-    return discount_value
 
 # Print quantity range menu
 def printQuantityRangeMenu():
