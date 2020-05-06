@@ -61,7 +61,8 @@ def populate_poc2(country, environment):
 
 # Populate the POC 3
 def populate_poc3(country, environment):
+    account_id = "3325534210"
     credit = "45000"
     balance = "45000"
-    populate_account(country, environment, "3325534210", "CL_POC_003")
-    populate_credit("3325534210", country, environment, credit, balance)
+    populate_account(country, environment, account_id, "CL_POC_003")
+    populate_credit(account_id, country, environment, credit, balance)

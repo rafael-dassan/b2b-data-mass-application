@@ -70,7 +70,38 @@ The countries BR and DO will have the Users created with the following Accounts 
 - User created with email: **abiautotest+1@gmail.com**, password: **Password1**, with Account ID **56338831000122** 
 - User created with email: **abiautotest+2@gmail.com**, password: **Password1**, with Account ID **56338831000122** and **42282891000166**
 - User created with email: **abiautotest+100@gmail.com**, password: **Pass()12**, with Account ID **56338831000122** and **42282891000166** 
- 
+
+#### AR
+
+- User created with email: **abiautotest+2@mailinator.com**, password: **Password1**, with Account ID **5444385012** 
+- User created with email: **abiautotest+100@mailinator.com**, password: **Pass()12**, with Account ID **5444385012** and **1669325565**
+
+
+- User created with email: **abiautotest+1@gmail.com**, password: **Password1**, with Account ID **9932094352** 
+- User created with email: **abiautotest+2@gmail.com**, password: **Password1**, with Account ID **9932094352** and **1669325565**
+- User created with email: **abiautotest+100@gmail.com**, password: **Pass()12**, with Account ID **9932094352** and **1669325565** 
+
+#### CL
+
+- User created with email: **abiautotest+2@mailinator.com**, password: **Password1**, with Account ID **2323434554** 
+- User created with email: **abiautotest+100@mailinator.com**, password: **Pass()12**, with Account ID **2323434554** and **3325534210**
+
+
+- User created with email: **abiautotest+1@gmail.com**, password: **Password1**, with Account ID **1020303040** 
+- User created with email: **abiautotest+2@gmail.com**, password: **Password1**, with Account ID **1020303040** and **3325534210**
+- User created with email: **abiautotest+100@gmail.com**, password: **Pass()12**, with Account ID **1020303040** and **3325534210** 
+
+#### ZA
+
+- User created with email: **abiautotest+2@mailinator.com**, password: **Password1**, with Account ID **9883300101** 
+- User created with email: **abiautotest+100@mailinator.com**, password: **Pass()12**, with Account ID **9883300101** and **9883300103**
+
+
+- User created with email: **abiautotest+1@gmail.com**, password: **Password1**, with Account ID **9883300102** 
+- User created with email: **abiautotest+2@gmail.com**, password: **Password1**, with Account ID **9883300102** and **9883300103**
+- User created with email: **abiautotest+100@gmail.com**, password: **Pass()12**, with Account ID **9883300102** and **9883300103** 
+
+
  
 ### Products
 
