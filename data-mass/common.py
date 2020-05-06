@@ -233,11 +233,17 @@ def place_request(request_type, request_url, request_body, request_headers):
 
     # If the logs directory does not exist, create it
     if path.exists(dir_logs) == False:
-        subprocess.call(["mkdir", "-p", dir_logs])
+        if os.name == 'nt':
+            os.makedirs(dir_logs)
+        else:
+            subprocess.call(["mkdir", "-p", dir_logs])
 
     # If the debug.log file does not exist, create it
     if path.exists(file_debug) == False:
-        subprocess.call(["touch", file_debug])
+        if os.name == 'nt':
+            subprocess.call(["echo '' >", file_debug])
+        else:
+            subprocess.call(["touch", file_debug])
 
     # Log request data to debug.log file
     logging.basicConfig(filename=file_debug,level=logging.DEBUG)
