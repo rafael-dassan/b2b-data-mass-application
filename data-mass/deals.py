@@ -299,6 +299,53 @@ def input_discount_to_cart_calculation(deal_id, accounts, zone, environment, sku
     else:
         return response.status_code
 
+def input_stepped_discount_with_qtd_to_cart_calculation(deal_id, accounts, zone, environment, skus, quantity, index_range, discount_type, discount_range):
+    # Get base URL
+    request_url = get_microservice_base_url(environment) + "/cart-calculation-relay/deals"
+
+    # Create body
+    request_body = dumps({
+        "accounts": accounts,
+        "deals": [
+            {
+                "dealId": deal_id,
+                "dealRules": {
+                    "dealSKUScaledRule": {
+                        "skus": skus,
+                        "ranges": [
+                            {
+                                "rangeIndex": 0,
+                                "from": index_range[0],
+                                "to": index_range[1]
+                            }
+                        ]
+                    }
+                },
+                "dealOutput": {
+                    "dealOutputSKUScaledDiscount": [
+                        {
+                            "rangeIndex": 0,
+                            "skus": skus,
+                            discount_type: discount_range[0],
+                            "maxQuantity": quantity
+                        }
+                    ]
+                },
+                "externalId": deal_id
+            }
+    ]})
+
+    # Get header request
+    request_headers = get_header_request(zone, "false", "false", "false", "false")
+
+    # Send request
+    response = place_request("PUT", request_url, request_body, request_headers)
+
+    if response.status_code == 202:
+        return "success"
+    else:
+        return response.status_code
+
 def input_stepped_discount_to_cart_calculation(deal_id, accounts, zone, environment, skus, discount_type, index_range, discount_range):
     # Get base URL
     request_url = get_microservice_base_url(environment) + "/cart-calculation-relay/deals"
@@ -471,6 +518,29 @@ def input_discount_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone,
         print(text.Green + "\n- Deal successfully registered")
         print(text.default_text_color + "\n- Deal ID: " + promotion_response)
         print(text.default_text_color + "- Buy at least " + str(minimum_quantity) + " of " + deal_sku + " and get " + str(discount_value) + " " + str(discount_type) + " discount")
+
+def input_stepped_discount_with_qtd_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone, environment):
+    free_good_sku = []
+    index_range = printIndexRangeMenuOne()
+    discount_type = printDiscountTypeMenu()
+    discount_range = printDiscountRangeMenuOne()
+    quantity = input(text.default_text_color + "Quantity: ")
+
+    # ZA is still using middleware for deal creation
+    if zone == "ZA":
+        promotion_response = input_deal_to_account_middleware(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
+    else:
+        promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
+
+    
+    cart_response = input_stepped_discount_with_qtd_to_cart_calculation(promotion_response, accounts, zone.upper(), environment.upper(), skus, quantity, index_range, discount_type, discount_range)
+
+    if promotion_response == "false" and cart_response != "success":
+        print(text.Red + "\n- [Deals] Something went wrong, please try again")
+    else:
+        print(text.Green + "\n- Deal successfully registered")
+        print(text.default_text_color + "\n- Deal ID: " + promotion_response)
+        print(text.default_text_color + "- Buy from " + str(index_range[0]) + " to " + str(index_range[1]) + " of " + deal_sku + " and get " + str(discount_range[0]) + " " + str(discount_type) + " discount in " + quantity + " items ")
 
 def input_stepped_discount_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone, environment):
     free_good_sku = []
