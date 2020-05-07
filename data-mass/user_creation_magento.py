@@ -40,7 +40,7 @@ def get_user_accounts(environment, country, user_name, password):
     return account_id_list
 
 
-def create_user(environment, country, email, password, account):
+def create_user(environment, country, email, password, account, phone=""):
     url = get_magento_base_url(environment, country) + "/rest/V1/accessmanagement/users"
 
     access_token = get_magento_access_token(environment, country)
@@ -50,7 +50,7 @@ def create_user(environment, country, email, password, account):
         "x-access-token": access_token
     }
 
-    response = create_user_request(url, account, headers, email, password)
+    response = create_user_request(url, account, headers, email, password, phone)
 
     if response.status_code == 200:
         return "success"
@@ -59,7 +59,7 @@ def create_user(environment, country, email, password, account):
         return response.status_code
 
 
-def create_user_request(url, account, headers, email, password):
+def create_user_request(url, account, headers, email, password, phone):
     name = email.split("@")[0]
     data = {
         "firstName": name,
@@ -67,7 +67,7 @@ def create_user_request(url, account, headers, email, password):
         "password": password,
         "phoneVerified": 'false',
         "email": email,
-        "phone": "",
+        "phone": phone,
         "emailVerified": 'true',
         "account": account
     }

@@ -696,6 +696,7 @@ def create_user_magento_menu():
     account_id = print_account_id_menu()
     email = print_input_email()
     password = print_input_password()
+    phone = print_input_phone()
 
     account_id_list = user_magento.get_user_accounts(env, country, email, password)
     if len(account_id_list) > 0:
@@ -715,7 +716,7 @@ def create_user_magento_menu():
             print(text.Red + "\n- The account isn't ACTIVE.")
             printFinishApplicationMenu()
 
-    status_response = user_magento.create_user(env, country, email, password, account_result[0])
+    status_response = user_magento.create_user(env, country, email, password, account_result[0], phone)
     if status_response == "success":
         print(text.Green + "\n- User created successfully")
     else:

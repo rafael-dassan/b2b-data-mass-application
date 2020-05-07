@@ -56,7 +56,7 @@ The countries BR and DO will have the Users created with the following Accounts 
 - User created with email: **abiautotest+100@mailinator.com**, password: **Pass()12**, with Account ID **9883300001** and **9883300003**
  
 
-- User created with email: **abiautotest+1@gmail.com**, password: **Password1**, with Account ID **9883300002**
+- User created with email: **abiautotest+1@gmail.com**, password: **Password1**, with Account ID **9883300002**, with phone **+5519992666528**
 - User created with email: **abiautotest+2@gmail.com**, password: **Password1**, with Account ID **9883300002** and **9883300003**
 - User created with email: **abiautotest+100@gmail.com**, password: **Pass()12**, with Account ID **9883300002** and **9883300003**
 
