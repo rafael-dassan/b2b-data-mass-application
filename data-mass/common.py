@@ -187,6 +187,13 @@ def validateStructure(option):
     else:
         return "false"
 
+# Validate deals
+def validate_deals(option):
+    if option == "1" or option == "2" or option == "3" or option == "4" or option == "5":
+        return "true"
+    else:
+        return "false"
+
 # Validate environment
 def validateEnvironment(environment):
     if environment == "DEV" or environment == "QA" or environment == "UAT":
@@ -420,7 +427,13 @@ def printAvailableOptions(selectionStructure):
 
 # Print welcome menu
 def printWelcomeScript():
-    print(text.default_text_color + "🄰🄽🅃🄰🅁🄲🅃🄸🄲🄰 🄰🅄🅃🄾🄼🄰🅃🄸🄾🄽 🅂🄲🅁🄸🄿🅃\n")
+    print(text.BackgroundLightYellow + text.Bold + text.Black)
+    print("╭──────────────────────────────────╮")
+    print("│ 🐝                               │")
+    print("│   ANTARCTICA AUTOMATION SCRIPT   │")
+    print("│                               🐝 │")
+    print("╰──────────────────────────────────╯") 
+    print(text.BackgroundDefault + text.ResetBold + text.default_text_color + "\n")
 
 # Print structure menu
 def printStructureMenu():
@@ -447,14 +460,16 @@ def printDealsMenu():
     print(text.default_text_color + str(2), text.Yellow + "Input deal type stepped discount")
     print(text.default_text_color + str(3), text.Yellow + "Input deal type free good")
     print(text.default_text_color + str(4), text.Yellow + "Input deal type stepped free good")
+    print(text.default_text_color + str(5), text.Yellow + "Input deal type stepped discount with quantity")
     structure = input(text.default_text_color + "\nPlease select: ")
-    while validateStructure(structure) == "false":
+    while validate_deals(structure) == "false":
         print(text.Red + "\n- Invalid option")
         print(text.default_text_color + "\nWhich type of deal do you want to create?")
         print(text.default_text_color + str(1), text.Yellow + "Input deal type discount")
         print(text.default_text_color + str(2), text.Yellow + "Input deal type stepped discount")
         print(text.default_text_color + str(3), text.Yellow + "Input deal type free good")
         print(text.default_text_color + str(4), text.Yellow + "Input deal type stepped free good")
+        print(text.default_text_color + str(5), text.Yellow + "Input deal type stepped discount with quantity")
 
     return structure
 
@@ -483,7 +498,7 @@ def validateComboStructure(option):
         return "false"
 
 # Print Discount type menu
-def printDiscountTypeMenu():
+def print_discount_type_menu():
     discount_type = input(text.default_text_color + "What type of discount do you want to apply (1. Percentage / 2. Fixed amount): ")
     while discount_type != "1" and discount_type != "2":
         print(text.Red + "\n- Invalid option")
@@ -518,10 +533,10 @@ def printDiscountValueMenu(discount_type):
     return discount_value
 
 # Print range index menu
-def printIndexRangeMenu():
+def print_index_range_menu(indexs=4):
     index_list = list()
 
-    for x in range(4):
+    for x in range(indexs):
         range_index = input(text.default_text_color + "Range index #" + str(x) + ": ")
         while range_index == "" or int(range_index) <= 0:
             print(text.Red + "\n- Range index must be greater than 0")
@@ -532,10 +547,10 @@ def printIndexRangeMenu():
     return index_list
 
 # Print discount range menu
-def printDiscountRangeMenu():
+def print_discount_range_menu(indexs=2):
     index_list = list()
 
-    for x in range(2):
+    for x in range(indexs):
         discount_value = input(text.default_text_color + "Discount value for index #" + str(x) + ": ")
         while discount_value == "" or float(discount_value) <= 0:
             print(text.Red + "\n- Discount value must be greater than 0")

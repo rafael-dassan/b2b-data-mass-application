@@ -249,7 +249,8 @@ def inputDealsMenu():
         "1": "DISCOUNT",
         "2": "STEPPED_DISCOUNT",
         "3": "FREE_GOOD",
-        "4": "STEPPED_FREE_GOOD"
+        "4": "STEPPED_FREE_GOOD",
+        "5": "STEPPED_DISCOUNT"
     }
 
     deal_type = switcher.get(selectionStructure, "false")
@@ -294,8 +295,10 @@ def inputDealsMenu():
         input_stepped_discount_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(), environment.upper()) 
     elif selectionStructure == "3":
         input_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(), environment.upper())
-    else:
+    elif selectionStructure == "4":
         input_stepped_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(), environment.upper())
+    else:
+        input_stepped_discount_with_qtd_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(), environment.upper())
 
     printFinishApplicationMenu()
             
@@ -838,7 +841,10 @@ def registration_user_iam():
         print(text.Red + "\n- [User] Something went wrong, please try again")
         printFinishApplicationMenu()
 
-# Init
-if __name__ == '__main__':
-    showMenu()
 
+# Init
+try:
+    if __name__ == '__main__':
+        showMenu()
+
+except KeyboardInterrupt: sys.exit(0)
