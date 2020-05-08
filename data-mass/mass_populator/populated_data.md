@@ -16,6 +16,8 @@ Only ZA has also the two Accounts created for Microservice and Middleware (check
 | DO | Dominican Republic | Yes | No |
 | ZA | South Africa | Yes | Yes |
 
+All accounts will have 100 products or the maximum available products for that country associated with them.
+
 #### AR
 
 - Account 1: created with ID **5444385012**, name **AR_POC_001**, payment method **[CASH]**, with liquor license, with delivery window, credit **45000**, balance **45000**.
