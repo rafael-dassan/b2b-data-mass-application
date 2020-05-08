@@ -6,13 +6,16 @@ from mass_populator.DO.account import populate_accounts as populate_accounts_do
 from mass_populator.ZA.account import populate_accounts as populate_accounts_za
 from mass_populator.BR.user import populate_users as populate_users_br
 from mass_populator.DO.user import populate_users as populate_users_do
+from mass_populator.AR.user import populate_users as populate_users_ar
+from mass_populator.CL.user import populate_users as populate_users_cl
+from mass_populator.ZA.user import populate_users as populate_users_za
 
 logger = logging.getLogger(__name__)
 
 
 def execute_common(country, environment):
     populate_accounts(country, environment)
-    populate_users_v2(country, environment)
+    populate_users_magento(country, environment)
 
     return True
 
@@ -36,21 +39,23 @@ def populate_accounts(country, environment):
         function(country, translated_environment)
 
 
-def populate_users_v2(country, environment):
-    allowed_countries = ["BR", "DO"]
+def populate_users_magento(country, environment):
     allowed_environments = ["UAT", "SIT"]
 
-    if (country not in allowed_countries) or (environment not in allowed_environments):
-        logger.info("Skipping populate users v2, because the country or environment are not supported!")
+    if (environment not in allowed_environments):
+        logger.info("Skipping populate users magento, because the environment is not supported!")
         return False
 
-    populate_users_v2_switcher = {
+    populate_users_magento_switcher = {
         "BR": populate_users_br,
-        "DO": populate_users_do
+        "DO": populate_users_do,
+        "AR": populate_users_ar,
+        "CL": populate_users_cl,
+        "ZA": populate_users_za
     }
 
-    function = populate_users_v2_switcher.get(country)
+    function = populate_users_magento_switcher.get(country)
     if function != "":
-        logger.info("populate_users_v2 for %s/%s", country, environment)
+        logger.info("populate_users_magento for %s/%s", country, environment)
         function(environment)
 
