@@ -182,7 +182,7 @@ def check_simulation_service_mdw_menu():
 def inputInventoryToProduct():
     zone = print_zone_menu_for_inventory()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu()
+    abi_id = print_account_id_menu("false")
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
@@ -243,7 +243,7 @@ def inputDealsMenu():
     selectionStructure = printDealsMenu()
     zone = print_zone_menu_for_deals()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu()
+    abi_id = print_account_id_menu("false")
 
     switcher = {
         "1": "DISCOUNT",
@@ -270,25 +270,34 @@ def inputDealsMenu():
         productOffers = request_get_offers_middleware(abi_id, zone.upper(), environment.upper())
     else:
         # For Zones which use the microservice integration
-        productOffers = request_get_offers_microservice(abi_id, zone, environment, account[0]["deliveryCenterId"])
+        productOffers = request_get_offers_microservice(abi_id, zone, environment)
 
     if len(productOffers) == 0:
         print(text.Red + "\n- [Products] The account " + str(abi_id) + " has no available products for purchase")
         printFinishApplicationMenu()
 
     indexOffers = randint(0, (len(productOffers) - 1))
-    sku = productOffers[indexOffers]
+    product = productOffers[indexOffers]
+
+    if zone.upper() == "ZA":
+        product_sku = product
+    else:
+        product_sku = product['sku']
 
     # Check if the SKU is enabled on Items MS
-    deal_sku = check_item_enabled(sku, zone.upper(), environment.upper())
+    deal_sku = check_item_enabled(product_sku, zone.upper(), environment.upper())
     while deal_sku == False:
         indexOffers = randint(0, (len(productOffers) - 1))
-        sku = productOffers[indexOffers]
-        deal_sku = check_item_enabled(sku, zone.upper(), environment.upper())
+        product = productOffers[indexOffers]
+        if zone.upper() == "ZA":
+            product_sku = product
+        else:
+            product_sku = product['sku']
+
+        deal_sku = check_item_enabled(product_sku, zone.upper(), environment.upper())
 
     skus = list()
-    skus.append(deal_sku)
-    
+    skus.append(product)
     if selectionStructure == "1": 
         input_discount_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(), environment.upper())
     elif selectionStructure == "2":
@@ -316,20 +325,20 @@ def inputCombosMenu():
         print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
         printFinishApplicationMenu()
 
-    productOffers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'])
+    productOffers = request_get_offers_microservice(abi_id, zone, environment)
 
     if len(productOffers) == 0:
         print(text.Red + "\n- [Products] The account " + str(abi_id) + " has no products available for purchase")
         printFinishApplicationMenu()
 
     indexOffers = randint(0, (len(productOffers) - 1))
-    sku = productOffers[indexOffers]
+    sku = productOffers[indexOffers]['sku']
 
     # Check if the SKU is enabled on Items MS
     combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
     while combo_item == False:
         indexOffers = randint(0, (len(productOffers) - 1))
-        sku = productOffers[indexOffers]
+        sku = productOffers[indexOffers]['sku']
         combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
     
     if selectionStructure == "1":
@@ -351,13 +360,13 @@ def inputCombosMenu():
         auxIndex = 0
         while auxIndex < 3:
             indexOffers = randint(0, (len(productOffers) - 1))
-            sku = productOffers[indexOffers]
+            sku = productOffers[indexOffers]['sku']
 
             # Check if the SKU is enabled on Items MS
             combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
             while combo_item == False:
                 indexOffers = randint(0, (len(productOffers) - 1))
-                sku = productOffers[indexOffers]
+                sku = productOffers[indexOffers]['sku']
                 combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
 
             combo_free_good.append(combo_item)
@@ -374,13 +383,13 @@ def inputCombosMenu():
         auxIndex = 0
         while auxIndex < 3:
             indexOffers = randint(0, (len(productOffers) - 1))
-            sku = productOffers[indexOffers]
+            sku = productOffers[indexOffers]['sku']
 
             # Check if the SKU is enabled on Items MS
             combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
             while combo_item == False:
                 indexOffers = randint(0, (len(productOffers) - 1))
-                sku = productOffers[indexOffers]
+                sku = productOffers[indexOffers]['sku']
                 combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
                 
             combo_free_good.append(combo_item)
@@ -421,7 +430,7 @@ def inputCreditAccountMicroserviceMenu():
 def inputProductsAccountMicroserviceMenu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu()
+    abi_id = print_account_id_menu("false")
     
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
@@ -454,7 +463,7 @@ def inputProductsAccountMicroserviceMenu():
 def inputDeliveryWindowAccountMicroserviceMenu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu()
+    abi_id = print_account_id_menu("false")
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
@@ -687,7 +696,6 @@ def createAccountMsMenu():
         print(text.Red + "\n- [DeliveryWindow] Something went wrong, please try again")
 
     printFinishApplicationMenu()
-
 
 # Create User for zones in Microservice
 def create_user_magento_menu():

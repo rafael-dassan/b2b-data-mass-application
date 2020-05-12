@@ -1,0 +1,41 @@
+{
+    "accounts": "string",
+    "prices": [
+        {
+            "sku": "string",
+            "basePrice": "string",
+            "measureUnit": "CS",
+            "minimumPrice": "string",
+            "deposit": "string",
+            "quantityPerPallet": "string",
+            "measureUnitConversion": {
+                "6PACK": 6,
+                "CASE": 30,
+                "LITER": 1
+            },
+            "promotionalPrice": {
+                "price": "string",
+                "externalId": "string"
+            },
+            "taxes": [
+                {
+                    "taxId": "string",
+                    "type": "string",
+                    "value": "string",
+                    "taxBaseInclusionIds": [
+                    ],
+                    "hidden": false
+                }
+            ],
+            "charges": [
+                {
+                    "chargeId": "string",
+                    "type": "$",
+                    "value": "string",
+                    "base": "string",
+                    "tax": "string"
+                }
+            ]
+        }
+    ]
+}

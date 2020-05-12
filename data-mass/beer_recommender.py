@@ -14,17 +14,17 @@ def create_beer_recommender_microservice(account_id, zone, environment, delivery
     request_url = get_microservice_base_url(environment) + "/global-recommendation-relay"
 
     # Retrieve all SKUs of the specified Account and DeliveryCenter IDs
-    product_offers = request_get_offers_microservice(account_id, zone, environment, delivery_center_id)
+    product_offers = request_get_offers_microservice(account_id, zone, environment)
 
     enabled_skus = list()
     aux_index = 0
     print(text.default_text_color + "\nChecking enabled products for the account " + account_id + ". It may take a while...")
     while aux_index < len(product_offers):
         # Check if the SKU is enabled on Items MS
-        recommended_sku = check_item_enabled(product_offers[aux_index], zone, environment)
+        recommended_sku = check_item_enabled(product_offers[aux_index]['sku'], zone, environment)
         while recommended_sku == False:
             aux_index = aux_index + 1
-            recommended_sku = check_item_enabled(product_offers[aux_index], zone, environment)
+            recommended_sku = check_item_enabled(product_offers[aux_index]['sku'], zone, environment)
             
         enabled_skus.append(recommended_sku)
         aux_index = aux_index + 1

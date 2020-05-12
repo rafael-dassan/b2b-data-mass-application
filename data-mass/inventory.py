@@ -9,7 +9,7 @@ from products import *
 def display_available_products_account(account_id, zone, environment, delivery_center_id):
     
     # Retrieve all SKUs for the specified Account and DeliveryCenter IDs
-    product_offers = request_get_offers_microservice(account_id, zone, environment, delivery_center_id)
+    product_offers = request_get_account_product_assortment(account_id, zone, environment, delivery_center_id)
 
     print(text.default_text_color + "\n[Inventory] Checking enabled products available in the account " + account_id + ". It may take a while...")
 
@@ -18,10 +18,10 @@ def display_available_products_account(account_id, zone, environment, delivery_c
 
     while aux_index < len(product_offers):
         # Check if the SKU is enabled on Items MS
-        sku_enable = check_item_enabled(product_offers[aux_index], zone, environment)
+        sku_enable = check_item_enabled(product_offers[aux_index]['sku'], zone, environment)
         while sku_enable == False:
             aux_index = aux_index + 1
-            sku_enable = check_item_enabled(product_offers[aux_index], zone, environment)
+            sku_enable = check_item_enabled(product_offers[aux_index]['sku'], zone, environment)
             
         enabled_skus.append(sku_enable)
         aux_index = aux_index + 1

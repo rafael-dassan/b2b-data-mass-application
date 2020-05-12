@@ -1,7 +1,8 @@
 from random import randint, uniform
-from json import loads
+from json import loads, dumps
 import concurrent.futures
 from common import *
+import sys
 
 def check_products_account_exists_microservice(abi_id, zone, environment):
     # Define headers
@@ -110,8 +111,7 @@ def product_post_requests_middleware(product_data, abi_id, zone, environment):
 
     # Workaround to prevent requests from CL to go to the Pricing Engine MS
     if zone != 'CL':
-        result = request_post_price_microservice(
-            abi_id, zone, environment, product['sku'], index)
+        result = request_post_price_microservice(abi_id, zone, environment, product['sku'], index)
 
     return 'true'
 
@@ -146,11 +146,18 @@ def request_post_price_microservice(abi_id, zone, environment, sku_product, prod
     # Get header request
     request_headers = get_header_request(zone)
 
-    # Get url base
-    request_url = get_microservice_base_url(environment) + "/cart-calculation-relay/prices"
+    if zone == "CO" or zone == "MX":
+        # Get base URL
+        request_url = get_microservice_base_url(environment, "false") + "/cart-calculation-relay/v2/prices"
 
-    # Get request body
-    request_body = get_body_price_microservice_request(abi_id, sku_product, product_price_id)
+        # Get request body
+        request_body = get_body_price_microservice_request_v2(abi_id, sku_product, product_price_id)
+    else:
+        # Get url base
+        request_url = get_microservice_base_url(environment) + "/cart-calculation-relay/prices"
+
+        # Get request body
+        request_body = get_body_price_microservice_request(abi_id, sku_product, product_price_id)
 
     # Place request
     response = place_request("PUT", request_url, request_body, request_headers)
@@ -369,12 +376,12 @@ def get_body_price_inclusion_microservice_request(delivery_center_id):
     return body_price_inclusion
 
 # Get offers account in microservice
-def request_get_offers_microservice(accountId, zone, environment, deliveryCenterId):
+def request_get_offers_microservice(accountId, zone, environment):
     # Get header request
     headers = get_header_request(zone, 'true')
 
     # Get url base
-    request_url = get_microservice_base_url(environment) + "/product-assortment/?accountId=accountId" + accountId + '&deliveryCenterId=' + deliveryCenterId
+    request_url = get_microservice_base_url(environment) + "/catalog-service/catalog?accountId=" + accountId + '&projection=SMALL'
 
     # Get body request
     request_body = ""
@@ -384,7 +391,7 @@ def request_get_offers_microservice(accountId, zone, environment, deliveryCenter
     
     if response.status_code == 200 and response.text != "":
         json_data = loads(response.text)
-        return json_data['skus']
+        return json_data
     else:
         print(text.Red + '\n- [Products] Something went wrong when searching for products')
 
@@ -435,3 +442,117 @@ def check_item_enabled(sku, zone, environment):
     else:
         print(text.Red + "\n- [Items] Something went wrong when searching for items")
         finishApplication()
+
+# Get body product price microservice request v2
+def get_body_price_microservice_request_v2(abi_id, sku_product, product_price_id):
+
+    base_price = round(uniform(1, 2000), 2)
+    promotion_price = base_price - ((10/100) * base_price)
+    minimum_price = 0
+    deposit = ((2/100) * base_price)
+    chargeAmount = ((4/100) * base_price)
+    chargeBase = ((2/100) * base_price)
+
+    if minimum_price < 0.0:
+        minimum_price = 0.0
+
+    if promotion_price < 0.0:
+        promotion_price = 0.0
+    
+    #Inputs for default payload of price microservice
+    dict_values = {
+        "accounts": abi_id,
+        "prices[0].sku": sku_product,
+        "prices[0].basePrice": base_price,
+        "prices[0].minimumPrice": minimum_price,
+        "prices[0].deposit": deposit,
+        "prices[0].quantityPerPallet": round(uniform(1, 2000), 2),
+        "prices[0].promotionalPrice.price": promotion_price,
+        "prices[0].promotionalPrice.externalId": product_price_id + "-Promotional",
+        "prices[0].taxes[0].taxId": product_price_id,
+        "prices[0].taxes[0].type": "$",
+        "prices[0].taxes[0].value": str(randint(1, 5)),
+        "prices[0].charges[0].chargeId": product_price_id + "LOGISTIC_COST",
+        "prices[0].charges[0].type": "$",
+        "prices[0].charges[0].value": chargeAmount,
+        "prices[0].charges[0].base": chargeBase,
+        "prices[0].charges[0].tax": None
+    }
+
+    # Create file path
+    path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(path, "data/put_price_sku_microservice_v2_payload.json")
+
+    # Load JSON file
+    with open(file_path) as file:
+        json_data = json.load(file)
+
+    for key in dict_values.keys():
+        json_object = update_value_to_json(json_data, key, dict_values[key])
+
+    # Create body
+    put_price_microservice_body = convert_json_to_string(json_object)
+
+    #put_price_microservice_body = dumps({
+    #    "accounts": [abi_id],
+    #    "prices": [
+    #        {
+    #            "sku": sku_product,
+    #            "basePrice": base_price,
+    #            "measureUnit": "CS",
+    #            "minimumPrice": minimum_price,
+    #            "deposit": deposit,
+    #            "quantityPerPallet": round(uniform(1, 2000), 2),
+    #            "measureUnitConversion": {
+    #                "6PACK": 6,
+    #                "CASE": 30,
+    #                "LITER": 1
+    #            },
+    #            "promotionalPrice": {
+    #                "price": promotion_price,
+    #                "externalId": product_price_id + "-Promotional"
+    #            },
+    #            "taxes": [
+    #                {
+    #                    "taxId": product_price_id,
+    #                    "type": "$",
+    #                    "value": str(randint(1, 5)),
+    #                    "taxBaseInclusionIds": [
+    #                    ],
+    #                    "hidden": "false"
+    #                }
+    #            ],
+    #            "charges": [
+    #                {
+    #                    "chargeId": product_price_id + "LOGISTIC_COST",
+    #                    "type": "$",
+    #                    "value": chargeAmount,
+    #                    "base": chargeBase,
+    #                    "tax": None
+    #                }
+    #            ]
+    #        }
+    #    ]
+    #})
+
+    return put_price_microservice_body
+
+# Get offers account in microservice
+def request_get_account_product_assortment(accountId, zone, environment, deliveryCenterId):
+    # Get header request
+    headers = get_header_request(zone, 'true')
+
+    # Get url base
+    request_url = get_microservice_base_url(environment) + "/product-assortment/?accountId=accountId" + accountId + '&deliveryCenterId=' + deliveryCenterId
+
+    # Get body request
+    request_body = ""
+
+    # Place request
+    response = place_request("GET", request_url, request_body, headers)
+    
+    if response.status_code == 200 and response.text != "":
+        json_data = loads(response.text)
+        return json_data['skus']
+    else:
+        print(text.Red + '\n- [Products] Something went wrong when searching for products')

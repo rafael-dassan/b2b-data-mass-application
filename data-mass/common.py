@@ -156,6 +156,8 @@ def validateCountryInUserCreation(country):
 def validate_zone_for_inventory(zone):
     switcher = {
         "ZA": "true",
+        "CO": "true",
+        "MX": "true",
     }
 
     value = switcher.get(zone, "false")
@@ -164,7 +166,9 @@ def validate_zone_for_inventory(zone):
 def validate_zone_for_deals(zone):
     switcher = {
         "BR": "true",
-        "DO": "true"
+        "DO": "true",
+        "CO": "true",
+        "MX": "true"
     }
 
     value = switcher.get(zone, "false")
@@ -174,7 +178,9 @@ def validate_zone_for_ms(zone):
     switcher = {
         "BR": "true",
         "DO": "true",
-        "ZA": "true"
+        "ZA": "true",
+        "CO": "true",
+        "MX": "true",
     }
 
     value = switcher.get(zone, "false")
@@ -248,6 +254,7 @@ def place_request(request_type, request_url, request_body, request_headers):
     logging.debug("URL= " + request_url)
     logging.debug("BODY= " + convert_json_to_string(request_body))
     logging.debug("RESPONSE= " + str(response))
+    logging.debug("RESPONSE BODY= " + str(response.text))
     logging.debug('= / Finish LOG =\n')
     
     return response
@@ -295,9 +302,15 @@ def get_middleware_base_url(zone, environment, version_request):
 
 
 # Return base URL for Microservice
-def get_microservice_base_url(environment):
+def get_microservice_base_url(environment, is_v1="true"):
     if environment == "SIT":
-        return "https://b2b-services-qa.westeurope.cloudapp.azure.com/v1"
+        if is_v1 == "true":
+            return "https://b2b-services-qa.westeurope.cloudapp.azure.com/v1"
+        else:
+            return "https://b2b-services-qa.westeurope.cloudapp.azure.com/api"
+
+    elif is_v1 == "false":
+        return "https://b2b-services-" + environment.lower() + ".westeurope.cloudapp.azure.com/api"
     else:
         return "https://b2b-services-" + environment.lower() + ".westeurope.cloudapp.azure.com/v1"
 
@@ -646,28 +659,28 @@ def printZoneMenu(isMiddleware="true"):
 
 # Print zone menu for Microservice
 def print_zone_menu_for_ms():
-    zone = input(text.default_text_color + "Zone (BR, DO, ZA): ")
+    zone = input(text.default_text_color + "Zone (BR, DO, ZA, CO, MX): ")
     while validate_zone_for_ms(zone.upper()) == "false":
         print(text.Red + "\n- Invalid option\n")
-        zone = input(text.default_text_color + "Zone (BR, DO, ZA): ")
+        zone = input(text.default_text_color + "Zone (BR, DO, ZA, CO, MX): ")
 
     return zone.upper()
 
 # Print zone menu for inventory
 def print_zone_menu_for_inventory():
-    zone = input(text.default_text_color + "Zone (ZA): ")
+    zone = input(text.default_text_color + "Zone (ZA, CO, MX): ")
     while validate_zone_for_inventory(zone.upper()) == "false":
         print(text.Red + "\n- Invalid option\n")
-        zone = input(text.default_text_color + "Zone (ZA): ")
+        zone = input(text.default_text_color + "Zone (ZA, CO, MX): ")
 
     return zone.upper()
 
 # Print zone menu for deals
 def print_zone_menu_for_deals():
-    zone = input(text.default_text_color + "Zone (BR, DO): ")
+    zone = input(text.default_text_color + "Zone (BR, DO, CO, MX): ")
     while validate_zone_for_deals(zone.upper()) == "false":
         print(text.Red + "\n- Invalid option\n")
-        zone = input(text.default_text_color + "Zone (BR, DO): ")
+        zone = input(text.default_text_color + "Zone (BR, DO, CO, MX): ")
 
     return zone.upper()
 
@@ -1032,3 +1045,11 @@ def print_payment_method_simulation_menu(zone):
         payment_method = "CASH"
     
     return payment_method
+
+# Return first and last day in the year
+def return_first_and_last_date_year_payload():
+    first_date = date(date.today().year, 1, 1)
+    first_date = first_date.strftime("%Y/%m/%d")
+    last_date = date(date.today().year, 12, 31)
+    last_date = first_date.strftime("%Y/%m/%d")
+    return {'startDate': first_date, 'endDate': last_date}
