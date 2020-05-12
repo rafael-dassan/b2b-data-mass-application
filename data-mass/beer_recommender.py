@@ -248,3 +248,16 @@ def create_file_request_sell_up(url, headers, abi_id, zone, product_list):
     response = place_request("POST", url, request_body, headers)
 
     return response
+
+def request_quick_order(zone, environment, account_id, products):
+    # Define headers
+    request_headers = get_header_request(zone, "false", "true")
+    # Define url request 
+    request_url = get_microservice_base_url(environment) + "/global-recommendation-relay"
+    # Get Response
+    response = create_file_request_quick_order(request_url, request_headers, account_id, zone, products)
+    
+    if (response.status_code == 202 and response.text != "[]"):
+        return 'success'
+    else:
+        return 'false'

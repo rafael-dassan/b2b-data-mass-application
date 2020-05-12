@@ -9,6 +9,9 @@ from mass_populator.DO.user import populate_users as populate_users_do
 from mass_populator.AR.user import populate_users as populate_users_ar
 from mass_populator.CL.user import populate_users as populate_users_cl
 from mass_populator.ZA.user import populate_users as populate_users_za
+from mass_populator.BR.recommendation import populate_recomendations as populate_recommendations_br
+from mass_populator.DO.recommendation import populate_recomendations as populate_recommendations_do
+from mass_populator.ZA.recommendation import populate_recomendations as populate_recommendations_za
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +19,7 @@ logger = logging.getLogger(__name__)
 def execute_common(country, environment):
     populate_accounts(country, environment)
     populate_users_magento(country, environment)
+    populate_recommendations(country, environment)
 
     return True
 
@@ -59,3 +63,27 @@ def populate_users_magento(country, environment):
         logger.info("populate_users_magento for %s/%s", country, environment)
         function(environment)
 
+
+def populate_recommendations(country, environment):
+    allowed_environments = ["UAT", "SIT"]
+    allowed_countries = ["BR", "DO", "ZA"]
+
+    if (country not in allowed_countries):
+        logger.info("Skipping populate recomendations, because the country is not supported!")
+        return False
+
+    populate_recommendations_switcher = {
+        "BR": populate_recommendations_br,
+        "DO": populate_recommendations_do,
+        "ZA": populate_recommendations_za
+    }
+
+    if environment == "SIT":
+        translated_environment = "QA"
+    else:
+        translated_environment = environment
+
+    function = populate_recommendations_switcher.get(country)
+    if function != "":
+        logger.info("populate_recommendations for %s/%s", country, translated_environment)
+        function(translated_environment)
