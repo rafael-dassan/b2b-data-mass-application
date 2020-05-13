@@ -16,3 +16,4 @@ class Message(Enum):
     CREDIT_ERROR_MIDDLEWARE = "Fail on populate credit for account {account_id} on Middleware."
     DELIVERY_WINDOW_ERROR = "Fail on populate delivery window for account {account_id}."
     DELIVERY_WINDOW_ERROR_MIDDLEWARE = "Fail on populate delivery window for account {account_id} on Middleware."
+    PRODUCT_ERROR = "Fail on populate product for account {account_id}."

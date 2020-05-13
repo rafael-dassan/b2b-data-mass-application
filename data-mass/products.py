@@ -4,14 +4,8 @@ import concurrent.futures
 from common import *
 
 def check_products_account_exists_microservice(abi_id, zone, environment):
-    # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
-
-    # Define URL Middleware
-    request_url = get_microservice_base_url(environment) + '/catalog-service/catalog?accountId=' + abi_id + '&projection=SMALL' 
-
     # Send request
-    response = place_request('GET', request_url, '', request_headers)
+    response = request_get_response_products_by_account_microservice(abi_id, zone, environment)
     json_data = loads(response.text)
     if response.status_code == 200 and json_data != '[]':
         return 'success'
@@ -435,3 +429,34 @@ def check_item_enabled(sku, zone, environment):
     else:
         print(text.Red + "\n- [Items] Something went wrong when searching for items")
         finishApplication()
+
+def request_get_response_products_by_account_microservice(abi_id, zone, environment):
+    """Get response products by query parameters
+    Arguments:
+        - abi_id: account_id
+        - zone: (e.g, BR,ZA,DO)
+        - environment: (e.g, UAT,SIT)
+    Return new json_object
+    """
+    # Define headers
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+
+    # Define URL Middleware
+    request_url = get_microservice_base_url(environment) + '/catalog-service/catalog?accountId=' + abi_id + '&projection=SMALL'
+
+    # Send request
+    return place_request('GET', request_url, '', request_headers)
+
+def request_get_products_by_account_microservice(abi_id, zone, environment):
+    """Get products by query parameters
+    Arguments:
+        - abi_id: account_id
+        - zone: (e.g, BR,ZA,DO)
+        - environment: (e.g, UAT,SIT)
+    Return new json_object
+    """
+    response = request_get_response_products_by_account_microservice(abi_id, zone, environment)
+    if response.status_code == 200:
+        return loads(response.text)
+    else:
+        return 'false'
