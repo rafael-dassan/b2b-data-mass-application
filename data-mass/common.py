@@ -607,17 +607,17 @@ def printQuantityMenu():
 #       for account creation, however not all zones use this pattern (e.g. AR, CH, CO). 
 #       Therefore, for simulation, this parameter was created to allow using accounts that do not 
 #       follow this pattern of more than 10 characters
-def print_account_id_menu(validate_string_account="true"):
+def print_account_id_menu(validate_string_account='true'):
     while True:
         try:
-            abi_id = int(input(text.default_text_color + "Account ID: "))
-            if validate_string_account == "true":
-                while validateAccount(str(abi_id)) == "false":
-                    print(text.Red + "\n- Account ID should not be empty and it must contain at least 10 characters")
-                    abi_id = int(input(text.default_text_color + "\nAccount ID: "))
+            abi_id = int(input(text.default_text_color + 'Account ID: '))
+            if validate_string_account == 'true':
+                while validateAccount(str(abi_id)) == 'false':
+                    print(text.Red + '\n- Account ID should not be empty and it must contain at least 10 characters')
+                    abi_id = int(input(text.default_text_color + '\nAccount ID: '))
             break
         except ValueError:
-            print(text.Red + "\n- Invalid value\n")
+            print(text.Red + '\n- The account ID must be Numeric\n')
 
     return str(abi_id)
 
