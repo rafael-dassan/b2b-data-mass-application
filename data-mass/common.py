@@ -147,7 +147,8 @@ def validateCountryInUserCreation(country):
         "DO": "true",
         "AR": "true",
         "CL": "true", 
-        "ZA": "true"
+        "ZA": "true",
+        "CO": "true"
     }
 
     value = switcher.get(country, "false")
@@ -310,14 +311,16 @@ def get_magento_base_url(environment, country):
             "DO": "https://test-conv-micerveceria.abi-sandbox.net",
             "AR": "https://migration-test-conv-quilmes.abi-sandbox.net",
             "CL": "https://test-conv-cl-mitienda.abi-sandbox.net",
-            "ZA": "https://test-conv-sabconnect.abi-sandbox.net"
+            "ZA": "https://test-conv-sabconnect.abi-sandbox.net",
+            "CO": "https://test-copec-co.abi-sandbox.net"
         },
         "SIT": {
             "BR": "https://sit-br.abi-sandbox.net",
             "DO": "https://sit-dr.abi-sandbox.net",
             "AR": "https://sit-las-ar.abi-sandbox.net",
             "CL": "https://sit-las-ch.abi-sandbox.net",
-            "ZA": "https://sit-za.abi-sandbox.net"
+            "ZA": "https://sit-za.abi-sandbox.net",
+            "CO": "https://sit-copec-co.abi-sandbox.net"
         }
     }
 
@@ -330,7 +333,8 @@ def get_region_id(country):
         "DO": "ES_DO",
         "AR": "ES_AR",
         "CL": "ES_CL",
-        "ZA": "EN_ZA"
+        "ZA": "EN_ZA",
+        "CO": "ES_CO"
     }
     return region_id.get(country)
 
@@ -357,14 +361,16 @@ def get_magento_access_token(environment, country):
             "DO": "56jqtzzto7tw9uox8nr3eckoeup53dt2",
             "AR": "30lqki06nbdegugcmdb0ttm9yppnmoec",
             "CL": "30lqki06nbdegugcmdb0ttm9yppnmoec",
-            "ZA": "31pdb0yht5kn3eld7gum021f6k984jh9"
+            "ZA": "31pdb0yht5kn3eld7gum021f6k984jh9",
+            "CO": "8mh6b9b6ft6m1cr5k7zm2jh4aljq4slx"
         },
         "SIT": {
             "BR": "qq8t0w0tvz7nbn4gxo5jh9u62gohvjrw",
             "DO": "56jqtzzto7tw9uox8nr3eckoeup53dt2",
             "AR": "30lqki06nbdegugcmdb0ttm9yppnmoec",
             "CL": "30lqki06nbdegugcmdb0ttm9yppnmoec",
-            "ZA": "nmvvuk58lc425a7p5l55orrkgh0jprr2"
+            "ZA": "nmvvuk58lc425a7p5l55orrkgh0jprr2",
+            "CO": "walt5dp3keiq2du0f30kir21v13f3u0v"
         }
     }
 
@@ -449,7 +455,7 @@ def printWelcomeScript():
 def printStructureMenu():
     print(text.default_text_color + str(1), text.Yellow + "Middleware")
     print(text.default_text_color + str(2), text.Yellow + "MicroService")
-    print(text.default_text_color + str(3), text.Yellow + "Magento (BR, DO, AR, CL, ZA)")
+    print(text.default_text_color + str(3), text.Yellow + "Magento")
 
     print(text.default_text_color + str(4), text.Yellow + "Close application")
     structure = input(text.default_text_color + "\nChoose which backend you want to run a service for: ")
@@ -457,7 +463,7 @@ def printStructureMenu():
         print(text.Red + "\n- Invalid option\n")
         print(text.default_text_color + str(1), text.Yellow + "Middleware")
         print(text.default_text_color + str(2), text.Yellow + "MicroService")
-        print(text.default_text_color + str(3), text.Yellow + "Magento (BR, DO, AR, CL, ZA)")
+        print(text.default_text_color + str(3), text.Yellow + "Magento")
         print(text.default_text_color + str(4), text.Yellow + "Close application")
         structure = input(text.default_text_color + "\nChoose which backend you want to run a service for: ")
 
@@ -675,10 +681,10 @@ def print_zone_menu_for_deals():
 
 # Print country menu for User creation
 def printCountryMenuInUserCreation():
-    country = input(text.default_text_color + "Country (BR, DO, AR, CL, ZA): ")
+    country = input(text.default_text_color + "Country (BR, DO, AR, CL, ZA, CO): ")
     while validateCountryInUserCreation(country.upper()) == "false":
         print(text.Red + "\n- Invalid option\n")
-        country = input(text.default_text_color + "Country (BR, DO, AR, CL, ZA): ")
+        country = input(text.default_text_color + "Country (BR, DO, AR, CL, ZA, CO): ")
 
     return country.upper()
 
