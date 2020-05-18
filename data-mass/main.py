@@ -272,28 +272,45 @@ def inputDealsMenu():
         print(text.Red + "\n- [Products] The account " + str(abi_id) + " has no available products for purchase")
         printFinishApplicationMenu()
 
-    index_offers = randint(0, (len(product_offers) - 1))
-    product = product_offers[index_offers]
+    if zone.upper() == "CO" or zone.upper() == "MX":
+        skus = list()
+        while len(skus) <= 1:
+            index_offers = randint(0, (len(product_offers) - 1))
+            product = product_offers[index_offers]
+            product_sku = product['sku']
 
-    if zone.upper() == "ZA":
-        product_sku = product
+            # Check if the SKU is enabled on Items MS
+            deal_sku = check_item_enabled(product_sku, zone.upper(), environment.upper())
+            while deal_sku == False:
+                index_offers = randint(0, (len(product_offers) - 1))
+                product = product_offers[index_offers]
+                product_sku = product['sku']
+                deal_sku = check_item_enabled(product_sku, zone.upper(), environment.upper())
+
+            skus.append(product)
     else:
-        product_sku = product['sku']
-
-    # Check if the SKU is enabled on Items MS
-    deal_sku = check_item_enabled(product_sku, zone.upper(), environment.upper())
-    while deal_sku == False:
         index_offers = randint(0, (len(product_offers) - 1))
         product = product_offers[index_offers]
+
         if zone.upper() == "ZA":
             product_sku = product
         else:
             product_sku = product['sku']
-
+        # Check if the SKU is enabled on Items MS
         deal_sku = check_item_enabled(product_sku, zone.upper(), environment.upper())
+        while deal_sku == False:
+            index_offers = randint(0, (len(product_offers) - 1))
+            product = product_offers[index_offers]
+            if zone.upper() == "ZA":
+                product_sku = product
+            else:
+                product_sku = product['sku']
 
-    skus = list()
-    skus.append(product)
+            deal_sku = check_item_enabled(product_sku, zone.upper(), environment.upper())
+
+        skus = list()
+        skus.append(product)
+
     if selectionStructure == "1": 
         input_discount_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(), environment.upper())
     elif selectionStructure == "2":
