@@ -5,6 +5,7 @@ from json import dumps
 import os
 import sys
 import json
+import re
 from classes.text import text
 from datetime import date, datetime, timedelta
 from jsonpath_rw import Index, Fields
@@ -584,6 +585,7 @@ def printQuantityRangeMenu():
 
     return index_list
 
+
 # Print minimum quantity menu
 def printMinimumQuantityMenu():
     minimum_quantity = input(text.default_text_color + "Desired quantity needed to buy to get a discount/free good: ")
@@ -610,11 +612,12 @@ def printQuantityMenu():
 def print_account_id_menu(validate_string_account='true'):
     while True:
         try:
-            abi_id = int(input(text.default_text_color + 'Account ID: '))
+            abi_id = (int(input(text.default_text_color + 'Account ID: ')))
             if validate_string_account == 'true':
                 while validateAccount(str(abi_id)) == 'false':
-                    print(text.Red + '\n- Account ID should not be empty and it must contain at least 10 characters')
-                    abi_id = int(input(text.default_text_color + '\nAccount ID: '))
+
+                        print(text.Red + '\n- Account ID should not be empty and it must contain at least 10 characters')
+                        abi_id = int(input(text.default_text_color + '\nAccount ID: '))
             break
         except ValueError:
             print(text.Red + '\n- The account ID must be Numeric\n')
