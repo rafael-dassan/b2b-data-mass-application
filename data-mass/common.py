@@ -5,7 +5,6 @@ from json import dumps
 import os
 import sys
 import json
-import re
 from classes.text import text
 from datetime import date, datetime, timedelta
 from jsonpath_rw import Index, Fields
