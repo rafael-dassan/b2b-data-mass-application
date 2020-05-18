@@ -109,6 +109,10 @@ def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environ
     if (validateAccount(abi_id) == "false") and (zone == "BR" or zone == "DO"):
         print(text.Yellow + "\n- Account ID should not be empty or it must contain at least 10 characters")
         finishApplication()
+    
+    payment_term = None
+    if zone.upper() == "BR" and "BANK_SLIP" in payment_method:
+        payment_term = return_payment_term_bank_slip()
 
     if minimum_order != None:
         dict_values = {
@@ -123,6 +127,7 @@ def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environ
             'name': name,
             'paymentMethods': payment_method,
             'deliveryAddress.state': state,
+            'paymentTerms': payment_term,
         }
     else:
         dict_values = {
@@ -136,6 +141,7 @@ def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environ
             'name': name,
             'paymentMethods': payment_method,
             'deliveryAddress.state': state,
+            'paymentTerms': payment_term,
         }
 
     # Get header request
