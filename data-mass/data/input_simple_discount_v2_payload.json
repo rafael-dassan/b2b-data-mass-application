@@ -1,0 +1,38 @@
+{
+    "accounts": "string",
+    "deals": [
+        {
+            "dealId": "string",
+            "externalId": "string",
+            "accumulationType": null,
+            "priority": 1,
+            "budget": null,
+            "quantityLimit": null,
+            "availability": null,
+            "conditions": {
+                "simulationDateTime": [
+                    {
+                        "startDate": "string",
+                        "endDate": "string",
+                        "startTime": "00:00:00",
+                        "endTime": "23:59:59"
+                    }
+                ],
+                "lineItem": {
+                    "skus": "string",
+                    "minimumQuantity": "string",
+                    "sharedMinimumQuantity": true,
+                    "crossDiscount": true
+                }
+            },
+            "output": {
+                "lineItemDiscount": {
+                    "skus": "string",
+                    "type": "string",
+                    "discount": "string",
+                    "fixed": true
+                }
+            }
+        }
+    ]
+}
