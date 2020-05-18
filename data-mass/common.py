@@ -267,7 +267,6 @@ def get_header_request(header_country, useJwtAuthorization="false", useRootAuthe
         timezone = "UTC"
     else:
         switcher = {
-            "ZA": "Africa/Johannesburg",
             "AR": "America/Buenos_Aires",
             "DO": "America/Santo_Domingo",
             "BR": "America/Sao_Paulo",
