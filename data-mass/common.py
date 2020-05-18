@@ -614,6 +614,7 @@ def printQuantityRangeMenu():
 
     return index_list
 
+
 # Print minimum quantity menu
 def printMinimumQuantityMenu():
     minimum_quantity = input(text.default_text_color + "Desired quantity needed to buy to get a discount/free good: ")

@@ -243,13 +243,16 @@ def get_body_price_inclusion_request(product_price_id, delivery_center_id):
 def add_products_to_account_middleware(abi_id, zone, environment):
     # Request get products middleware
     all_products_middleware = request_get_products_middleware(zone, environment)
-    maximum = min(15, len(all_products_middleware))
 
-    qtd = input(text.default_text_color + "Number of products you want to add (Maximum: " + str(len(all_products_middleware)) + " - Default: " + str(maximum) + "): ")
-    if qtd == "":
-        qtd = maximum
-
-    qtd = int(qtd)
+    while True:
+        try:
+            qtd = int(input(text.default_text_color + 'Number of products you want to add (Maximum: ' + str(len(all_products_middleware)) + '): '))
+            while qtd <= 0:
+                print(text.Red + '\n- The product quantity must be more than 0\n')
+                qtd = int(input(text.default_text_color + 'Number of products you want to add (Maximum: ' + str(len(all_products_middleware)) + '): '))
+            break
+        except ValueError:
+            print(text.Red + '\n- The product quantity must be Numeric\n')
 
     # Builds a list of products to be posted, along with their generated random IDs for price and inclusion in account
     products_data = list(zip(generate_random_price_ids(qtd), slice_array_products(qtd, all_products_middleware)))
@@ -264,13 +267,16 @@ def add_products_to_account_middleware(abi_id, zone, environment):
 def add_products_to_account_microservice(abi_id, zone, environment, delivery_center_id):
     # Request get products microservice
     all_products_microservice = request_get_products_microservice(zone, environment)
-    maximum = min(15, len(all_products_microservice))
 
-    qtd = input(text.default_text_color + "Number of products you want to add (Maximum: " + str(len(all_products_microservice)) + " - Default " + str(maximum) + "):")
-    if qtd == "":
-        qtd = maximum
-
-    qtd = int(qtd)
+    while True:
+        try:
+            qtd = int(input(text.default_text_color + 'Number of products you want to add (Maximum: ' + str(len(all_products_microservice)) + '): '))
+            while qtd <= 0:
+                print(text.Red + '\n- The product quantity must be more than 0\n')
+                qtd = int(input(text.default_text_color + 'Number of products you want to add (Maximum: ' + str(len(all_products_microservice)) + '): '))
+            break
+        except ValueError:
+            print(text.Red + '\n- The product quantity must be Numeric\n')
 
     # Builds a list of products to be posted, along with their generated random IDs for price and inclusion in account
     products_data = list(zip(generate_random_price_ids(qtd), slice_array_products(qtd, all_products_microservice)))
