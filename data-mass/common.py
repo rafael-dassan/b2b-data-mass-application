@@ -611,12 +611,11 @@ def printQuantityMenu():
 def print_account_id_menu(validate_string_account='true'):
     while True:
         try:
-            abi_id = (int(input(text.default_text_color + 'Account ID: ')))
+            abi_id = int(input(text.default_text_color + 'Account ID: '))
             if validate_string_account == 'true':
                 while validateAccount(str(abi_id)) == 'false':
-
-                        print(text.Red + '\n- Account ID should not be empty and it must contain at least 10 characters')
-                        abi_id = int(input(text.default_text_color + '\nAccount ID: '))
+                    print(text.Red + '\n- Account ID should not be empty and it must contain at least 10 characters')
+                    abi_id = int(input(text.default_text_color + '\nAccount ID: '))
             break
         except ValueError:
             print(text.Red + '\n- The account ID must be Numeric\n')
