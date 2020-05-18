@@ -1,0 +1,79 @@
+{
+    "accounts": "string",
+    "deals": [
+        {
+            "dealId": "string",
+            "externalId": "string",
+            "accumulationType": null,
+            "priority": 1,
+            "budget": null,
+            "quantityLimit": null,
+            "availability": null,
+            "conditions": {
+                "simulationDateTime": [
+                    {
+                        "startDate": "string",
+                        "endDate": "string",
+                        "startTime": "00:00:00",
+                        "endTime": "23:59:59"
+                    }
+                ],
+                "scaledLineItem": {
+                    "skus": "string",
+                    "ranges": [
+                        {
+                            "index": 0,
+                            "from": "string",
+                            "to": "string"
+                        },
+                        {
+                            "index": 1,
+                            "from": "string",
+                            "to": "string"
+                        }
+                    ],
+                    "sharedMinimumQuantity": "true",
+                    "crossDiscount": "true"
+                }
+            },
+            "output": {
+                "scaledFreeGoods": {
+                    "ranges": [
+                        {
+                            "index": 0,
+                            "freeGoods": [
+                                {
+                                    "skus": [
+                                        {
+                                            "sku": "string",
+                                            "measureUnit": "UNIT"
+                                        }
+                                    ],
+                                    "quantity": "string"
+                                }
+                            ],
+                            "fixed": "false",
+                            "proportion": "string"
+                        },
+                        {
+                            "index": 1,
+                            "freeGoods": [
+                                {
+                                    "skus": [
+                                        {
+                                            "sku": "string",
+                                            "measureUnit": "UNIT"
+                                        }
+                                    ],
+                                    "quantity": "string"
+                                }
+                            ],
+                            "fixed": "false",
+                            "proportion": "string"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

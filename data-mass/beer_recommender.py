@@ -20,11 +20,21 @@ def create_beer_recommender_microservice(account_id, zone, environment, delivery
     aux_index = 0
     print(text.default_text_color + "\nChecking enabled products for the account " + account_id + ". It may take a while...")
     while aux_index < len(product_offers):
+        if zone.upper() == "ZA":
+            sku = product_offers[aux_index]
+        else:
+            sku = product_offers[aux_index]['sku']
+
         # Check if the SKU is enabled on Items MS
-        recommended_sku = check_item_enabled(product_offers[aux_index], zone, environment)
+        recommended_sku = check_item_enabled(sku, zone, environment)
         while recommended_sku == False:
             aux_index = aux_index + 1
-            recommended_sku = check_item_enabled(product_offers[aux_index], zone, environment)
+            if zone.upper() == "ZA":
+                sku = product_offers[aux_index]
+            else:
+                sku = product_offers[aux_index]['sku']
+
+            recommended_sku = check_item_enabled(sku, zone, environment)
             
         enabled_skus.append(recommended_sku)
         aux_index = aux_index + 1
