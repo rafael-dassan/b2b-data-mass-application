@@ -287,13 +287,13 @@ def add_products_to_account_microservice(abi_id, zone, environment, delivery_cen
     return result
 
 # Post requests get products from microservice
-def request_get_products_microservice(zone, environment):
+def request_get_products_microservice(zone, environment, page_size=100000):
 
     # Get header request
     request_headers = get_header_request(zone, "true", "false", "false", "false")
 
     # Get url base
-    request_url = get_microservice_base_url(environment) + "/items/?includeDeleted=false&includeDisabled=false"
+    request_url = get_microservice_base_url(environment) + "/items/?includeDeleted=false&includeDisabled=false&pageSize=" + str(page_size)
 
     # Get body request
     request_body = ""

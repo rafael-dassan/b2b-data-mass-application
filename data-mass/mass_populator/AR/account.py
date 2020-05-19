@@ -65,7 +65,7 @@ def add_product_to_account(account, country, environment, amount_of_products):
     Return new json_object
     """
     # Get all products
-    all_products = request_get_products_microservice(country, environment)
+    all_products = request_get_products_microservice(country, environment, amount_of_products)
     logger.debug("Products available to populate: {products} items".format(products=str(len(all_products))))
     
     amount_of_products = min(len(all_products), amount_of_products)
