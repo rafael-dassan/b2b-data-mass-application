@@ -497,13 +497,16 @@ def inputDeliveryWindowAccountMicroserviceMenu():
         print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
         printFinishApplicationMenu()
     
-    # Validate if is alternative delivery window
-    isAlternativeDeliveryDate = printAlternativeDeliveryDateMenu()
+    if zone != 'DO':
+        # Validate if is alternative delivery window
+        isAlternativeDeliveryDate = printAlternativeDeliveryDateMenu()
 
-    if isAlternativeDeliveryDate.upper() == "Y":
-        isAlternativeDeliveryDate = "true"
+        if isAlternativeDeliveryDate.upper() == 'Y':
+            isAlternativeDeliveryDate = 'true'
+        else:
+            isAlternativeDeliveryDate = 'false'
     else:
-        isAlternativeDeliveryDate = "false"
+        isAlternativeDeliveryDate = 'false'
     
     # Call add delivery window to account function
     delivery_window = create_delivery_window_microservice(abi_id, zone.upper(), environment.upper(), account[0], isAlternativeDeliveryDate)
