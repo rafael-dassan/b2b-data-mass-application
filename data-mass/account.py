@@ -89,29 +89,29 @@ def create_account(abi_id, name, zone, payment_method, environment, minimum_orde
     else:
         return response.status_code
 
-def check_account_exists_microservice(accountId, zone, environment):
+def check_account_exists_microservice(abi_id, zone, environment):
     # Get header request
-    request_headers = get_header_request(zone, "true", "false", "false", "false")
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
 
     # Get base URL
-    request_url = get_microservice_base_url(environment) + "/accounts?accountId=" + accountId + "&country=" + zone
+    request_url = get_microservice_base_url(environment) + '/accounts?accountId=' + abi_id
 
     # Place request
-    response = place_request("GET", request_url, "", request_headers)
+    response = place_request('GET', request_url, '', request_headers)
 
-    if response.status_code == 200 and response.text != "[]":
+    if response.status_code == 200 and response.text != '[]':
         return loads(response.text)
     else:
-        return "false"
+        return 'false'
 
 def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environment, state):
     # Validation of Account ID for BR
-    if (validateAccount(abi_id) == "false") and (zone == "BR" or zone == "DO"):
-        print(text.Yellow + "\n- Account ID should not be empty or it must contain at least 10 characters")
+    if (validateAccount(abi_id) == 'false') and (zone == 'BR' or zone == 'DO'):
+        print(text.Yellow + '\n- Account ID should not be empty or it must contain at least 10 characters')
         finishApplication()
     
     payment_term = None
-    if zone.upper() == "BR" and "BANK_SLIP" in payment_method:
+    if zone.upper() == 'BR' and 'BANK_SLIP' in payment_method:
         payment_term = return_payment_term_bank_slip()
 
     if minimum_order != None:
@@ -145,14 +145,14 @@ def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environ
         }
 
     # Get header request
-    request_headers = get_header_request(zone, "false", "true", "false", "false")
+    request_headers = get_header_request(zone, 'false', 'true', 'false', 'false')
 
     # Get base URL
-    request_url = get_microservice_base_url(environment) + "/account-relay"
+    request_url = get_microservice_base_url(environment) + '/account-relay/'
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, "data/create_account_payload.json")
+    file_path = os.path.join(path, 'data/create_account_payload.json')
 
     # Load JSON file
     with open(file_path) as file:
@@ -162,12 +162,13 @@ def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environ
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
     # Create body
-    request_body = convert_json_to_string(json_object)
+    list_dict_values = create_list(json_object)
+    request_body = convert_json_to_string(list_dict_values)
 
     # Place request
-    response = place_request("POST", request_url, request_body, request_headers)
+    response = place_request('POST', request_url, request_body, request_headers)
 
     if response.status_code == 202:
-        return "success"
+        return 'success'
     else:
         return response.status_code

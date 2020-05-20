@@ -1,0 +1,22 @@
+{
+    "classification": "CORE",
+    "sku": "string",
+    "subBrandName": "string",
+    "name": "string",
+    "brandId": "DM2020",
+    "brandName": "string",
+    "salesRanking": 1,
+    "package": {
+        "count": 1,
+        "id": "string",
+        "itemCount": 12,
+        "name": "1x12",
+        "pack": "UN"
+    },
+    "container": {
+        "name": "string",
+        "returnable": false,
+        "size": 0,
+        "unitOfMeasurement": "string"
+    }
+}

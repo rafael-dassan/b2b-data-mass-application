@@ -28,7 +28,7 @@ def populate_recommendation_quick_order(country, environment, account_id):
         else:
             sku = product_offers[index]['sku']
         # Check if the SKU is enabled on Items MS
-        if check_item_enabled(sku, country, environment) != False :
+        if check_item_enabled(sku, country, environment, True) != False :
             enabled_skus.append(sku)
         index = index + 1
     

@@ -39,7 +39,8 @@ def showMenu():
             "7": inputDealsMenu,
             "8": inputCombosMenu,
             "9": registration_user_iam,
-            "10": check_simulation_service_account_microservice_menu
+            "10": check_simulation_service_account_microservice_menu,
+            "11": create_item_menu
         }
     elif selectionStructure == "3":
         switcher = {
@@ -54,6 +55,17 @@ def showMenu():
         function()
     
     printFinishApplicationMenu()
+
+# Create an item for a specific Zone
+def create_item_menu():
+    zone = print_zone_menu_for_ms()
+    environment = printEnvironmentMenu()
+    item_data = get_item_input_data()
+
+    response = create_item(zone.upper(), environment.upper(), item_data)
+    if response != None:
+        print(text.Green + '\n- [Item Service] The item was created successfully')
+        print(text.default_text_color + '- Item ID: ' + response.get('sku') + ' / Item name: ' + response.get('name'))
 
 # Place request for simulation service in microservice
 def check_simulation_service_account_microservice_menu():
@@ -280,12 +292,12 @@ def inputDealsMenu():
             product_sku = product['sku']
 
             # Check if the SKU is enabled on Items MS
-            deal_sku = check_item_enabled(product_sku, zone.upper(), environment.upper())
+            deal_sku = check_item_enabled(product_sku, zone.upper(), environment.upper(), True)
             while deal_sku == False:
                 index_offers = randint(0, (len(product_offers) - 1))
                 product = product_offers[index_offers]
                 product_sku = product['sku']
-                deal_sku = check_item_enabled(product_sku, zone.upper(), environment.upper())
+                deal_sku = check_item_enabled(product_sku, zone.upper(), environment.upper(), True)
 
             skus.append(product)
     else:
@@ -297,7 +309,7 @@ def inputDealsMenu():
         else:
             product_sku = product['sku']
         # Check if the SKU is enabled on Items MS
-        deal_sku = check_item_enabled(product_sku, zone.upper(), environment.upper())
+        deal_sku = check_item_enabled(product_sku, zone.upper(), environment.upper(), True)
         while deal_sku == False:
             index_offers = randint(0, (len(product_offers) - 1))
             product = product_offers[index_offers]
@@ -306,7 +318,7 @@ def inputDealsMenu():
             else:
                 product_sku = product['sku']
 
-            deal_sku = check_item_enabled(product_sku, zone.upper(), environment.upper())
+            deal_sku = check_item_enabled(product_sku, zone.upper(), environment.upper(), True)
 
         skus = list()
         skus.append(product)
@@ -348,11 +360,11 @@ def inputCombosMenu():
     sku = product_offers[index_offers]['sku']
 
     # Check if the SKU is enabled on Items MS
-    combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
+    combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
     while combo_item == False:
         index_offers = randint(0, (len(product_offers) - 1))
         sku = product_offers[index_offers]['sku']
-        combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
+        combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
     
     if selectionStructure == "1":
         while True:
@@ -376,11 +388,11 @@ def inputCombosMenu():
             sku = product_offers[index_offers]['sku']
 
             # Check if the SKU is enabled on Items MS
-            combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
+            combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
             while combo_item == False:
                 index_offers = randint(0, (len(product_offers) - 1))
                 sku = product_offers[index_offers]['sku']
-                combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
+                combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
 
             combo_free_good.append(combo_item)
             auxIndex = auxIndex + 1
@@ -399,11 +411,11 @@ def inputCombosMenu():
             sku = product_offers[index_offers]['sku']
 
             # Check if the SKU is enabled on Items MS
-            combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
+            combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
             while combo_item == False:
                 index_offers = randint(0, (len(product_offers) - 1))
                 sku = product_offers[index_offers]['sku']
-                combo_item = check_item_enabled(sku, zone.upper(), environment.upper())
+                combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
                 
             combo_free_good.append(combo_item)
             auxIndex = auxIndex + 1
@@ -598,7 +610,7 @@ def createAccountMdwMenu():
     state = validate_state(zone)
 
     option_include = input(text.default_text_color + "Do you want to include the minimum order parameter? y/N: ")
-    while option_include == "" or validateYesOrNotOption(option_include.upper()) == "false":
+    while option_include == "" or validate_yes_no_option(option_include.upper()) == "false":
         print(text.Red + "\n- Invalid option\n")
         option_include = input(text.default_text_color + "Do you want to include the minimum order parameter? y/N: ")
 
@@ -658,7 +670,7 @@ def createAccountMsMenu():
     state = validate_state(zone)
 
     option_include = input(text.default_text_color + "Do you want to include the minimum order parameter? y/N: ")
-    while option_include == "" or validateYesOrNotOption(option_include.upper()) == "false":
+    while option_include == "" or validate_yes_no_option(option_include.upper()) == "false":
         print(text.Red + "\n- Invalid option\n")
         option_include = input(text.default_text_color + "Do you want to include the minimum order parameter? y/N: ")
 
@@ -790,7 +802,7 @@ def associateUserToAccount():
 # Print Finish Menu application
 def printFinishApplicationMenu():
     finish = input(text.default_text_color + "\nDo you want to finish the application? y/N: ")
-    while validateYesOrNotOption(finish.upper()) == "false":
+    while validate_yes_no_option(finish.upper()) == "false":
         print(text.Red + "\n- Invalid option")
         finish = input(text.default_text_color + "\nDo you want to finish the application? y/N: ")
 
