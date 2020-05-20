@@ -1,0 +1,19 @@
+{
+    "sku": "string",
+    "itemName": "string",
+    "itemImage": null,
+    "brandId": "DM2020",
+    "container": {
+      "itemSize": 0,
+      "name": "string",
+      "unitOfMeasurement": "string"
+    },
+    "package": {
+      "packageId": "string",
+      "unitCount": 1
+    },
+    "enabled": true,
+    "deleted": false,
+    "description": "string",
+    "salesRanking": 0
+  }

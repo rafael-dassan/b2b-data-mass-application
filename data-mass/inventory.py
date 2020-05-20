@@ -18,11 +18,11 @@ def display_available_products_account(account_id, zone, environment, delivery_c
 
     while aux_index < len(product_offers):
         # Check if the SKU is enabled on Items MS
-        sku_enable = check_item_enabled(product_offers[aux_index], zone, environment)
+        sku_enable = check_item_enabled(product_offers[aux_index], zone, environment, True)
         while sku_enable == False:
             if aux_index <= (len(product_offers) - 1):
                 aux_index = aux_index + 1
-                sku_enable = check_item_enabled(product_offers[aux_index], zone, environment)
+                sku_enable = check_item_enabled(product_offers[aux_index], zone, environment, True)
             
         enabled_skus.append(sku_enable)
         aux_index = aux_index + 1

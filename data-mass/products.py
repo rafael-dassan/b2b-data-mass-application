@@ -25,9 +25,9 @@ def check_products_account_exists_middleware(abi_id, zone, environment):
     # Send request
     response = place_request('GET', url, '', headers)
     json_data = loads(response.text)
-    if response.status_code == 200 and json_data != '[]':
+    if response.status_code == 200 and len(json_data) != 0:
         return 'success'
-    elif response.status_code == 200 and json_data == '[]':
+    elif response.status_code == 200 and len(json_data) == 0:
         return 'false'
     else:
         return response.status_code
@@ -424,27 +424,26 @@ def request_get_offers_middleware(abi_id, zone, environment):
         print(text.Red + "\n- [Products] Something went wrong when searching for products")
         finishApplication()
 
-def check_item_enabled(sku, zone, environment):
+def check_item_enabled(sku, zone, environment, return_item_data = False):
     # Get base URL
-    request_url = get_microservice_base_url(environment) + "/items/" + sku + "?includeDisabled=false"
+    request_url = get_microservice_base_url(environment) + '/items/' + sku + '?includeDisabled=false'
 
     # Get header request
-    request_headers = get_header_request(zone, "true", "false", "false", "false")
-
-    # Get body request
-    request_body = ""
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
 
     # Send request
-    response = place_request("GET", request_url, request_body, request_headers)
+    response = place_request('GET', request_url, '', request_headers)
 
-    if response.status_code == 200 and response.text != "":
-        json_data = json.loads(response.text)
-        if json_data["enabled"] == True:
-            return json_data["sku"]
+    json_data = loads(response.text)
+    if response.status_code == 200 and len(json_data) != 0:
+        if return_item_data == True:
+            return json_data['sku']
+        else:
+            return True
     elif response.status_code == 404:
         return False
     else:
-        print(text.Red + "\n- [Items] Something went wrong when searching for items")
+        print(text.Red + '\n- [Items] Something went wrong when searching for items')
         finishApplication()
 
 def request_get_response_products_by_account_microservice(abi_id, zone, environment):
@@ -546,3 +545,143 @@ def request_get_account_product_assortment(account_id, zone, environment, delive
         return json_data['skus']
     else:
         print(text.Red + '\n- [Products] Something went wrong when searching for products')
+
+def create_item(zone, environment, item_data):
+    """Create or update an item
+    Arguments:
+        - zone: (e.g, BR,ZA,DO)
+        - environment: (e.g, QA,UAT)
+        - item_data: all necessary and relevant SKU data
+    """
+    # Define headers
+    request_headers = get_header_request(zone, 'false', 'true', 'false')
+
+    # Get base URL
+    request_url = get_microservice_base_url(environment) + '/item-relay/items'
+
+    # Create file path
+    path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(path, 'data/create_item_payload.json')
+
+    # Load JSON file
+    with open(file_path) as file:
+        json_data = json.load(file)
+
+    # Update JSON values
+    for key in item_data.keys():
+        json_object = update_value_to_json(json_data, key, item_data[key])
+
+    # Create body
+    list_dict_values = create_list(json_object)
+    request_body = convert_json_to_string(list_dict_values)
+
+    # Place request
+    response = place_request('PUT', request_url, request_body, request_headers)
+
+    if response.status_code == 202:
+        update_item_response = set_item_enabled(zone, environment, item_data)
+        get_item_response = check_item_enabled(item_data.get('sku'), zone, environment, False)
+        if update_item_response == True and get_item_response == True:
+            return(item_data)
+    else:
+        print(text.Red + '\n- [Item Service] Failure to create an item. Response Status: ' + str(response.status_code) + '. Response message ' + response.text)
+
+def get_item_input_data():
+    """Get input data from the user
+    Return a dictionary containing the customized item data
+    """
+    sku_identifier = input(text.default_text_color + 'SKU identifier: ')
+    # Create random value for the SKU identifier if the entry is empty
+    if len(sku_identifier) == 0:
+        sku_identifier = 'DM' + str(randint(1, 100000))
+
+    name = input(text.default_text_color + 'Item name: ')
+    brand_name = input(text.default_text_color + 'Brand name (e.g., SKOL, PRESIDENTE LIGHT, CASTLE): ').upper()
+    container_name = input(text.default_text_color + 'Container name (e.g., BOTTLE, PET, CAN): ').upper()
+
+    # Validate container size input data
+    while True:
+        try:
+            container_size = int(input(text.default_text_color + 'Container size: '))
+            break
+        except ValueError:
+            print(text.Red + '\n- The container size must be an integer value\n')
+    
+    container_unit_measurement = input(text.default_text_color + 'Container unit of measurement (e.g., ML, OZ): ').upper()
+
+    # Validate returnable input data
+    is_returnable = input(text.default_text_color + 'Is it returnable? y/N: ').upper()
+    while validate_yes_no_option(is_returnable) == "false":
+        print(text.Red + "\n- Invalid option\n")
+        is_returnable = input(text.default_text_color + 'Is it returnable? y/N: ').upper()
+    if is_returnable == 'Y':
+        is_returnable = True
+    else:
+        is_returnable = False
+
+    # Create random value for the sales ranking
+    sales_ranking = randint(1, 100)
+
+    # Create item dictionary
+    item_data = {
+        'sku': sku_identifier,
+        'name': name,
+        'brandName': brand_name,
+        'subBrandName': brand_name,
+        'package.id': sku_identifier,
+        'container.name': container_name,
+        'container.size': container_size,
+        'container.returnable': is_returnable,
+        'container.unitOfMeasurement': container_unit_measurement,
+        'salesRanking': sales_ranking
+    }
+
+    return item_data
+
+def set_item_enabled(zone, environment, item_data):
+    """Update an item via API
+    Arguments:
+        - zone: (e.g, BR,ZA,DO)
+        - environment: (e.g, UAT,SIT)
+        - item_data: all necessary and relevant SKU data
+    Return True when the item is updated successfully
+    """
+    # Define headers
+    request_headers = get_header_request(zone, 'true', 'false', 'false')
+
+    # Get base URL
+    request_url = get_microservice_base_url(environment, 'false') + '/items/' + item_data.get('sku')
+
+    # Create file path
+    path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(path, 'data/update_item_payload.json')
+
+    # Load JSON file
+    with open(file_path) as file:
+        json_data = json.load(file)
+
+    dict_values = {
+        'sku': item_data.get('sku'),
+        'itemName': item_data.get('name'),
+        'package.packageId': item_data.get('package.id'),
+        'container.name': item_data.get('container.name'),
+        'container.itemSize': item_data.get('container.size'),
+        'container.unitOfMeasurement': item_data.get('container.unitOfMeasurement'),
+        'description': item_data.get('name'),
+        'salesRanking': item_data.get('salesRanking')
+    }
+
+    for key in dict_values.keys():
+        json_object = update_value_to_json(json_data, key, dict_values[key])
+
+    # Create body
+    request_body = convert_json_to_string(json_object)
+
+    # Place request
+    response = place_request('PUT', request_url, request_body, request_headers)
+
+    json_data = loads(response.text)
+    if response.status_code == 200 and len(json_data) != 0:
+        return True
+    else:
+        print(text.Red + '\n- [Item Service] Failure to update an item. Response Status: ' + str(response.status_code) + '. Response message ' + response.text)

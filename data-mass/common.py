@@ -80,6 +80,7 @@ def validateOptionRequestSelection(option):
         "8": "true",
         "9": "true",
         "10": "true",
+        "11": "true"
     }
 
     value = switcher.get(option, "false")
@@ -248,15 +249,17 @@ def place_request(request_type, request_url, request_body, request_headers):
             subprocess.call(["touch", file_debug])
 
     # Log request data to debug.log file
-    logging.basicConfig(filename=file_debug,level=logging.DEBUG)
-    logging.debug("= Init LOG =")
-    logging.debug("REQUEST TYPE= " + request_type)
-    logging.debug("HEADERS= " + json.dumps(request_headers))
-    logging.debug("URL= " + request_url)
-    logging.debug("BODY= " + convert_json_to_string(request_body))
-    logging.debug("RESPONSE= " + str(response))
-    logging.debug("RESPONSE BODY= " + str(response.text))
-    logging.debug('= / Finish LOG =\n')
+    logging.basicConfig(filename=file_debug, level=logging.DEBUG, format='%(asctime)s :: %(levelname)s :: %(message)s')
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
+    logging.getLogger('chardet.charsetprober').setLevel(logging.WARNING)
+    logging.debug("Initializing rerquest...")
+    logging.debug("Request method: " + request_type)
+    logging.debug("Request headers: " + json.dumps(request_headers))
+    logging.debug("Request URL: " + request_url)
+    logging.debug("Request body: " + request_body)
+    logging.debug("Response code: " + str(response.status_code))
+    logging.debug("Response body: " + response.text)
+    logging.debug("Request finished!\n")
     
     return response
 
@@ -425,6 +428,7 @@ def printAvailableOptions(selectionStructure):
             print(text.default_text_color + str(8), text.Yellow + "Input combos")
             print(text.default_text_color + str(9), text.Yellow + "Create User IAM")
             print(text.default_text_color + str(10), text.Yellow + "(Beta) - Check Simulation Service")
+            print(text.default_text_color + str(11), text.Yellow + "Create item")
 
         print(text.default_text_color + str(0), text.Yellow + "Close application")
         selection = input(text.default_text_color + "\nPlease select: ")
@@ -443,6 +447,7 @@ def printAvailableOptions(selectionStructure):
                 print(text.default_text_color + str(8), text.Yellow + "Input combos")
                 print(text.default_text_color + str(9), text.Yellow + "Create User IAM")
                 print(text.default_text_color + str(10), text.Yellow + "(Beta) - Check Simulation Service")
+                print(text.default_text_color + str(11), text.Yellow + "Create item")
             
             print(text.default_text_color + str(0), text.Yellow + "Close application")
             selection = input(text.default_text_color + "\nPlease select: ")
@@ -865,7 +870,7 @@ def validate_state(zone):
     return state
 
 # Validate the option to finish application
-def validateYesOrNotOption(option):
+def validate_yes_no_option(option):
     if option == "Y" or option == "N":
         return "true"
     else:

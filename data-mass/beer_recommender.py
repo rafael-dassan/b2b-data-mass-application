@@ -26,7 +26,7 @@ def create_beer_recommender_microservice(account_id, zone, environment, delivery
             sku = product_offers[aux_index]['sku']
 
         # Check if the SKU is enabled on Items MS
-        recommended_sku = check_item_enabled(sku, zone, environment)
+        recommended_sku = check_item_enabled(sku, zone, environment, True)
         while recommended_sku == False:
             aux_index = aux_index + 1
             if zone.upper() == "ZA":
@@ -34,7 +34,7 @@ def create_beer_recommender_microservice(account_id, zone, environment, delivery
             else:
                 sku = product_offers[aux_index]['sku']
 
-            recommended_sku = check_item_enabled(sku, zone, environment)
+            recommended_sku = check_item_enabled(sku, zone, environment, True)
             
         enabled_skus.append(recommended_sku)
         aux_index = aux_index + 1
