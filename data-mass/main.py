@@ -4,6 +4,7 @@ from credit import add_credit_to_account, add_credit_to_account_microservice
 from delivery_window import create_delivery_window_middleware, create_delivery_window_microservice, validateAlternativeDeliveryDate
 from beer_recommender import *
 from inventory import *
+from order import *
 from common import *
 from classes.text import text
 from random import randint
@@ -36,11 +37,12 @@ def showMenu():
             "4": inputDeliveryWindowAccountMicroserviceMenu,
             "5": inputBeerRecommenderAccountMicroserviceMenu,
             "6": inputInventoryToProduct,
-            "7": inputDealsMenu,
-            "8": inputCombosMenu,
-            "9": registration_user_iam,
-            "10": check_simulation_service_account_microservice_menu,
-            "11": create_item_menu
+            "7": input_orders_to_account,
+            "8": inputDealsMenu,
+            "9": inputCombosMenu,
+            "10": registration_user_iam,
+            "11": check_simulation_service_account_microservice_menu,
+            "12": create_item_menu
         }
     elif selectionStructure == "3":
         switcher = {
@@ -55,6 +57,49 @@ def showMenu():
         function()
     
     printFinishApplicationMenu()
+
+# Input Orders to account
+def input_orders_to_account():
+    zone = print_zone_menu_for_order()
+    environment = printEnvironmentMenu()
+    abi_id = print_account_id_menu(zone)
+
+    # Call check account exists function
+    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+
+    if account == 'false':
+        print(text.Red + '\n- [Account] The account ' + str(abi_id) + ' does not exist')
+        printFinishApplicationMenu()
+
+    print(text.default_text_color + '\nChecking enabled products for the account ' + abi_id + '. It may take a while...')
+
+    # Call function to check if the account has products inside
+    products_inventory_account = check_products_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+
+    if products_inventory_account == 'success':
+        # Call function to configure prefix and order number size in the database sequence
+        order_params = configure_order_params(zone.upper(), environment.upper(), 1)
+
+        if order_params == 'false':
+            print(text.Red + '\n- [Order Creation] Something went wrong when configuring order params, please try again')
+            printFinishApplicationMenu()
+        else: 
+            # Call function to create the Order
+            create_order = create_order_account(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'])
+
+            if create_order == 'error_len':
+                print(text.Red + '\n- [Order Creation] The account must have at least two enabled products to proceed')
+                printFinishApplicationMenu()
+            elif create_order == 'false': 
+                print(text.Red + '\n- [Order Creation] Something went wrong, please try again')
+                printFinishApplicationMenu()
+            elif create_order == 'true':
+                # Call function to re-configure prefix and order number size to the previous format
+                order_params = configure_order_params(zone.upper(), environment.upper(), 2)
+                printFinishApplicationMenu()
+    else:
+        print(text.Red + '\n- [Order Creation] The account has no products inside. Use the menu option 02 to add them first')
+        printFinishApplicationMenu()
 
 # Create an item for a specific Zone
 def create_item_menu():
@@ -71,7 +116,7 @@ def create_item_menu():
 def check_simulation_service_account_microservice_menu():
     zone = print_zone_simulation_menu("false")
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu()
+    abi_id = print_account_id_menu(zone)
     
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
@@ -157,7 +202,7 @@ def check_simulation_service_account_microservice_menu():
 def check_simulation_service_mdw_menu():
     zone = print_zone_simulation_menu("true")
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu("false")
+    abi_id = print_account_id_menu(zone)
 
     # Call check account exists function
     account = check_account_exists_middleware(abi_id, zone.upper(), environment.upper(), "true")
@@ -194,7 +239,7 @@ def check_simulation_service_mdw_menu():
 def inputInventoryToProduct():
     zone = print_zone_menu_for_inventory()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu("false")
+    abi_id = print_account_id_menu(zone)
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
@@ -227,7 +272,7 @@ def inputInventoryToProduct():
 def inputBeerRecommenderAccountMicroserviceMenu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu()
+    abi_id = print_account_id_menu(zone)
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
@@ -255,7 +300,7 @@ def inputDealsMenu():
     selectionStructure = printDealsMenu()
     zone = print_zone_menu_for_deals()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu("false")
+    abi_id = print_account_id_menu(zone)
 
     switcher = {
         "1": "DISCOUNT",
@@ -341,7 +386,7 @@ def inputCombosMenu():
     selectionStructure = printCombosMenu()
     zone = print_zone_menu_for_deals()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu()
+    abi_id = print_account_id_menu(zone)
     
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
@@ -430,7 +475,7 @@ def inputCombosMenu():
 def inputCreditAccountMicroserviceMenu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu()
+    abi_id = print_account_id_menu(zone)
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
@@ -455,7 +500,7 @@ def inputCreditAccountMicroserviceMenu():
 def inputProductsAccountMicroserviceMenu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu("false")
+    abi_id = print_account_id_menu(zone)
     
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
@@ -488,7 +533,7 @@ def inputProductsAccountMicroserviceMenu():
 def inputDeliveryWindowAccountMicroserviceMenu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu("false")
+    abi_id = print_account_id_menu(zone)
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
@@ -521,7 +566,7 @@ def inputDeliveryWindowAccountMicroserviceMenu():
 def inputDeliveryWindowAccountMdwMenu():
     zone = printZoneMenu()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu()
+    abi_id = print_account_id_menu(zone)
 
     # Call check account exists function
     account = check_account_exists_middleware(abi_id, zone.upper(), environment.upper())
@@ -544,7 +589,7 @@ def inputDeliveryWindowAccountMdwMenu():
 def inputCreditAccountMdwMenu():
     zone = printZoneMenu()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu()
+    abi_id = print_account_id_menu(zone)
     
     # Call check account exists function
     account = check_account_exists_middleware(abi_id, zone.upper(), environment.upper())
@@ -570,7 +615,7 @@ def inputCreditAccountMdwMenu():
 def inputProductsAccountMdwMenu():
     zone = printZoneMenu()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu()
+    abi_id = print_account_id_menu(zone)
 
     # Call check account exists function
     account = check_account_exists_middleware(abi_id, zone.upper(), environment.upper())
@@ -607,7 +652,7 @@ def inputProductsAccountMdwMenu():
 def createAccountMdwMenu():
     zone = printZoneMenu()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu()
+    abi_id = print_account_id_menu(zone)
     name = printNameMenu()
     payment_method = printPaymentMethodMenu(zone.upper())
     state = validate_state(zone)
@@ -667,7 +712,7 @@ def createAccountMdwMenu():
 def createAccountMsMenu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu()
+    abi_id = print_account_id_menu(zone)
     name = printNameMenu()
     payment_method = printPaymentMethodMenu(zone.upper())
     state = validate_state(zone)
@@ -729,7 +774,7 @@ def createAccountMsMenu():
 def create_user_magento_menu():
     country = printCountryMenuInUserCreation()
     env = printEnvironmentMenuInUserCreation()
-    account_id = print_account_id_menu()
+    account_id = print_account_id_menu(country)
     email = print_input_email()
     password = print_input_password()
     phone = print_input_phone()
@@ -772,7 +817,7 @@ def associateUserToAccount():
     """
     country     = printCountryMenuInUserCreation()
     env         = printEnvironmentMenuInUserCreation()
-    accountId   = print_account_id_menu()
+    accountId   = print_account_id_menu(country)
     email       = print_input_email()
     password    = print_input_password()
 
@@ -859,7 +904,7 @@ def registration_user_iam():
         print(text.Green + "\n- The user already exists.")
         printFinishApplicationMenu()
 
-    account_id = print_account_id_menu()
+    account_id = print_account_id_menu(country)
     tax_id = print_input_tax_id()
 
     account_result = check_account_exists_microservice(account_id, country, environment)

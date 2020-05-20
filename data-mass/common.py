@@ -80,7 +80,8 @@ def validateOptionRequestSelection(option):
         "8": "true",
         "9": "true",
         "10": "true",
-        "11": "true"
+        "11": "true",
+        "12": "true"
     }
 
     value = switcher.get(option, "false")
@@ -100,11 +101,17 @@ def validate_option_request_selection_for_structure_3(option):
 
 
 # Validate lenght of Account ID
-def validateAccount(accountId):
-    if len(accountId) < 10:
-        return "false"
-    else:
-        return accountId
+def validateAccount(account_id, zone):
+    size_account_id = len(account_id)
+    
+    if size_account_id == 0:
+        return 'error_0'
+    elif (size_account_id > 0) and (is_number(account_id) == 'false'):
+        return 'not_number'
+    elif (zone == 'DO' or zone == 'BR') and (is_number(account_id) == 'true') and (size_account_id < 10):
+        return 'error_10'
+    elif (is_number(account_id) == 'true'):
+        return 'true'
 
 # Validate lenght of account name
 def validateName(name):
@@ -153,6 +160,16 @@ def validateCountryInUserCreation(country):
     }
 
     value = switcher.get(country, "false")
+    return value
+
+def validate_zone_for_order(zone):
+    switcher = {
+        'BR': 'true',
+        'DO': 'true',
+        'ZA': 'true'
+    }
+
+    value = switcher.get(zone, 'false')
     return value
 
 def validate_zone_for_inventory(zone):
@@ -424,11 +441,12 @@ def printAvailableOptions(selectionStructure):
         elif selectionStructure == "2":
             print(text.default_text_color + str(5), text.Yellow + "Input recommended products")
             print(text.default_text_color + str(6), text.Yellow + "Input inventory to product")
-            print(text.default_text_color + str(7), text.Yellow + "Input deals")
-            print(text.default_text_color + str(8), text.Yellow + "Input combos")
-            print(text.default_text_color + str(9), text.Yellow + "Create User IAM")
-            print(text.default_text_color + str(10), text.Yellow + "(Beta) - Check Simulation Service")
-            print(text.default_text_color + str(11), text.Yellow + "Create item")
+            print(text.default_text_color + str(7), text.Yellow + "Input order to account")
+            print(text.default_text_color + str(8), text.Yellow + "Input deals")
+            print(text.default_text_color + str(9), text.Yellow + "Input combos")
+            print(text.default_text_color + str(10), text.Yellow + "Create User IAM")
+            print(text.default_text_color + str(11), text.Yellow + "(Beta) - Check Simulation Service")
+            print(text.default_text_color + str(12), text.Yellow + "Create item")
 
         print(text.default_text_color + str(0), text.Yellow + "Close application")
         selection = input(text.default_text_color + "\nPlease select: ")
@@ -443,11 +461,12 @@ def printAvailableOptions(selectionStructure):
             elif selectionStructure == "2":
                 print(text.default_text_color + str(5), text.Yellow + "Input recommended products")
                 print(text.default_text_color + str(6), text.Yellow + "Input inventory to product")
-                print(text.default_text_color + str(7), text.Yellow + "Input deals")
-                print(text.default_text_color + str(8), text.Yellow + "Input combos")
-                print(text.default_text_color + str(9), text.Yellow + "Create User IAM")
-                print(text.default_text_color + str(10), text.Yellow + "(Beta) - Check Simulation Service")
-                print(text.default_text_color + str(11), text.Yellow + "Create item")
+                print(text.default_text_color + str(7), text.Yellow + "Input order to account")
+                print(text.default_text_color + str(8), text.Yellow + "Input deals")
+                print(text.default_text_color + str(9), text.Yellow + "Input combos")
+                print(text.default_text_color + str(10), text.Yellow + "Create User IAM")
+                print(text.default_text_color + str(11), text.Yellow + "(Beta) - Check Simulation Service")
+                print(text.default_text_color + str(12), text.Yellow + "Create item")
             
             print(text.default_text_color + str(0), text.Yellow + "Close application")
             selection = input(text.default_text_color + "\nPlease select: ")
@@ -643,18 +662,19 @@ def printQuantityMenu():
 #       for account creation, however not all zones use this pattern (e.g. AR, CH, CO). 
 #       Therefore, for simulation, this parameter was created to allow using accounts that do not 
 #       follow this pattern of more than 10 characters
-def print_account_id_menu(validate_string_account='true'):
-    while True:
-        try:
-            abi_id = int(input(text.default_text_color + 'Account ID: '))
-            if validate_string_account == 'true':
-                while validateAccount(str(abi_id)) == 'false':
-                    print(text.Red + '\n- Account ID should not be empty and it must contain at least 10 characters')
-                    abi_id = int(input(text.default_text_color + '\nAccount ID: '))
-            break
-        except ValueError:
-            print(text.Red + '\n- The account ID must be Numeric\n')
+def print_account_id_menu(zone):
+    abi_id = input(text.default_text_color + 'Account ID: ')
 
+    while validateAccount(str(abi_id), zone) != 'true':
+        if validateAccount(str(abi_id), zone) == 'error_0':
+            print(text.Red + '\n- Account ID should not be empty')
+            abi_id = input(text.default_text_color + 'Account ID: ')       
+        if validateAccount(str(abi_id), zone) == 'error_10':
+            print(text.Red + '\n- Account ID must contain at least 10 characters')
+            abi_id = input(text.default_text_color + 'Account ID: ')
+        elif validateAccount(str(abi_id), zone) == 'not_number':
+            print(text.Red + '\n- The account ID must be Numeric')
+            abi_id = input(text.default_text_color + 'Account ID: ')
     return str(abi_id)
 
 
@@ -688,6 +708,15 @@ def print_zone_menu_for_ms():
     while validate_zone_for_ms(zone.upper()) == "false":
         print(text.Red + "\n- Invalid option\n")
         zone = input(text.default_text_color + "Zone (BR, DO, ZA, CO, MX): ")
+
+    return zone.upper()
+
+# Print zone menu for orders
+def print_zone_menu_for_order():
+    zone = input(text.default_text_color + 'Zone (BR, DO, ZA): ')
+    while validate_zone_for_order(zone.upper()) == 'false':
+        print(text.Red + '\n- Invalid option\n')
+        zone = input(text.default_text_color + 'Zone (BR, DO, ZA): ')
 
     return zone.upper()
 
@@ -1106,3 +1135,24 @@ def return_payment_term_bank_slip():
 
     payment_term.append(list_payment_term)
     return payment_term
+
+def set_to_dictionary(dictionary, *key_value_pairs, **items):
+    """Adds the given ``key_value_pairs`` and ``items`` to the ``dictionary``.
+    Giving items as ``key_value_pairs`` means giving keys and values
+    as separate arguments:
+    | Set To Dictionary | ${D1} | key | value | second | ${2} |
+    =>
+    | ${D1} = {'a': 1, 'key': 'value', 'second': 2}
+    | Set To Dictionary | ${D1} | key=value | second=${2} |
+    The latter syntax is typically more convenient to use, but it has
+    a limitation that keys must be strings.
+    If given keys already exist in the dictionary, their values are updated.
+    """
+    
+    if len(key_value_pairs) % 2 != 0:
+        raise ValueError("Adding data to a dictionary failed. There "
+                            "should be even number of key-value-pairs.")
+    for i in range(0, len(key_value_pairs), 2):
+        dictionary[key_value_pairs[i]] = key_value_pairs[i+1]
+    dictionary.update(items)
+    return dictionary
