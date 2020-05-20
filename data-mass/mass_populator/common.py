@@ -1,17 +1,17 @@
 from mass_populator.log import *
-from mass_populator.AR.account import populate_accounts as populate_accounts_ar
-from mass_populator.BR.account import populate_accounts as populate_accounts_br
-from mass_populator.CL.account import populate_accounts as populate_accounts_cl
-from mass_populator.DO.account import populate_accounts as populate_accounts_do
-from mass_populator.ZA.account import populate_accounts as populate_accounts_za
-from mass_populator.BR.user import populate_users as populate_users_br
-from mass_populator.DO.user import populate_users as populate_users_do
-from mass_populator.AR.user import populate_users as populate_users_ar
-from mass_populator.CL.user import populate_users as populate_users_cl
-from mass_populator.ZA.user import populate_users as populate_users_za
-from mass_populator.BR.recommendation import populate_recomendations as populate_recommendations_br
-from mass_populator.DO.recommendation import populate_recomendations as populate_recommendations_do
-from mass_populator.ZA.recommendation import populate_recomendations as populate_recommendations_za
+from mass_populator.country.AR.account import populate_accounts as populate_accounts_ar
+from mass_populator.country.BR.account import populate_accounts as populate_accounts_br
+from mass_populator.country.CL.account import populate_accounts as populate_accounts_cl
+from mass_populator.country.DO.account import populate_accounts as populate_accounts_do
+from mass_populator.country.ZA.account import populate_accounts as populate_accounts_za
+from mass_populator.country.BR.user import populate_users as populate_users_br
+from mass_populator.country.DO.user import populate_users as populate_users_do
+from mass_populator.country.AR.user import populate_users as populate_users_ar
+from mass_populator.country.CL.user import populate_users as populate_users_cl
+from mass_populator.country.ZA.user import populate_users as populate_users_za
+from mass_populator.country.BR.recommendation import populate_recomendations as populate_recommendations_br
+from mass_populator.country.DO.recommendation import populate_recomendations as populate_recommendations_do
+from mass_populator.country.ZA.recommendation import populate_recomendations as populate_recommendations_za
 
 logger = logging.getLogger(__name__)
 

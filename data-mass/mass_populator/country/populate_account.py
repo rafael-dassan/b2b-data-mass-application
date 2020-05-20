@@ -1,5 +1,4 @@
 from account import create_account_ms
-from account import check_account_exists_microservice
 from delivery_window import create_delivery_window_microservice
 from credit import add_credit_to_account_microservice
 from products import request_get_products_by_account_microservice
@@ -13,18 +12,20 @@ from mass_populator.log import *
 logger = logging.getLogger(__name__)
 
 
-def populate_accounts(country, environment):
-    populate_poc1(country, environment)
-    populate_poc2(country, environment)
-    populate_poc3(country, environment)
-
-    logger.info("Accounts populating finalized.")
+# Populate the POC
+def populate_poc(country, environment, account_id, account_name, payment_method, credit, balance, amount_of_products,
+                 has_delivery_window):
+    populate_account(country, environment, account_id, account_name, payment_method)
+    if has_delivery_window:
+        populate_delivery_window(country, environment, account_id)
+    populate_credit(country, environment, account_id, credit, balance)
+    populate_product(account_id, country, environment, amount_of_products)
 
 
 # Populate an account
-def populate_account(country, environment, account_id, account_name):
+def populate_account(country, environment, account_id, account_name, payment_method):
     state = validate_state(country)
-    if "success" != create_account_ms(account_id, account_name, ["CASH", "CREDIT"], None, country, environment, state):
+    if "success" != create_account_ms(account_id, account_name, payment_method, None, country, environment, state):
         logger.info(log(Message.ACCOUNT_ERROR, {"account_id": account_id}))
 
 
@@ -53,6 +54,7 @@ def populate_product(account_id, country, environment, amount_of_products):
     if "success" != add_product_to_account(account_data, country, environment, amount_of_products):
         logger.info(log(Message.PRODUCT_ERROR, {"account_id": account_id}))
 
+
 def add_product_to_account(account, country, environment, amount_of_products):
     """Associate products by account
     Arguments:
@@ -65,54 +67,32 @@ def add_product_to_account(account, country, environment, amount_of_products):
     # Get all products
     all_products = request_get_products_microservice(country, environment, amount_of_products)
     logger.debug("Products available to populate: {products} items".format(products=str(len(all_products))))
-    
+
     amount_of_products = min(len(all_products), amount_of_products)
-    logger.debug("Amount of products should be filled on account: {amount_of_products} items".format(amount_of_products=amount_of_products))
+    logger.debug("Amount of products should be filled on account: {amount_of_products} items".format(
+        amount_of_products=amount_of_products))
 
     # Get products by account
     products_by_account = request_get_products_by_account_microservice(account['accountId'], country, environment)
-    logger.info("Products found on account {account_id}: {products} items".format(account_id=account['accountId'], products=str(len(products_by_account))))
+    logger.debug("Products found on account {account_id}: {products} items".format(account_id=account['accountId'],
+                                                                                  products=str(
+                                                                                      len(products_by_account))))
     if not isinstance(products_by_account, list):
         return 'failed'
-    
+
     remaining_products = amount_of_products - len(products_by_account)
-    logger.debug("Remaining products should be filled on account: {remaining_products} items".format(remaining_products=remaining_products))
-        
+    logger.debug("Remaining products should be filled on account: {remaining_products} items".format(
+        remaining_products=remaining_products))
+
     if remaining_products > 0:
-        products_data = list(zip(generate_random_price_ids(remaining_products), slice_array_products(remaining_products, all_products)))
-        logger.debug("Total products to populate: {remaining_products} items".format(remaining_products=str(remaining_products)))
-            
+        products_data = list(
+            zip(generate_random_price_ids(remaining_products), slice_array_products(remaining_products, all_products)))
+        logger.debug(
+            "Total products to populate: {remaining_products} items".format(remaining_products=str(remaining_products)))
+
         # Insert products in account
-        return request_post_products_account_microservice(account['accountId'], country, environment, account['deliveryCenterId'], products_data)
+        return request_post_products_account_microservice(account['accountId'], country, environment,
+                                                          account['deliveryCenterId'], products_data)
     else:
         logger.debug("Account already has the desired amount of products, not needed to populate!")
         return 'success'
-
-
-# Populate the POC 1
-def populate_poc1(country, environment):
-    account_id = "9883300001"
-    amount_of_products = 100
-    populate_account(country, environment, account_id, "DO_POC_001")
-    populate_delivery_window(country, environment, account_id)
-    populate_credit(country, environment, account_id, "45000", "45000")
-    populate_product(account_id, country, environment, amount_of_products)
-
-
-# Populate the POC 2
-def populate_poc2(country, environment):
-    account_id = "9883300002"
-    amount_of_products = 100
-    populate_account(country, environment, account_id, "DO_POC_002")
-    populate_delivery_window(country, environment, account_id)
-    populate_credit(country, environment, account_id, "45000", "45000")
-    populate_product(account_id, country, environment, amount_of_products)
-
-
-# Populate the POC 3
-def populate_poc3(country, environment):
-    account_id = "9883300003"
-    amount_of_products = 100
-    populate_account(country, environment, account_id, "DO_POC_003")
-    populate_credit(country, environment, account_id, "45000", "45000")
-    populate_product(account_id, country, environment, amount_of_products)
