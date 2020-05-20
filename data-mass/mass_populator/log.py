@@ -18,3 +18,5 @@ class Message(Enum):
     DELIVERY_WINDOW_ERROR_MIDDLEWARE = "Fail on populate delivery window for account {account_id} on Middleware."
     PRODUCT_ERROR = "Fail on populate product for account {account_id}."
     RECOMMENDER_QUICK_ORDER_ERROR = "Fail on populate recommender quick order for account {account_id}."
+    RECOMMENDER_FORGOTTEN_ITEMS_ERROR = "Fail on populate recommender forgotten items for account {account_id}."
+    RECOMMENDER_SELL_UP_ERROR = "Fail on populate recommender sell up for account {account_id}."
