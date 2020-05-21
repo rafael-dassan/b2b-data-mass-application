@@ -14,7 +14,7 @@ def create_beer_recommender_microservice(account_id, zone, environment, delivery
     request_url = get_microservice_base_url(environment) + "/global-recommendation-relay"
 
     # Retrieve all SKUs of the specified Account and DeliveryCenter IDs
-    product_offers = request_get_offers_microservice(account_id, zone, environment, delivery_center_id)
+    product_offers = request_get_offers_microservice(account_id, zone, environment, delivery_center_id, True)
 
     enabled_skus = list()
     aux_index = 0
