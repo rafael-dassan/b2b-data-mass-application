@@ -84,18 +84,18 @@ def create_beer_recommender_microservice(account_id, zone, environment, delivery
 
 # Define JSON to submmit QUICK ORDER recommendation type
 def create_file_request_quick_order(url, headers, abi_id, zone, product_list):
-    if (zone == "DO") or (zone == "CL") or (zone == "AR"):
-        language = "es"
-        text = "Pedido Facil"
-        text_description = "Productos que ordenaste anteriormente.<link>Anadir todo al camion</link>"
-    elif (zone == "BR"):
-        language = "pt"
-        text = "Pedido Facil"
-        text_description = "Produtos comprados anteriormente"
+    if (zone == 'DO') or (zone == 'CL') or (zone == 'AR') or (zone == 'CO'):
+        language = 'es'
+        text = 'Pedido Facil'
+        text_description = 'Productos que ordenaste anteriormente <link>Anadir todo al camion</link>'
+    elif (zone == 'BR'):
+        language = 'pt'
+        text = 'Pedido Facil'
+        text_description = 'Produtos comprados anteriormente <link>Adicionar todos itens ao carrinho</link>'
     else:
-        language = "en"
-        text = "Quick Order"
-        text_description = "Products ordered before"
+        language = 'en'
+        text = 'Quick Order'
+        text_description = 'Products ordered before <link>Add all items to cart</link>'
 
     # Retrieve the first ten SKUs of the account
     sku = list()

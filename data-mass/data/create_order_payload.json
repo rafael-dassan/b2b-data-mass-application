@@ -1,0 +1,57 @@
+{
+  "accountId": "string",
+  "channel": "B2B_WEB",
+  "delivery": {
+    "date": "string",
+    "note": "string",
+    "windowId": "string"
+  },
+  "deliveryCenter": "string",
+  "deposit": 0,
+  "discount": 0,
+  "interestAmount": 0,
+  "items": [
+    {
+      "price": 550.00,
+      "unitPrice": 110.00,
+      "unitPriceInclTax": 120.00,
+      "quantity": 5,
+      "discountAmount": 0,
+      "deposit": 8.00,
+      "subtotal": 550.00,
+      "taxAmount": 20,
+      "total": 570.00,
+      "totalExclDeposit": 570.00,
+      "sku": "string",
+      "hasInventory": true,
+      "freeGood": false,
+      "originalPrice": 120.00
+    },
+    {
+      "price": 800.00,
+      "unitPrice": 200.00,
+      "unitPriceInclTax": 210.00,
+      "quantity": 4,
+      "discountAmount": 0,
+      "deposit": 19.00,
+      "subtotal": 800.00,
+      "taxAmount": 30,
+      "total": 830.00,
+      "totalExclDeposit": 830.00,
+      "sku": "string",
+      "hasInventory": true,
+      "freeGood": false,
+      "originalPrice": 210.00
+    }
+  ],
+  "itemsQuantity": 9,
+  "note": "string",
+  "paymentMethod": "CASH",
+  "paymentTerm": 0,
+  "poNumber": "string",
+  "status": "PLACED",
+  "total": 1427.00,
+  "subtotal": 1350.00,
+  "tax": 50,
+  "placementDate": "string"
+}
