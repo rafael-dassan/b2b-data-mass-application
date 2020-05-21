@@ -74,7 +74,10 @@ def input_orders_to_account():
     print(text.default_text_color + '\nChecking enabled products for the account ' + abi_id + '. It may take a while...')
 
     # Call function to check if the account has products inside
-    products_inventory_account = check_products_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+    if zone == 'ZA':
+        products_inventory_account = check_products_account_exists_middleware(abi_id, zone.upper(), environment.upper())
+    else:
+        products_inventory_account = check_products_account_exists_microservice(abi_id, zone.upper(), environment.upper())   
 
     if products_inventory_account == 'success':
         # Call function to configure prefix and order number size in the database sequence
@@ -542,7 +545,7 @@ def inputDeliveryWindowAccountMicroserviceMenu():
         print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
         printFinishApplicationMenu()
     
-    if zone != 'DO':
+    if zone == 'BR':
         # Validate if is alternative delivery window
         isAlternativeDeliveryDate = printAlternativeDeliveryDateMenu()
 

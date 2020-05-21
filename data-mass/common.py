@@ -166,7 +166,8 @@ def validate_zone_for_order(zone):
     switcher = {
         'BR': 'true',
         'DO': 'true',
-        'ZA': 'true'
+        'ZA': 'true',
+        'CO': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -713,10 +714,10 @@ def print_zone_menu_for_ms():
 
 # Print zone menu for orders
 def print_zone_menu_for_order():
-    zone = input(text.default_text_color + 'Zone (BR, DO, ZA): ')
+    zone = input(text.default_text_color + 'Zone (BR, DO, ZA, CO): ')
     while validate_zone_for_order(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (BR, DO, ZA): ')
+        zone = input(text.default_text_color + 'Zone (BR, DO, ZA, CO): ')
 
     return zone.upper()
 
