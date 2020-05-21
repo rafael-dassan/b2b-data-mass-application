@@ -24,19 +24,8 @@ def create_beer_recommender_microservice(account_id, zone, environment, delivery
             sku = product_offers[aux_index]
         else:
             sku = product_offers[aux_index]['sku']
-
-        # Check if the SKU is enabled on Items MS
-        recommended_sku = check_item_enabled(sku, zone, environment, True)
-        while recommended_sku == False:
-            aux_index = aux_index + 1
-            if zone.upper() == "ZA":
-                sku = product_offers[aux_index]
-            else:
-                sku = product_offers[aux_index]['sku']
-
-            recommended_sku = check_item_enabled(sku, zone, environment, True)
             
-        enabled_skus.append(recommended_sku)
+        enabled_skus.append(sku)
         aux_index = aux_index + 1
 
     # Check if the account has at least 25 enabled SKUs added to it

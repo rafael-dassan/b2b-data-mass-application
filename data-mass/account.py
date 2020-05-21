@@ -105,11 +105,6 @@ def check_account_exists_microservice(abi_id, zone, environment):
         return 'false'
 
 def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environment, state):
-    # Validation of Account ID for BR
-    if (validateAccount(abi_id) == 'false') and (zone == 'BR' or zone == 'DO'):
-        print(text.Yellow + '\n- Account ID should not be empty or it must contain at least 10 characters')
-        finishApplication()
-    
     payment_term = None
     if zone.upper() == 'BR' and 'BANK_SLIP' in payment_method:
         payment_term = return_payment_term_bank_slip()
