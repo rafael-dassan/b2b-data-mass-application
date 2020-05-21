@@ -432,61 +432,61 @@ def finishApplication():
 
 # Print init menu
 def printAvailableOptions(selectionStructure):
-    if selectionStructure == "1":
-        print(text.default_text_color + str(0), text.Yellow + "Close application")
-        print(text.default_text_color + str(1), text.Yellow + "(Beta) - Check Simulation Service")
-        selection = input(text.default_text_color + "\nPlease select: ")
-        while validateOptionRequestSelection(selection) == "false":
-            print(text.Red + "\n- Invalid option\n")
-            selection = input(text.default_text_color + "\nPlease select: ")
+    if selectionStructure == '1':
+        print(text.default_text_color + str(0), text.Yellow + 'Close application')
+        print(text.default_text_color + str(1), text.Yellow + '(Beta) - Check Simulation Service')
+        selection = input(text.default_text_color + '\nPlease select: ')
+        while validateOptionRequestSelection(selection) == 'false':
+            print(text.Red + '\n- Invalid option\n')
+            selection = input(text.default_text_color + '\nPlease select: ')
 
     elif selectionStructure == '2':
-        print(text.default_text_color + str(0), text.Yellow + "Close application")
-        print(text.default_text_color + str(1), text.Yellow + "Create account")
-        print(text.default_text_color + str(2), text.Yellow + "Input products")
-        print(text.default_text_color + str(3), text.Yellow + "Input credit")
-        print(text.default_text_color + str(4), text.Yellow + "Input delivery window")
-        print(text.default_text_color + str(5), text.Yellow + "Input recommended products")
-        print(text.default_text_color + str(6), text.Yellow + "Input inventory to product")
-        print(text.default_text_color + str(7), text.Yellow + "Input order to account")
-        print(text.default_text_color + str(8), text.Yellow + "Input deals")
-        print(text.default_text_color + str(9), text.Yellow + "Input combos")
-        print(text.default_text_color + str(10), text.Yellow + "(Beta) - Check Simulation Service")
+        print(text.default_text_color + str(0), text.Yellow + 'Close application')
+        print(text.default_text_color + str(1), text.Yellow + 'Create account')
+        print(text.default_text_color + str(2), text.Yellow + 'Input products')
+        print(text.default_text_color + str(3), text.Yellow + 'Input credit')
+        print(text.default_text_color + str(4), text.Yellow + 'Input delivery window')
+        print(text.default_text_color + str(5), text.Yellow + 'Input recommended products')
+        print(text.default_text_color + str(6), text.Yellow + 'Input inventory to product')
+        print(text.default_text_color + str(7), text.Yellow + 'Input order to account')
+        print(text.default_text_color + str(8), text.Yellow + 'Input deals')
+        print(text.default_text_color + str(9), text.Yellow + 'Input combos')
+        print(text.default_text_color + str(10), text.Yellow + '(Beta) - Check Simulation Service')
         print(text.default_text_color + str(11), text.Yellow + "Create item")
 
-        selection = input(text.default_text_color + "\nPlease select: ")
-        while validateOptionRequestSelection(selection) == "false":
-            print(text.Red + "\n- Invalid option\n")
-            print(text.default_text_color + str(0), text.Yellow + "Close application")
-            print(text.default_text_color + str(1), text.Yellow + "Create account")
-            print(text.default_text_color + str(2), text.Yellow + "Input products")
-            print(text.default_text_color + str(3), text.Yellow + "Input credit")
-            print(text.default_text_color + str(4), text.Yellow + "Input delivery window")
-            print(text.default_text_color + str(5), text.Yellow + "Input recommended products")
-            print(text.default_text_color + str(6), text.Yellow + "Input inventory to product")
-            print(text.default_text_color + str(7), text.Yellow + "Input order to account")
-            print(text.default_text_color + str(8), text.Yellow + "Input deals")
-            print(text.default_text_color + str(9), text.Yellow + "Input combos")
-            print(text.default_text_color + str(10), text.Yellow + "(Beta) - Check Simulation Service")
+        selection = input(text.default_text_color + '\nPlease select: ')
+        while validateOptionRequestSelection(selection) == 'false':
+            print(text.Red + '\n- Invalid option\n')
+            print(text.default_text_color + str(0), text.Yellow + 'Close application')
+            print(text.default_text_color + str(1), text.Yellow + 'Create account')
+            print(text.default_text_color + str(2), text.Yellow + 'Input products')
+            print(text.default_text_color + str(3), text.Yellow + 'Input credit')
+            print(text.default_text_color + str(4), text.Yellow + 'Input delivery window')
+            print(text.default_text_color + str(5), text.Yellow + 'Input recommended products')
+            print(text.default_text_color + str(6), text.Yellow + 'Input inventory to product')
+            print(text.default_text_color + str(7), text.Yellow + 'Input order to account')
+            print(text.default_text_color + str(8), text.Yellow + 'Input deals')
+            print(text.default_text_color + str(9), text.Yellow + 'Input combos')
+            print(text.default_text_color + str(10), text.Yellow + '(Beta) - Check Simulation Service')
             print(text.default_text_color + str(11), text.Yellow + "Create item")
 
-            selection = input(text.default_text_color + "\nPlease select: ")
+            selection = input(text.default_text_color + '\nPlease select: ')
 
-    elif selectionStructure == "3":
-        print(text.default_text_color + str(0), text.Yellow + "Close application")
-        print(text.default_text_color + str(1), text.Yellow + "Create User")
-        print(text.default_text_color + str(2), text.Yellow + "Create User IAM")
-        print(text.default_text_color + str(3), text.Yellow + "Associate Account to user")
+    elif selectionStructure == '3':
+        print(text.default_text_color + str(0), text.Yellow + 'Close application')
+        print(text.default_text_color + str(1), text.Yellow + 'Create User')
+        print(text.default_text_color + str(2), text.Yellow + 'Create User IAM')
+        print(text.default_text_color + str(3), text.Yellow + 'Associate Account to user')
 
-        selection = input(text.default_text_color + "\nPlease select: ")
-        while validate_option_request_selection_for_structure_3(selection) == "false":
-            print(text.Red + "\n- Invalid option\n")
-            print(text.default_text_color + str(0), text.Yellow + "Close application")
-            print(text.default_text_color + str(1), text.Yellow + "Create User")
-            print(text.default_text_color + str(2), text.Yellow + "Create User IAM")
-            print(text.default_text_color + str(3), text.Yellow + "Associate Account to user")
+        selection = input(text.default_text_color + '\nPlease select: ')
+        while validateOptionRequestSelection(selection) == 'false':
+            print(text.Red + '\n- Invalid option\n')
+            print(text.default_text_color + str(0), text.Yellow + 'Close application')
+            print(text.default_text_color + str(1), text.Yellow + 'Create User')
+            print(text.default_text_color + str(2), text.Yellow + 'Create User IAM')
+            print(text.default_text_color + str(3), text.Yellow + 'Associate Account to user')
 
-            selection = input(text.default_text_color + "\nPlease select: ")
+            selection = input(text.default_text_color + '\nPlease select: ')
     else:
         finishApplication()
 

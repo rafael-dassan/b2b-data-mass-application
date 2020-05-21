@@ -10,7 +10,7 @@ def generate_random_price_ids(qtd):
         return []
 
     array_random_ids = set()
-    prefix = "DM"
+    prefix = 'DM'
     while len(array_random_ids) < qtd:
         new_prefix = prefix + str(randint(10000, 99999))
         array_random_ids.add(new_prefix)
