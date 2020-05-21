@@ -15,6 +15,7 @@ Only ZA has also the two Accounts created for Microservice and Middleware (check
 | CL | Chile | Yes | No |
 | DO | Dominican Republic | Yes | No |
 | ZA | South Africa | Yes | Yes |
+| CO | Colombia | Yes | No |
 
 All accounts will have 100 products or the maximum available products for that country associated with them.
 
@@ -47,6 +48,13 @@ All accounts will have 100 products or the maximum available products for that c
 - Account 1: created with ID **9883300101**, name **ZA_POC_001**, payment method **[CASH]**, with liquor license, with delivery window, credit **45000**, balance **45000**.
 - Account 2: created with ID **9883300102**, name **ZA_POC_002**, payment method **[CASH]**, with liquor license, with delivery window, credit **45000**, balance **45000**.
 - Account 3: created with ID **9883300103**, name **ZA_POC_003**, payment method **[CASH]**, with liquor license, without delivery window, credit **45000**, balance **45000**.
+
+#### CO
+
+- Account 1: created with ID **9883300201**, name **CO_POC_001**, payment method **[CASH]**, with liquor license, with delivery window, credit **41000**, balance **50100**.
+- Account 2: created with ID **9883300202**, name **CO_POC_002**, payment method **[CREDIT]**, with liquor license, with delivery window, credit **42000**, balance **50200**.
+- Account 3: created with ID **9883300203**, name **CO_POC_003**, payment method **[CASH, CREDIT]**, with liquor license, without delivery window, credit **43000**, balance **50300**.
+
 
 ### User
 
@@ -103,6 +111,16 @@ The countries BR and DO will have the Users created with the following Accounts 
 - User created with email: **abiautotest+2@gmail.com**, password: **Password1**, with Account ID **9883300102** and **9883300103**
 - User created with email: **abiautotest+100@gmail.com**, password: **Pass()12**, with Account ID **9883300102** and **9883300103** 
 
+#### CO
+
+- User created with email: **abiautotest+2@mailinator.com**, password: **Password1**, with Account ID **9883300201**
+- User created with email: **abiautotest+100@mailinator.com**, password: **Pass()12**, with Account ID **9883300201** and **9883300203**
+ 
+
+- User created with email: **abiautotest+1@gmail.com**, password: **Password1**, with Account ID **9883300202**, with phone **+5519992666528**
+- User created with email: **abiautotest+2@gmail.com**, password: **Password1**, with Account ID **9883300202** and **9883300203**
+- User created with email: **abiautotest+100@gmail.com**, password: **Pass()12**, with Account ID **9883300202** and **9883300203** 
+
 
  
 ### Products
@@ -124,6 +142,10 @@ The countries will have the recommendations described bellow.
 ##### ZA
 
 - Beer Recommender - Quick Order associated with POC **9883300101** and POC **9883300103**.
+
+##### CO
+
+- Beer Recommender - Quick Order associated with POC **9883300201** and POC **9883300203**.
 
 ## All
 
