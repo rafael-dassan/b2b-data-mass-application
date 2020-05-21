@@ -48,10 +48,7 @@ def create_order_account(account_id, zone, environment, delivery_center_id):
     request_url = get_microservice_base_url(environment) + '/order-service'
 
     # Retrieve all SKUs of the specified Account and DeliveryCenter IDs
-    if zone == 'ZA':
-        product_offers = request_get_offers_middleware(account_id, zone, environment)
-    else:
-        product_offers = request_get_offers_microservice(account_id, zone, environment, delivery_center_id)
+    product_offers = request_get_offers_microservice(account_id, zone, environment, delivery_center_id, True)
 
     enabled_skus = list()
     aux_index = 0

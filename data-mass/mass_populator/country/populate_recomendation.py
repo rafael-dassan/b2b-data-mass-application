@@ -15,7 +15,7 @@ def populate_recommendation_quick_order(country, environment, account_id):
     Return new json_object
     """
     # Retrieve all SKUs of the specified Account and DeliveryCenter IDs
-    product_offers = request_get_offers_microservice(account_id, country, environment, account_id)
+    product_offers = request_get_offers_microservice(account_id, country, environment, account_id, True)
     if not isinstance(product_offers, list) or not len(product_offers):
         logger.debug("Not found SKUs on account: {account_id}".format(account_id=account_id))
         return 'failed'
@@ -27,9 +27,8 @@ def populate_recommendation_quick_order(country, environment, account_id):
             sku = product_offers[index]
         else:
             sku = product_offers[index]['sku']
-        # Check if the SKU is enabled on Items MS
-        if check_item_enabled(sku, country, environment, True) != False :
-            enabled_skus.append(sku)
+
+        enabled_skus.append(sku)
         index = index + 1
     
     # Request for Quick Order
