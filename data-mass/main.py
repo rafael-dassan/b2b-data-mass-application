@@ -509,11 +509,11 @@ def input_products_to_account_menu():
     products = request_get_offers_microservice(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'], True)
 
     proceed = 'N'
-    if products != None:
+    if products != False:
         proceed = input(text.Yellow + '\n- [Account] The account ' + str(abi_id) + ' already have products, do you want to proceed? y/N: ').upper()
         if proceed == '':
             proceed = 'N'
-    elif products == 'false':
+    elif products == False:
         proceed = 'Y'
     else:
         printFinishApplicationMenu()
