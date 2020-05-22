@@ -73,7 +73,7 @@ def input_orders_to_account():
     # Call function to check if the account has products inside
     products_inventory_account = request_get_offers_microservice(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'], True)
 
-    if products_inventory_account != None:
+    if len(products_inventory_account) != 0:
         # Call function to configure prefix and order number size in the database sequence
         order_params = configure_order_params(zone.upper(), environment.upper(), 1)
 
@@ -509,11 +509,11 @@ def input_products_to_account_menu():
     products = request_get_offers_microservice(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'], True)
 
     proceed = 'N'
-    if products != False:
+    if len(products) != 0:
         proceed = input(text.Yellow + '\n- [Account] The account ' + str(abi_id) + ' already have products, do you want to proceed? y/N: ').upper()
         if proceed == '':
             proceed = 'N'
-    elif products == False:
+    elif len(products) == 0:
         proceed = 'Y'
     else:
         printFinishApplicationMenu()
