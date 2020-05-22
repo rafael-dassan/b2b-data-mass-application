@@ -391,7 +391,7 @@ def request_get_offers_microservice(abi_id, zone, environment, delivery_center_i
         else:
             return True
     elif response.status_code == 200 and len(json_data) == 0:
-        return False
+        return json_data
     else:
         print(text.Red + '\n- [Product Offers] Failure to get product offers. Response Status: ' + str(response.status_code) + '. Response message ' + response.text)
 
@@ -417,7 +417,7 @@ def request_get_offers_middleware(abi_id, zone, environment, return_product_data
         else:
             return True
     elif response.status_code == 200 and len(json_data) == 0:
-        return False
+        return json_data
     else:
         print(text.Red + '\n- [Product Offers Middleware] Failure to get product offers. Response Status: ' + str(response.status_code) + '. Response message ' + response.text)
 
