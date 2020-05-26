@@ -129,23 +129,23 @@ The countries BR and DO will have the Users created with the following Accounts 
 ### Recommendations
 The countries will have the recommendations described bellow.
 
-#### Beer Recommender - Quick Order
+#### Beer Recommender - [Quick Order, Forgotten Items, Sell Up]
 
 ##### BR
 
-- Beer Recommender - Quick Order associated with POC **99481543000135** and POC **42282891000166**.
+- Beer Recommender associated with POC **99481543000135** and POC **42282891000166**.
 
 ##### DO
 
-- Beer Recommender - Quick Order associated with POC **9883300001** and POC **9883300003**.
+- Beer Recommender associated with POC **9883300001** and POC **9883300003**.
 
 ##### ZA
 
-- Beer Recommender - Quick Order associated with POC **9883300101** and POC **9883300103**.
+- Beer Recommender associated with POC **9883300101** and POC **9883300103**.
 
 ##### CO
 
-- Beer Recommender - Quick Order associated with POC **9883300201** and POC **9883300203**.
+- Beer Recommender associated with POC **9883300201** and POC **9883300203**.
 
 ## All
 
