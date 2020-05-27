@@ -16,6 +16,8 @@ def check_account_exists_microservice(abi_id, zone, environment):
     json_data = loads(response.text)
     if response.status_code == 200 and len(json_data) != 0:
         return json_data
+    elif response.status_code == 200 and len(json_data) == 0:
+        return json_data
     else:
         return 'false'
 
@@ -86,10 +88,24 @@ def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environ
 
 
 def display_account_information(abi_id, zone, environment):
+    """Display account information
+    Arguments:
+        - zone: (e.g, BR,ZA,DO)
+        - environment: (e.g, UAT,SIT)
+        - abi_id: account_id
+    Return a table containing the available account information
+    """
     account_response = check_account_exists_microservice(abi_id, zone, environment)
 
+    if account_response == 'false':
+        return 'error_ms'
+    elif len(account_response) == 0:
+        return 'not_found'
+    else:
+        account = account_response[0]
+
     # Validate delivery windows
-    delivery_window = account_response[0]['deliveryWindows']
+    delivery_window = account['deliveryWindows']
     delivery_window_information = list()
     if len(delivery_window) == 0:
         account_delivery_window_values = {
@@ -107,7 +123,7 @@ def display_account_information(abi_id, zone, environment):
             delivery_window_information.append(account_delivery_window_values)
 
     # Validate liquor license number
-    liquor_license = account_response[0]['liquorLicense']
+    liquor_license = account['liquorLicense']
     if len(liquor_license) == 0:
         liquor_license = 'None'
     else:
@@ -120,7 +136,7 @@ def display_account_information(abi_id, zone, environment):
 
     # Validate minimum order
     minimum_order_information = list()
-    minimum_order = account_response[0]['minimumOrder']
+    minimum_order = account['minimumOrder']
     if minimum_order is None:
         minimum_order_values = {
             'Minimum Order': 'None'
@@ -134,7 +150,7 @@ def display_account_information(abi_id, zone, environment):
 
     # Validate maximum order
     maximum_order_information = list()
-    maximum_order = account_response[0]['maximumOrder']
+    maximum_order = account['maximumOrder']
     if maximum_order is None:
         maximum_order_values = {
             'Maximum Order': 'None'
@@ -148,37 +164,42 @@ def display_account_information(abi_id, zone, environment):
 
     basic_information = list()
     account_values = {
-        'Account ID': account_response[0]['accountId'],
-        'Name': account_response[0]['name'],
-        'Status': account_response[0]['status'],
-        'Tax ID': account_response[0]['taxId'],
+        'Account ID': account['accountId'],
+        'Name': account['name'],
+        'Status': account['status'],
+        'Tax ID': account['taxId'],
         'Liquor License Number': liquor_license,
         'Payment Methods': payment_methods
     }
     basic_information.append(account_values)
 
     credit_information = list()
-    account_credit_values = {
-        'Credit Balance': account_response[0]['credit']['balance'],
-        'Credit Overdue': account_response[0]['credit']['overdue'],
-        'Credit Available': account_response[0]['credit']['available'],
-        'Credit Total': account_response[0]['credit']['total'],
-        'Credit Consumption': account_response[0]['credit']['consumption']
-    }
+    credit = account['credit']
+    if credit is None:
+        account_credit_values = {
+            'Credit': 'None'
+        }
+    else:
+        account_credit_values = {
+            'Credit Balance': account['credit']['balance'],
+            'Credit Overdue': account['credit']['overdue'],
+            'Credit Available': account['credit']['available'],
+            'Credit Total': account['credit']['total'],
+            'Credit Consumption': account['credit']['consumption']
+        }
     credit_information.append(account_credit_values)
 
-    if account_response != 'false':
-        print(text.default_text_color + '\nAccount - Basic Information')
-        print(tabulate(basic_information, headers='keys', tablefmt='grid'))
+    print(text.default_text_color + '\nAccount - Basic Information')
+    print(tabulate(basic_information, headers='keys', tablefmt='grid'))
 
-        print(text.default_text_color + '\nAccount - Credit Information')
-        print(tabulate(credit_information, headers='keys', tablefmt='grid'))
+    print(text.default_text_color + '\nAccount - Credit Information')
+    print(tabulate(credit_information, headers='keys', tablefmt='grid'))
 
-        print(text.default_text_color + '\nAccount - Delivery Windows Information')
-        print(tabulate(delivery_window_information, headers='keys', tablefmt='grid'))
+    print(text.default_text_color + '\nAccount - Delivery Window Information')
+    print(tabulate(delivery_window_information, headers='keys', tablefmt='grid'))
 
-        print(text.default_text_color + '\nAccount - Minimum Order Information')
-        print(tabulate(minimum_order_information, headers='keys', tablefmt='grid'))
+    print(text.default_text_color + '\nAccount - Minimum Order Information')
+    print(tabulate(minimum_order_information, headers='keys', tablefmt='grid'))
 
-        print(text.default_text_color + '\nAccount - Maximum Order Information')
-        print(tabulate(maximum_order_information, headers='keys', tablefmt='grid'))
+    print(text.default_text_color + '\nAccount - Maximum Order Information')
+    print(tabulate(maximum_order_information, headers='keys', tablefmt='grid'))

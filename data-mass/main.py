@@ -59,7 +59,12 @@ def account_information_menu():
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
 
-    display_account_information(abi_id, zone.upper(), environment.upper())
+    response = display_account_information(abi_id, zone.upper(), environment.upper())
+
+    if response == 'error_ms':
+        print(text.Red + '\n- [Account] Something went wrong, please try again')
+    elif response == 'not_found':
+        print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
 
 
 # Input Orders to account
