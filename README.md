@@ -9,43 +9,9 @@ This repository contains the B2B Data Mass Script, aimed to those who want to cr
 ## Required Tooling
 
 * [Git][GitDoc]
-* [Visual Studio Code][VisualStudioCode]
 * [Python 3.5 or higher][Python]
 
-## Required Libraries
-
-* [Requests][Requests]
-* [JSONPath-ext RW][JSONPath-ext RW]
-* [JSONPath RW][JSONPath RW]
-
 ## Directories structure organization
-
-```sh
-data-mass/
-├── classes
-    └── text.py
-├── data
-    └── create_account_payload.json
-    └── create_beer_recommender_payload.json
-    └── create_beer_recommender_sell_up_payload.json
-├── mass_populator
-├── logs
-    └── debug.log
-├── account.py
-├── beer_recommender.py
-├── inventory.py
-├── combos.py
-├── common.py
-├── credit.py
-├── deals.py
-├── delivery_window.py
-├── main.py
-├── populate.py
-├── products.py
-├── requirements.txt
-├── user_creation_v2.py
-├── user_creation_v3.py
-```
 
 | Directory | Description |
 | ------ | ------ |
@@ -81,17 +47,6 @@ Here we have a list of fields to create an IAM User:
 - Account ID - Ex: 0000248660
 - Tax ID - Ex: 00300489572
 
-## Visual Studio Code plugins
-
-Install the IDE plugins for Visual Studio Code.
-
-> Plugins features and usage reference
-
-| Plugins |
-| ------ |
-| [Python](https://marketplace.visualstudio.com/items?itemName=ms-python.python) |
-| [vscode-icons](https://marketplace.visualstudio.com/items?itemName=vscode-icons-team.vscode-icons) |
-
 ## Running the Script
 
 To launch the application menu, please follow the steps below after opening the Terminal:
@@ -114,19 +69,10 @@ python3 main.py
 
 By running this command, anyone will be able to see the application menu, and then choose any of the available options depending on the usage.
 
-## Bug report, feedback & improvement requests
+## Additional information
 
-This script was originally developed by the Antarctica Team (Checkout Experience), after they identified that the difficulty and the lack of knowledge for creating data mass for the development and testing were a need for every team involved in this project.
-
-The Quality Management Team has been assigned to take care of this initiative, for both new features to come as well as the maintaince of what has been developed.
-
-If you find any issue, please contact one of following people listed below:
-
-| Developers |
-| ------ |
-| [Eduardo Oliveira](eduardo.oliveira@ab-inbev.com) - Checkout Experience |
-| [José Vieira](jose.vieirajunior@ab-inbev.com) - Quality Management | 
-| [Alexandre Rebouças](alexandre.reboucas@ab-inbev.com) - Quality Management | 
+* [Development Standards][Standards]
+* [Release Notes][Release Notes]
 
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
 
@@ -136,3 +82,5 @@ If you find any issue, please contact one of following people listed below:
 [Requests]: https://pypi.org/project/requests/
 [JSONPath-ext RW]: https://pypi.org/project/jsonpath-rw-ext/
 [JSONPath RW]: https://pypi.org/project/jsonpath-rw/
+[Standards]: https://anheuserbuschinbev.sharepoint.com/sites/b2bengineering/architecture/SitePages/Data-Mass-Application.aspx
+[Release Notes]: https://anheuserbuschinbev.sharepoint.com/:b:/s/b2bengineering/EaTlUWEzsp1EqdmKaqBclL4ByT6uvxDV1nF1erEOsD-stQ?e=QQyxU8
