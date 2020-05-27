@@ -217,9 +217,13 @@ def check_simulation_service_mdw_menu():
     abi_id = print_account_id_menu(zone)
 
     # Call check account exists function
-    account = check_account_exists_middleware(abi_id, zone.upper(), environment.upper(), "true")
-    if account == "false":
-        print(text.Red + "\n- [Account] The account " + str(abi_id) + " does not exist")
+    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+
+    if account == 'false':
+        print(text.Red + '\n- [Account] Something went wrong, please try again')
+        printFinishApplicationMenu()
+    elif len(account) == 0:
+        print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
     order_items = list()
