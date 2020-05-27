@@ -1,12 +1,11 @@
 from requests import request
 from uuid import uuid1
 from time import time
-from json import dumps
 import os
 import sys
 import json
 from classes.text import text
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from jsonpath_rw import Index, Fields
 from jsonpath_rw_ext import parse
 import logging
@@ -67,7 +66,7 @@ def get_magento_user_v3_params_dev():
 
 
 # Validate option menu selection
-def validateOptionRequestSelection(option):
+def validate_option_request_selection(selection):
     switcher = {
         '0': 'true',
         '1': 'true',
@@ -79,11 +78,10 @@ def validateOptionRequestSelection(option):
         '7': 'true',
         '8': 'true',
         '9': 'true',
-        '10': 'true',
-        '11': 'true'
+        '10': 'true'
     }
 
-    value = switcher.get(option, 'false')
+    value = switcher.get(selection, 'false')
     return value
 
 
@@ -103,28 +101,31 @@ def validate_option_request_selection_for_structure_3(option):
 # Validate lenght of Account ID
 def validateAccount(account_id, zone):
     size_account_id = len(account_id)
-    
+
     if size_account_id == 0:
         return 'error_0'
     elif (size_account_id > 0) and (is_number(account_id) == 'false'):
         return 'not_number'
     elif (zone == 'DO' or zone == 'BR') and (is_number(account_id) == 'true') and (size_account_id < 10):
         return 'error_10'
-    elif (is_number(account_id) == 'true'):
+    elif is_number(account_id) == 'true':
         return 'true'
 
-# Validate lenght of account name
+
+# Validate length of account name
 def validateName(name):
     if len(name) == 0:
         return "false"
     else:
         return name
 
+
 def validateDealType(deal_type):
     if deal_type == "1" or deal_type == "2" or deal_type == "3" or deal_type == "4":
         return "true"
     else:
         return "false"
+
 
 # Validate zone
 def validateZone(isMiddleware, zone):
@@ -148,19 +149,21 @@ def validateZone(isMiddleware, zone):
         value = switcher.get(zone, "false")
         return value
 
+
 # Validate Country in User creation
 def validateCountryInUserCreation(country):
     switcher = {
         "BR": "true",
         "DO": "true",
         "AR": "true",
-        "CL": "true", 
+        "CL": "true",
         "ZA": "true",
         "CO": "true"
     }
 
     value = switcher.get(country, "false")
     return value
+
 
 def validate_zone_for_order(zone):
     switcher = {
@@ -173,6 +176,7 @@ def validate_zone_for_order(zone):
     value = switcher.get(zone, 'false')
     return value
 
+
 def validate_zone_for_inventory(zone):
     switcher = {
         "ZA": "true",
@@ -182,6 +186,7 @@ def validate_zone_for_inventory(zone):
 
     value = switcher.get(zone, "false")
     return value
+
 
 def validate_zone_for_deals(zone):
     switcher = {
@@ -193,6 +198,7 @@ def validate_zone_for_deals(zone):
 
     value = switcher.get(zone, "false")
     return value
+
 
 def validate_zone_for_ms(zone):
     switcher = {
@@ -206,6 +212,7 @@ def validate_zone_for_ms(zone):
     value = switcher.get(zone, "false")
     return value
 
+
 # Validate account structure
 def validateStructure(option):
     if option == "1" or option == "2" or option == "3" or option == "4":
@@ -213,12 +220,14 @@ def validateStructure(option):
     else:
         return "false"
 
+
 # Validate deals
 def validate_deals(option):
     if option == "1" or option == "2" or option == "3" or option == "4" or option == "5":
         return "true"
     else:
         return "false"
+
 
 # Validate environment
 def validateEnvironment(environment):
@@ -261,7 +270,7 @@ def place_request(request_type, request_url, request_body, request_headers):
     # If the debug.log file does not exist, create it
     if path.exists(file_debug) == False:
         if os.name == 'nt':
-            f = open(file_debug,"w+")
+            f = open(file_debug, "w+")
             f.close()
         else:
             subprocess.call(["touch", file_debug])
@@ -278,12 +287,12 @@ def place_request(request_type, request_url, request_body, request_headers):
     logging.debug("Response code: " + str(response.status_code))
     logging.debug("Response body: " + response.text)
     logging.debug("Request finished!\n")
-    
+
     return response
+
 
 # Return JWT header request
 def get_header_request(header_country, useJwtAuthorization="false", useRootAuthentication="false", useInclusionAuthentication="false", sku_product="false"):
-    
     switcher = {
         "ZA": "UTC",
         "AR": "America/Buenos_Aires",
@@ -313,11 +322,12 @@ def get_header_request(header_country, useJwtAuthorization="false", useRootAuthe
         header['Authorization'] = "Basic cmVsYXk6TVVRd3JENVplSEtB"
     else:
         header['Authorization'] = "Basic cmVsYXk6cmVsYXk="
-    
+
     if sku_product != "false":
         header['skuId'] = sku_product
 
     return header
+
 
 # Return base URL for Middleware
 def get_middleware_base_url(zone, environment, version_request):
@@ -325,7 +335,7 @@ def get_middleware_base_url(zone, environment, version_request):
 
     if zone == "AR" or zone == "CL":
         prefix_zone = "las"
-    
+
     prefix_environment = environment.lower()
 
     if environment == "UAT":
@@ -426,21 +436,15 @@ def get_magento_access_token(environment, country):
 def clearTerminal():
     os.system("clear")
 
+
 # Kill application
 def finishApplication():
     sys.exit()
 
-# Print init menu
-def printAvailableOptions(selectionStructure):
-    if selectionStructure == '1':
-        print(text.default_text_color + str(0), text.Yellow + 'Close application')
-        print(text.default_text_color + str(1), text.Yellow + '(Beta) - Check Simulation Service')
-        selection = input(text.default_text_color + '\nPlease select: ')
-        while validateOptionRequestSelection(selection) == 'false':
-            print(text.Red + '\n- Invalid option\n')
-            selection = input(text.default_text_color + '\nPlease select: ')
 
-    elif selectionStructure == '2':
+# Print init menu
+def print_available_options(selection_structure):
+    if selection_structure == '1':
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
         print(text.default_text_color + str(1), text.Yellow + 'Create account')
         print(text.default_text_color + str(2), text.Yellow + 'Input products')
@@ -451,11 +455,10 @@ def printAvailableOptions(selectionStructure):
         print(text.default_text_color + str(7), text.Yellow + 'Input order to account')
         print(text.default_text_color + str(8), text.Yellow + 'Input deals')
         print(text.default_text_color + str(9), text.Yellow + 'Input combos')
-        print(text.default_text_color + str(10), text.Yellow + '(Beta) - Check Simulation Service')
-        print(text.default_text_color + str(11), text.Yellow + "Create item")
+        print(text.default_text_color + str(10), text.Yellow + "Create item")
 
         selection = input(text.default_text_color + '\nPlease select: ')
-        while validateOptionRequestSelection(selection) == 'false':
+        while validate_option_request_selection(selection) == 'false':
             print(text.Red + '\n- Invalid option\n')
             print(text.default_text_color + str(0), text.Yellow + 'Close application')
             print(text.default_text_color + str(1), text.Yellow + 'Create account')
@@ -467,19 +470,34 @@ def printAvailableOptions(selectionStructure):
             print(text.default_text_color + str(7), text.Yellow + 'Input order to account')
             print(text.default_text_color + str(8), text.Yellow + 'Input deals')
             print(text.default_text_color + str(9), text.Yellow + 'Input combos')
-            print(text.default_text_color + str(10), text.Yellow + '(Beta) - Check Simulation Service')
-            print(text.default_text_color + str(11), text.Yellow + "Create item")
+            print(text.default_text_color + str(10), text.Yellow + "Create item")
 
             selection = input(text.default_text_color + '\nPlease select: ')
 
-    elif selectionStructure == '3':
+    elif selection_structure == '2':
+        print(text.default_text_color + str(0), text.Yellow + 'Close application')
+        print(text.default_text_color + str(1), text.Yellow + '(Beta) - Order simulation via Microservice')
+        print(text.default_text_color + str(2), text.Yellow + '(Beta) - Order simulation via Middleware')
+        print(text.default_text_color + str(3), text.Yellow + 'POC information')
+
+        selection = input(text.default_text_color + '\nPlease select: ')
+        while validate_option_request_selection(selection) == 'false':
+            print(text.Red + '\n- Invalid option\n')
+            print(text.default_text_color + str(0), text.Yellow + 'Close application')
+            print(text.default_text_color + str(1), text.Yellow + '(Beta) - Order simulation via Microservice')
+            print(text.default_text_color + str(2), text.Yellow + '(Beta) - Order simulation via Middleware')
+            print(text.default_text_color + str(3), text.Yellow + 'POC information')
+
+            selection = input(text.default_text_color + '\nPlease select: ')
+
+    elif selection_structure == '3':
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
         print(text.default_text_color + str(1), text.Yellow + 'Create User')
         print(text.default_text_color + str(2), text.Yellow + 'Create User IAM')
         print(text.default_text_color + str(3), text.Yellow + 'Associate Account to user')
 
         selection = input(text.default_text_color + '\nPlease select: ')
-        while validateOptionRequestSelection(selection) == 'false':
+        while validate_option_request_selection(selection) == 'false':
             print(text.Red + '\n- Invalid option\n')
             print(text.default_text_color + str(0), text.Yellow + 'Close application')
             print(text.default_text_color + str(1), text.Yellow + 'Create User')
@@ -492,6 +510,7 @@ def printAvailableOptions(selectionStructure):
 
     return selection
 
+
 # Print welcome menu
 def printWelcomeScript():
     print(text.BackgroundLightYellow + text.Bold + text.Black)
@@ -499,26 +518,28 @@ def printWelcomeScript():
     print("│ 🐝                               │")
     print("│   ANTARCTICA AUTOMATION SCRIPT   │")
     print("│                               🐝 │")
-    print("╰──────────────────────────────────╯") 
+    print("╰──────────────────────────────────╯")
     print(text.BackgroundDefault + text.ResetBold + text.default_text_color + "\n")
 
-# Print structure menu
-def printStructureMenu():
-    print(text.default_text_color + str(1), text.Yellow + "Middleware")
-    print(text.default_text_color + str(2), text.Yellow + "MicroService")
-    print(text.default_text_color + str(3), text.Yellow + "Magento")
 
-    print(text.default_text_color + str(4), text.Yellow + "Close application")
-    structure = input(text.default_text_color + "\nChoose which backend you want to run a service for: ")
-    while validateStructure(structure) == "false":
-        print(text.Red + "\n- Invalid option\n")
-        print(text.default_text_color + str(1), text.Yellow + "Middleware")
-        print(text.default_text_color + str(2), text.Yellow + "MicroService")
-        print(text.default_text_color + str(3), text.Yellow + "Magento")
-        print(text.default_text_color + str(4), text.Yellow + "Close application")
-        structure = input(text.default_text_color + "\nChoose which backend you want to run a service for: ")
+# Print structure menu
+def print_structure_menu():
+    print(text.default_text_color + str(1), text.Yellow + 'Data creation - Microservice')
+    print(text.default_text_color + str(2), text.Yellow + 'Data searching - Microservice/MDW')
+    print(text.default_text_color + str(3), text.Yellow + 'Data creation - Magento')
+    print(text.default_text_color + str(4), text.Yellow + 'Close application')
+
+    structure = input(text.default_text_color + '\nChoose which backend you want to run a service for: ')
+    while validateStructure(structure) == 'false':
+        print(text.Red + '\n- Invalid option\n')
+        print(text.default_text_color + str(1), text.Yellow + 'Data creation - Microservice')
+        print(text.default_text_color + str(2), text.Yellow + 'Data searching - Microservice/MDW')
+        print(text.default_text_color + str(3), text.Yellow + 'Data creation - Magento')
+        print(text.default_text_color + str(4), text.Yellow + 'Close application')
+        structure = input(text.default_text_color + '\nChoose which backend you want to run a service for: ')
 
     return structure
+
 
 # Print deals menu
 def printDealsMenu():
@@ -540,6 +561,7 @@ def printDealsMenu():
 
     return structure
 
+
 # Print combos menu
 def printCombosMenu():
     print(text.default_text_color + "\nWhich type of combo do you want to create?")
@@ -557,12 +579,14 @@ def printCombosMenu():
 
     return structure
 
+
 # Validate combo type structure
 def validateComboStructure(option):
     if option != "1" or option != "2" or option != "3":
         return "true"
     else:
         return "false"
+
 
 # Print Discount type menu
 def print_discount_type_menu():
@@ -579,6 +603,7 @@ def print_discount_type_menu():
     value = switcher.get(discount_type, "true")
 
     return value
+
 
 # Print Discount value menu
 def printDiscountValueMenu(discount_type):
@@ -599,6 +624,7 @@ def printDiscountValueMenu(discount_type):
 
     return discount_value
 
+
 # Print range index menu
 def print_index_range_menu(indexs=4):
     index_list = list()
@@ -610,8 +636,9 @@ def print_index_range_menu(indexs=4):
             range_index = input(text.default_text_color + "\nRange index #" + str(x) + ": ")
 
         index_list.append(range_index)
-    
+
     return index_list
+
 
 # Print discount range menu
 def print_discount_range_menu(indexs=2):
@@ -626,6 +653,7 @@ def print_discount_range_menu(indexs=2):
         index_list.append(discount_value)
 
     return index_list
+
 
 # Print quantity range menu
 def printQuantityRangeMenu():
@@ -644,12 +672,13 @@ def printQuantityRangeMenu():
 
 # Print minimum quantity menu
 def printMinimumQuantityMenu():
-    minimum_quantity = input(text.default_text_color + "Desired quantity needed to buy to get a discount/free good: ")
-    while minimum_quantity == "" or int(minimum_quantity) <= 0:
-            print(text.Red + "\n- Minimum quantity must be greater than 0")
-            minimum_quantity = input(text.default_text_color + "Desired quantity needed to buy to get a discount/free good: ")
+    minimum_quantity = input(text.default_text_color + 'Desired quantity needed to buy to get a discount/free good: ')
+    while minimum_quantity == '' or int(minimum_quantity) <= 0:
+        print(text.Red + '\n- Minimum quantity must be greater than 0')
+        minimum_quantity = input(text.default_text_color + 'Desired quantity needed to buy to get a discount/free good: ')
 
     return minimum_quantity
+
 
 # Print quantity menu
 def printQuantityMenu():
@@ -659,6 +688,7 @@ def printQuantityMenu():
         quantity = input(text.default_text_color + "Desired quantity of free goods to offer: ")
 
     return quantity
+
 
 # Print Account ID menu
 #   validate_string_account -- For microservices, a character number pattern was determined 
@@ -671,7 +701,7 @@ def print_account_id_menu(zone):
     while validateAccount(str(abi_id), zone) != 'true':
         if validateAccount(str(abi_id), zone) == 'error_0':
             print(text.Red + '\n- Account ID should not be empty')
-            abi_id = input(text.default_text_color + 'Account ID: ')       
+            abi_id = input(text.default_text_color + 'Account ID: ')
         if validateAccount(str(abi_id), zone) == 'error_10':
             print(text.Red + '\n- Account ID must contain at least 10 characters')
             abi_id = input(text.default_text_color + 'Account ID: ')
@@ -690,6 +720,7 @@ def printNameMenu():
 
     return name
 
+
 # Print zone menu
 def printZoneMenu(isMiddleware="true"):
     if isMiddleware == "true":
@@ -705,6 +736,7 @@ def printZoneMenu(isMiddleware="true"):
 
     return zone.upper()
 
+
 # Print zone menu for Microservice
 def print_zone_menu_for_ms():
     zone = input(text.default_text_color + "Zone (BR, DO, ZA, CO, MX): ")
@@ -713,6 +745,7 @@ def print_zone_menu_for_ms():
         zone = input(text.default_text_color + "Zone (BR, DO, ZA, CO, MX): ")
 
     return zone.upper()
+
 
 # Print zone menu for orders
 def print_zone_menu_for_order():
@@ -723,6 +756,7 @@ def print_zone_menu_for_order():
 
     return zone.upper()
 
+
 # Print zone menu for inventory
 def print_zone_menu_for_inventory():
     zone = input(text.default_text_color + "Zone (ZA, CO, MX): ")
@@ -731,6 +765,7 @@ def print_zone_menu_for_inventory():
         zone = input(text.default_text_color + "Zone (ZA, CO, MX): ")
 
     return zone.upper()
+
 
 # Print zone menu for deals
 def print_zone_menu_for_deals():
@@ -741,6 +776,7 @@ def print_zone_menu_for_deals():
 
     return zone.upper()
 
+
 # Print country menu for User creation
 def printCountryMenuInUserCreation():
     country = input(text.default_text_color + "Country (BR, DO, AR, CL, ZA, CO): ")
@@ -749,6 +785,7 @@ def printCountryMenuInUserCreation():
         country = input(text.default_text_color + "Country (BR, DO, AR, CL, ZA, CO): ")
 
     return country.upper()
+
 
 # Print environment menu
 def printEnvironmentMenu():
@@ -759,6 +796,7 @@ def printEnvironmentMenu():
 
     return environment.upper()
 
+
 # Print environment menu for User creation
 def printEnvironmentMenuInUserCreation():
     environment = input(text.default_text_color + "Environment (UAT, SIT): ")
@@ -768,48 +806,50 @@ def printEnvironmentMenuInUserCreation():
 
     return environment.upper()
 
+
 # Print payment method menu
 def printPaymentMethodMenu(zone):
-    payment_cash = ["CASH"]
+    payment_cash = ['CASH']
 
-    if zone == "BR":
-        paymentMethod = input(text.default_text_color + "Choose the payment method (1. CASH / 2. BANK SLIP / 3. CASH, BANK SLIP): ")
-        while paymentMethod == "" or (int(paymentMethod) != 1 and int(paymentMethod) != 2 and int(paymentMethod) != 3):
-            print(text.Red + "\n- Invalid option\n")
-            paymentMethod = input(text.default_text_color + "Choose the payment method (1. CASH / 2. BANK SLIP / 3. CASH, BANK SLIP): ")
-        
-        payment_credit = ["BANK_SLIP"]
-        payment_list = ["CASH", "BANK_SLIP"]
+    if zone == 'BR':
+        paymentMethod = input(text.default_text_color + 'Choose the payment method (1. CASH / 2. BANK SLIP / 3. CASH, BANK SLIP): ')
+        while paymentMethod == '' or (int(paymentMethod) != 1 and int(paymentMethod) != 2 and int(paymentMethod) != 3):
+            print(text.Red + '\n- Invalid option\n')
+            paymentMethod = input(text.default_text_color + 'Choose the payment method (1. CASH / 2. BANK SLIP / 3. CASH, BANK SLIP): ')
+
+        payment_credit = ['BANK_SLIP']
+        payment_list = ['CASH', 'BANK_SLIP']
 
         switcher = {
-            "1": payment_cash,
-            "2": payment_credit,
-            "3": payment_list
+            '1': payment_cash,
+            '2': payment_credit,
+            '3': payment_list
         }
 
-        value = switcher.get(paymentMethod, "false")
+        value = switcher.get(paymentMethod, 'false')
         return value
 
-    elif zone == "DO":
-        paymentMethod = input(text.default_text_color + "Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ")
-        while paymentMethod == "" or (int(paymentMethod) != 1 and int(paymentMethod) != 2 and int(paymentMethod) != 3):
-            print(text.Red + "\n- Invalid option\n")
-            paymentMethod = input(text.default_text_color + "Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ")
+    elif zone == 'DO':
+        paymentMethod = input(text.default_text_color + 'Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ')
+        while paymentMethod == '' or (int(paymentMethod) != 1 and int(paymentMethod) != 2 and int(paymentMethod) != 3):
+            print(text.Red + '\n- Invalid option\n')
+            paymentMethod = input(text.default_text_color + 'Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ')
 
-        payment_credit = ["CREDIT"]
-        payment_list = ["CASH", "CREDIT"]
-        
+        payment_credit = ['CREDIT']
+        payment_list = ['CASH', 'CREDIT']
+
         switcher = {
-            "1": payment_cash,
-            "2": payment_credit,
-            "3": payment_list
+            '1': payment_cash,
+            '2': payment_credit,
+            '3': payment_list
         }
 
-        value = switcher.get(paymentMethod, "false")
+        value = switcher.get(paymentMethod, 'false')
         return value
 
     else:
         return payment_cash
+
 
 # Print range delivery date menu
 def printDeliveryDateMenu():
@@ -823,29 +863,31 @@ def printDeliveryDateMenu():
     while validateDate(endDeliveryDate) == "false":
         print(text.Red + "\n- Invalid date\n")
         endDeliveryDate = input(text.default_text_color + "Enter the end date to apply the discount(YYYY-mm-dd): ")
-    
-    listDeliveryWindowDates.append({'startDate':startDeliveryDate, 'endDate':endDeliveryDate})
+
+    listDeliveryWindowDates.append({'startDate': startDeliveryDate, 'endDate': endDeliveryDate})
 
     return listDeliveryWindowDates
 
+
 def printMinimumOrderMenu():
-    option_type = input(text.default_text_color + "Minimum order type (1. Poduct quantity / 2. Order volume / 3. Order total): ")
-    while option_type == "" or (int(option_type) != 1 and int(option_type) != 2 and int(option_type) != 3): 
-        print(text.Red + "\n- Invalid option\n")
-        option_type = input(text.default_text_color + "Minimum order type (1. Poduct quantity / 2. Order volume / 3. Order total): ")
+    option_type = input(text.default_text_color + 'Minimum order type (1. Poduct quantity / 2. Order volume / 3. Order total): ')
+    while option_type == '' or (int(option_type) != 1 and int(option_type) != 2 and int(option_type) != 3):
+        print(text.Red + '\n- Invalid option\n')
+        option_type = input(
+            text.default_text_color + 'Minimum order type (1. Poduct quantity / 2. Order volume / 3. Order total): ')
 
     switcher = {
-        "1": "PRODUCT_QUANTITY",
-        "2": "ORDER_VOLUME",
-        "3": "ORDER_TOTAL"
+        '1': 'PRODUCT_QUANTITY',
+        '2': 'ORDER_VOLUME',
+        '3': 'ORDER_TOTAL'
     }
 
-    minimum_order_type = switcher.get(option_type, "false")
+    minimum_order_type = switcher.get(option_type, 'false')
 
-    option_value = input(text.default_text_color + "Minimum order value: ")
-    while option_value == "" or int(option_value) <= 0:
-        print(text.Red + "\n- SKU quantity must be greater than 0\n")
-        option_value = input(text.default_text_color + "Minimum order value: ")
+    option_value = input(text.default_text_color + 'Minimum order value: ')
+    while option_value == '' or int(option_value) <= 0:
+        print(text.Red + '\n- SKU quantity must be greater than 0\n')
+        option_value = input(text.default_text_color + 'Minimum order value: ')
 
     minimum_order_values = list()
     minimum_order_values.append(minimum_order_type)
@@ -883,23 +925,24 @@ def print_input_phone():
 def validate_state(zone):
     if (zone == "BR"):
         state = "RS"
-    
+
     elif (zone == "DO"):
         state = "STO DGO"
 
     elif (zone == "ZA"):
         state = "Free State"
-    
+
     elif (zone == "CO"):
         state = "SAN ALBERTO"
-    
+
     elif (zone == "MX"):
         state = "Cidade do México"
 
     else:
         state = "CAPITAL FEDERAL"
-            
+
     return state
+
 
 # Validate the option to finish application
 def validate_yes_no_option(option):
@@ -908,12 +951,14 @@ def validate_yes_no_option(option):
     else:
         return "false"
 
+
 # Validate date
 def validateDate(date):
     try:
         datetime.strptime(date, "%Y-%m-%d")
     except ValueError:
         return "false"
+
 
 def get_sku_price(abi_id, combo_item, zone, environment):
     # Get base URL
@@ -937,6 +982,7 @@ def get_sku_price(abi_id, combo_item, zone, environment):
         print(text.Red + "\n- [Pricing Engine] Something went wrong when searching for prices")
         finishApplication()
 
+
 def update_value_to_json(json_object, json_path, new_value):
     """Update value to JSON using JSONPath
     Arguments:
@@ -954,6 +1000,7 @@ def update_value_to_json(json_object, json_path, new_value):
             match.context.value[match.path.fields[0]] = new_value
     return json_object
 
+
 def convert_json_to_string(json_object):
     """Convert JSON object to string
     Arguments:
@@ -962,6 +1009,7 @@ def convert_json_to_string(json_object):
     """
     return json.dumps(json_object)
 
+
 def create_list(*items):
     """Returns a list containing given items.
     The returned list can be assigned both to ``${scalar}`` and ``@{list}``
@@ -969,8 +1017,10 @@ def create_list(*items):
     """
     return list(items)
 
-def is_blank (str):
-    return not (str and str.strip())    
+
+def is_blank(str):
+    return not (str and str.strip())
+
 
 def print_input_tax_id():
     """Validate tax_id
@@ -983,6 +1033,7 @@ def print_input_tax_id():
         tax_id = input(text.default_text_color + "Tax ID: ")
     return tax_id
 
+
 def print_input_username():
     """Validate username
     Requirements:
@@ -994,11 +1045,13 @@ def print_input_username():
         username = input(text.default_text_color + "Username: ")
     return username
 
+
 def validate_country_menu_in_user_create_iam(country):
     switcher = {
         "DO": "true"
     }
     return switcher.get(country, "false")
+
 
 def validate_environment_menu_in_user_create_iam(environment):
     switcher = {
@@ -1006,6 +1059,7 @@ def validate_environment_menu_in_user_create_iam(environment):
         "UAT": "true"
     }
     return switcher.get(environment, "false")
+
 
 def print_country_menu_in_user_create_iam():
     """Print Country Menu to Create User IAM
@@ -1018,6 +1072,7 @@ def print_country_menu_in_user_create_iam():
         country = input(text.default_text_color + "Country (DO): ")
     return country.upper()
 
+
 def print_environment_menu_in_user_create_iam():
     """Print Environment Menu to Create User IAM
         Requirements:
@@ -1029,6 +1084,7 @@ def print_environment_menu_in_user_create_iam():
         print(text.Red + '\n- Invalid option')
         environment = input(text.default_text_color + "Environment (DEV, UAT): ")
     return environment.upper()
+
 
 # Print zone simulation menu
 def print_zone_simulation_menu(is_middleware="true"):
@@ -1044,6 +1100,7 @@ def print_zone_simulation_menu(is_middleware="true"):
             zone = input(text.default_text_color + "Zone (ZA, DO, BR, CO): ")
 
     return zone.upper()
+
 
 # Validate zone simulation
 def validate_zone_simulation_service(is_middleware, zone):
@@ -1065,6 +1122,7 @@ def validate_zone_simulation_service(is_middleware, zone):
         value = switcher.get(zone, "false")
         return value
 
+
 # Validate if value is a number
 def is_number(s):
     try:
@@ -1072,42 +1130,44 @@ def is_number(s):
         return "true"
     except ValueError:
         pass
- 
+
     try:
         numeric(s)
         return "true"
     except (TypeError, ValueError):
         pass
- 
+
     return "false"
+
 
 # Menu for payment method simulation
 def print_payment_method_simulation_menu(zone):
-    if zone == "BR":
-        payment_choice = input(text.default_text_color + "Select payment method for simulation: 1 - CASH, 2 - BANK_SLIP ")
-        while payment_choice != "1" and payment_choice != "2":
-            print(text.Red + "\n- Invalid option\n")
-            payment_choice = input(text.default_text_color + "Select payment method for simulation: 1 - CASH, 2 - BANK_SLIP ")
+    if zone == 'BR':
+        payment_choice = input(text.default_text_color + 'Select payment method for simulation: 1 - CASH, 2 - BANK_SLIP ')
+        while payment_choice != '1' and payment_choice != '2':
+            print(text.Red + '\n- Invalid option\n')
+            payment_choice = input(text.default_text_color + 'Select payment method for simulation: 1 - CASH, 2 - BANK_SLIP ')
 
-        if payment_choice == "1":
-            payment_method = "CASH"
+        if payment_choice == '1':
+            payment_method = 'CASH'
         else:
-            payment_method = "BANK_SLIP"
+            payment_method = 'BANK_SLIP'
 
-    elif zone == "DO" and zone == "CO":
-        payment_choice = input(text.default_text_color + "Select payment method for simulation: 1 - CASH, 2 - CREDIT ")
-        while payment_choice != "1" and payment_choice != "2":
-            print(text.Red + "\n- Invalid option\n")
-            payment_choice = input(text.default_text_color + "Select payment method for simulation: 1 - CASH, 2 - CREDIT")
+    elif zone == 'DO' and zone == 'CO':
+        payment_choice = input(text.default_text_color + 'Select payment method for simulation: 1 - CASH, 2 - CREDIT ')
+        while payment_choice != '1' and payment_choice != '2':
+            print(text.Red + '\n- Invalid option\n')
+            payment_choice = input(text.default_text_color + 'Select payment method for simulation: 1 - CASH, 2 - CREDIT ')
 
-        if payment_choice == "1":
-            payment_method = "CASH"
+        if payment_choice == '1':
+            payment_method = 'CASH'
         else:
-            payment_method = "CREDIT"
+            payment_method = 'CREDIT'
     else:
-        payment_method = "CASH"
-    
+        payment_method = 'CASH'
+
     return payment_method
+
 
 # Return first and last day in the year
 def return_first_and_last_date_year_payload():
@@ -1117,6 +1177,7 @@ def return_first_and_last_date_year_payload():
     last_date = last_date.strftime("%Y-%m-%d")
     return {'startDate': first_date, 'endDate': last_date}
 
+
 # Return payment term value for BANK_SLIP payment method
 def return_payment_term_bank_slip():
     payment_term = []
@@ -1124,20 +1185,21 @@ def return_payment_term_bank_slip():
 
     temp_index = 0
     while temp_index < 5:
-        temp_index = temp_index+1
+        temp_index = temp_index + 1
         list_term_periods = {
-            'days':temp_index
+            'days': temp_index
         }
 
         term_periods.append(list_term_periods)
-    
+
     list_payment_term = {
-        "type":"BANK_SLIP",
-        "termPeriods":term_periods
+        'type': 'BANK_SLIP',
+        'termPeriods': term_periods
     }
 
     payment_term.append(list_payment_term)
     return payment_term
+
 
 def set_to_dictionary(dictionary, *key_value_pairs, **items):
     """Adds the given ``key_value_pairs`` and ``items`` to the ``dictionary``.
@@ -1151,11 +1213,11 @@ def set_to_dictionary(dictionary, *key_value_pairs, **items):
     a limitation that keys must be strings.
     If given keys already exist in the dictionary, their values are updated.
     """
-    
+
     if len(key_value_pairs) % 2 != 0:
-        raise ValueError("Adding data to a dictionary failed. There "
-                            "should be even number of key-value-pairs.")
+        raise ValueError('Adding data to a dictionary failed. There '
+                         'should be even number of key-value-pairs.')
     for i in range(0, len(key_value_pairs), 2):
-        dictionary[key_value_pairs[i]] = key_value_pairs[i+1]
+        dictionary[key_value_pairs[i]] = key_value_pairs[i + 1]
     dictionary.update(items)
     return dictionary
