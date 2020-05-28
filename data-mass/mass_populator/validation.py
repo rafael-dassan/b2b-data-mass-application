@@ -29,7 +29,8 @@ def valid_parameters(parameters):
 def valid_execution_type(execution_type):
     switcher = {
         "all": True,
-        "common": True
+        "common": True,
+        "test": True
     }
 
     return switcher.get(execution_type, False)
