@@ -1,8 +1,7 @@
-import sys
-from json import dumps
-from uuid import uuid1
-from random import randint, uniform
+from json import dumps, loads
+from random import randint
 from common import *
+from tabulate import tabulate
 
 def input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone, environment):
     account_group_id = list()
@@ -914,3 +913,69 @@ def input_stepped_discount_with_qtd_to_cart_calculation_v2(deal_id, accounts, zo
         return "success"
     else:
         return response.status_code
+
+
+def request_get_deals(abi_id, zone, environment):
+    # Get base URL
+    request_url = get_microservice_base_url(environment) + '/promo-fusion-service/' + abi_id
+
+    # Define headers
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+
+    # Send request
+    response = place_request('GET', request_url, '', request_headers)
+
+    json_data = loads(response.text)
+
+    if response.status_code == 200 and len(json_data) != 0:
+        return json_data
+    else:
+        print(text.Red + '\n- [Promo Fusion Service] Failure to retrieve deals. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
+        finishApplication()
+
+
+def display_deals_information(abi_id, zone, environment):
+    """Display item information
+    Arguments:
+        - abi_id: account_id
+        - zone: e.g, BR,ZA,DO
+        - environment: e.g, UAT,SIT
+    Print a table containing the available deals information
+    """
+    deals = request_get_deals(abi_id, zone, environment)
+
+    combos = deals['combos']
+    promotions = deals['promotions']
+
+    combo_information = list()
+    if len(combos) == 0:
+        print(text.Yellow + '\n- There is no combo available for ' + abi_id)
+    else:
+        for i in range(len(combos)):
+            combo_values = {
+                'ID': combos[i]['id'],
+                'Type': combos[i]['type'],
+                'Title': combos[i]['title'],
+                'Original Price': combos[i]['originalPrice'],
+                'Price': combos[i]['price'],
+                'Stock Available': combos[i]['availableToday']
+            }
+            combo_information.append(combo_values)
+        print(text.default_text_color + '\nCombo Information')
+        print(tabulate(combo_information, headers='keys', tablefmt='grid'))
+
+    promotion_information = list()
+    if len(promotions) == 0:
+        print(text.Yellow + '\n- There is no promotion available for ' + abi_id)
+    else:
+        for i in range(len(promotions)):
+            promotion_values = {
+                'SKU': promotions[i]['sku'],
+                'Type': promotions[i]['type'],
+                'Title': promotions[i]['title'],
+                'Price': promotions[i]['price']
+            }
+            promotion_information.append(promotion_values)
+        print(text.default_text_color + '\nPromotion Information')
+        print(tabulate(promotion_information, headers='keys', tablefmt='grid'))
