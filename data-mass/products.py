@@ -2,7 +2,8 @@ from random import randint, uniform
 from json import loads, dumps
 import concurrent.futures
 from common import *
-import sys
+from tabulate import tabulate
+
 
 # Return an array of price IDs for price inclusion
 def generate_random_price_ids(qtd):
@@ -17,6 +18,7 @@ def generate_random_price_ids(qtd):
 
     return list(array_random_ids)
 
+
 # Get body request for product's price
 def get_body_price_middleware_request(body_id, price_list_id, price_values):
     price = price_values.get('basePrice') + price_values.get('tax') + price_values.get('deposit')
@@ -26,7 +28,7 @@ def get_body_price_middleware_request(body_id, price_list_id, price_values):
         'price': round(price, 2),
         'priceListId': price_list_id
     }
-    
+
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
     file_path = os.path.join(path, 'data/price_inclusion_middleware.json')
@@ -43,9 +45,9 @@ def get_body_price_middleware_request(body_id, price_list_id, price_values):
 
     return put_price_body
 
+
 # Post request to get products from Middleware
 def request_get_products_middleware(zone, environment):
-
     # Get header request
     headers = get_header_request(zone, "false", "true")
     
@@ -65,9 +67,11 @@ def request_get_products_middleware(zone, environment):
         print(text.Red + "\n- [Product] Something went wrong, please try again")
         finishApplication()
 
+
 # Slices a list of products, returning the first X elements
 def slice_array_products(quantity, products):
     return products[0: quantity]
+
 
 # Does the necessary requests to add a product in a middleware-based zone
 def product_post_requests_middleware(product_data, abi_id, zone, environment):
@@ -78,18 +82,22 @@ def product_post_requests_middleware(product_data, abi_id, zone, environment):
     price_values = generate_price_values_v1()
 
     # Request to create price on microservice
-    post_price_ms_result = request_post_price_microservice(abi_id, zone, environment, product['sku'], index, price_values)
+    post_price_ms_result = request_post_price_microservice(abi_id, zone, environment, product['sku'], index,
+                                                           price_values)
 
     # Request to create price on middleware
-    post_price_middleware_result = request_post_price_middleware(zone, environment, product['sku'], index, price_list_id, price_values)
+    post_price_middleware_result = request_post_price_middleware(zone, environment, product['sku'], index,
+                                                                 price_list_id, price_values)
 
     # Request to include a product into a specific delivery center
-    product_inclusion_result = product_inclusion_middleware(zone, environment, product['sku'], index, delivery_center_id)
+    product_inclusion_result = product_inclusion_middleware(zone, environment, product['sku'], index,
+                                                            delivery_center_id)
 
     if post_price_ms_result == 'false' or post_price_middleware_result == 'false' or product_inclusion_result == 'false':
         return 'false'
 
     return 'true'
+
 
 # Post requests product price and product inclusion in account
 def request_post_products_account_middleware(abi_id, zone, environment, products_data):
@@ -105,15 +113,17 @@ def request_post_products_account_middleware(abi_id, zone, environment, products
 
     now = datetime.now()
     lapsed = (now - last).seconds
-    print(text.default_text_color + '{}\n- Products added: {} / failed: {}. Completed in {} seconds.'.format(text.Green,
-                                                                                   results.count('true'),
-                                                                                   results.count('false'), lapsed))
+    print(text.default_text_color + '{}\n- Products added: {} / failed: {}. Completed in {} seconds.'
+          .format(text.Green, results.count('true'), results.count('false'), lapsed))
+
     return 'success'
+
 
 def format_seconds_to_mmss(seconds):
     minutes = seconds // 60
     seconds %= 60
     return '%02i:%02i' % (minutes, seconds)
+
 
 # Post request product price microservice
 def request_post_price_microservice(abi_id, zone, environment, sku_product, product_price_id, price_values):
@@ -136,10 +146,12 @@ def request_post_price_microservice(abi_id, zone, environment, sku_product, prod
     # Place request
     response = place_request("PUT", request_url, request_body, request_headers)
     if response.status_code != 202:
-        print(text.Red + '\n- [Product] Something went wrong in define product price SKU ' + str(sku_product) + ' on microservice price engine')
+        print(text.Red + '\n- [Product] Something went wrong in define product price SKU '
+              + str(sku_product) + ' on microservice price engine')
         return 'false'
-    
+
     return 'true'
+
 
 # Get body product price microservice request
 def get_body_price_microservice_request(abi_id, sku_product, product_price_id, price_values):
@@ -169,6 +181,7 @@ def get_body_price_microservice_request(abi_id, sku_product, product_price_id, p
 
     return put_price_microservice_body
 
+
 # Generate random price values
 def generate_price_values_v1():
     price_values = {
@@ -179,9 +192,9 @@ def generate_price_values_v1():
 
     return price_values
 
+
 # Post request product price middleware
 def request_post_price_middleware(zone, environment, sku_product, product_price_id, price_list_id, price_values):
-    
     # Get header request
     request_headers = get_header_request(zone, 'false', 'true')
 
@@ -194,10 +207,12 @@ def request_post_price_middleware(zone, environment, sku_product, product_price_
     # Place request
     response = place_request('POST', request_url, request_body, request_headers)
     if response.status_code != 202:
-        print(text.Red + '\n- [Price Inclusion] Failure to define a product price. Response Status: ' + str(response.status_code) + '. Response message ' + response.text)
+        print(text.Red + '\n- [Price Inclusion] Failure to define a product price. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
         return 'false'
-    
+
     return 'true'
+
 
 # Post request product inclusion middleware
 def product_inclusion_middleware(zone, environment, sku_product, inclusion_id, delivery_center_id):
@@ -222,17 +237,19 @@ def product_inclusion_middleware(zone, environment, sku_product, inclusion_id, d
 
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
-    
+
     # Create body
     request_body = convert_json_to_string(json_object)
 
     response = place_request('POST', request_url, request_body, request_headers)
 
     if response.status_code != 202:
-        print(text.Red + '\n- [Product Inclusion] Product inclusion has failed. Response Status: ' + str(response.status_code) + '. Response message ' + response.text)
+        print(text.Red + '\n- [Product Inclusion] Product inclusion has failed. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
         return 'false'
-    
+
     return 'true'
+
 
 # Add products in middleware account
 def add_products_to_account_middleware(abi_id, zone, environment):
@@ -241,10 +258,12 @@ def add_products_to_account_middleware(abi_id, zone, environment):
 
     while True:
         try:
-            qtd = int(input(text.default_text_color + 'Number of products you want to add (Maximum: ' + str(len(all_products_middleware)) + '): '))
+            qtd = int(input(text.default_text_color + 'Number of products you want to add (Maximum: '
+                            + str(len(all_products_middleware)) + '): '))
             while qtd <= 0:
                 print(text.Red + '\n- The product quantity must be more than 0\n')
-                qtd = int(input(text.default_text_color + 'Number of products you want to add (Maximum: ' + str(len(all_products_middleware)) + '): '))
+                qtd = int(input(text.default_text_color + 'Number of products you want to add (Maximum: '
+                                + str(len(all_products_middleware)) + '): '))
             break
         except ValueError:
             print(text.Red + '\n- The product quantity must be Numeric\n')
@@ -257,6 +276,7 @@ def add_products_to_account_middleware(abi_id, zone, environment):
 
     return result
 
+
 # Add products in microservice account
 def add_products_to_account_microservice(abi_id, zone, environment, delivery_center_id):
     # Request get products microservice
@@ -264,10 +284,12 @@ def add_products_to_account_microservice(abi_id, zone, environment, delivery_cen
 
     while True:
         try:
-            qtd = int(input(text.default_text_color + 'Number of products you want to add (Maximum: ' + str(len(all_products_microservice)) + '): '))
+            qtd = int(input(text.default_text_color + 'Number of products you want to add (Maximum: '
+                            + str(len(all_products_microservice)) + '): '))
             while qtd <= 0:
                 print(text.Red + '\n- The product quantity must be more than 0\n')
-                qtd = int(input(text.default_text_color + 'Number of products you want to add (Maximum: ' + str(len(all_products_microservice)) + '): '))
+                qtd = int(input(text.default_text_color + 'Number of products you want to add (Maximum: '
+                                + str(len(all_products_microservice)) + '): '))
             break
         except ValueError:
             print(text.Red + '\n- The product quantity must be Numeric\n')
@@ -280,14 +302,15 @@ def add_products_to_account_microservice(abi_id, zone, environment, delivery_cen
 
     return result
 
+
 # Post requests get products from microservice
 def request_get_products_microservice(zone, environment, page_size=100000):
-
     # Get header request
     request_headers = get_header_request(zone, "true", "false", "false", "false")
 
     # Get url base
-    request_url = get_microservice_base_url(environment) + "/items/?includeDeleted=false&includeDisabled=false&pageSize=" + str(page_size)
+    request_url = get_microservice_base_url(
+        environment) + "/items/?includeDeleted=false&includeDisabled=false&pageSize=" + str(page_size)
 
     # Get body request
     request_body = ""
@@ -301,25 +324,29 @@ def request_get_products_microservice(zone, environment, page_size=100000):
         print(text.Red + '\n- [Product] Something went wrong in search products on microservice')
         finishApplication()
 
+
 # Does the necessary requests to add a product in a microservice-based zone
 def product_post_requests_microservice(product_data, abi_id, zone, environment, delivery_center_id):
     index, product = product_data
     price_values = generate_price_values_v1()
 
-    product_inclusion_ms_result = request_post_price_inclusion_microservice(zone, environment, product['sku'], index, delivery_center_id)
+    product_inclusion_ms_result = request_post_price_inclusion_microservice(zone, environment, product['sku'], index,
+                                                                            delivery_center_id)
     if product_inclusion_ms_result == 'false':
         return 'false'
-    
+
     if zone == 'ZA':
         product_inclusion_mdw_result = product_post_requests_middleware(product_data, abi_id, zone, environment)
         if product_inclusion_mdw_result == 'false':
             return 'false'
     else:
-        price_inclusion_result = request_post_price_microservice(abi_id, zone, environment, product['sku'], index, price_values)
+        price_inclusion_result = request_post_price_microservice(abi_id, zone, environment, product['sku'], index,
+                                                                 price_values)
         if price_inclusion_result == 'false':
             return 'false'
 
     return 'true'
+
 
 # Post requests product price and product inclusion in account
 def request_post_products_account_microservice(abi_id, zone, environment, delivery_center_id, products_data):
@@ -335,14 +362,14 @@ def request_post_products_account_microservice(abi_id, zone, environment, delive
 
     now = datetime.now()
     lapsed = (now - last).seconds
-    print(text.default_text_color + '{}\n- Products added: {} / failed: {}. Completed in {} seconds.'.format(text.Green,
-                                                                                   results.count('true'),
-                                                                                   results.count('false'), lapsed))
+    print(text.default_text_color + '{}\n- Products added: {} / failed: {}. Completed in {} seconds.'
+          .format(text.Green, results.count('true'), results.count('false'), lapsed))
+
     return 'success'
+
 
 # Post request product inclusion microservice
 def request_post_price_inclusion_microservice(zone, environment, sku_product, product_price_id, delivery_center_id):
-
     # Get header request
     request_headers = get_header_request(zone, 'false', 'false', 'true', sku_product)
 
@@ -356,10 +383,12 @@ def request_post_price_inclusion_microservice(zone, environment, sku_product, pr
     response = place_request("POST", request_url, request_body, request_headers)
 
     if response.status_code != 202:
-        print(text.Red + '\n- [Product] Something went wrong in post product SKU ' + str(sku_product) + ' on account product-assortment-relay')
+        print(text.Red + '\n- [Product] Something went wrong in post product SKU '
+              + str(sku_product) + ' on account product-assortment-relay')
         return 'false'
 
     return 'true'
+
 
 # Create body for product inclusion in account
 def get_body_price_inclusion_microservice_request(delivery_center_id):
@@ -368,6 +397,7 @@ def get_body_price_inclusion_microservice_request(delivery_center_id):
     })
 
     return body_price_inclusion
+
 
 # Get offers account in microservice
 def request_get_offers_microservice(abi_id, zone, environment, delivery_center_id, return_product_data = False):
@@ -379,24 +409,27 @@ def request_get_offers_microservice(abi_id, zone, environment, delivery_center_i
     headers = get_header_request(zone, 'true')
 
     # Get base URL
-    request_url = get_microservice_base_url(environment) + '/catalog-service/catalog?accountId=' + abi_id + '&projection=SMALL'
+    request_url = get_microservice_base_url(
+        environment) + '/catalog-service/catalog?accountId=' + abi_id + '&projection=SMALL'
 
     # Place request
     response = place_request('GET', request_url, '', headers)
-    
+
     json_data = loads(response.text)
     if response.status_code == 200 and len(json_data) != 0:
-        if return_product_data == True:
+        if return_product_data:
             return json_data
         else:
             return True
     elif response.status_code == 200 and len(json_data) == 0:
         return json_data
     else:
-        print(text.Red + '\n- [Product Offers] Failure to get product offers. Response Status: ' + str(response.status_code) + '. Response message ' + response.text)
+        print(text.Red + '\n- [Product Offers] Failure to get product offers. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
+
 
 # Get offers by account on middleware
-def request_get_offers_middleware(abi_id, zone, environment, return_product_data = False):
+def request_get_offers_middleware(abi_id, zone, environment, return_product_data=False):
     # Get base URL
     request_url = get_middleware_base_url(zone, environment, 'v4') + '/products/offers?accountId=' + abi_id
 
@@ -405,10 +438,10 @@ def request_get_offers_middleware(abi_id, zone, environment, return_product_data
 
     # Place request
     response = place_request('GET', request_url, '', headers)
-    
+
     json_data = loads(response.text)
     if response.status_code == 200 and len(json_data) != 0:
-        if return_product_data == True:
+        if return_product_data:
             sku_list = list()
             for dict in json_data:
                 sku = dict['sku']
@@ -419,11 +452,13 @@ def request_get_offers_middleware(abi_id, zone, environment, return_product_data
     elif response.status_code == 200 and len(json_data) == 0:
         return json_data
     else:
-        print(text.Red + '\n- [Product Offers Middleware] Failure to get product offers. Response Status: ' + str(response.status_code) + '. Response message ' + response.text)
+        print(text.Red + '\n- [Product Offers Middleware] Failure to get product offers. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
 
-def check_item_enabled(sku, zone, environment, return_item_data = False):
+
+def check_item_enabled(sku, zone, environment, return_item_data=False):
     # Get base URL
-    request_url = get_microservice_base_url(environment) + '/items/' + sku + '?includeDisabled=false'
+    request_url = get_microservice_base_url(environment, 'false') + '/items/' + sku + '?includeDisabled=false'
 
     # Get header request
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
@@ -433,7 +468,7 @@ def check_item_enabled(sku, zone, environment, return_item_data = False):
 
     json_data = loads(response.text)
     if response.status_code == 200 and len(json_data) != 0:
-        if return_item_data == True:
+        if return_item_data:
             return json_data['sku']
         else:
             return True
@@ -442,6 +477,7 @@ def check_item_enabled(sku, zone, environment, return_item_data = False):
     else:
         print(text.Red + '\n- [Items] Something went wrong when searching for items')
         finishApplication()
+
 
 def request_get_response_products_by_account_microservice(abi_id, zone, environment):
     """Get response products by query parameters
@@ -455,10 +491,12 @@ def request_get_response_products_by_account_microservice(abi_id, zone, environm
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
 
     # Define URL Middleware
-    request_url = get_microservice_base_url(environment) + '/catalog-service/catalog?accountId=' + abi_id + '&projection=SMALL'
+    request_url = get_microservice_base_url(
+        environment) + '/catalog-service/catalog?accountId=' + abi_id + '&projection=LIST'
 
     # Send request
     return place_request('GET', request_url, '', request_headers)
+
 
 def request_get_products_by_account_microservice(abi_id, zone, environment):
     """Get products by query parameters
@@ -474,23 +512,23 @@ def request_get_products_by_account_microservice(abi_id, zone, environment):
     else:
         return 'false'
 
+
 # Get body product price microservice request v2
 def get_body_price_microservice_request_v2(abi_id, sku_product, product_price_id):
-
     base_price = round(uniform(1, 2000), 2)
-    promotion_price = base_price - ((10/100) * base_price)
+    promotion_price = base_price - ((10 / 100) * base_price)
     minimum_price = 0
-    deposit = ((2/100) * base_price)
-    charge_amount = ((4/100) * base_price)
-    charge_base = ((2/100) * base_price)
+    deposit = ((2 / 100) * base_price)
+    charge_amount = ((4 / 100) * base_price)
+    charge_base = ((2 / 100) * base_price)
 
     if minimum_price < 0.0:
         minimum_price = 0.0
 
     if promotion_price < 0.0:
         promotion_price = 0.0
-    
-    #Inputs for default payload of price microservice
+
+    # Inputs for default payload of price microservice
     dict_values = {
         "accounts": [abi_id],
         "prices[0].sku": sku_product,
@@ -523,25 +561,28 @@ def get_body_price_microservice_request_v2(abi_id, sku_product, product_price_id
 
     return put_price_microservice_body
 
+
 # Get offers account in microservice
 def request_get_account_product_assortment(account_id, zone, environment, delivery_center_id):
     # Get header request
     headers = get_header_request(zone, 'true')
 
     # Get url base
-    request_url = get_microservice_base_url(environment) + "/product-assortment/?accountId=accountId" + account_id + '&deliveryCenterId=' + delivery_center_id
+    request_url = get_microservice_base_url(
+        environment) + "/product-assortment/?accountId=accountId" + account_id + '&deliveryCenterId=' + delivery_center_id
 
     # Get body request
     request_body = ""
 
     # Place request
     response = place_request("GET", request_url, request_body, headers)
-    
+
     if response.status_code == 200 and response.text != "":
         json_data = loads(response.text)
         return json_data['skus']
     else:
         print(text.Red + '\n- [Products] Something went wrong when searching for products')
+
 
 def create_item(zone, environment, item_data):
     """Create or update an item
@@ -554,7 +595,7 @@ def create_item(zone, environment, item_data):
     request_headers = get_header_request(zone, 'false', 'true', 'false')
 
     # Get base URL
-    request_url = get_microservice_base_url(environment) + '/item-relay/items'
+    request_url = get_microservice_base_url(environment, 'false') + '/item-relay/items'
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
@@ -579,9 +620,11 @@ def create_item(zone, environment, item_data):
         update_item_response = set_item_enabled(zone, environment, item_data)
         get_item_response = check_item_enabled(item_data.get('sku'), zone, environment, False)
         if update_item_response == True and get_item_response == True:
-            return(item_data)
+            return item_data
     else:
-        print(text.Red + '\n- [Item Service] Failure to create an item. Response Status: ' + str(response.status_code) + '. Response message ' + response.text)
+        print(text.Red + '\n- [Item Service] Failure to create an item. Response Status: ' + str(
+            response.status_code) + '. Response message ' + response.text)
+
 
 def get_item_input_data():
     """Get input data from the user
@@ -603,8 +646,9 @@ def get_item_input_data():
             break
         except ValueError:
             print(text.Red + '\n- The container size must be an integer value\n')
-    
-    container_unit_measurement = input(text.default_text_color + 'Container unit of measurement (e.g., ML, OZ): ').upper()
+
+    container_unit_measurement = input(
+        text.default_text_color + 'Container unit of measurement (e.g., ML, OZ): ').upper()
 
     # Validate returnable input data
     is_returnable = input(text.default_text_color + 'Is it returnable? y/N: ').upper()
@@ -634,6 +678,7 @@ def get_item_input_data():
     }
 
     return item_data
+
 
 def set_item_enabled(zone, environment, item_data):
     """Update an item via API
@@ -681,4 +726,26 @@ def set_item_enabled(zone, environment, item_data):
     if response.status_code == 200 and len(json_data) != 0:
         return True
     else:
-        print(text.Red + '\n- [Item Service] Failure to update an item. Response Status: ' + str(response.status_code) + '. Response message ' + response.text)
+        print(text.Red + '\n- [Item Service] Failure to update an item. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
+
+
+def display_product_information(product_offers):
+    """Display item information
+    Arguments:
+        - product_offers: product data by account
+    Print a table containing the available item information
+    """
+    product_information = list()
+    for i in range(len(product_offers)):
+        product_values = {
+            'SKU': product_offers[i]['sku'],
+            'Name': product_offers[i]['itemName'],
+            'Price': product_offers[i]['price'],
+            'Returnable': product_offers[i]['container']['returnable'],
+            'Stock Available': product_offers[i]['stockAvailable']
+        }
+        product_information.append(product_values)
+
+    print(text.default_text_color + '\nProduct Information By Account')
+    print(tabulate(product_information, headers='keys', tablefmt='grid'))

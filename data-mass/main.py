@@ -35,7 +35,8 @@ def showMenu():
             '0': finishApplication,
             '1': check_simulation_service_account_microservice_menu,
             '2': check_simulation_service_mdw_menu,
-            '3': account_information_menu
+            '3': account_information_menu,
+            '4': product_information_menu
         }
     elif selection_structure == '3':
         switcher = {
@@ -52,6 +53,28 @@ def showMenu():
         function()
 
     printFinishApplicationMenu()
+
+
+def product_information_menu():
+    zone = print_zone_menu_data_searching()
+    environment = printEnvironmentMenu()
+    abi_id = print_account_id_menu(zone)
+
+    account_response = check_account_exists_microservice(abi_id, zone, environment)
+
+    if account_response == 'false':
+        print(text.Red + '\n- [Account] Something went wrong, please try again')
+        printFinishApplicationMenu()
+    elif len(account_response) == 0:
+        print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
+        printFinishApplicationMenu()
+
+    product_offers = request_get_products_by_account_microservice(abi_id, zone, environment)
+    if len(product_offers) == 0:
+        print(text.Red + '\n- [Product Offers] The account ' + abi_id + ' does not have products')
+        printFinishApplicationMenu()
+    else:
+        display_product_information(product_offers)
 
 
 def account_information_menu():

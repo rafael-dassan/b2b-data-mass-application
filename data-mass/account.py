@@ -93,7 +93,7 @@ def display_account_information(abi_id, zone, environment):
         - zone: (e.g, BR,ZA,DO)
         - environment: (e.g, UAT,SIT)
         - abi_id: account_id
-    Return a table containing the available account information
+    Print a table containing the available account information
     """
     account_response = check_account_exists_microservice(abi_id, zone, environment)
 

@@ -165,6 +165,17 @@ def validateCountryInUserCreation(country):
     return value
 
 
+def validate_zone_data_searching(zone):
+    switcher = {
+        'BR': 'true',
+        'DO': 'true',
+        'ZA': 'true',
+        'CO': 'true'
+    }
+
+    value = switcher.get(zone, 'false')
+    return value
+
 def validate_zone_for_order(zone):
     switcher = {
         'BR': 'true',
@@ -231,7 +242,7 @@ def validate_deals(option):
 
 # Validate environment
 def validateEnvironment(environment):
-    if environment == "DEV" or environment == "QA" or environment == "UAT":
+    if environment == "DEV" or environment == "SIT" or environment == "UAT":
         return "true"
     else:
         return "false"
@@ -348,14 +359,14 @@ def get_middleware_base_url(zone, environment, version_request):
 def get_microservice_base_url(environment, is_v1="true"):
     if environment == "SIT":
         if is_v1 == "true":
-            return "https://b2b-services-qa.westeurope.cloudapp.azure.com/v1"
+            return "https://services-sit.bees-platform.dev/v1"
         else:
-            return "https://b2b-services-qa.westeurope.cloudapp.azure.com/api"
+            return "https://services-sit.bees-platform.dev/api"
 
     elif is_v1 == "false":
-        return "https://b2b-services-" + environment.lower() + ".westeurope.cloudapp.azure.com/api"
+        return "https://services-" + environment.lower() + ".bees-platform.dev/api"
     else:
-        return "https://b2b-services-" + environment.lower() + ".westeurope.cloudapp.azure.com/v1"
+        return "https://services-" + environment.lower() + ".bees-platform.dev/v1"
 
 
 # Return base URL for Magento
@@ -479,6 +490,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(1), text.Yellow + '(Beta) - Order simulation via Microservice')
         print(text.default_text_color + str(2), text.Yellow + '(Beta) - Order simulation via Middleware')
         print(text.default_text_color + str(3), text.Yellow + 'POC information')
+        print(text.default_text_color + str(4), text.Yellow + 'Product information by account')
 
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_option_request_selection(selection) == 'false':
@@ -487,6 +499,7 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(1), text.Yellow + '(Beta) - Order simulation via Microservice')
             print(text.default_text_color + str(2), text.Yellow + '(Beta) - Order simulation via Middleware')
             print(text.default_text_color + str(3), text.Yellow + 'POC information')
+            print(text.default_text_color + str(4), text.Yellow + 'Product information by account')
 
             selection = input(text.default_text_color + '\nPlease select: ')
 
@@ -737,6 +750,15 @@ def printZoneMenu(isMiddleware="true"):
     return zone.upper()
 
 
+def print_zone_menu_data_searching():
+    zone = input(text.default_text_color + "Zone (BR, DO, ZA, CO): ")
+    while validate_zone_data_searching(zone.upper()) == "false":
+        print(text.Red + "\n- Invalid option\n")
+        zone = input(text.default_text_color + "Zone (BR, DO, ZA, CO): ")
+
+    return zone.upper()
+
+
 # Print zone menu for Microservice
 def print_zone_menu_for_ms():
     zone = input(text.default_text_color + "Zone (BR, DO, ZA, CO, MX): ")
@@ -789,10 +811,10 @@ def printCountryMenuInUserCreation():
 
 # Print environment menu
 def printEnvironmentMenu():
-    environment = input(text.default_text_color + "Environment (DEV, QA, UAT): ")
+    environment = input(text.default_text_color + "Environment (DEV, SIT, UAT): ")
     while validateEnvironment(environment.upper()) == 'false':
         print(text.Red + '\n- Invalid option')
-        environment = input(text.default_text_color + "Environment (DEV, QA, UAT): ")
+        environment = input(text.default_text_color + "Environment (DEV, SIT, UAT): ")
 
     return environment.upper()
 
