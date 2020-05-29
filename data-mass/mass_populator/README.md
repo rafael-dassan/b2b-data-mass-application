@@ -21,7 +21,7 @@ Example #1:
 - Executing Mass Populator for:
   - Country: Dominican Republic
   - Environment: UAT
-  - Tests Scenarios to Create Data: ALL
+  - Tests Scenarios to Create Data: ALL (populate data for tests that are available for all countries)
 
 ```sh
 python3 populate.py DO UAT all
@@ -32,10 +32,21 @@ Example #2:
 - Executing Mass Populator for:
   - Country: Argentina
   - Environment: DEV
-  - Tests Scenarios to Create Data: common (only data for tests that are common for all countries)
+  - Tests Scenarios to Create Data: common (populate only data for tests that are common for all countries)
 
 ```sh
 python3 populate.py AR DEV common
+```
+
+Example #3:
+
+- Executing Mass Populator for:
+  - Country: Dominican Republic
+  - Environment: SIT
+  - Tests Scenarios to validate populator script: test (In this special case, to make sure all core components (recommendation, user, account) are working as expected)
+
+```sh
+python3 populate.py DO SIT test
 ```
 
 ## How to change Log Level

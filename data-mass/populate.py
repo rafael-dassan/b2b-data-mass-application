@@ -3,6 +3,7 @@ import sys
 from mass_populator.log import *
 from mass_populator.all import execute_all
 from mass_populator.common import execute_common
+from mass_populator.test import execute_test
 from mass_populator.validation import *
 
 logger = logging.getLogger(__name__)
@@ -15,6 +16,10 @@ def all(country, environment):
     logger.debug("ALL method executed with Country/Environment: {a}/{b}".format(a=country, b=environment))
     execute_all(country, environment)
 
+def test(country, environment):
+    logger.debug("TEST method executed with Country/Environment: {a}/{b}".format(a=country, b=environment))
+    execute_test(country, environment)
+
 def execute(country, environment, execution_type):
     logger.info("Country: %s", country)
     logger.info("Environment: %s", environment)
@@ -23,7 +28,8 @@ def execute(country, environment, execution_type):
     # to discover wich function to call
     switcher = {
             "all": all,
-            "common": common
+            "common": common,
+            "test": test
         }
 
     # get the function to call
