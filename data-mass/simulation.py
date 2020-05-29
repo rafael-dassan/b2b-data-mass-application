@@ -61,6 +61,7 @@ def process_simulation_middleware(zone, environment, abi_id, account, order_item
                 "TaxAmount": item["tax"],
                 "DepositAmount": 0.0,
                 "DiscountAmount": item["discount"],
+                "HasInventory": item["hasInventory"],
                 "Total": item["total"],
             }
 
@@ -128,6 +129,7 @@ def process_simulation_microservice(zone, environment, abi_id, account, order_it
                 "TaxAmount": item["taxAmount"],
                 "DepositAmount": item["deposit"],
                 "DiscountAmount": item["discountAmount"],
+                "HasInventory": item["hasInventory"],
                 "Total": item["total"],
             }
 
