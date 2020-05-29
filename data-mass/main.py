@@ -386,6 +386,9 @@ def inputDealsMenu():
 
         skus = list()
         skus.append(product)
+    
+    if zone.upper() != "ZA":
+        deal_sku = skus[0]['sku']
 
     if selectionStructure == "1":
         input_discount_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(), environment.upper())
