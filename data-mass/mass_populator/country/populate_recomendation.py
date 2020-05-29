@@ -1,3 +1,5 @@
+from multiprocessing import Pool
+from itertools import repeat
 from products import request_get_offers_microservice
 from products import check_item_enabled
 from beer_recommender import request_quick_order, request_forgotten_items, request_sell_up
@@ -21,17 +23,9 @@ def populate_recommendation(country, environment, account_id):
         return 'failed'
 
     enabled_skus = list()
-    index = 0
-    while index < len(product_offers):
-        if country == "ZA":
-            sku = product_offers[index]
-        else:
-            sku = product_offers[index]['sku']
-
-        # Check if the SKU is enabled on Items MS
-        if check_item_enabled(sku, country, environment) != False:
-            enabled_skus.append(sku)
-        index = index + 1
+    if len(product_offers):
+        with Pool(5) as pool:
+            enabled_skus = pool.starmap(_check_item_enabled, zip(product_offers, repeat(country), repeat(environment))) 
 
     logger.debug("Available_products to populate in recommendations: {available_products} items".format(
         available_products=len(enabled_skus)))
@@ -48,3 +42,9 @@ def populate_recommendation(country, environment, account_id):
         # Request for Sell Up
         if "success" != request_sell_up(country, environment, account_id, enabled_skus):
             logger.debug(log(Message.RECOMMENDER_SELL_UP_ERROR, {"account_id": account_id}))
+    
+
+def _check_item_enabled(product, country, environment):
+    sku = product if country == "ZA" else product['sku']
+    if check_item_enabled(sku, country, environment) != False:
+        return sku
