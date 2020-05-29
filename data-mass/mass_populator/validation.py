@@ -14,8 +14,7 @@ def valid_environment(environment):
     switcher = {
         "SIT": True,
         "UAT": True,
-        "DEV": True,
-        "QA": True,
+        "DEV": True
     }
 
     return switcher.get(environment, False)
