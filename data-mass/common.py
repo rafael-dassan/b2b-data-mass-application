@@ -242,10 +242,10 @@ def validate_deals(option):
 
 # Validate environment
 def validateEnvironment(environment):
-    if environment == "DEV" or environment == "SIT" or environment == "UAT":
-        return "true"
+    if environment == 'DEV' or environment == 'SIT' or environment == 'UAT':
+        return 'true'
     else:
-        return "false"
+        return 'false'
 
 
 # Validate environment to User creation
@@ -356,17 +356,17 @@ def get_middleware_base_url(zone, environment, version_request):
 
 
 # Return base URL for Microservice
-def get_microservice_base_url(environment, is_v1="true"):
-    if environment == "SIT":
-        if is_v1 == "true":
-            return "https://services-sit.bees-platform.dev/v1"
+def get_microservice_base_url(environment, is_v1='true'):
+    if environment == 'SIT':
+        if is_v1 == 'true':
+            return 'https://services-sit.bees-platform.dev/v1'
         else:
-            return "https://services-sit.bees-platform.dev/api"
+            return 'https://services-sit.bees-platform.dev/api'
 
-    elif is_v1 == "false":
-        return "https://services-" + environment.lower() + ".bees-platform.dev/api"
+    elif is_v1 == 'false':
+        return 'https://services-' + environment.lower() + '.bees-platform.dev/api'
     else:
-        return "https://services-" + environment.lower() + ".bees-platform.dev/v1"
+        return 'https://services-' + environment.lower() + '.bees-platform.dev/v1'
 
 
 # Return base URL for Magento
@@ -751,10 +751,10 @@ def printZoneMenu(isMiddleware="true"):
 
 
 def print_zone_menu_data_searching():
-    zone = input(text.default_text_color + "Zone (BR, DO, ZA, CO): ")
-    while validate_zone_data_searching(zone.upper()) == "false":
-        print(text.Red + "\n- Invalid option\n")
-        zone = input(text.default_text_color + "Zone (BR, DO, ZA, CO): ")
+    zone = input(text.default_text_color + 'Zone (BR, DO, ZA, CO): ')
+    while validate_zone_data_searching(zone.upper()) == 'false':
+        print(text.Red + '\n- Invalid option\n')
+        zone = input(text.default_text_color + 'Zone (BR, DO, ZA, CO): ')
 
     return zone.upper()
 
@@ -811,10 +811,10 @@ def printCountryMenuInUserCreation():
 
 # Print environment menu
 def printEnvironmentMenu():
-    environment = input(text.default_text_color + "Environment (DEV, SIT, UAT): ")
+    environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
     while validateEnvironment(environment.upper()) == 'false':
         print(text.Red + '\n- Invalid option')
-        environment = input(text.default_text_color + "Environment (DEV, SIT, UAT): ")
+        environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
 
     return environment.upper()
 

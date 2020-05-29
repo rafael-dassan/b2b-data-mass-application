@@ -569,16 +569,13 @@ def request_get_account_product_assortment(account_id, zone, environment, delive
 
     # Get url base
     request_url = get_microservice_base_url(
-        environment) + "/product-assortment/?accountId=accountId" + account_id + '&deliveryCenterId=' + delivery_center_id
-
-    # Get body request
-    request_body = ""
+        environment) + '/product-assortment/?accountId=accountId' + account_id + '&deliveryCenterId=' + delivery_center_id
 
     # Place request
-    response = place_request("GET", request_url, request_body, headers)
+    response = place_request('GET', request_url, '', headers)
 
-    if response.status_code == 200 and response.text != "":
-        json_data = loads(response.text)
+    json_data = loads(response.text)
+    if response.status_code == 200 and len(json_data) != 0:
         return json_data['skus']
     else:
         print(text.Red + '\n- [Products] Something went wrong when searching for products')

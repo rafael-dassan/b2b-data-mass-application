@@ -87,7 +87,7 @@ def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environ
         return response.status_code
 
 
-def display_account_information(abi_id, zone, environment):
+def display_account_information(abi_id, zone, environment, account):
     """Display account information
     Arguments:
         - zone: (e.g, BR,ZA,DO)
@@ -95,17 +95,10 @@ def display_account_information(abi_id, zone, environment):
         - abi_id: account_id
     Print a table containing the available account information
     """
-    account_response = check_account_exists_microservice(abi_id, zone, environment)
-
-    if account_response == 'false':
-        return 'error_ms'
-    elif len(account_response) == 0:
-        return 'not_found'
-    else:
-        account = account_response[0]
+    account_data = account[0]
 
     # Validate delivery windows
-    delivery_window = account['deliveryWindows']
+    delivery_window = account_data['deliveryWindows']
     delivery_window_information = list()
     if len(delivery_window) == 0:
         account_delivery_window_values = {
@@ -123,20 +116,20 @@ def display_account_information(abi_id, zone, environment):
             delivery_window_information.append(account_delivery_window_values)
 
     # Validate liquor license number
-    liquor_license = account['liquorLicense']
+    liquor_license = account_data['liquorLicense']
     if len(liquor_license) == 0:
         liquor_license = 'None'
     else:
         liquor_license = liquor_license[0]['number']
 
     # Validate payment methods
-    payment_methods = account_response[0]['paymentMethods']
+    payment_methods = account_data['paymentMethods']
     if len(payment_methods) == 0:
         payment_methods = 'None'
 
     # Validate minimum order
     minimum_order_information = list()
-    minimum_order = account['minimumOrder']
+    minimum_order = account_data['minimumOrder']
     if minimum_order is None:
         minimum_order_values = {
             'Minimum Order': 'None'
@@ -150,7 +143,7 @@ def display_account_information(abi_id, zone, environment):
 
     # Validate maximum order
     maximum_order_information = list()
-    maximum_order = account['maximumOrder']
+    maximum_order = account_data['maximumOrder']
     if maximum_order is None:
         maximum_order_values = {
             'Maximum Order': 'None'
@@ -164,28 +157,28 @@ def display_account_information(abi_id, zone, environment):
 
     basic_information = list()
     account_values = {
-        'Account ID': account['accountId'],
-        'Name': account['name'],
-        'Status': account['status'],
-        'Tax ID': account['taxId'],
+        'Account ID': account_data['accountId'],
+        'Name': account_data['name'],
+        'Status': account_data['status'],
+        'Tax ID': account_data['taxId'],
         'Liquor License Number': liquor_license,
         'Payment Methods': payment_methods
     }
     basic_information.append(account_values)
 
     credit_information = list()
-    credit = account['credit']
+    credit = account_data['credit']
     if credit is None:
         account_credit_values = {
             'Credit': 'None'
         }
     else:
         account_credit_values = {
-            'Credit Balance': account['credit']['balance'],
-            'Credit Overdue': account['credit']['overdue'],
-            'Credit Available': account['credit']['available'],
-            'Credit Total': account['credit']['total'],
-            'Credit Consumption': account['credit']['consumption']
+            'Credit Balance': account_data['credit']['balance'],
+            'Credit Overdue': account_data['credit']['overdue'],
+            'Credit Available': account_data['credit']['available'],
+            'Credit Total': account_data['credit']['total'],
+            'Credit Consumption': account_data['credit']['consumption']
         }
     credit_information.append(account_credit_values)
 
