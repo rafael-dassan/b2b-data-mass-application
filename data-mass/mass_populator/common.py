@@ -37,14 +37,9 @@ def populate_accounts(country, environment):
         "CO": populate_accounts_co
     }
 
-    if environment == "SIT":
-        translated_environment = "QA"
-    else:
-        translated_environment = environment
-
     function = populate_accounts_switcher.get(country)
     if function != "":
-        function(country, translated_environment)
+        function(country, environment)
 
 
 def populate_users_magento(country, environment):
@@ -83,12 +78,7 @@ def populate_recommendations(country, environment):
         "CO": populate_recommendations_co
     }
 
-    if environment == "SIT":
-        translated_environment = "QA"
-    else:
-        translated_environment = environment
-
     function = populate_recommendations_switcher.get(country)
     if function != "":
-        logger.info("populate_recommendations for %s/%s", country, translated_environment)
-        function(translated_environment)
+        logger.info("populate_recommendations for %s/%s", country, environment)
+        function(environment)
