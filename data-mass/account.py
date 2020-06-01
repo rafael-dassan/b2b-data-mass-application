@@ -87,12 +87,10 @@ def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environ
         return response.status_code
 
 
-def display_account_information(abi_id, zone, environment, account):
+def display_account_information(account):
     """Display account information
     Arguments:
-        - zone: (e.g, BR,ZA,DO)
-        - environment: (e.g, UAT,SIT)
-        - abi_id: account_id
+        - account: all account data
     Print a table containing the available account information
     """
     account_data = account[0]
