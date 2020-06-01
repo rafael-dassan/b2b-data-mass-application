@@ -57,7 +57,7 @@ def showMenu():
 
 
 def deals_information_menu():
-    zone = print_zone_menu_data_searching()
+    zone = print_zone_menu_data_searching_deals()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
 
@@ -70,7 +70,10 @@ def deals_information_menu():
         print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
-    display_deals_information(abi_id, zone.upper(), environment.upper())
+    if zone == 'AR' or zone == 'CL':
+        display_deals_information_promotion(abi_id, zone.upper(), environment.upper())
+    else:
+        display_deals_information_promo_fusion(abi_id, zone.upper(), environment.upper())
 
 
 def product_information_menu():

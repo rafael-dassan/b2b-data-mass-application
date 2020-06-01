@@ -165,6 +165,19 @@ def validateCountryInUserCreation(country):
     return value
 
 
+def validate_zone_data_searching_deals(zone):
+    switcher = {
+        'BR': 'true',
+        'DO': 'true',
+        'CO': 'true',
+        'AR': 'true',
+        'CL': 'true'
+    }
+
+    value = switcher.get(zone, 'false')
+    return value
+
+
 def validate_zone_data_searching(zone):
     switcher = {
         'BR': 'true',
@@ -175,6 +188,7 @@ def validate_zone_data_searching(zone):
 
     value = switcher.get(zone, 'false')
     return value
+
 
 def validate_zone_for_order(zone):
     switcher = {
@@ -748,6 +762,15 @@ def printZoneMenu(isMiddleware="true"):
         while validateZone("false", zone.upper()) == "false":
             print(text.Red + "\n- Invalid option\n")
             zone = input(text.default_text_color + "Zone (ZA, DO, BR): ")
+
+    return zone.upper()
+
+
+def print_zone_menu_data_searching_deals():
+    zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO): ')
+    while validate_zone_data_searching_deals(zone.upper()) == 'false':
+        print(text.Red + '\n- Invalid option\n')
+        zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO): ')
 
     return zone.upper()
 
