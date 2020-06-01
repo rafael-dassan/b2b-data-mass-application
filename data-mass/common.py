@@ -371,11 +371,11 @@ def get_middleware_base_url(zone, environment, version_request):
 
 # Return base URL for Microservice
 def get_microservice_base_url(environment, is_v1='true'):
-    if environment == 'SIT':
+    if environment == 'DEV':
         if is_v1 == 'true':
-            return 'https://services-sit.bees-platform.dev/v1'
+            return 'https://b2b-services-dev.westeurope.cloudapp.azure.com/v1'
         else:
-            return 'https://services-sit.bees-platform.dev/api'
+            return 'https://b2b-services-dev.westeurope.cloudapp.azure.com/api'
 
     elif is_v1 == 'false':
         return 'https://services-' + environment.lower() + '.bees-platform.dev/api'
