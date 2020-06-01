@@ -7,8 +7,8 @@ from products import *
 
 # Create beer recommender in microservice
 def create_beer_recommender_microservice(account_id, zone, environment, delivery_center_id):
-    # Define headers
-    request_headers = get_header_request(zone, "false", "true")
+    # Define headers specific for Recommended Products
+    request_headers_recommender = get_header_request_recommender(zone)
 
     # Define url request 
     request_url = get_microservice_base_url(environment) + "/global-recommendation-relay"
@@ -32,38 +32,14 @@ def create_beer_recommender_microservice(account_id, zone, environment, delivery
     if len(enabled_skus) >= 25:
         print(text.default_text_color + "\nAdding recommended products. Please wait...")
 
-        # Define an exclusive header for Recommended Products
-        switcher = {
-            "ZA": "UTC",
-            "AR": "America/Buenos_Aires",
-            "DO": "America/Santo_Domingo",
-            "BR": "America/Sao_Paulo",
-            "CO": "America/Bogota",
-            "PE": "America/Lima",
-            "CL": "America/Santiago",
-            "MX": "UTC"
-        }
-
-        timezone = switcher.get(zone, "false")
-
-        request_headers = {
-            'Content-Type': 'application/json',
-            'country': zone,
-            'requestTraceId': str(uuid1()),
-            'x-timestamp': str(int(round(time() * 1000))),
-            'cache-control': 'no-cache',
-            'timezone': timezone,
-            'Authorization': 'Basic ZGV4dGVyOktZTVU5MndHUjNZaENlRHI='
-        }
-
         # Get body request for Quick Order
-        request_body_quick_order = create_file_request_quick_order(request_url, request_headers, account_id, zone, enabled_skus)
+        request_body_quick_order = create_file_request_quick_order(request_url, request_headers_recommender, account_id, zone, enabled_skus)
 
         # Get body request for Forgotten Items
-        request_body_forgotten_items = create_file_request_forgotten_items(request_url, request_headers, account_id, zone, enabled_skus)
+        request_body_forgotten_items = create_file_request_forgotten_items(request_url, request_headers_recommender, account_id, zone, enabled_skus)
 
         # Get body request Sell Up
-        request_body_sell_up = create_file_request_sell_up(request_url, request_headers, account_id, zone, enabled_skus)
+        request_body_sell_up = create_file_request_sell_up(request_url, request_headers_recommender, account_id, zone, enabled_skus)
 
 
         if (request_body_quick_order.status_code == 202 and request_body_quick_order.text != "[]"):
@@ -312,3 +288,30 @@ def request_sell_up(zone, environment, account_id, products):
         return 'success'
     else:
         return 'false'
+
+def get_header_request_recommender(zone):
+    # Define an exclusive header for Recommended Products
+    switcher = {
+        "ZA": "UTC",
+        "AR": "America/Buenos_Aires",
+        "DO": "America/Santo_Domingo",
+        "BR": "America/Sao_Paulo",
+        "CO": "America/Bogota",
+        "PE": "America/Lima",
+        "CL": "America/Santiago",
+        "MX": "UTC"
+    }
+
+    timezone = switcher.get(zone, "false")
+
+    request_headers = {
+        'Content-Type': 'application/json',
+        'country': zone,
+        'requestTraceId': str(uuid1()),
+        'x-timestamp': str(int(round(time() * 1000))),
+        'cache-control': 'no-cache',
+        'timezone': timezone,
+        'Authorization': 'Basic ZGV4dGVyOktZTVU5MndHUjNZaENlRHI='
+    }
+
+    return request_headers
