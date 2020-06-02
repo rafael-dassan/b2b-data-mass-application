@@ -20,3 +20,4 @@ class Message(Enum):
     RECOMMENDER_QUICK_ORDER_ERROR = "Fail on populate recommender quick order for account {account_id}."
     RECOMMENDER_FORGOTTEN_ITEMS_ERROR = "Fail on populate recommender forgotten items for account {account_id}."
     RECOMMENDER_SELL_UP_ERROR = "Fail on populate recommender sell up for account {account_id}."
+    PRODUCT_CREATE_ERROR = "Fail on create product for sku: {sku}"

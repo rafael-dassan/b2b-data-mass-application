@@ -122,10 +122,6 @@ The countries BR and DO will have the Users created with the following Accounts 
 - User created with email: **abiautotest+100@gmail.com**, password: **Pass()12**, with Account ID **9883300202** and **9883300203** 
 
 
- 
-### Products
-
-
 ### Recommendations
 The countries will have the recommendations described bellow.
 
@@ -152,3 +148,76 @@ The countries will have the recommendations described bellow.
 Populates everything from the following options:
 
 - Common
+
+## Product
+
+Populate products for all countries.
+
+##### AR
+
+|SKUIdentifier|ItemName     |BrandName|ContainerName/Size/Unit|Returnable|SalesRanking
+|-------------|-------------|---------|-----------------------|----------|----------
+|0101WEB      |QM Journey 01|Journey  |Botella / 1000 / ML    |No        |1
+|0101ANDROID  |QM Journey 01|Journey  |Botella / 1000 / ML    |No        |1
+|0101IOS      |QM Journey 01|Journey  |Botella / 1000 / ML    |No        |1
+|0102WEB      |QM Journey 02|Journey  |Botella / 1000 / ML    |No        |2
+|0102ANDROID  |QM Journey 02|Journey  |Botella / 1000 / ML    |No        |2
+|0102IOS      |QM Journey 02|Journey  |Botella / 1000 / ML    |No        |2
+
+##### BR
+
+|SKUIdentifier|ItemName     |BrandName|ContainerName/Size/Unit|Returnable|SalesRanking
+|-------------|-------------|---------|-----------------------|----------|----------
+|0101WEB      |QM Journey 01|Journey  |Garrafa / 1000 / ML    |No        |1
+|0101ANDROID  |QM Journey 01|Journey  |Garrafa / 1000 / ML    |No        |1
+|0101IOS      |QM Journey 01|Journey  |Garrafa / 1000 / ML    |No        |1
+|0102WEB      |QM Journey 02|Journey  |Garrafa / 1000 / ML    |No        |2
+|0102ANDROID  |QM Journey 02|Journey  |Garrafa / 1000 / ML    |No        |2
+|0102IOS      |QM Journey 02|Journey  |Garrafa / 1000 / ML    |No        |2
+
+##### CO
+
+|SKUIdentifier|ItemName     |BrandName|ContainerName/Size/Unit|Returnable|SalesRanking
+|-------------|-------------|---------|-----------------------|----------|----------
+|0101WEB      |QM Journey 01|Journey  |Botella / 1000 / ML    |No        |1
+|0101ANDROID  |QM Journey 01|Journey  |Botella / 1000 / ML    |No        |1
+|0101IOS      |QM Journey 01|Journey  |Botella / 1000 / ML    |No        |1
+|0102WEB      |QM Journey 02|Journey  |Botella / 1000 / ML    |No        |2
+|0102ANDROID  |QM Journey 02|Journey  |Botella / 1000 / ML    |No        |2
+|0102IOS      |QM Journey 02|Journey  |Botella / 1000 / ML    |No        |2
+
+
+##### CL
+
+|SKUIdentifier|ItemName     |BrandName|ContainerName/Size/Unit|Returnable|SalesRanking
+|-------------|-------------|---------|-----------------------|----------|----------
+|0101WEB      |QM Journey 01|Journey  |Botella / 1000 / ML    |No        |1
+|0101ANDROID  |QM Journey 01|Journey  |Botella / 1000 / ML    |No        |1
+|0101IOS      |QM Journey 01|Journey  |Botella / 1000 / ML    |No        |1
+|0102WEB      |QM Journey 02|Journey  |Botella / 1000 / ML    |No        |2
+|0102ANDROID  |QM Journey 02|Journey  |Botella / 1000 / ML    |No        |2
+|0102IOS      |QM Journey 02|Journey  |Botella / 1000 / ML    |No        |2
+
+
+##### DO
+
+|SKUIdentifier|ItemName     |BrandName|ContainerName/Size/Unit|Returnable|SalesRanking
+|-------------|-------------|---------|-----------------------|----------|----------
+|0101WEB      |QM Journey 01|Journey  |Botella / 1000 / ML    |No        |1
+|0101ANDROID  |QM Journey 01|Journey  |Botella / 1000 / ML    |No        |1
+|0101IOS      |QM Journey 01|Journey  |Botella / 1000 / ML    |No        |1
+|0102WEB      |QM Journey 02|Journey  |Botella / 1000 / ML    |No        |2
+|0102ANDROID  |QM Journey 02|Journey  |Botella / 1000 / ML    |No        |2
+|0102IOS      |QM Journey 02|Journey  |Botella / 1000 / ML    |No        |2
+
+
+##### ZA
+
+|SKUIdentifier|ItemName     |BrandName|ContainerName/Size/Unit|Returnable|SalesRanking
+|-------------|-------------|---------|-----------------------|----------|----------
+|0101WEB      |QM Journey 01|Journey  |Bottle / 1000 / ML     |Yes       |1
+|0101ANDROID  |QM Journey 01|Journey  |Bottle / 1000 / ML     |Yes       |1
+|0101IOS      |QM Journey 01|Journey  |Bottle / 1000 / ML     |Yes       |1
+|0102WEB      |QM Journey 02|Journey  |Bottle / 1000 / ML     |Yes       |2
+|0102ANDROID  |QM Journey 02|Journey  |Bottle / 1000 / ML     |Yes       |2
+|0102IOS      |QM Journey 02|Journey  |Bottle / 1000 / ML     |Yes       |2
