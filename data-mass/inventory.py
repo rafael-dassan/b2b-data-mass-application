@@ -27,34 +27,39 @@ def display_available_products_account(account_id, zone, environment, delivery_c
         enabled_skus.append(sku_enable)
         aux_index = aux_index + 1
 
-    # Check if the account has at least one SKU added to it
+    if len(enabled_skus) > 0:
+        quantity_enabled_skus = len(enabled_skus)
+
+        # Store the name of all enabled SKUs
+        sku_description = list()
+        aux_index = 0
+
+        while aux_index < quantity_enabled_skus:
+            sku_description.append(get_sku_description(account_id, zone, environment, enabled_skus[aux_index]))
+            aux_index = aux_index + 1
+
+
+    # Check if the account has at least one SKU enabled on it
     if len(enabled_skus) > 0:
 
         stock_option = input(text.default_text_color + "\nDo you want to choose which product will be updated the stock? (1 - Yes, 2 - No) \nIf you do not wish to choose, stock will be added to all products linked to your account ")
+        
         while stock_option != "1" and stock_option != "2":
             print(text.Red + "\n[Inventory] Invalid option.")
             stock_option = input(text.default_text_color + "\nDo you want to choose which product will be updated the stock? (1 - Yes, 2 - No) \nIf you do not wish to choose, stock will be added to all products linked to your account ")
-        
+
         if stock_option == "2":
             update_sku = update_sku_inventory_microservice(account_id, zone, environment, delivery_center_id, enabled_skus)
         else:
-            quantity_product_offers = len(enabled_skus)
-
-            # Store and display all the SKUs on the screen
-            sku = []
+            # Show all the enabled SKUs and its respective names on the screen
             aux_index = 0
-            while aux_index < quantity_product_offers:
-                sku.append(enabled_skus[aux_index])
-                aux_index = aux_index + 1
-
-            aux_index = 0
-            while aux_index < quantity_product_offers:
-                print(text.default_text_color + "\n SKU: " + text.Blue + enabled_skus[aux_index])
+            while aux_index < quantity_enabled_skus:
+                print(text.default_text_color + "\n SKU: " + text.Blue + enabled_skus[aux_index] + "  ||  " + sku_description[aux_index].upper())
                 aux_index = aux_index + 1
 
             sku_id = input(text.default_text_color + "\n Type here the SKU from the list above you want to add inventory: ")
             
-            while validate_sku(sku_id, enabled_skus) != "true":
+            while validate_sku(sku_id.strip(), enabled_skus) != "true":
                 print(text.Red + "\n[Inventory] Invalid SKU. Please check the list above and try again.")
                 sku_id = input(text.default_text_color + "\n Type here the SKU from the list above you want to add inventory: ")
             
@@ -75,7 +80,7 @@ def display_available_products_account(account_id, zone, environment, delivery_c
 
 # Update SKU inventory
 def update_sku_inventory_microservice(account_id, zone, environment, delivery_center_id, list_skus, sku_quantity = 0):
-    
+    print(list_skus)
     # Define headers
     request_headers = get_header_request(zone, "false", "false", "true")
 
@@ -120,3 +125,19 @@ def validate_sku(sku_id, enabled_skus):
             if enabled_skus[aux_index] == sku_id:
                 return "true"
             aux_index = aux_index + 1
+
+# Get SKU description
+def get_sku_description(account_id, zone, environment, sku_id):
+    # Get header request
+    headers = get_header_request(zone, 'true')
+
+    # Get url base
+    request_url = get_microservice_base_url(environment, 'false') + '/items/' + sku_id + '?includeDisabled=false'
+
+    # Place request
+    response = place_request('GET', request_url, '', headers)
+
+    json_data = loads(response.text)
+    sku_description = json_data['itemName']
+
+    return sku_description
