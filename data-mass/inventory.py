@@ -19,6 +19,7 @@ def display_available_products_account(account_id, zone, environment, delivery_c
     while aux_index < len(product_offers):
         # Check if the SKU is enabled on Items MS
         sku_enable = check_item_enabled(product_offers[aux_index], zone, environment, True)
+        
         while sku_enable == False:
             if aux_index <= (len(product_offers) - 1):
                 aux_index = aux_index + 1
@@ -53,6 +54,7 @@ def display_available_products_account(account_id, zone, environment, delivery_c
         else:
             # Show all the enabled SKUs and its respective names on the screen
             aux_index = 0
+
             while aux_index < quantity_enabled_skus:
                 print(text.default_text_color + "\n SKU: " + text.Blue + enabled_skus[aux_index] + "  ||  " + sku_description[aux_index].upper())
                 aux_index = aux_index + 1
@@ -80,7 +82,6 @@ def display_available_products_account(account_id, zone, environment, delivery_c
 
 # Update SKU inventory
 def update_sku_inventory_microservice(account_id, zone, environment, delivery_center_id, list_skus, sku_quantity = 0):
-    print(list_skus)
     # Define headers
     request_headers = get_header_request(zone, "false", "false", "true")
 
@@ -120,11 +121,12 @@ def update_sku_inventory_microservice(account_id, zone, environment, delivery_ce
 
 # Validate SKU inventory
 def validate_sku(sku_id, enabled_skus):
-        aux_index = 0
-        while aux_index < len(enabled_skus):
-            if enabled_skus[aux_index] == sku_id:
-                return "true"
-            aux_index = aux_index + 1
+    aux_index = 0
+    
+    while aux_index < len(enabled_skus):
+        if enabled_skus[aux_index] == sku_id:
+            return "true"
+        aux_index = aux_index + 1
 
 # Get SKU description
 def get_sku_description(account_id, zone, environment, sku_id):
