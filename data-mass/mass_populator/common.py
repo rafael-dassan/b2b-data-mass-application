@@ -39,6 +39,7 @@ def populate_accounts(country, environment):
 
     function = populate_accounts_switcher.get(country)
     if function != "":
+        logger.info("populate_accounts for %s/%s", country, environment)
         function(country, environment)
 
 
@@ -46,7 +47,8 @@ def populate_users_magento(country, environment):
     allowed_environments = ["UAT", "SIT"]
 
     if (environment not in allowed_environments):
-        logger.info("Skipping populate users magento, because the environment is not supported!")
+        logger.info(
+            "Skipping populate users magento, because the environment is not supported!")
         return False
 
     populate_users_magento_switcher = {
@@ -68,7 +70,8 @@ def populate_recommendations(country, environment):
     allowed_countries = ["BR", "DO", "ZA", "CO"]
 
     if (country not in allowed_countries):
-        logger.info("Skipping populate recomendations, because the country is not supported!")
+        logger.info(
+            "Skipping populate recomendations, because the country is not supported!")
         return False
 
     populate_recommendations_switcher = {
