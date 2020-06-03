@@ -128,7 +128,7 @@ def validate_sku(sku_id, enabled_skus):
             return 'true'
         aux_index = aux_index + 1
 
-# Get SKU description
+# Get SKU name
 def get_sku_name(account_id, zone, environment, sku_id):
     # Get header request
     headers = get_header_request(zone, 'true')
@@ -140,6 +140,6 @@ def get_sku_name(account_id, zone, environment, sku_id):
     response = place_request('GET', request_url, '', headers)
 
     json_data = loads(response.text)
-    sku_description = json_data['itemName']
+    sku_name = json_data['itemName']
 
-    return sku_description
+    return sku_name

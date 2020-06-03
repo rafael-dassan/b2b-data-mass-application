@@ -134,7 +134,7 @@ def create_file_request_quick_order(url, headers, abi_id, zone, product_list):
 
 # Define JSON to submmit FORGOTTEN ITEMS recommendation type
 def create_file_request_forgotten_items(url, headers, abi_id, zone, product_list):
-    if (zone == 'DO') or (zone == 'CL') or (zone == 'AR'):
+    if (zone == 'DO') or (zone == 'CL') or (zone == 'AR') or (zone == 'CO'):
         language = 'es'
         text = 'Productos Populares para Negocios como el tuyo'
         text_description = ''
@@ -195,7 +195,7 @@ def create_file_request_forgotten_items(url, headers, abi_id, zone, product_list
 
 # Define JSON to submmit UP SELL recommendation type
 def create_file_request_sell_up(url, headers, abi_id, zone, product_list):
-    if (zone == 'DO') or (zone == 'CL') or (zone == 'AR'):
+    if (zone == 'DO') or (zone == 'CL') or (zone == 'AR') or (zone == 'CO'):
         language = 'es'
         text = 'Productos Populares para Negocios como el tuyo'
         text_description = 'Los Productos mas Vendidos en tu Zona'
