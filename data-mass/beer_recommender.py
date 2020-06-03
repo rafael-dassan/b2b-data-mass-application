@@ -8,7 +8,10 @@ from products import *
 # Create beer recommender in microservice
 def create_beer_recommender_microservice(account_id, zone, environment, delivery_center_id):
     # Define headers specific for Recommended Products
-    request_headers_recommender = get_header_request_recommender(zone)
+    if environment == 'SIT':
+        request_headers_recommender = get_header_request(zone, 'false', 'true')
+    elif environment == 'UAT':
+        request_headers_recommender = get_header_request_recommender(zone)
 
     # Define url request 
     request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
@@ -250,7 +253,11 @@ def create_file_request_sell_up(url, headers, abi_id, zone, product_list):
 
 def request_quick_order(zone, environment, account_id, products):
     # Define headers
-    request_headers = get_header_request_recommender(zone)
+    if environment == 'SIT':
+        request_headers = get_header_request(zone, 'false', 'true')
+    elif environment == 'UAT':
+        request_headers = get_header_request_recommender(zone)
+
     # Define url request 
     request_url = get_microservice_base_url(environment) + "/global-recommendation-relay"
     # Get Response
@@ -263,7 +270,11 @@ def request_quick_order(zone, environment, account_id, products):
 
 def request_forgotten_items(zone, environment, account_id, products):
     # Define headers
-    request_headers = get_header_request_recommender(zone)
+    if environment == 'SIT':
+        request_headers = get_header_request(zone, 'false', 'true')
+    elif environment == 'UAT':
+        request_headers = get_header_request_recommender(zone)
+
     # Define url request
     request_url = get_microservice_base_url(environment) + "/global-recommendation-relay"
     # Get Response
@@ -276,7 +287,11 @@ def request_forgotten_items(zone, environment, account_id, products):
 
 def request_sell_up(zone, environment, account_id, products):
     # Define headers
-    request_headers = get_header_request_recommender(zone)
+    if environment == 'SIT':
+        request_headers = get_header_request(zone, 'false', 'true')
+    elif environment == 'UAT':
+        request_headers = get_header_request_recommender(zone)
+
     # Define url request
     request_url = get_microservice_base_url(environment) + "/global-recommendation-relay"
     # Get Response
