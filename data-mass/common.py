@@ -358,15 +358,17 @@ def get_header_request(header_country, useJwtAuthorization="false", useRootAuthe
 def get_middleware_base_url(zone, environment, version_request):
     prefix_zone = zone.lower()
 
-    if zone == "AR" or zone == "CL":
-        prefix_zone = "las"
+    if zone == 'AR' or zone == 'CL':
+        prefix_zone = 'las'
 
     prefix_environment = environment.lower()
 
-    if environment == "UAT":
-        prefix_environment = "test"
+    if environment == 'UAT':
+        prefix_environment = 'test'
+    elif environment == 'SIT':
+        prefix_environment = 'qa'
 
-    return "https://b2b-" + prefix_zone.lower() + "-" + prefix_environment.lower() + ".azurewebsites.net/api/" + version_request + "/" + zone.upper()
+    return 'https://b2b-' + prefix_zone.lower() + '-' + prefix_environment.lower() + '.azurewebsites.net/api/' + version_request + '/' + zone.upper()
 
 
 # Return base URL for Microservice
