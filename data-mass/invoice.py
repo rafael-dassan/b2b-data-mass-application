@@ -121,4 +121,3 @@ def create_invoice_request(abi_id, zone, environment, order_id):
         print(text.Green + f'Invoice created: {invoice_id}')
         return invoice_id
 
-# return response
