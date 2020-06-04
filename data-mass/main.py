@@ -13,8 +13,6 @@ from simulation import process_simulation_microservice, process_simulation_middl
 
 def showMenu():
     # Defining a global variable to use the same function for both Order's option
-    global option
-    
     clearTerminal()
     printWelcomeScript()
     selection_structure = print_structure_menu()
@@ -29,10 +27,9 @@ def showMenu():
             '5': input_recommendation_to_account_menu,
             '6': inputInventoryToProduct,
             '7': input_orders_to_account,
-            '8': input_orders_to_account,
-            '9': inputDealsMenu,
-            '10': inputCombosMenu,
-            '11': create_item_menu
+            '8': inputDealsMenu,
+            '9': inputCombosMenu,
+            '10': create_item_menu
         }
     elif selection_structure == '2':
         switcher = {
@@ -122,15 +119,17 @@ def account_information_menu():
     
 # Input Orders to account (active and cancelled ones)
 def input_orders_to_account():
+    selectionStructure = print_orders_menu()
     zone = print_zone_menu_for_order()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
 
-    # Check the Order menu option selected
-    if option == '7': 
-        order_option = 'active'
-    elif option == '8':
-        order_option = 'cancelled'
+    switcher = {
+        "1": "ACTIVE",
+        "2": "CANCELLED",
+    }
+
+    order_type = switcher.get(selectionStructure, "false")
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
@@ -156,7 +155,7 @@ def input_orders_to_account():
             printFinishApplicationMenu()
         else:
             # Call function to create the Order according to the 'order_option' parameter (create an active order or a cancelled one)
-            create_order = create_order_account(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'], order_option)
+            create_order = create_order_account(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'], order_type)
 
             if create_order == 'error_len':
                 print(text.Red + '\n- [Order Creation] The account must have at least two enabled products to proceed')

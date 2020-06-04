@@ -75,7 +75,7 @@ def create_order_account(account_id, zone, environment, delivery_center_id, orde
     if enabled_counter >= 2:
 
         # Check if the request is for an active order or for a cancelled one
-        if order_option == 'active':
+        if order_option == 'ACTIVE':
             allow_order_cancel = input(text.default_text_color + '\nDo you want to make this order cancellable? y/N: ')
             allow_order_cancel = allow_order_cancel.upper()
 
@@ -140,13 +140,13 @@ def set_file_request_order(url, headers, abi_id, zone, delivery_center_id, enabl
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
-    if order_option == 'active':
+    if order_option == 'ACTIVE':
         if allow_order_cancel == 'Y':   
             json_object = set_to_dictionary(json_object, 'status', 'PLACED')
             json_object = set_to_dictionary(json_object, 'cancellableUntil', cancellable_date)
         else:
             json_object = set_to_dictionary(json_object, 'status', 'PLACED')
-    elif order_option == 'cancelled':
+    elif order_option == 'CANCELLED':
         json_object = set_to_dictionary(json_object, 'status', 'CANCELLED')
         json_object = set_to_dictionary(json_object, 'cancellationReason', 'ORDER CANCELLED FOR TESTING PURPOSES')
 
