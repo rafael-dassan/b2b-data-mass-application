@@ -43,7 +43,7 @@ def get_user_accounts(environment, country, user_name, password):
 def create_user(environment, country, email, password, account, phone=""):
     url = get_magento_base_url(environment, country) + "/rest/V1/accessmanagement/users"
 
-    access_token = get_magento_access_token(environment, country)
+    access_token = get_magento_user_registration_access_token(environment, country)
 
     headers = {
         "Content-Type": "application/json",
