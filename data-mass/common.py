@@ -247,6 +247,14 @@ def validateStructure(option):
 
 
 # Validate deals
+def validate_orders(option):
+    if option == '1' or option == '2':
+        return 'true'
+    else:
+        return 'false'
+
+
+# Validate deals
 def validate_deals(option):
     if option == "1" or option == "2" or option == "3" or option == "4" or option == "5":
         return "true"
@@ -479,7 +487,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(4), text.Yellow + 'Input delivery window')
         print(text.default_text_color + str(5), text.Yellow + 'Input recommended products')
         print(text.default_text_color + str(6), text.Yellow + 'Input inventory to product')
-        print(text.default_text_color + str(7), text.Yellow + 'Input order to account')
+        print(text.default_text_color + str(7), text.Yellow + 'Input orders to account')
         print(text.default_text_color + str(8), text.Yellow + 'Input deals')
         print(text.default_text_color + str(9), text.Yellow + 'Input combos')
         print(text.default_text_color + str(10), text.Yellow + "Create item")
@@ -494,7 +502,7 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(4), text.Yellow + 'Input delivery window')
             print(text.default_text_color + str(5), text.Yellow + 'Input recommended products')
             print(text.default_text_color + str(6), text.Yellow + 'Input inventory to product')
-            print(text.default_text_color + str(7), text.Yellow + 'Input order to account')
+            print(text.default_text_color + str(7), text.Yellow + 'Input orders to account')
             print(text.default_text_color + str(8), text.Yellow + 'Input deals')
             print(text.default_text_color + str(9), text.Yellow + 'Input combos')
             print(text.default_text_color + str(10), text.Yellow + "Create item")
@@ -572,6 +580,21 @@ def print_structure_menu():
     return structure
 
 
+# Print orders menu
+def print_orders_menu():
+    print(text.default_text_color + '\nWhich type of order do you want to create?')
+    print(text.default_text_color + str(1), text.Yellow + 'Input Active Order')
+    print(text.default_text_color + str(2), text.Yellow + 'Input Cancelled Order')
+    structure = input(text.default_text_color + '\nPlease select: ')
+    while validate_orders(structure) == 'false':
+        print(text.Red + '\n- Invalid option')
+        print(text.default_text_color + '\nWhich type of order do you want to create?')
+        print(text.default_text_color + str(1), text.Yellow + 'Input Active Order')
+        print(text.default_text_color + str(2), text.Yellow + 'Input Cancelled Order')
+        structure = input(text.default_text_color + '\nPlease select: ')
+
+    return structure
+
 # Print deals menu
 def printDealsMenu():
     print(text.default_text_color + "\nWhich type of deal do you want to create?")
@@ -589,6 +612,7 @@ def printDealsMenu():
         print(text.default_text_color + str(3), text.Yellow + "Input deal type free good")
         print(text.default_text_color + str(4), text.Yellow + "Input deal type stepped free good")
         print(text.default_text_color + str(5), text.Yellow + "Input deal type stepped discount with quantity")
+        structure = input(text.default_text_color + "\nPlease select: ")
 
     return structure
 
@@ -613,10 +637,10 @@ def printCombosMenu():
 
 # Validate combo type structure
 def validateComboStructure(option):
-    if option != "1" or option != "2" or option != "3":
-        return "true"
+    if option == '1' or option == '2' or option == '3':
+        return 'true'
     else:
-        return "false"
+        return 'false'
 
 
 # Print Discount type menu

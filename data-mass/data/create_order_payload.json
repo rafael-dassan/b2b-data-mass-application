@@ -22,6 +22,7 @@
       "taxAmount": 20,
       "total": 570.00,
       "totalExclDeposit": 570.00,
+      "tax": 10,
       "sku": "string",
       "hasInventory": true,
       "freeGood": false,
@@ -38,6 +39,7 @@
       "taxAmount": 30,
       "total": 830.00,
       "totalExclDeposit": 830.00,
+      "tax": 10,
       "sku": "string",
       "hasInventory": true,
       "freeGood": false,
@@ -49,9 +51,8 @@
   "paymentMethod": "CASH",
   "paymentTerm": 0,
   "poNumber": "string",
-  "status": "PLACED",
   "total": 1427.00,
   "subtotal": 1350.00,
-  "tax": 50,
+  "tax": 20,
   "placementDate": "string"
 }

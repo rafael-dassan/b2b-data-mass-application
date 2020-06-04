@@ -50,6 +50,7 @@ def showMenu():
         finishApplication()
 
     function = switcher.get(option, '')
+
     if function != '':
         function()
 
@@ -113,13 +114,21 @@ def account_information_menu():
         printFinishApplicationMenu()
 
     display_account_information(account)
-
-
-# Input Orders to account
+    
+    
+# Input Orders to account (active and cancelled ones)
 def input_orders_to_account():
+    selectionStructure = print_orders_menu()
     zone = print_zone_menu_for_order()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
+
+    switcher = {
+        '1': 'ACTIVE',
+        '2': 'CANCELLED',
+    }
+
+    order_type = switcher.get(selectionStructure, "false")
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
@@ -144,8 +153,8 @@ def input_orders_to_account():
             print(text.Red + '\n- [Order Creation] Something went wrong when configuring order params, please try again')
             printFinishApplicationMenu()
         else:
-            # Call function to create the Order
-            create_order = create_order_account(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'])
+            # Call function to create the Order according to the 'order_option' parameter (create an active order or a cancelled one)
+            create_order = create_order_account(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'], order_type)
 
             if create_order == 'error_len':
                 print(text.Red + '\n- [Order Creation] The account must have at least two enabled products to proceed')
