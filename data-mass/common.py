@@ -248,10 +248,10 @@ def validateStructure(option):
 
 # Validate deals
 def validate_orders(option):
-    if option == "1" or option == "2":
-        return "true"
+    if option == '1' or option == '2':
+        return 'true'
     else:
-        return "false"
+        return 'false'
 
 
 # Validate deals
@@ -637,10 +637,10 @@ def printCombosMenu():
 
 # Validate combo type structure
 def validateComboStructure(option):
-    if option == "1" or option == "2" or option == "3":
-        return "true"
+    if option == '1' or option == '2' or option == '3':
+        return 'true'
     else:
-        return "false"
+        return 'false'
 
 
 # Print Discount type menu

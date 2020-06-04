@@ -124,8 +124,8 @@ def input_orders_to_account():
     abi_id = print_account_id_menu(zone)
 
     switcher = {
-        "1": "ACTIVE",
-        "2": "CANCELLED",
+        '1': 'ACTIVE',
+        '2': 'CANCELLED',
     }
 
     order_type = switcher.get(selectionStructure, "false")
