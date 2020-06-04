@@ -74,18 +74,22 @@ def create_order_account(account_id, zone, environment, delivery_center_id, orde
     # Check if the account has at least 2 enabled SKUs added to it
     if enabled_counter >= 2:
 
-        allow_order_cancel = input(text.default_text_color + '\nDo you want to make this order cancellable? y/N: ')
-        allow_order_cancel = allow_order_cancel.upper()
-
-        while allow_order_cancel != 'Y' and allow_order_cancel != 'N':
-            print(text.Red + '\n[Order] Invalid option.')
+        # Check if the request is for an active order or for a cancelled one
+        if order_option == 'active':
             allow_order_cancel = input(text.default_text_color + '\nDo you want to make this order cancellable? y/N: ')
             allow_order_cancel = allow_order_cancel.upper()
+
+            while allow_order_cancel != 'Y' and allow_order_cancel != 'N':
+                print(text.Red + '\n[Order] Invalid option.')
+                allow_order_cancel = input(text.default_text_color + '\nDo you want to make this order cancellable? y/N: ')
+                allow_order_cancel = allow_order_cancel.upper()
+        else:
+            allow_order_cancel = 'N'
 
         print(text.default_text_color + '\nCreating Order...')
 
         # Get body request for Order
-        request_body_order = set_file_request_order(request_url, request_headers, account_id, zone, delivery_center_id, enabled_skus, allow_order_cancel)
+        request_body_order = set_file_request_order(request_url, request_headers, account_id, zone, delivery_center_id, enabled_skus, allow_order_cancel, order_option)
 
         # Extracts the order number created from the request's response
         order_id_created = request_body_order.text
@@ -101,7 +105,7 @@ def create_order_account(account_id, zone, environment, delivery_center_id, orde
 
 
 # Define JSON to submmit Order creation
-def set_file_request_order(url, headers, abi_id, zone, delivery_center_id, enabled_skus, allow_order_cancel):
+def set_file_request_order(url, headers, abi_id, zone, delivery_center_id, enabled_skus, allow_order_cancel, order_option):
 
     #Sets the format of the placement date of the order (current date and time)
     placement_date = datetime.now()
@@ -136,8 +140,15 @@ def set_file_request_order(url, headers, abi_id, zone, delivery_center_id, enabl
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
-    if allow_order_cancel == 'Y':   
-        json_object = set_to_dictionary(json_object, 'cancellableUntil', cancellable_date)
+    if order_option == 'active':
+        if allow_order_cancel == 'Y':   
+            json_object = set_to_dictionary(json_object, 'status', 'PLACED')
+            json_object = set_to_dictionary(json_object, 'cancellableUntil', cancellable_date)
+        else:
+            json_object = set_to_dictionary(json_object, 'status', 'PLACED')
+    elif order_option == 'cancelled':
+        json_object = set_to_dictionary(json_object, 'status', 'CANCELLED')
+        json_object = set_to_dictionary(json_object, 'cancellationReason', 'ORDER CANCELLED FOR TESTING PURPOSES')
 
     # Create body
     request_body = convert_json_to_string(json_object)

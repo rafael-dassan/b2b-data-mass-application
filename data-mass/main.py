@@ -118,59 +118,19 @@ def account_information_menu():
         printFinishApplicationMenu()
 
     display_account_information(account)
-
-# # Input Cancelled Orders to account
-# def input_cancelled_orders_to_account():
-#     zone = print_zone_menu_for_order()
-#     environment = printEnvironmentMenu()
-#     abi_id = print_account_id_menu(zone)
-
-#     # Call check account exists function
-#     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
-
-#     if account == 'false':
-#         print(text.Red + '\n- [Account] Something went wrong, please try again')
-#         printFinishApplicationMenu()
-#     elif len(account) == 0:
-#         print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
-#         printFinishApplicationMenu()
-
-#     print(text.default_text_color + '\nChecking enabled products for the account ' + abi_id + '. It may take a while...')
-
-#     # Call function to check if the account has products inside
-#     products_inventory_account = request_get_offers_microservice(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'], True)
-
-#     if len(products_inventory_account) != 0:
-#         # Call function to configure prefix and order number size in the database sequence
-#         order_params = configure_order_params(zone.upper(), environment.upper(), 1)
-
-#         if order_params == 'false':
-#             print(text.Red + '\n- [Order Creation] Something went wrong when configuring order params, please try again')
-#             printFinishApplicationMenu()
-#         else:
-#             # Call function to create the Order
-#             create_order = create_order_account(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'])
-
-#             if create_order == 'error_len':
-#                 print(text.Red + '\n- [Order Creation] The account must have at least two enabled products to proceed')
-#                 printFinishApplicationMenu()
-#             elif create_order == 'false':
-#                 print(text.Red + '\n- [Order Creation] Something went wrong, please try again')
-#                 printFinishApplicationMenu()
-#             elif create_order == 'true':
-#                 # Call function to re-configure prefix and order number size to the previous format
-#                 order_params = configure_order_params(zone.upper(), environment.upper(), 2)
-#                 printFinishApplicationMenu()
-#     else:
-#         print(text.Red + '\n- [Order Creation] The account has no products inside. Use the menu option 02 to add them first')
-#         printFinishApplicationMenu()
-
+    
+    
 # Input Orders to account (active and cancelled ones)
 def input_orders_to_account():
-    order_option = option
     zone = print_zone_menu_for_order()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
+
+    # Check the Order menu option selected
+    if option == '7': 
+        order_option = 'active'
+    elif option == '8':
+        order_option = 'cancelled'
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())

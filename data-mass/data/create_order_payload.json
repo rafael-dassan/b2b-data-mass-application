@@ -49,7 +49,6 @@
   "paymentMethod": "CASH",
   "paymentTerm": 0,
   "poNumber": "string",
-  "status": "PLACED",
   "total": 1427.00,
   "subtotal": 1350.00,
   "tax": 50,
