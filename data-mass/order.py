@@ -40,7 +40,7 @@ def configure_order_params(zone, environment, position):
 
 
 # Create order in microservice
-def create_order_account(account_id, zone, environment, delivery_center_id):
+def create_order_account(account_id, zone, environment, delivery_center_id, order_option):
     # Define headers
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
 
