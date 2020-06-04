@@ -12,7 +12,6 @@ from simulation import process_simulation_microservice, process_simulation_middl
 
 
 def showMenu():
-    # Defining a global variable to use the same function for both Order's option
     clearTerminal()
     printWelcomeScript()
     selection_structure = print_structure_menu()
