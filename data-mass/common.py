@@ -78,7 +78,8 @@ def validate_option_request_selection(selection):
         '7': 'true',
         '8': 'true',
         '9': 'true',
-        '10': 'true'
+        '10': 'true',
+        '11': 'true'
     }
 
     value = switcher.get(selection, 'false')
@@ -481,6 +482,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(8), text.Yellow + 'Input deals')
         print(text.default_text_color + str(9), text.Yellow + 'Input combos')
         print(text.default_text_color + str(10), text.Yellow + "Create item")
+        print(text.default_text_color + str(11), text.Yellow + "Create invoice")
 
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_option_request_selection(selection) == 'false':
@@ -496,6 +498,7 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(8), text.Yellow + 'Input deals')
             print(text.default_text_color + str(9), text.Yellow + 'Input combos')
             print(text.default_text_color + str(10), text.Yellow + "Create item")
+            print(text.default_text_color + str(11), text.Yellow + "Create invoice")
 
             selection = input(text.default_text_color + '\nPlease select: ')
 
