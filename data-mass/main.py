@@ -137,16 +137,14 @@ def input_orders_to_account():
         text.default_text_color + '\nChecking enabled products for the account ' + abi_id + '. It may take a while...')
 
     # Call function to check if the account has products inside
-    products_inventory_account = request_get_offers_microservice(abi_id, zone.upper(), environment.upper(),
-                                                                 account[0]['deliveryCenterId'], True)
+    products_inventory_account = request_get_offers_microservice(abi_id, zone.upper(), environment.upper(),account[0]['deliveryCenterId'], True)
 
     if len(products_inventory_account) != 0:
         # Call function to configure prefix and order number size in the database sequence
         order_params = configure_order_params(zone.upper(), environment.upper(), 1)
 
         if order_params == 'false':
-            print(
-                text.Red + '\n- [Order Creation] Something went wrong when configuring order params, please try again')
+            print(text.Red + '\n- [Order Creation] Something went wrong when configuring order params, please try again')
             printFinishApplicationMenu()
         else:
             # Call function to create the Order
