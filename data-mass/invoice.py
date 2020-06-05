@@ -1,10 +1,12 @@
 from random import randint
 
-from common import *
 from json import loads
+
+from common import *
 
 
 def check_if_order_exist(abi_id, zone, environment, order_id):
+
     # Get header request
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
 

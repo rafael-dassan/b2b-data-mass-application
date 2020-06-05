@@ -13,8 +13,6 @@ import subprocess
 from unicodedata import numeric
 from os import path
 
-from invoice import check_if_order_exist
-
 
 def get_magento_user_v3_params(environment):
     if environment == "UAT":

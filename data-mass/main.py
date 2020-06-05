@@ -905,7 +905,7 @@ def create_invoice_menu():
     if order == 'false':
         print(text.Red + '\n- [Order] Something went wrong, please try again')
         printFinishApplicationMenu()
-    elif len(order) == 0:
+    elif order == 'error_ms':
         print(text.Red + '\n- [Order] The Order Id ' + order_id + ' does not exist')
         printFinishApplicationMenu()
 
