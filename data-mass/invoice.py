@@ -11,7 +11,6 @@ def check_if_order_exist(abi_id, zone, environment, order_id):
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/order-service/v1?orderIds=' + order_id + '&accountId=' + abi_id
 
-
     # Place request
     response = place_request('GET', request_url, '', request_headers)
 

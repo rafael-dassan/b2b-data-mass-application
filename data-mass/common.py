@@ -13,6 +13,8 @@ import subprocess
 from unicodedata import numeric
 from os import path
 
+from invoice import check_if_order_exist
+
 
 def get_magento_user_v3_params(environment):
     if environment == "UAT":
@@ -1271,3 +1273,16 @@ def set_to_dictionary(dictionary, *key_value_pairs, **items):
         dictionary[key_value_pairs[i]] = key_value_pairs[i + 1]
     dictionary.update(items)
     return dictionary
+
+
+def print_order_id_menu():
+    order_id = input(text.default_text_color + 'Order ID: ')
+
+    while True:
+        size_order_id = len(order_id)
+        if size_order_id == 0:
+            print(text.Red + '\n- Order ID should not be empty')
+        elif size_order_id != 0:
+            break
+        order_id = input(text.default_text_color + 'Order ID: ')
+    return order_id

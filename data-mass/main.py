@@ -3,7 +3,7 @@ from credit import add_credit_to_account_microservice
 from delivery_window import create_delivery_window_microservice, validateAlternativeDeliveryDate
 from beer_recommender import *
 from inventory import *
-from invoice import check_if_order_exist, order_info, create_invoice_request
+from invoice import *
 from order import *
 from combos import *
 from deals import *
@@ -30,7 +30,7 @@ def showMenu():
             '8': inputDealsMenu,
             '9': inputCombosMenu,
             '10': create_item_menu,
-            '11': create_invoice
+            '11': create_invoice_menu
         }
     elif selection_structure == '2':
         switcher = {
@@ -885,7 +885,7 @@ def registration_user_iam():
         printFinishApplicationMenu()
 
 
-def create_invoice():
+def create_invoice_menu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
@@ -899,17 +899,17 @@ def create_invoice():
         print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
-    order_id = input('Order Id: ')
-    order = order_info(abi_id, zone.upper(), environment.upper(), order_id)
+    order_id = print_order_id_menu()
+    order = order_info(abi_id, zone, environment, order_id)
 
     if order == 'false':
         print(text.Red + '\n- [Order] Something went wrong, please try again')
         printFinishApplicationMenu()
-    elif order == '[]':
+    elif len(order) == 0:
         print(text.Red + '\n- [Order] The Order Id ' + order_id + ' does not exist')
         printFinishApplicationMenu()
 
-    invoice = create_invoice_request(abi_id, zone.upper(), environment.upper(), order_id)
+    create_invoice_request(abi_id, zone.upper(), environment.upper(), order_id)
 
 
 # Init
