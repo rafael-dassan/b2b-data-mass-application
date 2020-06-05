@@ -119,6 +119,6 @@ def create_invoice_request(abi_id, zone, environment, order_id):
         print(text.Red + '\n- [Invoice] Something went wrong, please try again')
         finishApplication()
     else:
-        print(text.Green + f'Invoice created: {invoice_id}')
+        print(text.Green + 'Invoice created: ' + invoice_id)
         return invoice_id
 
