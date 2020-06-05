@@ -3,6 +3,7 @@ from credit import add_credit_to_account_microservice
 from delivery_window import create_delivery_window_microservice, validateAlternativeDeliveryDate
 from beer_recommender import *
 from inventory import *
+from invoice import *
 from order import *
 from combos import *
 from deals import *
@@ -28,7 +29,8 @@ def showMenu():
             '7': input_orders_to_account,
             '8': inputDealsMenu,
             '9': inputCombosMenu,
-            '10': create_item_menu
+            '10': create_item_menu,
+            '11': create_invoice_menu
         }
     elif selection_structure == '2':
         switcher = {
@@ -459,7 +461,7 @@ def inputDealsMenu():
 
         skus = list()
         skus.append(product)
-    
+
     if zone.upper() != "ZA":
         deal_sku = skus[0]['sku']
 
@@ -890,6 +892,33 @@ def registration_user_iam():
     else:
         print(text.Red + "\n- [User] Something went wrong, please try again")
         printFinishApplicationMenu()
+
+
+def create_invoice_menu():
+    zone = print_zone_menu_for_ms()
+    environment = printEnvironmentMenu()
+    abi_id = print_account_id_menu(zone)
+
+    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+
+    if account == 'false':
+        print(text.Red + '\n- [Account] Something went wrong, please try again')
+        printFinishApplicationMenu()
+    elif len(account) == 0:
+        print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
+        printFinishApplicationMenu()
+
+    order_id = print_order_id_menu()
+    order = order_info(abi_id, zone, environment, order_id)
+
+    if order == 'false':
+        print(text.Red + '\n- [Order] Something went wrong, please try again')
+        printFinishApplicationMenu()
+    elif order == 'error_ms':
+        print(text.Red + '\n- [Order] The Order Id ' + order_id + ' does not exist')
+        printFinishApplicationMenu()
+
+    create_invoice_request(abi_id, zone.upper(), environment.upper(), order_id)
 
 
 # Init
