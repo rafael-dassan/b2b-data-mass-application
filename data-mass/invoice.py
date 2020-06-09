@@ -81,11 +81,13 @@ def create_invoice_request(abi_id, zone, environment, order_id):
         json_data = json.load(file)
 
     invoice_id = 'DM-' + str(randint(1, 100000))
+    order_placement_date = order_details.get('placementDate')
+    placement_date = order_placement_date.split('+')[0] + 'Z'
 
     dict_values = {
         'accountId': order_details.get('accountId'),
         'channel': order_details.get('channel'),
-        'date': order_details.get('placementDate'),
+        'date': placement_date,
         'interestAmount': order_details.get('total'),
         'itemsQuantity': order_details.get('itemsQuantity'),
         'orderDate': order_details.get('placementDate'),
