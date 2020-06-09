@@ -90,7 +90,7 @@ def create_invoice_request(abi_id, zone, environment, order_id):
         'date': placement_date,
         'interestAmount': order_details.get('total'),
         'itemsQuantity': order_details.get('itemsQuantity'),
-        'orderDate': order_details.get('placementDate'),
+        'orderDate': placement_date,
         'orderId': order_id,
         'paymentTerm': order_details.get('paymentTerm'),
         'subtotal': order_details.get('subtotal'),
