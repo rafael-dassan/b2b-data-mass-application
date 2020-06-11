@@ -80,7 +80,7 @@ def deals_information_menu():
 
 
 def product_information_menu():
-    zone = print_zone_menu_data_searching()
+    zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
 

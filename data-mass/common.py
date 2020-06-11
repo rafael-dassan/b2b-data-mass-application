@@ -179,18 +179,6 @@ def validate_zone_data_searching_deals(zone):
     return value
 
 
-def validate_zone_data_searching(zone):
-    switcher = {
-        'BR': 'true',
-        'DO': 'true',
-        'ZA': 'true',
-        'CO': 'true'
-    }
-
-    value = switcher.get(zone, 'false')
-    return value
-
-
 def validate_zone_for_inventory(zone):
     switcher = {
         "ZA": "true",
@@ -789,15 +777,6 @@ def print_zone_menu_data_searching_deals():
     while validate_zone_data_searching_deals(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
         zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO): ')
-
-    return zone.upper()
-
-
-def print_zone_menu_data_searching():
-    zone = input(text.default_text_color + 'Zone (BR, DO, ZA, CO): ')
-    while validate_zone_data_searching(zone.upper()) == 'false':
-        print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (BR, DO, ZA, CO): ')
 
     return zone.upper()
 
