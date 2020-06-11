@@ -130,21 +130,21 @@ def request_post_price_microservice(abi_id, zone, environment, sku_product, prod
     # Get header request
     request_headers = get_header_request(zone)
 
-    if zone == "CO" or zone == "MX":
+    if zone == 'CO' or zone == 'MX' or zone == 'AR' or zone == 'ZA':
         # Get base URL
-        request_url = get_microservice_base_url(environment, "false") + "/cart-calculation-relay/v2/prices"
+        request_url = get_microservice_base_url(environment, 'false') + '/cart-calculation-relay/v2/prices'
 
         # Get request body
         request_body = get_body_price_microservice_request_v2(abi_id, sku_product, product_price_id)
     else:
         # Get url base
-        request_url = get_microservice_base_url(environment) + "/cart-calculation-relay/prices"
+        request_url = get_microservice_base_url(environment) + '/cart-calculation-relay/prices'
 
         # Get request body
         request_body = get_body_price_microservice_request(abi_id, sku_product, product_price_id, price_values)
 
     # Place request
-    response = place_request("PUT", request_url, request_body, request_headers)
+    response = place_request('PUT', request_url, request_body, request_headers)
     if response.status_code != 202:
         print(text.Red + '\n- [Product] Something went wrong in define product price SKU '
               + str(sku_product) + ' on microservice price engine')
@@ -335,7 +335,7 @@ def product_post_requests_microservice(product_data, abi_id, zone, environment, 
     if product_inclusion_ms_result == 'false':
         return 'false'
 
-    if zone == 'ZA':
+    if zone == 'ZA' or zone == 'AR':
         product_inclusion_mdw_result = product_post_requests_middleware(product_data, abi_id, zone, environment)
         if product_inclusion_mdw_result == 'false':
             return 'false'
@@ -401,7 +401,7 @@ def get_body_price_inclusion_microservice_request(delivery_center_id):
 
 # Get offers account in microservice
 def request_get_offers_microservice(abi_id, zone, environment, delivery_center_id, return_product_data = False):
-    if zone == 'ZA':
+    if zone == 'ZA' or zone == 'AR':
         product_offers = request_get_offers_middleware(abi_id, zone, environment, True)
         return product_offers
 
