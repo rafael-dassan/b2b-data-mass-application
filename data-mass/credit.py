@@ -1,40 +1,5 @@
-import sys
 from json import dumps
 from common import *
-
-# Include credit for account on middleware
-def add_credit_to_account(accountId, zone, env, credit, balance):
-	# Define headers
-	header = get_header_request(zone, "false", "true")
-
-	# Define URL Middleware
-	url = get_middleware_base_url(zone, env, "v5") + "/accounts/" + accountId + "/credit"
-
-	if credit == "":
-		credit = "5000"
-
-	if balance == "":
-		balance = "15000"
-
-	credit = int(credit)
-	balance = int(balance)
-
-	# Body request
-	request_body = dumps({
-        "balance": balance,
-        "available": credit,
-        "overdue": 0,
-        "paymentTerms": None,
-        "total": (credit + balance)
-    })
-
-	# Send request
-	response = place_request("POST", url, request_body, header)
-
-	if response.status_code == 202:
-		return "success"
-	else:
-		return response.status_code
 
 
 # Include credit for account on microservice

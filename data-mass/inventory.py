@@ -1,9 +1,5 @@
-import sys
-from json import dumps
-import time
-from datetime import date, datetime, timedelta
-import calendar
 from products import *
+
 
 # Show all available SKUs of the account in the screen
 def display_available_products_account(account_id, zone, environment, delivery_center_id):

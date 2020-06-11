@@ -3,6 +3,7 @@ from random import randint
 from common import *
 from tabulate import tabulate
 
+
 def input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone, environment):
     account_group_id = list()
     sku_group_id = list()
@@ -54,46 +55,6 @@ def input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone, envi
     else:
         return deal_id
 
-def input_deal_to_account_middleware(abi_id, deal_sku, free_good_sku, deal_type, zone, environment):
-    account_group_id = create_account_group_middleware(abi_id, zone, environment)
-    sku_group_id = create_sku_group_middleware(deal_sku, zone, environment)
-
-    if free_good_sku != []:
-        free_good_group_id = create_free_good_group_middleware(deal_sku, zone, environment)
-    else:
-        free_good_group_id = None
-
-    deal_id = "DM-" + str(randint(1, 100000))
-
-    dict_values = {
-        "accountGroupId": account_group_id,
-        "description": abi_id + " DEAL TYPE " + deal_type,
-        "endDate": "2040-03-31T23:59:59.999Z",
-        "freeGoodGroupId": free_good_group_id,
-        "id": deal_id,
-        "promotionsRanking": 100,
-        "skuGroupId": sku_group_id,
-        "startDate": "2019-03-04T00:00:00.000Z",
-        "title": abi_id + " DEAL TYPE " + deal_type,
-        "type": deal_type
-    }
-
-    # Create body
-    request_body = convert_json_to_string(dict_values)
-
-    # Get header request
-    request_headers = get_header_request(zone, "false", "true", "false", "false")
-
-    # Get base URL
-    request_url = get_middleware_base_url(zone, environment, "v4") + "/promotions"
-
-    # Send request
-    response = place_request("POST", request_url, request_body, request_headers)
-
-    if response.status_code != 202:
-        return "false"
-    else:
-        return deal_id
 
 def create_account_group(abi_id, zone, environment):
     accounts = list()
@@ -124,31 +85,6 @@ def create_account_group(abi_id, zone, environment):
     else:
         return account_group_id
 
-def create_account_group_middleware(abi_id, zone, environment):
-    account_group_id = "DM-" + str(randint(1, 100000))
-
-    dict_values = {
-        "accountId": abi_id,
-        "id": account_group_id
-    }
-
-    # Create body
-    request_body = convert_json_to_string(dict_values)
-
-    # Get header request
-    request_headers = get_header_request(zone, "false", "true", "false", "false")
-
-    # Get base URL
-    request_url = get_middleware_base_url(zone, environment, "v4") + "/promotions/account-groups"
-
-    # Send request
-    response = place_request("POST", request_url, request_body, request_headers)
-
-    if response.status_code != 202:
-        print(text.Red + "\n- [Deals - Account Group] Something went wrong, please try again")
-        finishApplication()
-    else:
-        return account_group_id
 
 def create_sku_group(sku, zone, environment):
     skus = list()
@@ -179,31 +115,6 @@ def create_sku_group(sku, zone, environment):
     else:
         return sku_group_id
 
-def create_sku_group_middleware(sku, zone, environment):
-    sku_group_id = "DM-" + str(randint(1, 100000))
-
-    dict_values = {
-        "id": sku_group_id,
-        "sku": sku
-    }
-
-    # Create body
-    request_body = convert_json_to_string(dict_values)
-
-    # Get header request
-    request_headers = get_header_request(zone, "false", "true", "false", "false")
-
-    # Get base URL
-    request_url = get_middleware_base_url(zone, environment, "v4") + "/promotions/sku-groups"
-
-    # Send request
-    response = place_request("POST", request_url, request_body, request_headers)
-
-    if response.status_code != 202:
-        print(text.Red + "\n- [Deals - SKU Group] Something went wrong, please try again")
-        finishApplication()
-    else:
-        return sku_group_id
 
 def create_free_good_group(sku, zone, environment):
     skus = list()
@@ -234,31 +145,6 @@ def create_free_good_group(sku, zone, environment):
     else:
         return free_good_group_id
 
-def create_free_good_group_middleware(sku, zone, environment):
-    free_good_group_id = "DM-" + str(randint(1, 100000))
-
-    dict_values = {
-        "id": free_good_group_id,
-        "sku": sku
-    }
-
-    # Create body
-    request_body = convert_json_to_string(dict_values)
-
-    # Get header request
-    request_headers = get_header_request(zone, "false", "true", "false", "false")
-
-    # Get base URL
-    request_url = get_middleware_base_url(zone, environment, "v4") + "/promotions/free-good-groups"
-
-    # Send request
-    response = place_request("POST", request_url, request_body, request_headers)
-
-    if response.status_code != 202:
-        print(text.Red + "\n- [Deals - Free Good Group] Something went wrong, please try again")
-        finishApplication()
-    else:
-        return free_good_group_id
 
 # Input discount business rules to Cart Calculation microservice
 def input_discount_to_cart_calculation(deal_id, accounts, zone, environment, skus, discount_type, discount_value, minimum_quantity):
@@ -518,11 +404,7 @@ def input_discount_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone,
     discount_type = print_discount_type_menu()
     discount_value = printDiscountValueMenu(discount_type)
 
-    # ZA is still using middleware for deal creation
-    if zone == "ZA":
-        promotion_response = input_deal_to_account_middleware(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
-    else:
-        promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
+    promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
 
     if zone == "CO" or zone == "MX":
         cart_response = input_discount_to_cart_calculation_v2(promotion_response, accounts, zone.upper(), environment.upper(), skus, discount_type, discount_value, minimum_quantity)
@@ -543,11 +425,7 @@ def input_stepped_discount_with_qtd_to_account(abi_id, accounts, deal_sku, skus,
     discount_range = print_discount_range_menu(1)
     quantity = input(text.default_text_color + "Quantity: ")
 
-    # ZA is still using middleware for deal creation
-    if zone == "ZA":
-        promotion_response = input_deal_to_account_middleware(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
-    else:
-        promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
+    promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
 
     if zone == "CO" or zone == "MX":
         cart_response = input_stepped_discount_with_qtd_to_cart_calculation_v2(promotion_response, accounts, zone.upper(), environment.upper(), skus, quantity, index_range, discount_type, discount_range)
@@ -567,11 +445,7 @@ def input_stepped_discount_to_account(abi_id, accounts, deal_sku, skus, deal_typ
     discount_type = print_discount_type_menu()
     discount_range = print_discount_range_menu()
 
-    # ZA is still using middleware for deal creation
-    if zone == "ZA":
-        promotion_response = input_deal_to_account_middleware(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
-    else:
-        promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
+    promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
 
     if zone == "CO" or zone == "MX":
         cart_response = input_stepped_discount_to_cart_calculation_v2(promotion_response, accounts, zone.upper(), environment.upper(), skus, discount_type, index_range, discount_range)
@@ -591,11 +465,7 @@ def input_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone
     minimum_quantity = printMinimumQuantityMenu()
     quantity = printQuantityMenu()
 
-    # ZA is still using middleware for deal creation
-    if zone == "ZA":
-        promotion_response = input_deal_to_account_middleware(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
-    else: 
-        promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
+    promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
 
     if zone == "CO" or zone == "MX":
         cart_response = input_free_good_to_cart_calculation_v2(promotion_response, accounts, zone.upper(), environment.upper(), skus, minimum_quantity, quantity)
@@ -614,11 +484,7 @@ def input_stepped_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_ty
     index_range = print_index_range_menu()
     quantity_range = printQuantityRangeMenu()
 
-    # ZA is still using middleware for deal creation
-    if zone == "ZA":
-        promotion_response = input_deal_to_account_middleware(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
-    else:
-        promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
+    promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
     
     if zone == "CO" or zone == "MX":
         cart_response = input_stepped_free_good_to_cart_calculation_v2(promotion_response, accounts, zone.upper(), environment.upper(), skus, index_range, quantity_range)
