@@ -1,5 +1,5 @@
 from products import request_get_offers_microservice
-from beer_recommender import request_quick_order, request_forgotten_items, request_sell_up
+from beer_recommender import request_quick_order, request_forgotten_items
 from mass_populator.log import *
 
 logger = logging.getLogger(__name__)
@@ -35,7 +35,8 @@ def populate_recommendation(country, environment, account_id):
     logger.debug("Available_products to populate in recommendations: {available_products} items".format(
         available_products=len(enabled_skus)))
 
-    if len(enabled_skus) >= 25:
+    min_amount = 20
+    if len(enabled_skus) >= min_amount:
         # Request for Quick Order
         if "success" != request_quick_order(country, environment, account_id, enabled_skus):
             logger.error(log(Message.RECOMMENDER_QUICK_ORDER_ERROR, {
@@ -45,8 +46,5 @@ def populate_recommendation(country, environment, account_id):
         if "success" != request_forgotten_items(country, environment, account_id, enabled_skus):
             logger.error(log(Message.RECOMMENDER_FORGOTTEN_ITEMS_ERROR, {
                          "account_id": account_id}))
-
-        # Request for Sell Up
-        if "success" != request_sell_up(country, environment, account_id, enabled_skus):
-            logger.error(log(Message.RECOMMENDER_SELL_UP_ERROR,
-                             {"account_id": account_id}))
+    else:
+        logger.warning("Not enough products to populate recommendations. Min amount is {}".format(str(min_amount)))

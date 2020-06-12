@@ -7,9 +7,9 @@ logger = logging.getLogger(__name__)
 def populate_recomendations(environment):
     country = "ZA"
     account_id_poc_1 = "9883300101"
-    account_id_poc_3 = "9883300103"
+    account_id_poc_2 = "9883300102"
     
     populate_recommendation(country, environment, account_id_poc_1)
-    populate_recommendation(country, environment, account_id_poc_3)
+    populate_recommendation(country, environment, account_id_poc_2)
     
     logger.info("Beer Recommender populating finalized.")
