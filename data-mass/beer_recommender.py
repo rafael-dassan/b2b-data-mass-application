@@ -4,6 +4,7 @@ import time
 from datetime import date, datetime, timedelta
 import calendar
 from products import *
+from json import loads
 
 # Create beer recommender in microservice
 def create_beer_recommender_microservice(account_id, zone, environment, delivery_center_id):
@@ -320,3 +321,49 @@ def get_header_request_recommender(zone, environment):
         }
         
     return request_headers
+
+
+def get_recommendation_by_account(abi_id, zone, environment, use_case):
+    headers = get_header_request(zone, 'true')
+
+    request_url = get_microservice_base_url(environment, 'true') + '/global-recommendation/?useCase=' + use_case + \
+                  '&useCaseId=' + abi_id + '&useCaseType=ACCOUNT'
+
+    response = place_request('GET', request_url, '', headers)
+
+    recommendation_data = loads(response.text)
+    content = recommendation_data['content']
+
+    if response.status_code == 200 and len(content) != 0:
+        return recommendation_data
+    elif response.status_code == 200 and len(content) == 0:
+        print(text.Yellow + '\n- [Global Recommendation Service] The account ' + abi_id
+              + ' does not have recommendation type ' + use_case)
+        return 'not_found'
+    else:
+        print(text.Red + '\n- [Global Recommendation Service] Failure to retrieve a recommendation. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
+        return 'false'
+
+
+def delete_recommendation_by_id(environment, recommendation_data):
+    recommendation_id = recommendation_data['content'][0]['id']
+
+    headers = {
+        'requestTraceId': str(uuid1()),
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYi1pbmJldiIsImF1ZCI6ImFiaS1taWNyb3Nlc'
+                         'nZpY2VzIiwiZXhwIjoxNjE2MjM5MDIyLCJpYXQiOjE1MTYyMzkwMjIsInVwZGF0ZWRfYXQiOjExMTExMTEsIm5hbWUiOi'
+                         'J1c2VyQGFiLWluYmV2LmNvbSIsImFjY291bnRJRCI6IiIsInVzZXJJRCI6IjIxMTgiLCJyb2xlcyI6WyJST0xFX0FETUl'
+                         'OIl19.Hpthi-Joez6m2lNiOpC6y1hfPOT5nvMtYdNnp5NqVTM'
+    }
+
+    request_url = get_microservice_base_url(environment, 'true') + '/global-recommendation/' + recommendation_id
+
+    response = place_request('DELETE', request_url, '', headers)
+
+    if response.status_code == 202:
+        return 'success'
+    else:
+        print(text.Red + '\n- [Global Recommendation Service] Failure to delete a recommendation. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
+        return 'false'
