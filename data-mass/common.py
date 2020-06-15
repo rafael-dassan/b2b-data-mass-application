@@ -783,10 +783,10 @@ def print_zone_menu_data_searching_deals():
 
 # Print zone menu for Microservice
 def print_zone_menu_for_ms():
-    zone = input(text.default_text_color + "Zone (AR, BR, DO, ZA, CO, MX): ")
-    while validate_zone_for_ms(zone.upper()) == "false":
-        print(text.Red + "\n- Invalid option\n")
-        zone = input(text.default_text_color + "Zone (AR, BR, DO, ZA, CO, MX): ")
+    zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX): ')
+    while validate_zone_for_ms(zone.upper()) == 'false':
+        print(text.Red + '\n- Invalid option\n')
+        zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX): ')
 
     return zone.upper()
 
