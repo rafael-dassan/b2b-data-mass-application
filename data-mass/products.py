@@ -678,3 +678,20 @@ def display_product_information(product_offers):
 
     print(text.default_text_color + '\nProduct Information By Account')
     print(tabulate(product_information, headers='keys', tablefmt='grid'))
+
+
+# Get SKU name
+def get_sku_name(zone, environment, sku_id):
+    # Get header request
+    headers = get_header_request(zone, 'true')
+
+    # Get url base
+    request_url = get_microservice_base_url(environment, 'false') + '/items/' + sku_id + '?includeDisabled=false'
+
+    # Place request
+    response = place_request('GET', request_url, '', headers)
+
+    json_data = loads(response.text)
+    sku_name = json_data['itemName']
+
+    return sku_name
