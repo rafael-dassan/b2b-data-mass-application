@@ -1,36 +1,8 @@
-import sys
 from json import dumps
-import time
-from datetime import date, datetime, timedelta
+from datetime import timedelta
 import calendar
 from common import *
 
-# Create delivery window on middleware
-def create_delivery_window_middleware(abi_id, zone, environment):
-    
-    listDates = returnDatesPayload()
-    # Define headers
-    headers = get_header_request(zone, 'false', 'true')
-
-    # Define URL Middleware
-    url = get_middleware_base_url(zone, environment, "v5") + "/delivery-windows"
-
-    # Body request
-    request_body = dumps({
-        "deliveryScheduleId": "{account_id}".format(account_id=abi_id),
-        "endDate": "{end_date}".format(end_date=listDates['endDate']),
-        "expirationDate": "{expiration_date}".format(expiration_date=listDates['expirationDate']),
-        "id": "{account_id}".format(account_id=abi_id),
-        "startDate": "{start_date}".format(start_date=listDates['startDate'])
-    })
-
-    # Send request
-    response = place_request("POST", url, request_body, headers)
-    
-    if response.status_code == 202:
-        return 'success'
-    else:
-        return response.status_code
 
 # Create payload for delivery date
 def get_microservice_payload_post_delivery_date(zone, accountId, environment, accountData, isAlternativeDeliveryDate, listDates):
@@ -44,6 +16,7 @@ def get_microservice_payload_post_delivery_date(zone, accountId, environment, ac
     })
 
     return request_body
+
 
 # Create delivery date in microservice
 def create_delivery_window_microservice(accountId, zone, environment, accountData, isAlternativeDeliveryDate):
@@ -66,6 +39,7 @@ def create_delivery_window_microservice(accountId, zone, environment, accountDat
         return 'success'
     else:
         return response.status_code
+
 
 # Validate alternative delivery date creation
 def validateAlternativeDeliveryDate(option):

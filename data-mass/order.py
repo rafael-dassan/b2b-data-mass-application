@@ -1,8 +1,4 @@
-import sys
-from json import dumps
-import time
-from datetime import date, datetime, timedelta
-import calendar
+from datetime import timedelta
 from products import *
 from common import *
 import json
@@ -56,7 +52,7 @@ def create_order_account(account_id, zone, environment, delivery_center_id, orde
     enabled_counter = 0
     
     while (aux_index < len(product_offers)) and (enabled_counter < 2):
-        if zone == 'ZA':
+        if zone == 'ZA' or zone == 'AR':
             sku_offer = product_offers[aux_index]
         else:
             sku_offer = product_offers[aux_index]['sku']
@@ -64,7 +60,7 @@ def create_order_account(account_id, zone, environment, delivery_center_id, orde
         # Check if the SKU is enabled on Items MS
         sku_enable = check_item_enabled(sku_offer, zone, environment)
 
-        if sku_enable != False:
+        if sku_enable:
             enabled_skus.append(sku_offer)
             enabled_counter += 1
             aux_index += 1
@@ -89,17 +85,18 @@ def create_order_account(account_id, zone, environment, delivery_center_id, orde
         print(text.default_text_color + '\nCreating Order...')
 
         # Get body request for Order
-        request_body_order = set_file_request_order(request_url, request_headers, account_id, zone, delivery_center_id, enabled_skus, allow_order_cancel, order_option)
+        request_body_order = set_file_request_order(request_url, request_headers, account_id, zone, delivery_center_id, enabled_skus,
+                                                    allow_order_cancel, order_option)
 
         # Extracts the order number created from the request's response
         order_id_created = request_body_order.text
         order_id_created = order_id_created[16:30]
 
         if request_body_order.status_code == 200:
-                print(text.Green + '\n- [Order Creation] The Order ' + order_id_created + ' has been created successfully')
-                return 'true'
+            print(text.Green + '\n- [Order Creation] The Order ' + order_id_created + ' has been created successfully')
+            return 'true'
         else:
-                return 'false'
+            return 'false'
     else:
         return 'error_len'
 
@@ -107,16 +104,16 @@ def create_order_account(account_id, zone, environment, delivery_center_id, orde
 # Define JSON to submmit Order creation
 def set_file_request_order(url, headers, abi_id, zone, delivery_center_id, enabled_skus, allow_order_cancel, order_option):
 
-    #Sets the format of the placement date of the order (current date and time)
+    # Sets the format of the placement date of the order (current date and time)
     placement_date = datetime.now()
     placement_date = placement_date.strftime('%Y-%m-%dT%H:%M:%S')
     placement_date = placement_date + '+00:00'
 
-    #Sets the format of the delivery date of the order (current date and time more one day)
+    # Sets the format of the delivery date of the order (current date and time more one day)
     delivery_date = datetime.now() + timedelta(days=1)
     delivery_date = delivery_date.strftime('%Y-%m-%d')
 
-    #Sets the format of the cancellable date of the order (current date and time more ten days)
+    # Sets the format of the cancellable date of the order (current date and time more ten days)
     cancellable_date = datetime.now() + timedelta(days=10)
     cancellable_date = cancellable_date.strftime('%Y-%m-%dT%H:%M:%S')
     cancellable_date = cancellable_date + '+00:00'

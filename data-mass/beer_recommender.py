@@ -1,9 +1,6 @@
-import sys
-from json import dumps
 import time
-from datetime import date, datetime, timedelta
-import calendar
 from products import *
+
 
 # Create beer recommender in microservice
 def create_beer_recommender_microservice(account_id, zone, environment, delivery_center_id):
@@ -20,7 +17,7 @@ def create_beer_recommender_microservice(account_id, zone, environment, delivery
     aux_index = 0
     print(text.default_text_color + '\nChecking enabled products for the account ' + account_id + '. It may take a while...')
     while aux_index < len(product_offers):
-        if zone.upper() == 'ZA':
+        if zone == 'ZA' or zone == 'AR':
             sku = product_offers[aux_index]
         else:
             sku = product_offers[aux_index]['sku']
@@ -33,37 +30,38 @@ def create_beer_recommender_microservice(account_id, zone, environment, delivery
         print(text.default_text_color + '\nAdding recommended products. Please wait...')
 
         # Get body request for Quick Order
-        request_body_quick_order = create_file_request_quick_order(request_url, request_headers, account_id, zone, enabled_skus)
+        request_body_quick_order = create_file_request_quick_order(request_url, request_headers, account_id, zone,
+                                                                   enabled_skus)
 
         # Get body request for Forgotten Items
-        request_body_forgotten_items = create_file_request_forgotten_items(request_url, request_headers, account_id, zone, enabled_skus)
+        request_body_forgotten_items = create_file_request_forgotten_items(request_url, request_headers, account_id,
+                                                                           zone, enabled_skus)
 
         # Get body request Sell Up
         request_body_sell_up = create_file_request_sell_up(request_url, request_headers, account_id, zone, enabled_skus)
 
-
-        if (request_body_quick_order.status_code == 202 and request_body_quick_order.text != '[]'):
-                quick_order = 'true'
-                print(text.Green + '\n- [Algo Selling] Quick Order Items added successfully')
+        if request_body_quick_order.status_code == 202:
+            quick_order = 'true'
+            print(text.Green + '\n- [Algo Selling] Quick Order Items added successfully')
         else:
-                quick_order = 'false'
-                print(text.Red + '\n- [Algo Selling] Failed to add Quick Order Items')
+            quick_order = 'false'
+            print(text.Red + '\n- [Algo Selling] Failed to add Quick Order Items')
 
-        if (request_body_forgotten_items.status_code == 202 and request_body_forgotten_items.text != '[]'):
-                forgotten_items = 'true'
-                print(text.Green + '\n- [Algo Selling] Forgotten Items added successfully')
+        if request_body_forgotten_items.status_code == 202:
+            forgotten_items = 'true'
+            print(text.Green + '\n- [Algo Selling] Forgotten Items added successfully')
         else:
-                forgotten_items = 'false'
-                print(text.Red + '\n- [Algo Selling] Failed to add Forgotten Items')
+            forgotten_items = 'false'
+            print(text.Red + '\n- [Algo Selling] Failed to add Forgotten Items')
 
-        if (request_body_sell_up.status_code == 202 and request_body_sell_up.text != '[]'):
-                sell_up = 'true'
-                print(text.Green + '\n- [Algo Selling] Up-Sell Items added successfully')
+        if request_body_sell_up.status_code == 202:
+            sell_up = 'true'
+            print(text.Green + '\n- [Algo Selling] Up-Sell Items added successfully')
         else:
-                sell_up = 'false'
-                print(text.Red + '\n- [Algo Selling] Failed to add Up Sell Items')
+            sell_up = 'false'
+            print(text.Red + '\n- [Algo Selling] Failed to add Up Sell Items')
 
-        if (quick_order == 'true') and (forgotten_items == 'true') and (sell_up == 'true'):
+        if quick_order == 'true' and forgotten_items == 'true' and sell_up == 'true':
             return 'true'
         else:
             return 'false'
@@ -73,11 +71,11 @@ def create_beer_recommender_microservice(account_id, zone, environment, delivery
 
 # Define JSON to submmit QUICK ORDER recommendation type
 def create_file_request_quick_order(url, headers, abi_id, zone, product_list):
-    if (zone == 'DO') or (zone == 'CL') or (zone == 'AR') or (zone == 'CO'):
+    if zone == 'DO' or zone == 'CL' or zone == 'AR' or zone == 'CO':
         language = 'es'
         text = 'Pedido Facil'
         text_description = 'Productos que ordenaste anteriormente <link>Anadir todo al camion</link>'
-    elif (zone == 'BR'):
+    elif zone == 'BR':
         language = 'pt'
         text = 'Pedido Facil'
         text_description = 'Produtos comprados anteriormente <link>Adicionar todos itens ao carrinho</link>'
@@ -132,13 +130,14 @@ def create_file_request_quick_order(url, headers, abi_id, zone, product_list):
 
     return response
 
+
 # Define JSON to submmit FORGOTTEN ITEMS recommendation type
 def create_file_request_forgotten_items(url, headers, abi_id, zone, product_list):
-    if (zone == 'DO') or (zone == 'CL') or (zone == 'AR') or (zone == 'CO'):
+    if zone == 'DO' or zone == 'CL' or zone == 'AR' or zone == 'CO':
         language = 'es'
         text = 'Productos Populares para Negocios como el tuyo'
         text_description = ''
-    elif (zone == 'BR'):
+    elif zone == 'BR':
         language = 'pt'
         text = 'Produtos Populares para Negocios como o seu'
         text_description = ''
@@ -193,13 +192,14 @@ def create_file_request_forgotten_items(url, headers, abi_id, zone, product_list
 
     return response
 
+
 # Define JSON to submmit UP SELL recommendation type
 def create_file_request_sell_up(url, headers, abi_id, zone, product_list):
-    if (zone == 'DO') or (zone == 'CL') or (zone == 'AR') or (zone == 'CO'):
+    if zone == 'DO' or zone == 'CL' or zone == 'AR' or zone == 'CO':
         language = 'es'
         text = 'Productos Populares para Negocios como el tuyo'
         text_description = 'Los Productos mas Vendidos en tu Zona'
-    elif (zone == 'BR'):
+    elif zone == 'BR':
         language = 'pt'
         text = 'Produtos Populares para Negocios como o seu'
         text_description = 'Os Produtos mais Vendidos em tua região'
@@ -248,6 +248,7 @@ def create_file_request_sell_up(url, headers, abi_id, zone, product_list):
 
     return response
 
+
 def request_quick_order(zone, environment, account_id, products):
     # Define headers
     request_headers = get_header_request_recommender(zone, environment)
@@ -257,10 +258,11 @@ def request_quick_order(zone, environment, account_id, products):
     # Get Response
     response = create_file_request_quick_order(request_url, request_headers, account_id, zone, products)
     
-    if response.status_code == 202 and response.text != "[]":
+    if response.status_code == 202:
         return 'success'
     else:
         return 'false'
+
 
 def request_forgotten_items(zone, environment, account_id, products):
     # Define headers
@@ -271,10 +273,11 @@ def request_forgotten_items(zone, environment, account_id, products):
     # Get Response
     response = create_file_request_forgotten_items(request_url, request_headers, account_id, zone, products)
 
-    if response.status_code == 202 and response.text != "[]":
+    if response.status_code == 202:
         return 'success'
     else:
         return 'false'
+
 
 def request_sell_up(zone, environment, account_id, products):
     # Define headers
@@ -285,10 +288,11 @@ def request_sell_up(zone, environment, account_id, products):
     # Get Response
     response = create_file_request_sell_up(request_url, request_headers, account_id, zone, products)
 
-    if response.status_code == 202 and response.text != "[]":
+    if response.status_code == 202:
         return 'success'
     else:
         return 'false'
+
 
 # Define an exclusive header for Recommended Products
 def get_header_request_recommender(zone, environment):

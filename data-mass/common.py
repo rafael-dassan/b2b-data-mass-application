@@ -130,24 +130,24 @@ def validateDealType(deal_type):
 
 # Validate zone
 def validateZone(isMiddleware, zone):
-    if isMiddleware == "true":
+    if isMiddleware == 'true':
         switcher = {
-            "ZA": "true",
-            "AR": "true",
-            "CL": "true"
+            'CL': 'true'
         }
 
-        value = switcher.get(zone, "false")
+        value = switcher.get(zone, 'false')
         return value
     else:
         switcher = {
-            "DO": "true",
-            "ZA": "true",
-            "BR": "true",
-            "CO": "true"
+            'DO': 'true',
+            'ZA': 'true',
+            'BR': 'true',
+            'CO': 'true',
+            'AR': 'true',
+            'MX': 'true'
         }
 
-        value = switcher.get(zone, "false")
+        value = switcher.get(zone, 'false')
         return value
 
 
@@ -179,30 +179,6 @@ def validate_zone_data_searching_deals(zone):
     return value
 
 
-def validate_zone_data_searching(zone):
-    switcher = {
-        'BR': 'true',
-        'DO': 'true',
-        'ZA': 'true',
-        'CO': 'true'
-    }
-
-    value = switcher.get(zone, 'false')
-    return value
-
-
-def validate_zone_for_order(zone):
-    switcher = {
-        'BR': 'true',
-        'DO': 'true',
-        'ZA': 'true',
-        'CO': 'true'
-    }
-
-    value = switcher.get(zone, 'false')
-    return value
-
-
 def validate_zone_for_inventory(zone):
     switcher = {
         "ZA": "true",
@@ -228,11 +204,12 @@ def validate_zone_for_deals(zone):
 
 def validate_zone_for_ms(zone):
     switcher = {
-        "BR": "true",
-        "DO": "true",
-        "ZA": "true",
-        "CO": "true",
-        "MX": "true"
+        'BR': 'true',
+        'DO': 'true',
+        'ZA': 'true',
+        'CO': 'true',
+        'MX': 'true',
+        'AR': 'true'
     }
 
     value = switcher.get(zone, "false")
@@ -804,31 +781,12 @@ def print_zone_menu_data_searching_deals():
     return zone.upper()
 
 
-def print_zone_menu_data_searching():
-    zone = input(text.default_text_color + 'Zone (BR, DO, ZA, CO): ')
-    while validate_zone_data_searching(zone.upper()) == 'false':
-        print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (BR, DO, ZA, CO): ')
-
-    return zone.upper()
-
-
 # Print zone menu for Microservice
 def print_zone_menu_for_ms():
-    zone = input(text.default_text_color + "Zone (BR, DO, ZA, CO, MX): ")
-    while validate_zone_for_ms(zone.upper()) == "false":
-        print(text.Red + "\n- Invalid option\n")
-        zone = input(text.default_text_color + "Zone (BR, DO, ZA, CO, MX): ")
-
-    return zone.upper()
-
-
-# Print zone menu for orders
-def print_zone_menu_for_order():
-    zone = input(text.default_text_color + 'Zone (BR, DO, ZA, CO): ')
-    while validate_zone_for_order(zone.upper()) == 'false':
+    zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX): ')
+    while validate_zone_for_ms(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (BR, DO, ZA, CO): ')
+        zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX): ')
 
     return zone.upper()
 
@@ -905,7 +863,7 @@ def printPaymentMethodMenu(zone):
         value = switcher.get(paymentMethod, 'false')
         return value
 
-    elif zone == 'DO':
+    elif zone == 'DO' or zone == 'CO':
         paymentMethod = input(text.default_text_color + 'Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ')
         while paymentMethod == '' or (int(paymentMethod) != 1 and int(paymentMethod) != 2 and int(paymentMethod) != 3):
             print(text.Red + '\n- Invalid option\n')
@@ -999,23 +957,26 @@ def print_input_phone():
 
 # Validate State in registration flow
 def validate_state(zone):
-    if (zone == "BR"):
-        state = "RS"
+    if zone == 'BR':
+        state = 'RS'
 
-    elif (zone == "DO"):
-        state = "STO DGO"
+    elif zone == 'DO':
+        state = 'STO DGO'
 
-    elif (zone == "ZA"):
-        state = "Free State"
+    elif zone == 'ZA':
+        state = 'Free State'
 
-    elif (zone == "CO"):
-        state = "SAN ALBERTO"
+    elif zone == 'CO':
+        state = 'San Alberto'
 
-    elif (zone == "MX"):
-        state = "Cidade do México"
+    elif zone == 'MX':
+        state = 'Cidade do México'
 
-    else:
-        state = "CAPITAL FEDERAL"
+    elif zone == 'AR':
+        state = 'Corrientes'
+
+    elif zone == 'CL':
+        state = 'Los Lagos'
 
     return state
 
@@ -1163,17 +1124,17 @@ def print_environment_menu_in_user_create_iam():
 
 
 # Print zone simulation menu
-def print_zone_simulation_menu(is_middleware="true"):
-    if is_middleware == "true":
-        zone = input(text.default_text_color + "Zone (AR, CL): ")
-        while validateZone("true", zone.upper()) == "false":
-            print(text.Red + "\n- Invalid option\n")
-            zone = input(text.default_text_color + "Zone (AR, CL): ")
+def print_zone_simulation_menu(is_middleware='true'):
+    if is_middleware == 'true':
+        zone = input(text.default_text_color + 'Zone (CL): ')
+        while validateZone('true', zone.upper()) == 'false':
+            print(text.Red + '\n- Invalid option\n')
+            zone = input(text.default_text_color + 'Zone (CL): ')
     else:
-        zone = input(text.default_text_color + "Zone (ZA, DO, BR, CO): ")
-        while validateZone("false", zone.upper()) == "false":
-            print(text.Red + "\n- Invalid option\n")
-            zone = input(text.default_text_color + "Zone (ZA, DO, BR, CO): ")
+        zone = input(text.default_text_color + 'Zone (AR, ZA, DO, BR, CO, MX): ')
+        while validateZone('false', zone.upper()) == 'false':
+            print(text.Red + '\n- Invalid option\n')
+            zone = input(text.default_text_color + 'Zone (AR, ZA, DO, BR, CO, MX): ')
 
     return zone.upper()
 
