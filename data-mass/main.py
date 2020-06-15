@@ -7,6 +7,8 @@ from invoice import *
 from order import *
 from combos import *
 from deals import *
+from category_magento import *
+from products_magento import *
 import user_creation_magento as user_magento
 import user_creation_v3 as user_v3
 from simulation import process_simulation_microservice, process_simulation_middleware
@@ -46,7 +48,9 @@ def showMenu():
             '0': finishApplication,
             '1': create_user_magento_menu,
             '2': registration_user_iam,
-            '3': associateUserToAccount
+            '3': associateUserToAccount,
+            '4': get_categories_menu,
+            '5': associate_product_to_category_menu
         }
     else:
         finishApplication()
@@ -142,7 +146,8 @@ def input_orders_to_account():
         print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
-    print(text.default_text_color + '\nChecking enabled products for the account ' + abi_id + '. It may take a while...')
+    print(
+        text.default_text_color + '\nChecking enabled products for the account ' + abi_id + '. It may take a while...')
 
     # Call function to check if the account has products inside
     products_inventory_account = request_get_offers_microservice(abi_id, zone.upper(), environment.upper(),
@@ -170,7 +175,8 @@ def input_orders_to_account():
                 order_params = configure_order_params(zone.upper(), environment.upper(), 2)
                 printFinishApplicationMenu()
     else:
-        print(text.Red + '\n- [Order Creation] The account has no products inside. Use the menu option 02 to add them first')
+        print(
+            text.Red + '\n- [Order Creation] The account has no products inside. Use the menu option 02 to add them first')
         printFinishApplicationMenu()
 
 
@@ -229,7 +235,8 @@ def check_simulation_service_account_microservice_menu():
     input_order_combo = input(text.default_text_color + "Would you like to include a new combo for simulation? (y/n) ")
     while input_order_combo.upper() != "Y" and input_order_combo.upper() != "N":
         print(text.Red + "\n- Invalid option\n")
-        input_order_combo = input(text.default_text_color + "Would you like to include a new combo for simulation? (y/n) ")
+        input_order_combo = input(
+            text.default_text_color + "Would you like to include a new combo for simulation? (y/n) ")
 
     if input_order_combo.upper() == "Y":
         more_combo = "Y"
@@ -248,7 +255,8 @@ def check_simulation_service_account_microservice_menu():
     input_order_empties = input(text.default_text_color + "Would you like to include a new empties sku for simulation? (y/n) ")
     while input_order_empties.upper() != "Y" and input_order_empties.upper() != "N":
         print(text.Red + "\n- Invalid option\n")
-        input_order_empties = input(text.default_text_color + "Would you like to include a new empties sku for simulation? (y/n) ")
+        input_order_empties = input(
+            text.default_text_color + "Would you like to include a new empties sku for simulation? (y/n) ")
 
     if input_order_empties.upper() == "Y":
         more_empties = "Y"
@@ -273,7 +281,8 @@ def check_simulation_service_account_microservice_menu():
     else:
         payment_term = 0
 
-    process_simulation_microservice(zone, environment, abi_id, account, order_items, order_combos, empties_skus, payment_method, payment_term)
+    process_simulation_microservice(zone, environment, abi_id, account, order_items, order_combos, empties_skus,
+                                    payment_method, payment_term)
     printFinishApplicationMenu()
 
 
@@ -336,11 +345,13 @@ def inputInventoryToProduct():
         printFinishApplicationMenu()
 
     # Call function to check if the account has products inside
-    products_inventory_account = request_get_account_product_assortment(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'])
+    products_inventory_account = request_get_account_product_assortment(abi_id, zone.upper(), environment.upper(),
+                                                                        account[0]['deliveryCenterId'])
 
     if len(products_inventory_account) > 0:
         # Call function to display the SKUs on the screen
-        product_offers = display_available_products_account(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'])
+        product_offers = display_available_products_account(abi_id, zone.upper(), environment.upper(),
+                                                            account[0]['deliveryCenterId'])
 
         if product_offers == "true":
             print(text.Green + "\n- [Inventory] The inventory of the SKU has been added successfully.")
@@ -352,7 +363,8 @@ def inputInventoryToProduct():
                 print(text.Red + "\n- [Inventory] Something went wrong, please try again.")
                 printFinishApplicationMenu()
     else:
-        print(text.Red + "\n- [Inventory] The account has no products inside. Use the menu option 02 to add them first.")
+        print(
+            text.Red + "\n- [Inventory] The account has no products inside. Use the menu option 02 to add them first.")
         printFinishApplicationMenu()
 
 
@@ -373,7 +385,8 @@ def input_recommendation_to_account_menu():
         printFinishApplicationMenu()
 
     # Call function to add Beer Recommender to the account
-    beer_recommender = create_beer_recommender_microservice(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'])
+    beer_recommender = create_beer_recommender_microservice(abi_id, zone.upper(), environment.upper(),
+                                                            account[0]['deliveryCenterId'])
 
     if beer_recommender == 'true':
         print(text.Green + '\n- [Algo Selling] All recommended products were added successfully')
@@ -469,13 +482,16 @@ def inputDealsMenu():
     if selectionStructure == "1":
         input_discount_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(), environment.upper())
     elif selectionStructure == "2":
-        input_stepped_discount_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(), environment.upper())
+        input_stepped_discount_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(),
+                                          environment.upper())
     elif selectionStructure == "3":
         input_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(), environment.upper())
     elif selectionStructure == "4":
-        input_stepped_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(), environment.upper())
+        input_stepped_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(),
+                                           environment.upper())
     else:
-        input_stepped_discount_with_qtd_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(), environment.upper())
+        input_stepped_discount_with_qtd_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(),
+                                                   environment.upper())
 
     printFinishApplicationMenu()
 
@@ -710,7 +726,8 @@ def create_account_menu():
         printFinishApplicationMenu()
 
     # Call add products to account function
-    products = add_products_to_account_microservice(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'])
+    products = add_products_to_account_microservice(abi_id, zone.upper(), environment.upper(),
+                                                    account[0]['deliveryCenterId'])
 
     if products != 'success':
         print(text.Red + '\n\n- [Products] Something went wrong, please try again')
@@ -924,6 +941,54 @@ def create_invoice_menu():
 
     create_invoice_request(abi_id, zone.upper(), environment.upper(), order_id)
 
+
+def get_categories_menu():
+    """Get categories
+    Input Arguments:
+        - Country (BR, DO, AR, CL, ZA, CO)
+        - Environment (UAT, SIT)
+        - Parent id (default: 0)
+    """
+    country = printCountryMenuInUserCreation()
+    environment = printEnvironmentMenuInUserCreation()
+    parent_id = print_input_number_with_default('Parent id')
+    
+    # Get categories 
+    categories = get_categories(country, environment, parent_id)
+    if categories:
+        print("Categories: [id, name]")
+        for category in categories:
+            print("- {id}, {name}".format(id=category['id'],name=category['name']))
+    else:
+        print("{text_red}{not_found}".format(text_red=text.Red, not_found="Categories not found"))
+        printFinishApplicationMenu()
+
+def associate_product_to_category_menu():
+    """Associate product to category
+    Input Arguments:
+        - Country (BR, DO, AR, CL, ZA, CO)
+        - Environment (UAT, SIT)
+        - Product SKU
+        - Category ID
+    """
+    country = printCountryMenuInUserCreation()
+    environment = printEnvironmentMenuInUserCreation()
+    product_sku = print_input_text('Product SKU')
+    category_id = print_input_number('Category ID')
+
+    # Enable product
+    enable_product_response = request_enable_product(country, environment, product_sku)
+    if enable_product_response == 'false':
+        print("{text_red}{fail}".format(text_red=text.Red, fail="Fail to enable product"))
+        printFinishApplicationMenu()
+    else:
+        # Associate product to category
+        response_associate_product_to_category = associate_product_to_category(country, environment, product_sku, category_id)
+        if response_associate_product_to_category == 'false':
+            print("{text_red}{fail}".format(text_red=text.Red, fail="Fail to associate product to category"))
+            printFinishApplicationMenu()
+    
+    print("{text_green}{success}".format(text_green=text.Green, success="Success to enable and to associate product to category"))
 
 # Init
 try:

@@ -435,7 +435,7 @@ def get_azure_iam_base_url(environment, country):
 
 
 # Returns Magento User Registration Integration Access Token
-def get_magento_access_token(environment, country):
+def get_magento_user_registration_access_token(environment, country):
     access_token = {
         "UAT": {
             "BR": "qq8t0w0tvz7nbn4gxo5jh9u62gohvjrw",
@@ -452,6 +452,29 @@ def get_magento_access_token(environment, country):
             "CL": "30lqki06nbdegugcmdb0ttm9yppnmoec",
             "ZA": "nmvvuk58lc425a7p5l55orrkgh0jprr2",
             "CO": "walt5dp3keiq2du0f30kir21v13f3u0v"
+        }
+    }
+
+    return access_token.get(environment).get(country)
+
+# Returns Magento Datamass Application Access Token
+def get_magento_datamass_access_token(environment, country):
+    access_token = {
+        "UAT": {
+            "BR": "8z2z3y523hoqkcqci8q58afuoue81bns",
+            "DO": "js4gd8y9wkqogf7eo2s4uy6oys15lfkf",
+            "AR": "a34o213zgisn67efeg0zbq04sqg667qk",
+            "CL": "a34o213zgisn67efeg0zbq04sqg667qk",
+            "ZA": "0seca4btewbr3e1opma4je2x8ftj57wx",
+            "CO": "meqei3q5ztreebdpb5vyej378mt2o8qy"
+        },
+        "SIT": {
+            "BR": "q6yti2dxmhp0e2xjgyvtt72nziss6ptp",
+            "DO": "tgqnjlqpfupf0i4zxcs2doqx409k1hyq",
+            "AR": "hzp6hw65oqiyeyv8ozfzunex0nc1rff8",
+            "CL": "hzp6hw65oqiyeyv8ozfzunex0nc1rff8",
+            "ZA": "fde80w10jbbaed1mrz6yg0pwy1vzfo48",
+            "CO": "bl9cnb3ngb7almxml6rmvma3lyl8b1st"
         }
     }
 
@@ -527,6 +550,8 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(1), text.Yellow + 'Create User')
         print(text.default_text_color + str(2), text.Yellow + 'Create User IAM')
         print(text.default_text_color + str(3), text.Yellow + 'Associate Account to user')
+        print(text.default_text_color + str(4), text.Yellow + 'List Categories')
+        print(text.default_text_color + str(5), text.Yellow + 'Associate Product to category')
 
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_option_request_selection(selection) == 'false':
@@ -535,6 +560,8 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(1), text.Yellow + 'Create User')
             print(text.default_text_color + str(2), text.Yellow + 'Create User IAM')
             print(text.default_text_color + str(3), text.Yellow + 'Associate Account to user')
+            print(text.default_text_color + str(4), text.Yellow + 'List Categories')
+            print(text.default_text_color + str(5), text.Yellow + 'Associate Product to category')
 
             selection = input(text.default_text_color + '\nPlease select: ')
     else:
@@ -1111,6 +1138,38 @@ def print_input_username():
         print(text.Red + "\n- The Username should not be empty")
         username = input(text.default_text_color + "Username: ")
     return username
+
+def print_input_number_with_default(input_text, default_value = 0):
+    """Validate input number with default value"""
+    while(True):
+        input_number = input("{default_text_color}{input_text} - [default: {default_value}]: ".format(
+            default_text_color=text.default_text_color,
+            input_text=input_text, default_value=default_value)).strip() or str(default_value)
+        
+        if input_number.lstrip("-").isdigit():
+            return int(input_number)
+
+
+def print_input_number(input_text):
+    """Validate input number"""
+    while(True):
+        input_number = input("{default_text_color}{input_text}: ".format(
+            default_text_color=text.default_text_color,
+            input_text=input_text)).strip()
+        
+        if input_number.lstrip("-").isdigit():
+            return int(input_number)
+
+
+def print_input_text(input_text):
+    """Validate input text"""
+    while(True):
+        input_str = input("{default_text_color}{input_text}: ".format(
+            default_text_color=text.default_text_color,
+            input_text=input_text)).strip()
+        
+        if not is_blank(input_str):
+            return input_str
 
 
 def validate_country_menu_in_user_create_iam(country):
