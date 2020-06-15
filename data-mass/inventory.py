@@ -94,7 +94,7 @@ def update_sku_inventory_microservice(zone, environment, delivery_center_id, lis
     request_url = get_microservice_base_url(environment) + '/inventory-relay/add'
 
     quantity = 999999
-    if int(sku_quantity) > 0:
+    if int(sku_quantity) >= 0:
         specific_quantity = int(sku_quantity)
 
     inventory_list = []
