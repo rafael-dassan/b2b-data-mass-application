@@ -232,7 +232,7 @@ def add_products_to_account_microservice(abi_id, zone, environment, delivery_cen
     # Insert products in account
     result = request_post_products_account_microservice(abi_id, zone, environment, delivery_center_id, products_data)
 
-    if zone == 'ZA' or zone == 'CO' and zone == 'MX':
+    if zone == 'ZA' or zone == 'CO' or zone == 'MX':
         skus_id = list()
         aux_index = 0
 
