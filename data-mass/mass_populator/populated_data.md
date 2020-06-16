@@ -62,65 +62,149 @@ The countries BR and DO will have the Users created with the following Accounts 
 
 #### DO
 
-- User created with email: **abiautotest+2@mailinator.com**, password: **Password1**, with Account ID **9883300001**
-- User created with email: **abiautotest+100@mailinator.com**, password: **Pass()12**, with Account ID **9883300001** and **9883300003**
- 
+Accounts list:
+| Name | Id |
+| --- | --- |
+| account_id_poc_1 | 9883300001 |
+| account_id_poc_2 | 9883300002 |
+| account_id_poc_3 | 9883300003 |
 
-- User created with email: **abiautotest+1@gmail.com**, password: **Password1**, with Account ID **9883300002**, with phone **+5519992666528**
-- User created with email: **abiautotest+2@gmail.com**, password: **Password1**, with Account ID **9883300002** and **9883300003**
-- User created with email: **abiautotest+100@gmail.com**, password: **Pass()12**, with Account ID **9883300002** and **9883300003**
+
+- User created with email: **qm.team.do+222@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.do+333@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.do+10000@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_1,account_id_poc_3]**
+
+- User created with email: **qm.team.do+1@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.do+2@gmail.com**, password: **Password1**, with Account **[account_id_poc_2,account_id_poc_3]**
+- User created with email: **qm.team.do+3@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.do+100@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_2,account_id_poc_3]**
+
+- User created with email: **qm.team.do+11@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.do+22@gmail.com**, password: **Password1**, with Account **[account_id_poc_2,account_id_poc_3]**
+- User created with email: **qm.team.do+33@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.do+1000@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_2,account_id_poc_3]**
+
 
 
 #### BR
 
-- User created with email: **abiautotest+2@mailinator.com**, password: **Password1**, with Account ID **99481543000135** 
-- User created with email: **abiautotest+100@mailinator.com**, password: **Pass()12**, with Account ID **99481543000135** and **42282891000166**
+Accounts list:
+| Name | Id |
+| --- | --- |
+| account_id_poc_1 | 99481543000135 |
+| account_id_poc_2 | 56338831000122 |
+| account_id_poc_3 | 42282891000166 |
 
 
-- User created with email: **abiautotest+1@gmail.com**, password: **Password1**, with Account ID **56338831000122** 
-- User created with email: **abiautotest+2@gmail.com**, password: **Password1**, with Account ID **56338831000122** and **42282891000166**
-- User created with email: **abiautotest+100@gmail.com**, password: **Pass()12**, with Account ID **56338831000122** and **42282891000166** 
+- User created with email: **qm.team.br+222@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.br+333@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.br+10000@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_1,account_id_poc_3]**
+
+- User created with email: **qm.team.br+1@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.br+2@gmail.com**, password: **Password1**, with Account **[account_id_poc_2,account_id_poc_3]**
+- User created with email: **qm.team.br+3@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.br+100@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_2,account_id_poc_3]**
+
+- User created with email: **qm.team.br+11@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.br+22@gmail.com**, password: **Password1**, with Account **[account_id_poc_2,account_id_poc_3]**
+- User created with email: **qm.team.br+33@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.br+1000@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_2,account_id_poc_3]**
 
 #### AR
 
-- User created with email: **abiautotest+2@mailinator.com**, password: **Password1**, with Account ID **5444385012** 
-- User created with email: **abiautotest+100@mailinator.com**, password: **Pass()12**, with Account ID **5444385012** and **1669325565**
+Accounts list:
+| Name | Id |
+| --- | --- |
+| account_id_poc_1 | 5444385012 |
+| account_id_poc_2 | 9932094352 |
+| account_id_poc_3 | 1669325565 |
 
 
-- User created with email: **abiautotest+1@gmail.com**, password: **Password1**, with Account ID **9932094352** 
-- User created with email: **abiautotest+2@gmail.com**, password: **Password1**, with Account ID **9932094352** and **1669325565**
-- User created with email: **abiautotest+100@gmail.com**, password: **Pass()12**, with Account ID **9932094352** and **1669325565** 
+- User created with email: **qm.team.ar+222@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.ar+333@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.ar+10000@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_1,account_id_poc_3]**
+
+- User created with email: **qm.team.ar+1@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.ar+2@gmail.com**, password: **Password1**, with Account **[account_id_poc_2,account_id_poc_3]**
+- User created with email: **qm.team.ar+3@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.ar+100@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_2,account_id_poc_3]**
+
+- User created with email: **qm.team.ar+11@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.ar+22@gmail.com**, password: **Password1**, with Account **[account_id_poc_2,account_id_poc_3]**
+- User created with email: **qm.team.ar+33@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.ar+1000@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_2,account_id_poc_3]** 
 
 #### CL
 
-- User created with email: **abiautotest+2@mailinator.com**, password: **Password1**, with Account ID **2323434554** 
-- User created with email: **abiautotest+100@mailinator.com**, password: **Pass()12**, with Account ID **2323434554** and **3325534210**
+Accounts list:
+| Name | Id |
+| --- | --- |
+| account_id_poc_1 | 2323434554 |
+| account_id_poc_2 | 1020303040 |
+| account_id_poc_3 | 3325534210 |
 
 
-- User created with email: **abiautotest+1@gmail.com**, password: **Password1**, with Account ID **1020303040** 
-- User created with email: **abiautotest+2@gmail.com**, password: **Password1**, with Account ID **1020303040** and **3325534210**
-- User created with email: **abiautotest+100@gmail.com**, password: **Pass()12**, with Account ID **1020303040** and **3325534210** 
+- User created with email: **qm.team.cl+222@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.cl+333@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.cl+10000@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_1,account_id_poc_3]**
+
+- User created with email: **qm.team.cl+1@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.cl+2@gmail.com**, password: **Password1**, with Account **[account_id_poc_2,account_id_poc_3]**
+- User created with email: **qm.team.cl+3@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.cl+100@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_2,account_id_poc_3]**
+
+- User created with email: **qm.team.cl+11@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.cl+22@gmail.com**, password: **Password1**, with Account **[account_id_poc_2,account_id_poc_3]**
+- User created with email: **qm.team.cl+33@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.cl+1000@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_2,account_id_poc_3]**
 
 #### ZA
 
-- User created with email: **abiautotest+2@mailinator.com**, password: **Password1**, with Account ID **9883300101** 
-- User created with email: **abiautotest+100@mailinator.com**, password: **Pass()12**, with Account ID **9883300101** and **9883300103**
+Accounts list:
+| Name | Id |
+| --- | --- |
+| account_id_poc_1 | 9883300101 |
+| account_id_poc_2 | 9883300102 |
+| account_id_poc_3 | 9883300103 |
 
 
-- User created with email: **abiautotest+1@gmail.com**, password: **Password1**, with Account ID **9883300102** 
-- User created with email: **abiautotest+2@gmail.com**, password: **Password1**, with Account ID **9883300102** and **9883300103**
-- User created with email: **abiautotest+100@gmail.com**, password: **Pass()12**, with Account ID **9883300102** and **9883300103** 
+- User created with email: **qm.team.za+222@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.za+333@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.za+10000@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_1,account_id_poc_3]**
+
+- User created with email: **qm.team.za+1@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.za+2@gmail.com**, password: **Password1**, with Account **[account_id_poc_2,account_id_poc_3]**
+- User created with email: **qm.team.za+3@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.za+100@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_2,account_id_poc_3]**
+
+- User created with email: **qm.team.za+11@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.za+22@gmail.com**, password: **Password1**, with Account **[account_id_poc_2,account_id_poc_3]**
+- User created with email: **qm.team.za+33@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.za+1000@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_2,account_id_poc_3]**
 
 #### CO
 
-- User created with email: **abiautotest+2@mailinator.com**, password: **Password1**, with Account ID **9883300201**
-- User created with email: **abiautotest+100@mailinator.com**, password: **Pass()12**, with Account ID **9883300201** and **9883300203**
- 
+Accounts list:
+| Name | Id |
+| --- | --- |
+| account_id_poc_1 | 9883300201 |
+| account_id_poc_2 | 9883300202 |
+| account_id_poc_3 | 9883300203 |
 
-- User created with email: **abiautotest+1@gmail.com**, password: **Password1**, with Account ID **9883300202**, with phone **+5519992666528**
-- User created with email: **abiautotest+2@gmail.com**, password: **Password1**, with Account ID **9883300202** and **9883300203**
-- User created with email: **abiautotest+100@gmail.com**, password: **Pass()12**, with Account ID **9883300202** and **9883300203** 
 
+- User created with email: **qm.team.co+222@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.co+333@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.co+10000@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_1,account_id_poc_3]**
+
+- User created with email: **qm.team.co+1@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.co+2@gmail.com**, password: **Password1**, with Account **[account_id_poc_2,account_id_poc_3]**
+- User created with email: **qm.team.co+3@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.co+100@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_2,account_id_poc_3]**
+
+- User created with email: **qm.team.co+11@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.co+22@gmail.com**, password: **Password1**, with Account **[account_id_poc_2,account_id_poc_3]**
+- User created with email: **qm.team.co+33@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
+- User created with email: **qm.team.co+1000@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_2,account_id_poc_3]**
 
 ### Recommendations
 The countries will have the recommendations described bellow.
