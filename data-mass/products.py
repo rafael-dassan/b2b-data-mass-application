@@ -3,7 +3,6 @@ from json import loads, dumps
 import concurrent.futures
 from common import *
 from tabulate import tabulate
-from inventory import update_sku_inventory_microservice
 
 
 def generate_random_price_ids(qtd):
@@ -228,23 +227,9 @@ def add_products_to_account_microservice(abi_id, zone, environment, delivery_cen
 
     # Builds a list of products to be posted, along with their generated random IDs for price and inclusion in account
     products_data = list(zip(generate_random_price_ids(qtd), slice_array_products(qtd, all_products_microservice)))
-    sku_info = slice_array_products(qtd, all_products_microservice)
+
     # Insert products in account
     result = request_post_products_account_microservice(abi_id, zone, environment, delivery_center_id, products_data)
-
-    if zone == 'ZA' or zone == 'CO' or zone == 'MX' or zone == 'AR':
-        skus_id = list()
-        aux_index = 0
-
-        while aux_index <= (len(sku_info) - 1):
-            skus_id.append(sku_info[aux_index]['sku'])
-            aux_index = aux_index + 1
-
-        update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id,
-                                                       skus_id)
-
-        if update_sku != 'true':
-            print(text.Red + '\n- [Inventory] Something went wrong, please try again.')
 
     return result
 
