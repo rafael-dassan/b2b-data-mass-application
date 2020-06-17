@@ -79,7 +79,8 @@ def validate_option_request_selection(selection):
         '8': 'true',
         '9': 'true',
         '10': 'true',
-        '11': 'true'
+        '11': 'true',
+        '12': 'true'
     }
 
     value = switcher.get(selection, 'false')
@@ -192,6 +193,18 @@ def validate_zone_data_searching_deals(zone):
     return value
 
 
+def validate_zone_for_rewards(zone):
+    switcher = {
+        'BR': 'true',
+        'DO': 'true',
+        'CO': 'true',
+        'AR': 'true'
+    }
+
+    value = switcher.get(zone, 'false')
+    return value
+
+
 def validate_zone_for_inventory(zone):
     switcher = {
         "ZA": "true",
@@ -235,6 +248,14 @@ def validateStructure(option):
         return "true"
     else:
         return "false"
+
+
+# Validate rewards
+def validate_rewards(option):
+    if option == '1':
+        return 'true'
+    else:
+        return 'false'
 
 
 # Validate deals
@@ -506,6 +527,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(9), text.Yellow + 'Input combos')
         print(text.default_text_color + str(10), text.Yellow + "Create item")
         print(text.default_text_color + str(11), text.Yellow + "Create invoice")
+        print(text.default_text_color + str(12), text.Yellow + "Create rewards")
 
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_option_request_selection(selection) == 'false':
@@ -522,6 +544,7 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(9), text.Yellow + 'Input combos')
             print(text.default_text_color + str(10), text.Yellow + "Create item")
             print(text.default_text_color + str(11), text.Yellow + "Create invoice")
+            print(text.default_text_color + str(12), text.Yellow + "Create rewards")
 
             selection = input(text.default_text_color + '\nPlease select: ')
 
@@ -600,6 +623,18 @@ def print_structure_menu():
     return structure
 
 
+# Print rewards menu
+def print_rewards_menu():
+    print(text.default_text_color + str(1), text.Yellow + 'Create new program')
+    structure = input(text.default_text_color + '\nPlease select: ')
+    while validate_rewards(structure) == 'false':
+        print(text.Red + '\n- Invalid option')
+        print(text.default_text_color + str(1), text.Yellow + 'Create new program')
+        structure = input(text.default_text_color + '\nPlease select: ')
+
+    return structure
+
+
 # Print orders menu
 def print_orders_menu():
     print(text.default_text_color + '\nWhich type of order do you want to create?')
@@ -614,6 +649,7 @@ def print_orders_menu():
         structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure
+
 
 # Print deals menu
 def printDealsMenu():
@@ -827,6 +863,16 @@ def print_zone_menu_for_ms():
     while validate_zone_for_ms(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
         zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX): ')
+
+    return zone.upper()
+
+
+# Print zone menu for rewards
+def print_zone_menu_for_rewards():
+    zone = input(text.default_text_color + 'Zone (BR, DO, CO, AR): ')
+    while validate_zone_for_rewards(zone.upper()) == 'false':
+        print(text.Red + '\n- Invalid option\n')
+        zone = input(text.default_text_color + 'Zone (BR, DO, CO, AR): ')
 
     return zone.upper()
 

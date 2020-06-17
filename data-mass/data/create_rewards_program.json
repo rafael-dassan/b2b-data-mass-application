@@ -1,0 +1,80 @@
+{
+    "name": "string",
+    "rules": [
+      {
+        "ruleId": "PREMIUM",
+        "moneySpentSkuRule": {
+          "name": "PREMIUM RULE",
+          "skus": "string",
+          "amountSpent": 1000,
+          "points": 100
+        }
+      },
+      {
+        "ruleId": "CORE",
+        "moneySpentSkuRule": {
+          "name": "CORE RULE",
+          "skus": "string",
+          "amountSpent": 1000,
+          "points": 50
+        }
+      }
+    ],
+    "combos": [
+      {
+        "comboId": "string",
+        "points": 400
+      },
+      {
+        "comboId": "string",
+        "points": 500
+      },
+      {
+        "comboId": "string",
+        "points": 600
+      },
+      {
+        "comboId": "string",
+        "points": 700
+      },
+      {
+        "comboId": "string",
+        "points": 800
+      }
+    ],
+    "filter": {
+      "potential": "string",
+      "segment": "string",
+      "subsegment": "string"
+    },
+    "initialBalance": 10000,
+    "calculationType": "SUBTOTAL",
+    "freeGoodEnabled": true,
+    "categories": [
+      {
+        "categoryId": "0",
+        "categoryIdWeb": "1",
+        "description": "string",
+        "buttonLabel": "string",
+        "buttonName": "Premium-product-button",
+        "image": "string"
+      },
+      {
+        "categoryId": "2",
+        "categoryIdWeb": "3",
+        "description": "string",
+        "buttonLabel": "string",
+        "buttonName": "Core-product-button",
+        "image": "string"
+      }
+    ],
+    "termsAndConditions": [
+      {
+        "versionId": "1",
+        "documentDate": "2019-08-07T08:00:00.000Z",
+        "startDate": "2019-08-07T08:00:00.000Z",
+        "documentURL": "string",
+        "changeLog": "string"
+      }
+    ]
+  }

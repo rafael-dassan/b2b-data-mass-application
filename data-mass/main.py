@@ -7,6 +7,7 @@ from invoice import *
 from order import *
 from combos import *
 from deals import *
+from rewards import *
 from category_magento import *
 from products_magento import *
 import user_creation_magento as user_magento
@@ -32,7 +33,8 @@ def showMenu():
             '8': inputDealsMenu,
             '9': inputCombosMenu,
             '10': create_item_menu,
-            '11': create_invoice_menu
+            '11': create_invoice_menu,
+            '12': create_rewards_to_account
         }
     elif selection_structure == '2':
         switcher = {
@@ -120,8 +122,39 @@ def account_information_menu():
         printFinishApplicationMenu()
 
     display_account_information(account)
+
+
+# Input Rewards to account
+def create_rewards_to_account():
+    selectionStructure = print_rewards_menu()
+    zone = print_zone_menu_for_rewards()
+    environment = printEnvironmentMenu()
+
+    switcher = {
+        '1': 'NEW_PROGRAM',
+    }
+
+    reward_option = switcher.get(selectionStructure, 'false')
+
+    # Option to create a new program
+    if reward_option == 'NEW_PROGRAM':
+
+        create_pgm = create_new_program(zone, environment)
+
+        if create_pgm == 'error_len_sku':
+            print(text.Red + '\n- [Rewards] The zone must have at least 20 products to proceed')
+            printFinishApplicationMenu()
+        elif create_pgm == 'error_len_combo':
+            print(text.Red + '\n- [Rewards] The zone must have at least 5 combos available to proceed')
+            printFinishApplicationMenu()
+        elif create_pgm == 'false':
+            print(text.Red + "\n- [Rewards] Something went wrong, please try again.")
+            printFinishApplicationMenu()
+        else:
+            print(text.Green + '\n- [Rewards] The new program has been created successfully - ID: ' + create_pgm)
+            printFinishApplicationMenu() 
     
-    
+
 # Input Orders to account (active and cancelled ones)
 def input_orders_to_account():
     selection_structure = print_orders_menu()

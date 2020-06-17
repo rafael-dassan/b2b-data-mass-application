@@ -781,7 +781,7 @@ def input_stepped_discount_with_qtd_to_cart_calculation_v2(deal_id, accounts, zo
         return response.status_code
 
 
-def request_get_deals_promo_fusion_service(abi_id, zone, environment):
+def request_get_deals_promo_fusion_service(zone, environment, abi_id = ''):
     """Get deals data from the Promo Fusion Service
     Arguments:
         - abi_id: account_id
@@ -873,7 +873,7 @@ def display_deals_information_promo_fusion(abi_id, zone, environment):
         - environment: e.g, UAT,SIT
     Print a table containing the available deals information
     """
-    deals = request_get_deals_promo_fusion_service(abi_id, zone, environment)
+    deals = request_get_deals_promo_fusion_service(zone, environment, abi_id)
 
     combos = deals['combos']
     promotions = deals['promotions']
