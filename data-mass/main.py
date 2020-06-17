@@ -635,7 +635,9 @@ def input_products_to_account_menu():
         print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
-    products = request_get_offers_microservice(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'], True)
+    delivery_center_id = account[0]['deliveryCenterId']
+
+    products = request_get_offers_microservice(abi_id, zone.upper(), environment.upper(), delivery_center_id, True)
 
     proceed = 'N'
     if len(products) != 0:
@@ -650,10 +652,30 @@ def input_products_to_account_menu():
 
     if proceed == 'Y':
         # Call add products to account function
-        add_products = add_products_to_account_microservice(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'])
+        add_products = add_products_to_account_microservice(abi_id, zone.upper(), environment.upper(),
+                                                            delivery_center_id)
         if add_products != 'success':
             print(text.Red + '\n- [Products] Something went wrong, please try again')
             printFinishApplicationMenu()
+
+        products = request_get_offers_microservice(abi_id, zone.upper(), environment.upper(), delivery_center_id, True)
+
+        if zone.upper() == 'ZA' or zone.upper() == 'CO' or zone.upper() == 'MX' or zone.upper() == 'AR':
+            skus_id = list()
+            aux_index = 0
+
+            while aux_index <= (len(products) - 1):
+                if zone.upper() == 'ZA' or zone.upper() == 'AR':
+                    skus_id.append(products[aux_index])
+                else:
+                    skus_id.append(products[aux_index]['sku'])
+                aux_index = aux_index + 1
+
+            update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id,
+                                                           skus_id)
+
+            if update_sku != 'true':
+                print(text.Red + '\n- [Inventory] Something went wrong, please try again.')
 
 
 def input_delivery_window_menu():
@@ -714,7 +736,8 @@ def create_account_menu():
         minimum_order = None
 
     # Call create account function
-    create_account_response = create_account_ms(abi_id, name, payment_method, minimum_order, zone.upper(), environment.upper(), state)
+    create_account_response = create_account_ms(abi_id, name, payment_method, minimum_order, zone.upper(),
+                                                environment.upper(), state)
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
@@ -725,13 +748,32 @@ def create_account_menu():
         print(text.Red + '\n- [Account] Something went wrong, please try again')
         printFinishApplicationMenu()
 
+    delivery_center_id = account[0]['deliveryCenterId']
+
     # Call add products to account function
-    products = add_products_to_account_microservice(abi_id, zone.upper(), environment.upper(),
-                                                    account[0]['deliveryCenterId'])
+    products = add_products_to_account_microservice(abi_id, zone.upper(), environment.upper(), delivery_center_id)
 
     if products != 'success':
         print(text.Red + '\n\n- [Products] Something went wrong, please try again')
         printFinishApplicationMenu()
+
+    products = request_get_offers_microservice(abi_id, zone.upper(), environment.upper(), delivery_center_id, True)
+
+    if zone.upper() == 'ZA' or zone.upper() == 'CO' or zone.upper() == 'MX' or zone.upper() == 'AR':
+        skus_id = list()
+        aux_index = 0
+
+        while aux_index <= (len(products) - 1):
+            if zone.upper() == 'ZA' or zone.upper() == 'AR':
+                skus_id.append(products[aux_index])
+            else:
+                skus_id.append(products[aux_index]['sku'])
+            aux_index = aux_index + 1
+
+        update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id, skus_id)
+
+        if update_sku != 'true':
+            print(text.Red + '\n- [Inventory] Something went wrong, please try again.')
 
     if zone == 'BR':
         # Validate if is alternative delivery window
