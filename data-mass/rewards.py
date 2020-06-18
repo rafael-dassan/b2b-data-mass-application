@@ -1,8 +1,6 @@
-import sys
 from json import dumps
 import time
 from datetime import date, datetime, timedelta
-import calendar
 from products import *
 from deals import *
 from random import *
@@ -60,16 +58,16 @@ def create_new_program(zone, environment):
 
             dict_values  = {
                 'name': reward_id,
-                'rules[0].moneySpentSkuRule.skus': sku_rules_premium,
-                'rules[1].moneySpentSkuRule.skus': sku_rules_core,
-                'combos[0].comboId': generated_combos[0],
-                'combos[1].comboId': generated_combos[1],
-                'combos[2].comboId': generated_combos[2],
-                'combos[3].comboId': generated_combos[3],
-                'combos[4].comboId': generated_combos[4],
-                'filter.potential': generated_potentials,
-                'filter.segment': generated_segments,
-                'filter.subsegment': generated_subsegments,
+                'rules[0].moneySpentSkuRule.skus' : sku_rules_premium,
+                'rules[1].moneySpentSkuRule.skus' : sku_rules_core,
+                'combos[0].comboId' : generated_combos[0],
+                'combos[1].comboId' : generated_combos[1],
+                'combos[2].comboId' : generated_combos[2],
+                'combos[3].comboId' : generated_combos[3],
+                'combos[4].comboId' : generated_combos[4],
+                'filter.potential' : generated_potentials,
+                'filter.segment' : generated_segments,
+                'filter.subsegment' : generated_subsegments,
                 'categories[0].description' : categories[0],
                 'categories[0].buttonLabel' : categories[1],
                 'categories[0].image' : categories[2],
