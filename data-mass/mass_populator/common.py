@@ -11,6 +11,7 @@ from mass_populator.country.AR.user import populate_users as populate_users_ar
 from mass_populator.country.CL.user import populate_users as populate_users_cl
 from mass_populator.country.ZA.user import populate_users as populate_users_za
 from mass_populator.country.CO.user import populate_users as populate_users_co
+from mass_populator.country.AR.recommendation import populate_recomendations as populate_recommendations_ar
 from mass_populator.country.BR.recommendation import populate_recomendations as populate_recommendations_br
 from mass_populator.country.DO.recommendation import populate_recomendations as populate_recommendations_do
 from mass_populator.country.ZA.recommendation import populate_recomendations as populate_recommendations_za
@@ -67,7 +68,7 @@ def populate_users_magento(country, environment):
 
 
 def populate_recommendations(country, environment):
-    allowed_countries = ["BR", "DO", "ZA", "CO"]
+    allowed_countries = ["AR","BR", "DO", "ZA", "CO"]
 
     if (country not in allowed_countries):
         logger.info(
@@ -75,6 +76,7 @@ def populate_recommendations(country, environment):
         return False
 
     populate_recommendations_switcher = {
+        "AR": populate_recommendations_ar,
         "BR": populate_recommendations_br,
         "DO": populate_recommendations_do,
         "ZA": populate_recommendations_za,

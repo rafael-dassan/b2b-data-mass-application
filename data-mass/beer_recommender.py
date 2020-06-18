@@ -280,21 +280,6 @@ def request_forgotten_items(zone, environment, account_id, products):
         return 'false'
 
 
-def request_sell_up(zone, environment, account_id, products):
-    # Define headers
-    request_headers = get_header_request_recommender(zone, environment)
-
-    # Define url request
-    request_url = get_microservice_base_url(environment) + "/global-recommendation-relay"
-    # Get Response
-    response = create_file_request_sell_up(request_url, request_headers, account_id, zone, products)
-
-    if response.status_code == 202:
-        return 'success'
-    else:
-        return 'false'
-
-
 # Define an exclusive header for Recommended Products
 def get_header_request_recommender(zone, environment):
     # Define headers
