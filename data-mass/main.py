@@ -126,7 +126,7 @@ def account_information_menu():
 
 # Input Rewards to account
 def create_rewards_to_account():
-    selectionStructure = print_rewards_menu()
+    selection_structure = print_rewards_menu()
     zone = print_zone_menu_for_rewards()
     environment = printEnvironmentMenu()
 
@@ -134,7 +134,7 @@ def create_rewards_to_account():
         '1': 'NEW_PROGRAM',
     }
 
-    reward_option = switcher.get(selectionStructure, 'false')
+    reward_option = switcher.get(selection_structure, 'false')
 
     # Option to create a new program
     if reward_option == 'NEW_PROGRAM':
@@ -148,7 +148,7 @@ def create_rewards_to_account():
             print(text.Red + '\n- [Rewards] The zone must have at least 5 combos available to proceed')
             printFinishApplicationMenu()
         elif create_pgm == 'false':
-            print(text.Red + "\n- [Rewards] Something went wrong, please try again.")
+            print(text.Red + '\n- [Rewards] Something went wrong, please try again.')
             printFinishApplicationMenu()
         else:
             print(text.Green + '\n- [Rewards] The new program has been created successfully - ID: ' + create_pgm)

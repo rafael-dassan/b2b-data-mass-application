@@ -161,7 +161,7 @@ def generate_subsegment_information():
 def generate_categories_information(zone):
     category_info = list()
     
-    if (zone == 'DO') or (zone == 'CO') or (zone == 'AR'):
+    if zone == 'DO' or zone == 'CO' or zone == 'AR':
         category_info.append('Gana 100 puntos por cada RD $1000 pesos de compra en estos productos')
         category_info.append('COMPRA AHORA')
         category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/core/img_punto_1.png')
@@ -169,7 +169,7 @@ def generate_categories_information(zone):
         category_info.append('Gana 50 puntos por cada RD $1000 pesos de compra en estos productos')
         category_info.append('COMPRA AHORA')
         category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/core/img_punto_1.png')
-    elif (zone == 'BR'):
+    elif zone == 'BR':
         category_info.append('Ganhe 100 pontos para cada R$1000,00 gastos em compras e troque por produtos gratis.')
         category_info.append('COMPRAR AGORA')
         category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/br/premium/img-premium-br-rules-2.png')
@@ -185,10 +185,10 @@ def generate_categories_information(zone):
 def generate_terms_information(zone):
     terms_info = list()
     
-    if (zone == 'DO') or (zone == 'CO') or (zone == 'AR'):
+    if zone == 'DO' or zone == 'CO' or zone == 'AR':
         terms_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/terms/terms-co.html')
         terms_info.append('Términos iniciales introducidos al programa')
-    elif (zone == 'BR'):
+    elif zone == 'BR':
         terms_info.append('https://b2bstaticwebsagbdev.blob.core.windows.net/digitaltrade/terms/terms-br.html')
         terms_info.append('Termos iniciais introduzidos ao programa')
 
