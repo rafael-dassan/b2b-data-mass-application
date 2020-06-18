@@ -57,7 +57,7 @@ def create_new_program(zone, environment):
                 json_data = json.load(file)
 
             dict_values  = {
-                'name': reward_id,
+                'name' : reward_id,
                 'rules[0].moneySpentSkuRule.skus' : sku_rules_premium,
                 'rules[1].moneySpentSkuRule.skus' : sku_rules_core,
                 'combos[0].comboId' : generated_combos[0],

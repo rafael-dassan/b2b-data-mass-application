@@ -525,9 +525,9 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(7), text.Yellow + 'Input orders to account')
         print(text.default_text_color + str(8), text.Yellow + 'Input deals')
         print(text.default_text_color + str(9), text.Yellow + 'Input combos')
-        print(text.default_text_color + str(10), text.Yellow + "Create item")
-        print(text.default_text_color + str(11), text.Yellow + "Create invoice")
-        print(text.default_text_color + str(12), text.Yellow + "Create rewards")
+        print(text.default_text_color + str(10), text.Yellow + 'Create item')
+        print(text.default_text_color + str(11), text.Yellow + 'Create invoice')
+        print(text.default_text_color + str(12), text.Yellow + 'Create rewards')
 
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_option_request_selection(selection) == 'false':
@@ -542,9 +542,9 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(7), text.Yellow + 'Input orders to account')
             print(text.default_text_color + str(8), text.Yellow + 'Input deals')
             print(text.default_text_color + str(9), text.Yellow + 'Input combos')
-            print(text.default_text_color + str(10), text.Yellow + "Create item")
-            print(text.default_text_color + str(11), text.Yellow + "Create invoice")
-            print(text.default_text_color + str(12), text.Yellow + "Create rewards")
+            print(text.default_text_color + str(10), text.Yellow + 'Create item')
+            print(text.default_text_color + str(11), text.Yellow + 'Create invoice')
+            print(text.default_text_color + str(12), text.Yellow + 'Create rewards')
 
             selection = input(text.default_text_color + '\nPlease select: ')
 
