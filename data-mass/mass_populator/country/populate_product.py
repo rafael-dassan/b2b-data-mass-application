@@ -1,4 +1,5 @@
 from products import create_item
+from products_magento import enable_product
 from mass_populator.log import *
 
 logger = logging.getLogger(__name__)
@@ -45,3 +46,15 @@ def populate_product(country, environment,
     response = create_item(country, environment, item_data)
     if response is None:
         logger.error(log(Message.PRODUCT_CREATE_ERROR,{"sku": sku}))
+
+
+def enable_product_magento(country, environment, product_sku):
+    """Enable product magento
+    Arguments:
+        - country: (e.g, BR,ZA,DO)
+        - environment: (e.g, UAT,SIT)
+        - product: product to enable
+    """
+    response = enable_product(country, environment, product_sku)
+    if response == 'false':
+        logger.error(log(Message.PRODUCT_ENABLE_ERROR,{"sku": product_sku}))

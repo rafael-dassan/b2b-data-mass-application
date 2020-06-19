@@ -21,3 +21,6 @@ class Message(Enum):
     RECOMMENDER_FORGOTTEN_ITEMS_ERROR = "Fail on populate recommender forgotten items for account {account_id}."
     RECOMMENDER_SELL_UP_ERROR = "Fail on populate recommender sell up for account {account_id}."
     PRODUCT_CREATE_ERROR = "Fail on create product for sku: {sku}"
+    PRODUCT_ENABLE_ERROR = "Fail on enable product for sku: {sku}"
+    CATEGORY_PRODUCT_ASSOCIATE_ERROR = "Fail on associate category {category} to product {sku}."
+    CATEGORY_CREATE_ERROR = "Fail on create category {category}."
