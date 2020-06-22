@@ -3,73 +3,6 @@ from products import *
 from json import loads
 
 
-# Create beer recommender in microservice
-def create_beer_recommender_microservice(account_id, zone, environment, delivery_center_id):
-    # Define headers specific for Recommended Products
-    request_headers = get_header_request_recommender(zone, environment)
-
-    # Define url request 
-    request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
-
-    # Retrieve all SKUs of the specified Account and DeliveryCenter IDs
-    product_offers = request_get_offers_microservice(account_id, zone, environment, delivery_center_id, True)
-
-    enabled_skus = list()
-    aux_index = 0
-    print(text.default_text_color + '\nChecking enabled products for the account ' + account_id + '. It may take a while...')
-    while aux_index < len(product_offers):
-        if zone == 'ZA' or zone == 'AR':
-            sku = product_offers[aux_index]
-        else:
-            sku = product_offers[aux_index]['sku']
-            
-        enabled_skus.append(sku)
-        aux_index = aux_index + 1
-
-    # Check if the account has at least 25 enabled SKUs added to it
-    if len(enabled_skus) >= 25:
-        print(text.default_text_color + '\nAdding recommended products. Please wait...')
-
-        # Get body request for Quick Order
-        request_body_quick_order = create_file_request_quick_order(request_url, request_headers, account_id, zone,
-                                                                   enabled_skus)
-
-        # Get body request for Forgotten Items
-        request_body_forgotten_items = create_file_request_forgotten_items(request_url, request_headers, account_id,
-                                                                           zone, enabled_skus)
-
-        # Get body request Sell Up
-        request_body_sell_up = create_file_request_sell_up(request_url, request_headers, account_id, zone, enabled_skus)
-
-        if request_body_quick_order.status_code == 202:
-            quick_order = 'true'
-            print(text.Green + '\n- [Algo Selling] Quick Order Items added successfully')
-        else:
-            quick_order = 'false'
-            print(text.Red + '\n- [Algo Selling] Failed to add Quick Order Items')
-
-        if request_body_forgotten_items.status_code == 202:
-            forgotten_items = 'true'
-            print(text.Green + '\n- [Algo Selling] Forgotten Items added successfully')
-        else:
-            forgotten_items = 'false'
-            print(text.Red + '\n- [Algo Selling] Failed to add Forgotten Items')
-
-        if request_body_sell_up.status_code == 202:
-            sell_up = 'true'
-            print(text.Green + '\n- [Algo Selling] Up-Sell Items added successfully')
-        else:
-            sell_up = 'false'
-            print(text.Red + '\n- [Algo Selling] Failed to add Up Sell Items')
-
-        if quick_order == 'true' and forgotten_items == 'true' and sell_up == 'true':
-            return 'true'
-        else:
-            return 'false'
-    else:
-        return 'error25'
-
-
 # Define JSON to submmit QUICK ORDER recommendation type
 def create_file_request_quick_order(url, headers, abi_id, zone, product_list):
     if zone == 'DO' or zone == 'CL' or zone == 'AR' or zone == 'CO':
@@ -250,14 +183,15 @@ def create_file_request_sell_up(url, headers, abi_id, zone, product_list):
     return response
 
 
-def request_quick_order(zone, environment, account_id, products):
+def request_quick_order(zone, environment, abi_id, products):
     # Define headers
     request_headers = get_header_request_recommender(zone, environment)
 
     # Define url request 
-    request_url = get_microservice_base_url(environment) + "/global-recommendation-relay"
+    request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
+
     # Get Response
-    response = create_file_request_quick_order(request_url, request_headers, account_id, zone, products)
+    response = create_file_request_quick_order(request_url, request_headers, abi_id, zone, products)
     
     if response.status_code == 202:
         return 'success'
@@ -265,14 +199,31 @@ def request_quick_order(zone, environment, account_id, products):
         return 'false'
 
 
-def request_forgotten_items(zone, environment, account_id, products):
+def request_forgotten_items(zone, environment, abi_id, products):
     # Define headers
     request_headers = get_header_request_recommender(zone, environment)
 
     # Define url request
-    request_url = get_microservice_base_url(environment) + "/global-recommendation-relay"
+    request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
+
     # Get Response
-    response = create_file_request_forgotten_items(request_url, request_headers, account_id, zone, products)
+    response = create_file_request_forgotten_items(request_url, request_headers, abi_id, zone, products)
+
+    if response.status_code == 202:
+        return 'success'
+    else:
+        return 'false'
+
+
+def request_sell_up(zone, environment, abi_id, products):
+    # Define headers
+    request_headers = get_header_request_recommender(zone, environment)
+
+    # Define url request
+    request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
+
+    # Get Response
+    response = create_file_request_sell_up(request_url, request_headers, abi_id, zone, products)
 
     if response.status_code == 202:
         return 'success'

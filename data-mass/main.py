@@ -403,6 +403,7 @@ def inputInventoryToProduct():
 
 # Input beer recommender by account on Microservice
 def input_recommendation_to_account_menu():
+    recommendation_type = print_recommendation_type_menu()
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
@@ -417,19 +418,48 @@ def input_recommendation_to_account_menu():
         print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
-    # Call function to add Beer Recommender to the account
-    beer_recommender = create_beer_recommender_microservice(abi_id, zone.upper(), environment.upper(),
-                                                            account[0]['deliveryCenterId'])
+    product_offers = request_get_offers_microservice(abi_id, zone.upper(), environment.upper(),
+                                                     account[0]['deliveryCenterId'], True)
 
-    if beer_recommender == 'true':
-        print(text.Green + '\n- [Algo Selling] All recommended products were added successfully')
-        print(text.Yellow + '\n- [Algo Selling] ** UP SELL TRIGGERS: Products Added to Cart: 03 / Cart Viewed with Products: 01 **')
-    else:
-        if beer_recommender == 'error25':
-            print(text.Red + '\n- [Algo Selling] The account must have at least 25 enabled products to proceed')
-            printFinishApplicationMenu()
+    enabled_skus = list()
+    aux_index = 0
+    while aux_index < len(product_offers):
+        if zone == 'ZA' or zone == 'AR':
+            sku = product_offers[aux_index]
         else:
-            print(text.Red + '\n- [Algo Selling] Something went wrong, please try again')
+            sku = product_offers[aux_index]['sku']
+
+        enabled_skus.append(sku)
+        aux_index = aux_index + 1
+
+    if len(enabled_skus) < 25:
+        print(text.Red + '\n- [Global Recommendation Service] The account must have at least 25 enabled products to '
+                         'proceed')
+        printFinishApplicationMenu()
+
+    if recommendation_type == 'QUICK_ORDER':
+        quick_order_response = request_quick_order(zone.upper(), environment.upper(), abi_id, enabled_skus)
+        if quick_order_response == 'success':
+            print(text.Green + '\n- [Global Recommendation Service] Quick order items added successfully')
+        else:
+            print(text.Red + '\n- [Global Recommendation Service] Failure to add quick order items. Response Status: '
+                  + str(quick_order_response.status_code) + '. Response message ' + quick_order_response.text)
+            printFinishApplicationMenu()
+    elif recommendation_type == 'CROSS_SELL_UP_SELL':
+        sell_up_response = request_sell_up(zone.upper(), environment.upper(), abi_id, enabled_skus)
+        if sell_up_response == 'success':
+            print(text.Green + '\n- [Global Recommendation Service] Up sell items added successfully')
+        else:
+            print(text.Red + '\n- [Global Recommendation Service] Failure to add up sell items. Response Status: '
+                  + str(sell_up_response.status_code) + '. Response message ' + sell_up_response.text)
+            printFinishApplicationMenu()
+    else:
+        forgotten_items_response = request_forgotten_items(zone.upper(), environment.upper(), abi_id, enabled_skus)
+        if forgotten_items_response == 'success':
+            print(text.Green + '\n- [Global Recommendation Service] Forgotten items added successfully')
+        else:
+            print(text.Red + '\n- [Global Recommendation Service] Failure to add forgotten items. Response Status: '
+                  + str(forgotten_items_response.status_code) + '. Response message ' + forgotten_items_response.text)
             printFinishApplicationMenu()
 
 
