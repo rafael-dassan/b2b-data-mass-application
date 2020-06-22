@@ -1,6 +1,6 @@
 from account import create_account_ms, check_account_exists_microservice, display_account_information
 from credit import add_credit_to_account_microservice
-from delivery_window import create_delivery_window_microservice, validateAlternativeDeliveryDate
+from delivery_window import create_delivery_window_microservice, validate_alternative_delivery_date
 from beer_recommender import *
 from inventory import *
 from invoice import *
@@ -726,7 +726,7 @@ def input_delivery_window_menu():
         print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
-    if zone == 'BR':
+    if zone == 'BR' or zone == 'ZA':
         # Validate if is alternative delivery window
         is_alternative_delivery_date = print_alternative_delivery_date_menu()
 
@@ -808,7 +808,7 @@ def create_account_menu():
         if update_sku != 'true':
             print(text.Red + '\n- [Inventory] Something went wrong, please try again.')
 
-    if zone == 'BR':
+    if zone == 'BR' or zone == 'ZA':
         # Validate if is alternative delivery window
         is_alternative_delivery_date = print_alternative_delivery_date_menu()
 
@@ -925,10 +925,12 @@ def printFinishApplicationMenu():
 
 # Print alternative delivery date menu application
 def print_alternative_delivery_date_menu():
-    is_alternative_delivery_date = input(text.default_text_color + '\nDo you want to register an alternative delivery date? y/N: ')
-    while validateAlternativeDeliveryDate(is_alternative_delivery_date.upper()) == 'false':
+    is_alternative_delivery_date = input(text.default_text_color + '\nDo you want to register an alternative delivery '
+                                                                   'date? y/N: ')
+    while validate_alternative_delivery_date(is_alternative_delivery_date.upper()) == 'false':
         print(text.Red + '\n- Invalid option')
-        is_alternative_delivery_date = input(text.default_text_color + '\nDo you want to register an alternative delivery date? y/N: ')
+        is_alternative_delivery_date = input(text.default_text_color + '\nDo you want to register an alternative '
+                                                                       'delivery date? y/N: ')
 
     return is_alternative_delivery_date
 
