@@ -266,6 +266,13 @@ def validate_orders(option):
         return 'false'
 
 
+def validate_recommendation_type(option):
+    if option == '1' or option == '2' or option == '3':
+        return 'true'
+    else:
+        return 'false'
+
+
 # Validate deals
 def validate_deals(option):
     if option == "1" or option == "2" or option == "3" or option == "4" or option == "5":
@@ -1406,3 +1413,29 @@ def print_order_id_menu():
             break
         order_id = input(text.default_text_color + 'Order ID: ')
     return order_id
+
+
+# Print orders menu
+def print_recommendation_type_menu():
+    print(text.default_text_color + '\nWhich type of recommendation do you want to create?')
+    print(text.default_text_color + str(1), text.Yellow + 'Quick order')
+    print(text.default_text_color + str(2), text.Yellow + 'Up sell')
+    print(text.default_text_color + str(3), text.Yellow + 'Forgotten items')
+    option = input(text.default_text_color + '\nPlease select: ')
+    while validate_recommendation_type(option) == 'false':
+        print(text.Red + '\n- Invalid option')
+        print(text.default_text_color + '\nWhich type of recommendation do you want to create?')
+        print(text.default_text_color + str(1), text.Yellow + 'Quick order')
+        print(text.default_text_color + str(2), text.Yellow + 'Up sell')
+        print(text.default_text_color + str(3), text.Yellow + 'Forgotten items')
+        option = input(text.default_text_color + '\nPlease select: ')
+
+    switcher = {
+        '1': 'QUICK_ORDER',
+        '2': 'CROSS_SELL_UP_SELL',
+        '3': 'FORGOTTEN_ITEMS'
+    }
+
+    recommendation_type = switcher.get(option, 'false')
+
+    return recommendation_type
