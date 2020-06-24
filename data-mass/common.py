@@ -575,6 +575,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(3), text.Yellow + 'Associate Account to user')
         print(text.default_text_color + str(4), text.Yellow + 'List Categories')
         print(text.default_text_color + str(5), text.Yellow + 'Associate Product to category')
+        print(text.default_text_color + str(6), text.Yellow + 'Create Category')
 
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_option_request_selection(selection) == 'false':
@@ -585,6 +586,7 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(3), text.Yellow + 'Associate Account to user')
             print(text.default_text_color + str(4), text.Yellow + 'List Categories')
             print(text.default_text_color + str(5), text.Yellow + 'Associate Product to category')
+            print(text.default_text_color + str(6), text.Yellow + 'Create Category')
 
             selection = input(text.default_text_color + '\nPlease select: ')
     else:

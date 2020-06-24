@@ -52,7 +52,8 @@ def showMenu():
             '2': registration_user_iam,
             '3': associateUserToAccount,
             '4': get_categories_menu,
-            '5': associate_product_to_category_menu
+            '5': associate_product_to_category_menu,
+            '6': create_categories_menu,
         }
     else:
         finishApplication()
@@ -1066,6 +1067,38 @@ def associate_product_to_category_menu():
             printFinishApplicationMenu()
     
     print("{text_green}{success}".format(text_green=text.Green, success="Success to enable and to associate product to category"))
+
+
+def create_categories_menu():
+    """Create categories
+    Input Arguments:
+        - Country (BR, DO, AR, CL, ZA, CO)
+        - Environment (UAT, SIT)
+        - Category name
+        - Parent id (default: 0)
+    """
+    country = printCountryMenuInUserCreation()
+    environment = printEnvironmentMenuInUserCreation()
+    category_name = print_input_text('Category name')
+    parent_id = print_input_number_with_default('Parent id')
+
+    # Get categories
+    categories = get_categories(country, environment, parent_id)
+    category = [category for category in categories if category['name'] == category_name]
+    if category:
+        category = category[0]
+        print("{text_green}{success}".format(text_green=text.Green, success="Category already exists"))
+    else:
+        # Create category
+        category = create_category(country, environment, category_name, parent_id)
+        if isinstance(category, str):
+            print("{text_red}{not_found}".format(text_red=text.Red, not_found="Fail to create category"))
+            printFinishApplicationMenu()
+        else:
+            print("{text_green}{success}".format(text_green=text.Green, success="Success to create category"))
+
+    print("- {id}, {name}".format(id=category['id'],name=category['name']))
+
 
 # Init
 try:
