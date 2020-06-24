@@ -1,12 +1,9 @@
 from random import randint
-
 from json import loads
-
 from common import *
 
 
 def check_if_order_exist(abi_id, zone, environment, order_id):
-
     # Get header request
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
 
@@ -118,9 +115,10 @@ def create_invoice_request(abi_id, zone, environment, order_id):
     response = place_request('POST', request_url, request_body, request_headers)
 
     if response.status_code != 202:
-        print(text.Red + '\n- [Invoice] Something went wrong, please try again')
-        finishApplication()
+        print(text.Red + '\n- [Invoice Service] Failure to create an invoice. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
     else:
-        print(text.Green + 'Invoice created: ' + invoice_id)
-        return invoice_id
+        print(text.Green + '\n- Invoice ' + invoice_id + ' successfully created')
+        print(text.Yellow + '- Please, run the cron job `webjump_invoicelistabi_import_invoices` to import your '
+                            'invoice, so it can be used in the front-end applications')
 

@@ -1,0 +1,12 @@
+{
+    "accountId": "string",
+    "combos": [
+      {
+        "comboId": "string",
+        "consumedLimit": {
+          "daily": 0,
+          "monthly": 0
+        }
+      }
+    ]
+}

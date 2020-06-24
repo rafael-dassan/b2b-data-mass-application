@@ -1,0 +1,37 @@
+{
+  "accounts": [
+    "string"
+  ],
+  "combos": [
+    {
+      "description": "string",
+      "discountPercentOff": 0,
+      "endDate": "2045-02-28T00:00:00Z",
+      "externalId": "string",
+      "freeGoods": {
+        "quantity": 1,
+        "skus": [
+          "string"
+        ]
+      },
+      "id": "string",
+      "image": "http://www.ab-inbev.com/b2b/files/combo-icon.png",
+      "items": [
+        {
+          "sku": "string",
+          "quantity": 1
+        }
+      ],
+      "limit": {
+        "daily": 200,
+        "monthly": 200
+      },
+      "originalPrice": 0,
+      "price": 0,
+      "score": 1,
+      "startDate": "2020-01-01T00:00:00Z",
+      "title": "string",
+      "type": "string"
+    }
+  ]
+}

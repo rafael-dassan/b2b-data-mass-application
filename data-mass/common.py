@@ -676,25 +676,25 @@ def printDealsMenu():
 
 
 # Print combos menu
-def printCombosMenu():
-    print(text.default_text_color + "\nWhich type of combo do you want to create?")
-    print(text.default_text_color + str(1), text.Yellow + "Input combo type discount")
-    print(text.default_text_color + str(2), text.Yellow + "Input combo type free good")
-    print(text.default_text_color + str(3), text.Yellow + "Input combo with only free goods")
-    structure = input(text.default_text_color + "\nPlease select: ")
-    while validateComboStructure(structure) == "false":
-        print(text.Red + "\n- Invalid option")
-        print(text.default_text_color + "\nWhich type of combo do you want to create?")
-        print(text.default_text_color + str(1), text.Yellow + "Input combo type discount")
-        print(text.default_text_color + str(2), text.Yellow + "Input combo type free good")
-        print(text.default_text_color + str(3), text.Yellow + "Input combo with only free goods")
-        structure = input(text.default_text_color + "\nPlease select: ")
+def print_combos_menu():
+    print(text.default_text_color + '\nWhich type of combo do you want to create?')
+    print(text.default_text_color + str(1), text.Yellow + 'Input combo type discount')
+    print(text.default_text_color + str(2), text.Yellow + 'Input combo type free good')
+    print(text.default_text_color + str(3), text.Yellow + 'Input combo with only free goods')
+    structure = input(text.default_text_color + '\nPlease select: ')
+    while validate_combo_structure(structure) == 'false':
+        print(text.Red + '\n- Invalid option')
+        print(text.default_text_color + '\nWhich type of combo do you want to create?')
+        print(text.default_text_color + str(1), text.Yellow + 'Input combo type discount')
+        print(text.default_text_color + str(2), text.Yellow + 'Input combo type free good')
+        print(text.default_text_color + str(3), text.Yellow + 'Input combo with only free goods')
+        structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure
 
 
 # Validate combo type structure
-def validateComboStructure(option):
+def validate_combo_structure(option):
     if option == '1' or option == '2' or option == '3':
         return 'true'
     else:
