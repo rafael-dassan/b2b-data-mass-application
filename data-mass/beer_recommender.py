@@ -3,6 +3,32 @@ from products import *
 from json import loads
 
 
+def create_all_recommendations(zone, environment, abi_id, products):
+    # Define headers
+    request_headers = get_header_request_recommender(zone, environment)
+
+    # Define url request
+    request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
+
+    # Get Response
+    quick_order_response = create_file_request_quick_order(request_url, request_headers, abi_id, zone, products)
+    sell_up_response = create_file_request_sell_up(request_url, request_headers, abi_id, zone, products)
+    forgotten_items_response = create_file_request_forgotten_items(request_url, request_headers, abi_id, zone, products)
+
+    if quick_order_response.status_code == 202 and sell_up_response.status_code == 202 and \
+            forgotten_items_response.status_code == 202:
+        print(text.Green + '\n- [Global Recommendation Service] All recommendation use cases were added (quick order, '
+                           'up sell and forgotten items)')
+        print(text.Yellow + '- [Global Recommendation Service] Up sell trigger: Add 3 of any products to the cart / '
+                            'Cart viewed with a product inside')
+    else:
+        responses_list = [quick_order_response, sell_up_response, forgotten_items_response]
+        for x in range(len(responses_list)):
+            if responses_list[x].status_code != 202:
+                print(text.Red + '\n- [Global Recommendation Service] Failure to add recommendations. Response Status: '
+                      + str(responses_list[x].status_code) + '. Response message ' + responses_list[x].text)
+
+
 # Define JSON to submmit QUICK ORDER recommendation type
 def create_file_request_quick_order(url, headers, abi_id, zone, product_list):
     if zone == 'DO' or zone == 'CL' or zone == 'AR' or zone == 'CO':
@@ -34,7 +60,7 @@ def create_file_request_quick_order(url, headers, abi_id, zone, product_list):
         json_data = json.load(file)
 
     dict_values  = {
-        'recommendationId': 'QUICK ORDER RECOMMENDATION FOR ACCOUNT ' + str(abi_id),
+        'recommendationId': 'DM-' + str(randint(1, 100000)),
         'useCase': 'QUICK_ORDER',
         'useCaseId': abi_id,
         'items[0].sku': sku[0],
@@ -96,7 +122,7 @@ def create_file_request_forgotten_items(url, headers, abi_id, zone, product_list
         json_data = json.load(file)
 
     dict_values  = {
-        'recommendationId': 'FORGOTTEN ITEMS RECOMMENDATION FOR ACCOUNT ' + str(abi_id),
+        'recommendationId': 'DM-' + str(randint(1, 100000)),
         'useCase': 'FORGOTTEN_ITEMS',
         'useCaseId': abi_id,
         'items[0].sku': sku[0],
@@ -158,7 +184,7 @@ def create_file_request_sell_up(url, headers, abi_id, zone, product_list):
         json_data = json.load(file)
 
     dict_values  = {
-        'recommendationId': 'SELL UP RECOMMENDATION FOR ACCOUNT ' + str(abi_id),
+        'recommendationId': 'DM-' + str(randint(1, 100000)),
         'descriptions[0].language': language,
         'descriptions[0].text': text,
         'descriptions[0].description': text_description,

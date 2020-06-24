@@ -449,11 +449,13 @@ def input_recommendation_to_account_menu():
         sell_up_response = request_sell_up(zone.upper(), environment.upper(), abi_id, enabled_skus)
         if sell_up_response == 'success':
             print(text.Green + '\n- [Global Recommendation Service] Up sell items added successfully')
+            print(text.Yellow + '\n- [Global Recommendation Service] Up sell trigger: Add 3 of any products to the cart'
+                                ' / Cart viewed with a product inside')
         else:
             print(text.Red + '\n- [Global Recommendation Service] Failure to add up sell items. Response Status: '
                   + str(sell_up_response.status_code) + '. Response message ' + sell_up_response.text)
             printFinishApplicationMenu()
-    else:
+    elif recommendation_type == 'FORGOTTEN_ITEMS':
         forgotten_items_response = request_forgotten_items(zone.upper(), environment.upper(), abi_id, enabled_skus)
         if forgotten_items_response == 'success':
             print(text.Green + '\n- [Global Recommendation Service] Forgotten items added successfully')
@@ -461,6 +463,10 @@ def input_recommendation_to_account_menu():
             print(text.Red + '\n- [Global Recommendation Service] Failure to add forgotten items. Response Status: '
                   + str(forgotten_items_response.status_code) + '. Response message ' + forgotten_items_response.text)
             printFinishApplicationMenu()
+    else:
+        create_all_recommendations(zone.upper(), environment.upper(), abi_id, enabled_skus)
+
+    printFinishApplicationMenu()
 
 
 # Input Deals to an account

@@ -267,7 +267,7 @@ def validate_orders(option):
 
 
 def validate_recommendation_type(option):
-    if option == '1' or option == '2' or option == '3':
+    if option == '1' or option == '2' or option == '3' or option == '4':
         return 'true'
     else:
         return 'false'
@@ -1416,23 +1416,26 @@ def print_order_id_menu():
 
 
 def print_recommendation_type_menu():
-    print(text.default_text_color + '\nWhich type of recommendation do you want to create?')
+    print(text.default_text_color + '\nWhich recommendation use case do you want to add?')
     print(text.default_text_color + str(1), text.Yellow + 'Quick order')
     print(text.default_text_color + str(2), text.Yellow + 'Up sell')
     print(text.default_text_color + str(3), text.Yellow + 'Forgotten items')
+    print(text.default_text_color + str(4), text.Yellow + 'Standard recommendations (all use cases)')
     option = input(text.default_text_color + '\nPlease select: ')
     while validate_recommendation_type(option) == 'false':
         print(text.Red + '\n- Invalid option')
-        print(text.default_text_color + '\nWhich type of recommendation do you want to create?')
+        print(text.default_text_color + '\nWhich recommendation use case do you want to add?')
         print(text.default_text_color + str(1), text.Yellow + 'Quick order')
         print(text.default_text_color + str(2), text.Yellow + 'Up sell')
         print(text.default_text_color + str(3), text.Yellow + 'Forgotten items')
+        print(text.default_text_color + str(4), text.Yellow + 'Standard recommendations (all use cases)')
         option = input(text.default_text_color + '\nPlease select: ')
 
     switcher = {
         '1': 'QUICK_ORDER',
         '2': 'CROSS_SELL_UP_SELL',
-        '3': 'FORGOTTEN_ITEMS'
+        '3': 'FORGOTTEN_ITEMS',
+        '4': 'ALL'
     }
 
     recommendation_type = switcher.get(option, 'false')
