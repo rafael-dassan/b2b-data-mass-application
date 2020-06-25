@@ -39,7 +39,6 @@
       "string"
   ],
   "paymentTerms": null,
-  "potential": null,
   "priceListId": "string",
   "salesRepresentative": {
       "email": "test@zone.com",
@@ -47,8 +46,9 @@
       "phone": 11000000000
   },
   "salesRoute": null,
-  "segment": "16",
+  "potential": "DM-POTENT",
+  "segment": "DM-SEG",
+  "subSegment": "DM-SUBSEG",
   "status": "ACTIVE",
-  "subSegment": "00011",
   "taxId": "string"
 }

@@ -43,9 +43,9 @@
       }
     ],
     "filter": {
-      "potential": "string",
-      "segment": "string",
-      "subsegment": "string"
+      "potential": "DM-POTENT",
+      "segment": "DM-SEG",
+      "subsegment": "DM-SUBSEG"
     },
     "initialBalance": 10000,
     "calculationType": "SUBTOTAL",
@@ -53,15 +53,15 @@
     "categories": [
       {
         "categoryId": "0",
-        "categoryIdWeb": "1",
+        "categoryIdWeb": "0",
         "description": "string",
         "buttonLabel": "string",
         "buttonName": "Premium-product-button",
         "image": "string"
       },
       {
-        "categoryId": "2",
-        "categoryIdWeb": "3",
+        "categoryId": "0",
+        "categoryIdWeb": "0",
         "description": "string",
         "buttonLabel": "string",
         "buttonName": "Core-product-button",

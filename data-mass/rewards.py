@@ -20,7 +20,7 @@ def create_new_program(zone, environment):
     deals = request_get_deals_promo_fusion_service(zone, environment)
 
     # Verify if the zone has at least 5 combos available
-    if len(deals) >= 5:
+    if len(deals) >= 3:
         
         print(text.default_text_color + '\nCreating new Rewards program in ' + zone + ' - ' + environment + '. Please wait...')
 
@@ -42,9 +42,6 @@ def create_new_program(zone, environment):
 
             # Getting all the basic information for the Program to be created
             generated_combos = generate_combos_information(deals)
-            generated_potentials = generate_potential_information()
-            generated_segments = generate_segment_information()
-            generated_subsegments = generate_subsegment_information()
             categories = generate_categories_information(zone)
             terms = generate_terms_information(zone)
 
@@ -65,9 +62,6 @@ def create_new_program(zone, environment):
                 'combos[2].comboId' : generated_combos[2],
                 'combos[3].comboId' : generated_combos[3],
                 'combos[4].comboId' : generated_combos[4],
-                'filter.potential' : generated_potentials,
-                'filter.segment' : generated_segments,
-                'filter.subsegment' : generated_subsegments,
                 'categories[0].description' : categories[0],
                 'categories[0].buttonLabel' : categories[1],
                 'categories[0].image' : categories[2],
@@ -119,40 +113,40 @@ def generate_combos_information(deals_list):
     return combos_id
 
 
-# Generates the Potentials for Rewards program
-def generate_potential_information():
-    potential_id = list()
+# # Generates the Potentials for Rewards program
+# def generate_potential_information():
+#     potential_id = list()
     
-    i = 1
-    while i <= 3:
-        potential_id.append('DM-POT-' + str(randint(100,900)))
-        i += 1
+#     i = 1
+#     while i <= 3:
+#         potential_id.append('DM-POT-' + str(randint(100,900)))
+#         i += 1
 
-    return potential_id
+#     return potential_id
 
 
-# Generates the Segments for Rewards program
-def generate_segment_information():
-    segment_id = list()
+# # Generates the Segments for Rewards program
+# def generate_segment_information():
+#     segment_id = list()
     
-    i = 1
-    while i <= 3:
-        segment_id.append('DM-SEG-' + str(randint(100,900)))
-        i += 1
+#     i = 1
+#     while i <= 3:
+#         segment_id.append('DM-SEG-' + str(randint(100,900)))
+#         i += 1
 
-    return segment_id
+#     return segment_id
 
 
-# Generates the Sub-Segments for Rewards program
-def generate_subsegment_information():
-    subsegment_id = list()
+# # Generates the Sub-Segments for Rewards program
+# def generate_subsegment_information():
+#     subsegment_id = list()
     
-    i = 1
-    while i <= 3:
-        subsegment_id.append('DM-SUBSEG-' + str(randint(100,900)))
-        i += 1
+#     i = 1
+#     while i <= 3:
+#         subsegment_id.append('DM-SUBSEG-' + str(randint(100,900)))
+#         i += 1
 
-    return subsegment_id
+#     return subsegment_id
 
 
 # Generates the Categories for Rewards program

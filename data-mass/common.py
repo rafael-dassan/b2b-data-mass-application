@@ -252,7 +252,7 @@ def validateStructure(option):
 
 # Validate rewards
 def validate_rewards(option):
-    if option == '1':
+    if option == '1' or option == '2':
         return 'true'
     else:
         return 'false'
@@ -635,10 +635,12 @@ def print_structure_menu():
 # Print rewards menu
 def print_rewards_menu():
     print(text.default_text_color + str(1), text.Yellow + 'Create new program')
+    print(text.default_text_color + str(2), text.Yellow + 'Enroll POC to a Reward program')
     structure = input(text.default_text_color + '\nPlease select: ')
     while validate_rewards(structure) == 'false':
         print(text.Red + '\n- Invalid option')
         print(text.default_text_color + str(1), text.Yellow + 'Create new program')
+        print(text.default_text_color + str(2), text.Yellow + 'Enroll POC to a Reward program')
         structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure

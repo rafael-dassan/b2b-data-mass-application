@@ -133,6 +133,7 @@ def create_rewards_to_account():
 
     switcher = {
         '1': 'NEW_PROGRAM',
+        '2': 'ENROLL_POC'
     }
 
     reward_option = switcher.get(selection_structure, 'false')
