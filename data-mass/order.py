@@ -165,32 +165,27 @@ def change_order(account_id, zone, environment, order_option, order_id):
         return 'error_ms'
     else:
         order_info = order_data[0]
-        return order_info
 
-    print(order_info)
-    print(order_info['status'])
+    status = order_info['status']
 
-    if order_info['status'] != 'CANCELLED' or order_info['status'] != 'DELIVERED' or order_info['status'] != 'PARTIAL_DELIVERED' or order_info['status'] != 'PENDIN_CANCELLATION':
+    if status == 'DENIED' or status == 'CANCELLED' or status == 'DELIVERED' or status == 'PARTIAL_DELIVERY' \
+            or status == 'PENDING_CANCELLATION':
+        print(text.Red + '\n- [Order Change] Its not possible change this order because the order status is ' +
+              order_info['status'])
+    else:
         items = order_info['items']
-        print(items)
         item_qtd = 10
         item_subtotal = items[0]['price'] * 10
-        print(item_subtotal)
         item_total = items[0]['price'] * 10
-        print(item_total)
         dif_item_total = items[0]['total'] - item_total
         dif_item_total = round(dif_item_total, 2)
-        print(dif_item_total)
         dif_item_subtotal = items[0]['subtotal'] - item_subtotal
         dif_item_subtotal = round(dif_item_subtotal, 2)
-        print(dif_item_subtotal)
 
         order_total = order_info['total'] - dif_item_total
         order_total = round(order_total, 2)
-        print(order_total)
         order_subtotal = order_info['subtotal'] - dif_item_subtotal
         order_subtotal = round(order_subtotal, 2)
-        print(order_subtotal)
 
         json_data = order_data
         json_object = update_value_to_json(order_info, 'items[0].quantity', item_qtd)
@@ -202,21 +197,18 @@ def change_order(account_id, zone, environment, order_option, order_id):
         # Create body
         request_body = convert_json_to_string(json_object)
         request_body = '[' + request_body + ']'
-        print(request_body)
 
         # Define headers
-        request_headers = get_header_request(zone, 'false', 'true', 'false', 'false')
+        request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
 
         # Define url request
-        request_url = get_microservice_base_url(environment) + '/account-relay/'
+        request_url = get_microservice_base_url(environment) + '/order-relay/'
 
         # Send request
         response = place_request('POST', request_url, request_body, request_headers)
 
         if response.status_code == 202:
-            print(text.Green + 'Order: ' + order_id + 'was change')
+            print(text.Green + 'Order: ' + order_id + ' was change')
             return response
         else:
             return 'false'
-    else:
-        print(text.Red + '\n- [Order Change] The order status expected is ACTIVE but the value found was ' + order_info['status'])

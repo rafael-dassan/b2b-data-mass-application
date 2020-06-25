@@ -1422,7 +1422,6 @@ def check_if_order_exist(abi_id, zone, environment, order_id):
 
     # Place request
     response = place_request('GET', request_url, '', request_headers)
-
     json_data = loads(response.text)
     if response.status_code == 200 and len(json_data) != 0:
         return json_data

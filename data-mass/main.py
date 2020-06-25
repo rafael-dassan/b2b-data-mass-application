@@ -217,7 +217,7 @@ def input_orders_to_account():
         order_id = print_order_id_menu()
         order_change = change_order(abi_id, zone, environment, order_type, order_id)
 
-        if order_change == 'false':
+        if order_change == 'error_ms' or order_change == 'false':
             print(text.Red + '\n- [Order Change] Something went wrong, please try again')
 
 
