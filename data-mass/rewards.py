@@ -8,18 +8,25 @@ from random import *
 # Create Rewards Program
 def create_new_program(zone, environment):
 
-    # Generates the Program ID
-    reward_id = 'DM-REWARDS-' + str(randint(100,900))
-
     # Define headers
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+
+    # Verify if the zone already have a reward program created
+    program_found = locate_program_for_zone(zone, environment, request_headers)
+
+    if program_found != 'false':
+        print(text.Yellow + '\n- [Rewards] This zone already have a reward program created - ID: ' + program_found)
+        return 'error_found'
+
+    # Generates the new Program ID
+    reward_id = 'DM-REWARDS-' + str(randint(100,900))
 
     # Define url request
     request_url = get_microservice_base_url(environment) + '/rewards-service/programs/' + reward_id
 
     deals = request_get_deals_promo_fusion_service(zone, environment)
 
-    # Verify if the zone has at least 5 combos available
+    # Verify if the zone has at least 3 combos available
     if len(deals) >= 3:
         
         print(text.default_text_color + '\nCreating new Rewards program in ' + zone + ' - ' + environment + '. Please wait...')
@@ -91,6 +98,44 @@ def create_new_program(zone, environment):
         return 'error_len_combo'
 
 
+# Enroll POC to a zone's reward program
+def enroll_poc_to_program(account_id, zone, environment):
+
+    # Define headers
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+
+    # Verify if the zone already have a reward program created
+    program_found = locate_program_for_zone(zone, environment, request_headers)
+
+    if program_found != 'false':
+        print(text.Yellow + '\n- [Rewards] This zone already have a reward program created - ID: ' + program_found)
+        return 'error_found'
+
+
+# Locate Rewards program previously created in the zone
+def locate_program_for_zone(zone, environment, header_request):
+
+    # Define url request
+    request_url = get_microservice_base_url(environment) + '/rewards-service/programs/'
+    
+    # Send request
+    response = place_request('GET', request_url, '', header_request)
+    
+    program_list = loads(response.text)
+
+    program_found = 'false'
+
+    for i in range(len(program_list)):
+        program_id = program_list[i]['id']
+        program_id = program_id[0:9]
+
+        if program_id == 'DM-REWARD':
+            program_found = program_list[i]['id']
+            break
+    
+    return program_found
+
+
 # Generates the SKUs for the rules for Rewards program
 def generate_skus_for_rules(zone, environment):
     products = request_get_products_microservice(zone, environment)
@@ -111,42 +156,6 @@ def generate_combos_information(deals_list):
         combos_id.append(combos[i]['id'])
 
     return combos_id
-
-
-# # Generates the Potentials for Rewards program
-# def generate_potential_information():
-#     potential_id = list()
-    
-#     i = 1
-#     while i <= 3:
-#         potential_id.append('DM-POT-' + str(randint(100,900)))
-#         i += 1
-
-#     return potential_id
-
-
-# # Generates the Segments for Rewards program
-# def generate_segment_information():
-#     segment_id = list()
-    
-#     i = 1
-#     while i <= 3:
-#         segment_id.append('DM-SEG-' + str(randint(100,900)))
-#         i += 1
-
-#     return segment_id
-
-
-# # Generates the Sub-Segments for Rewards program
-# def generate_subsegment_information():
-#     subsegment_id = list()
-    
-#     i = 1
-#     while i <= 3:
-#         subsegment_id.append('DM-SUBSEG-' + str(randint(100,900)))
-#         i += 1
-
-#     return subsegment_id
 
 
 # Generates the Categories for Rewards program

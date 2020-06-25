@@ -147,14 +147,30 @@ def create_rewards_to_account():
             print(text.Red + '\n- [Rewards] The zone must have at least 20 products to proceed')
             printFinishApplicationMenu()
         elif create_pgm == 'error_len_combo':
-            print(text.Red + '\n- [Rewards] The zone must have at least 5 combos available to proceed')
+            print(text.Red + '\n- [Rewards] The zone must have at least 3 combos available to proceed')
             printFinishApplicationMenu()
         elif create_pgm == 'false':
             print(text.Red + '\n- [Rewards] Something went wrong, please try again.')
             printFinishApplicationMenu()
+        elif create_pgm == 'error_found':
+            printFinishApplicationMenu()
         else:
             print(text.Green + '\n- [Rewards] The new program has been created successfully - ID: ' + create_pgm)
-            printFinishApplicationMenu() 
+            printFinishApplicationMenu()
+    elif reward_option == 'ENROLL_POC':
+        abi_id = print_account_id_menu(zone)
+
+        # Call check account exists function
+        account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+
+        if account == 'false':
+            print(text.Red + '\n- [Account] Something went wrong, please try again')
+            printFinishApplicationMenu()
+        elif len(account) == 0:
+            print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
+            printFinishApplicationMenu()
+        
+        enroll_poc = enroll_poc_to_program
     
 
 # Input Orders to account (active and cancelled ones)

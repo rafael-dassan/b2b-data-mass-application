@@ -43,9 +43,15 @@
       }
     ],
     "filter": {
-      "potential": "DM-POTENT",
-      "segment": "DM-SEG",
-      "subsegment": "DM-SUBSEG"
+      "potential": [
+        "DM-POTENT"
+      ],
+      "segment": [
+        "DM-SEG"
+      ],
+      "subsegment": [
+        "DM-SUBSEG"
+      ]
     },
     "initialBalance": 10000,
     "calculationType": "SUBTOTAL",
