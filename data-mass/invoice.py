@@ -49,7 +49,7 @@ def create_invoice_request(abi_id, zone, environment, order_id):
 
     order_details = get_order_details(order_data)
     order_items = get_order_items(order_data)
-    sizeItems = len(order_items)
+    size_items = len(order_items)
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
@@ -84,7 +84,7 @@ def create_invoice_request(abi_id, zone, environment, order_id):
         json_object = set_to_dictionary(json_data, 'orderDate', order_details.get('placementDate'))
 
     if 'itemsQuantity' not in order_data:
-        json_object = set_to_dictionary(json_data, 'itemsQuantity', sizeItems)
+        json_object = set_to_dictionary(json_data, 'itemsQuantity', size_items)
     else:
         json_object = set_to_dictionary(json_data, 'itemsQuantity', order_data['itemsQuantity'])
 
