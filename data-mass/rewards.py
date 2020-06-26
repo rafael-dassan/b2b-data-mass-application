@@ -133,6 +133,11 @@ def enroll_poc_to_program(account_id, zone, environment):
             if turn_eligible == 'Y':
                 account_eligible = turn_account_eligible(account_id, zone, environment, request_headers)
 
+                if account_eligible == 'true':
+                    print(text.Green + '\n- [Rewards] The account is now eligible to be enrolled to a Reward program')
+                    print(text.Yellow + '\n- [Rewards] To proceed with the enrollment, now back to the menu and use the option "2" again')
+                else:
+                    print(text.Red + '\n- [Rewards] Something went wrong, please try again')
         elif response.status_code == 409:
             print(text.Yellow + '\n- [Rewards] The account is already enrolled to a Reward program')
         else:
@@ -148,24 +153,29 @@ def turn_account_eligible(abi_id, zone, environment, header_request):
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
 
     if account != 'false':
-        # print('ACCOUNT')
-        # print(account)
 
-        json_data = account
-        json_object = update_value_to_json(json_data, 'potential', 'DM-POTENT')
-        json_object = update_value_to_json(json_data, 'segment', 'DM-SEG')
-        json_object = update_value_to_json(json_data, 'subSegment', 'DM-SUBSEG')
+        # Update the account's information with the right values to associate to a Reward program
+        json_object = update_value_to_json(account, '[0][potential]', 'DM-POTENT')
+        json_object = update_value_to_json(account, '[0][segment]', 'DM-SEG')
+        json_object = update_value_to_json(account, '[0][subSegment]', 'DM-SUBSEG')
 
-        # print('JSON OBJECT')
-        # print(json_object)
+        # Get header request
+        request_headers = get_header_request(zone, 'false', 'true', 'false', 'false')
+
+        # Get base URL
+        request_url = get_microservice_base_url(environment) + '/account-relay/'
 
         # Create body
         request_body = convert_json_to_string(json_object)
 
-        # print('REQUEST BODY')
-        # print(request_body)
+        # Place request
+        response = place_request('POST', request_url, request_body, request_headers)
 
-    return 'false'
+        if response.status_code == 202:
+            return 'true'
+        else:
+            return 'false'
+
 
 # Locate Rewards program previously created in the zone
 def locate_program_for_zone(zone, environment, header_request):
