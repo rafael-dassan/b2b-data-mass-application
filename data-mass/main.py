@@ -6,7 +6,6 @@ from inventory import *
 from invoice import *
 from order import *
 from combos import *
-from deals import *
 from rewards import *
 from category_magento import *
 from products_magento import *
@@ -1168,7 +1167,7 @@ def order_information_menu():
 
     orders = check_if_order_exists(abi_id, zone.upper(), environment.upper(), order_id)
     if orders != 'false':
-        display_specific_order_information(abi_id, zone.upper(), environment.upper(), order_id)
+        display_specific_order_information(orders)
 
 
 

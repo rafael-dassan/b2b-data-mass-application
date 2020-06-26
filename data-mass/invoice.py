@@ -3,7 +3,7 @@ from common import *
 
 
 def order_info(abi_id, zone, environment, order_id):
-    order_response = check_if_order_exist(abi_id, zone, environment, order_id)
+    order_response = check_if_order_exists(abi_id, zone, environment, order_id)
 
     if order_response == 'false':
         return 'error_ms'

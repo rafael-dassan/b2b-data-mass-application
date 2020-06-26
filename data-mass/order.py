@@ -157,8 +157,7 @@ def set_file_request_order(url, headers, abi_id, zone, delivery_center_id, enabl
 
 
 def change_order(account_id, zone, environment, order_option, order_id):
-
-    order_data = check_if_order_exist(account_id, zone, environment, order_id)
+    order_data = check_if_order_exists(account_id, zone, environment, order_id)
 
     if order_data == 'false':
         return 'error_ms'
@@ -207,3 +206,72 @@ def change_order(account_id, zone, environment, order_option, order_id):
             return response
         else:
             return 'false'
+
+
+def display_specific_order_information(orders):
+    """Display order information
+    Arguments:
+        - orders: order data by account and order ID
+    Print a table containing the available order information
+    """
+    items = orders[0]['items']
+    item_information = list()
+    if len(items) == 0:
+        item_values = {
+            'Items': 'None'
+        }
+        item_information.append(item_values)
+    else:
+        for i in range(len(items)):
+            item_values = {
+                'SKU': items[i]['sku'],
+                'Price': items[i]['price'],
+                'Quantity': items[i]['quantity'],
+                'Subtotal': items[i]['subtotal'],
+                'Tax': items[i]['tax'],
+                'Total': items[i]['total'],
+                'Free Good': items[i]['freeGood']
+            }
+            item_information.append(item_values)
+
+    combos = orders[0]['combos']
+    combo_information = list()
+    if len(combos) == 0:
+        combo_values = {
+            'Combos': 'None'
+        }
+        combo_information.append(combo_values)
+    else:
+        for i in range(len(combos)):
+            combo_values = {
+                'Combo ID': combos[i]['id'],
+                'Type': combos[i]['type'],
+                'Quantity': combos[i]['quantity'],
+                'Title': combos[i]['title'],
+                'Description': combos[i]['description'],
+                'Original Price': combos[i]['originalPrice'],
+                'Price': combos[i]['price']
+            }
+            combo_information.append(combo_values)
+
+    order_information = list()
+    order_values = {
+        'Order ID': orders[0]['orderNumber'],
+        'Status': orders[0]['status'],
+        'Placement Date': orders[0]['placementDate'],
+        'Payment Method': orders[0]['paymentMethod'],
+        'Subtotal': orders[0]['subtotal'],
+        'Tax': orders[0]['tax'],
+        'Discount': orders[0]['discount'],
+        'Total': orders[0]['total']
+    }
+    order_information.append(order_values)
+
+    print(text.default_text_color + '\nOrder Information By Account')
+    print(tabulate(order_information, headers='keys', tablefmt='grid'))
+
+    print(text.default_text_color + '\nOrder items')
+    print(tabulate(item_information, headers='keys', tablefmt='grid'))
+
+    print(text.default_text_color + '\nOrder combos')
+    print(tabulate(combo_information, headers='keys', tablefmt='grid'))
