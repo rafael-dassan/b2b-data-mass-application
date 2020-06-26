@@ -39,8 +39,7 @@ def get_order_details(order_data):
         'subtotal': order_data['subtotal'],
         'total': order_data['total'],
         'tax': order_data['tax'],
-        'discount': order_data['discount'],
-        'itemsQuantity': order_data['itemsQuantity']
+        'discount': order_data['discount']
     }
     return order_details
 
@@ -50,6 +49,7 @@ def create_invoice_request(abi_id, zone, environment, order_id):
 
     order_details = get_order_details(order_data)
     order_items = get_order_items(order_data)
+    size_items = len(order_items)
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
@@ -68,7 +68,6 @@ def create_invoice_request(abi_id, zone, environment, order_id):
         'channel': order_details.get('channel'),
         'date': placement_date,
         'interestAmount': order_details.get('total'),
-        'itemsQuantity': order_details.get('itemsQuantity'),
         'orderDate': placement_date,
         'orderId': order_id,
         'paymentTerm': order_details.get('paymentTerm'),
@@ -80,6 +79,14 @@ def create_invoice_request(abi_id, zone, environment, order_id):
 
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
+    if zone == 'BR':
+        json_object = set_to_dictionary(json_data, 'date', order_details.get('placementDate'))
+        json_object = set_to_dictionary(json_data, 'orderDate', order_details.get('placementDate'))
+
+    if 'itemsQuantity' not in order_data:
+        json_object = set_to_dictionary(json_data, 'itemsQuantity', size_items)
+    else:
+        json_object = set_to_dictionary(json_data, 'itemsQuantity', order_data['itemsQuantity'])
 
     items = set_to_dictionary(json_object, 'items', order_items)
 
