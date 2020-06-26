@@ -154,3 +154,56 @@ def set_file_request_order(url, headers, abi_id, zone, delivery_center_id, enabl
     response = place_request('POST', url, request_body, headers)
 
     return response
+
+
+def change_order(account_id, zone, environment, order_option, order_id):
+
+    order_data = check_if_order_exist(account_id, zone, environment, order_id)
+
+    if order_data == 'false':
+        return 'error_ms'
+    else:
+        order_info = order_data[0]
+
+    status = order_info['status']
+
+    if status == 'DENIED' or status == 'CANCELLED' or status == 'DELIVERED' or status == 'PARTIAL_DELIVERY' \
+            or status == 'PENDING_CANCELLATION':
+        print(text.Red + '\n- [Order Service] Its not possible change this order because the order status is ' +
+              order_info['status'])
+    else:
+        items = order_info['items']
+        item_qtd = 10
+        item_subtotal = items[0]['price'] * 10
+        item_total = items[0]['price'] * 10
+        dif_item_total = round(items[0]['total'] - item_total, 2)
+        dif_item_subtotal = round(items[0]['subtotal'] - item_subtotal, 2)
+
+        order_total = round(order_info['total'] - dif_item_total, 2)
+        order_subtotal = round(order_info['subtotal'] - dif_item_subtotal, 2)
+
+        json_data = order_data
+        json_object = update_value_to_json(order_info, 'items[0].quantity', item_qtd)
+        json_object = update_value_to_json(order_info, 'items[0].subtotal', item_subtotal)
+        json_object = update_value_to_json(order_info, 'items[0].total', item_total)
+        json_object = update_value_to_json(order_info, 'subtotal', order_subtotal)
+        json_object = update_value_to_json(order_info, 'total', order_total)
+
+        # Create body
+        request_body = convert_json_to_string(json_object)
+        request_body = '[' + request_body + ']'
+
+        # Define headers
+        request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+
+        # Define url request
+        request_url = get_microservice_base_url(environment) + '/order-relay/'
+
+        # Send request
+        response = place_request('POST', request_url, request_body, request_headers)
+
+        if response.status_code == 202:
+            print(text.Green + 'Order: ' + order_id + ' was change')
+            return response
+        else:
+            return 'false'

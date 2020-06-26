@@ -1,23 +1,5 @@
 from random import randint
-from json import loads
 from common import *
-
-
-def check_if_order_exist(abi_id, zone, environment, order_id):
-    # Get header request
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
-
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + '/order-service/v1?orderIds=' + order_id + '&accountId=' + abi_id
-
-    # Place request
-    response = place_request('GET', request_url, '', request_headers)
-
-    json_data = loads(response.text)
-    if response.status_code == 200 and len(json_data) != 0:
-        return json_data
-    else:
-        return 'false'
 
 
 def order_info(abi_id, zone, environment, order_id):

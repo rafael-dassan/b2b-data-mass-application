@@ -1,3 +1,4 @@
+from json import loads
 from requests import request
 from uuid import uuid1
 from time import time
@@ -260,7 +261,7 @@ def validate_rewards(option):
 
 # Validate deals
 def validate_orders(option):
-    if option == '1' or option == '2':
+    if option == '1' or option == '2' or option == '3':
         return 'true'
     else:
         return 'false'
@@ -649,12 +650,14 @@ def print_orders_menu():
     print(text.default_text_color + '\nWhich type of order do you want to create?')
     print(text.default_text_color + str(1), text.Yellow + 'Input Active Order')
     print(text.default_text_color + str(2), text.Yellow + 'Input Cancelled Order')
+    print(text.default_text_color + str(3), text.Yellow + 'Input Changed Order')
     structure = input(text.default_text_color + '\nPlease select: ')
     while validate_orders(structure) == 'false':
         print(text.Red + '\n- Invalid option')
         print(text.default_text_color + '\nWhich type of order do you want to create?')
         print(text.default_text_color + str(1), text.Yellow + 'Input Active Order')
         print(text.default_text_color + str(2), text.Yellow + 'Input Cancelled Order')
+        print(text.default_text_color + str(3), text.Yellow + 'Input Changed Order')
         structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure
@@ -1443,3 +1446,20 @@ def print_recommendation_type_menu():
     recommendation_type = switcher.get(option, 'false')
 
     return recommendation_type
+
+
+def check_if_order_exist(abi_id, zone, environment, order_id):
+    # Get header request
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+
+    # Get base URL
+    request_url = get_microservice_base_url(environment) + '/order-service/v1?orderIds=' + order_id + '&accountId=' + abi_id
+
+    # Place request
+    response = place_request('GET', request_url, '', request_headers)
+
+    json_data = loads(response.text)
+    if response.status_code == 200 and len(json_data) != 0:
+        return json_data
+    else:
+        return 'false'

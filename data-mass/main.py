@@ -166,6 +166,7 @@ def input_orders_to_account():
     switcher = {
         '1': 'ACTIVE',
         '2': 'CANCELLED',
+        '3': 'CHANGED'
     }
 
     order_type = switcher.get(selection_structure, 'false')
@@ -180,38 +181,45 @@ def input_orders_to_account():
         print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
-    print(
-        text.default_text_color + '\nChecking enabled products for the account ' + abi_id + '. It may take a while...')
-
-    # Call function to check if the account has products inside
-    products_inventory_account = request_get_offers_microservice(abi_id, zone.upper(), environment.upper(),
-                                                                 account[0]['deliveryCenterId'], True)
-
-    if len(products_inventory_account) != 0:
-        # Call function to configure prefix and order number size in the database sequence
-        order_params = configure_order_params(zone.upper(), environment.upper(), 1)
-
-        if order_params == 'false':
-            print(text.Red + '\n- [Order Creation] Something went wrong when configuring order params, please try again')
-            printFinishApplicationMenu()
-        else:
-            # Call function to create the Order according to the 'order_option' parameter (active or cancelled)
-            create_order = create_order_account(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'], order_type)
-
-            if create_order == 'error_len':
-                print(text.Red + '\n- [Order Creation] The account must have at least two enabled products to proceed')
-                printFinishApplicationMenu()
-            elif create_order == 'false':
-                print(text.Red + '\n- [Order Creation] Something went wrong, please try again')
-                printFinishApplicationMenu()
-            elif create_order == 'true':
-                # Call function to re-configure prefix and order number size to the previous format
-                order_params = configure_order_params(zone.upper(), environment.upper(), 2)
-                printFinishApplicationMenu()
-    else:
+    if order_type == 'ACTIVE' or order_type == 'CANCELLED':
         print(
-            text.Red + '\n- [Order Creation] The account has no products inside. Use the menu option 02 to add them first')
-        printFinishApplicationMenu()
+            text.default_text_color + '\nChecking enabled products for the account ' + abi_id + '. It may take a while...')
+
+        # Call function to check if the account has products inside
+        products_inventory_account = request_get_offers_microservice(abi_id, zone.upper(), environment.upper(),
+                                                                     account[0]['deliveryCenterId'], True)
+
+        if len(products_inventory_account) != 0:
+            # Call function to configure prefix and order number size in the database sequence
+            order_params = configure_order_params(zone.upper(), environment.upper(), 1)
+
+            if order_params == 'false':
+                print(text.Red + '\n- [Order Creation] Something went wrong when configuring order params, please try again')
+                printFinishApplicationMenu()
+            else:
+                # Call function to create the Order according to the 'order_option' parameter (active or cancelled)
+                create_order = create_order_account(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'], order_type)
+
+                if create_order == 'error_len':
+                    print(text.Red + '\n- [Order Creation] The account must have at least two enabled products to proceed')
+                    printFinishApplicationMenu()
+                elif create_order == 'false':
+                    print(text.Red + '\n- [Order Creation] Something went wrong, please try again')
+                    printFinishApplicationMenu()
+                elif create_order == 'true':
+                    # Call function to re-configure prefix and order number size to the previous format
+                    order_params = configure_order_params(zone.upper(), environment.upper(), 2)
+                    printFinishApplicationMenu()
+        else:
+            print(
+                text.Red + '\n- [Order Creation] The account has no products inside. Use the menu option 02 to add them first')
+            printFinishApplicationMenu()
+    else:
+        order_id = print_order_id_menu()
+        order_change = change_order(abi_id, zone, environment, order_type, order_id)
+
+        if order_change == 'error_ms' or order_change == 'false':
+            print(text.Red + '\n- [Order Service] Something went wrong, please try again')
 
 
 # Create an item for a specific Zone
