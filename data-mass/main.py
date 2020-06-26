@@ -170,7 +170,7 @@ def create_rewards_to_account():
             print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
             printFinishApplicationMenu()
         
-        enroll_poc = enroll_poc_to_program
+        enroll_poc = enroll_poc_to_program(abi_id, zone, environment)
     
 
 # Input Orders to account (active and cancelled ones)

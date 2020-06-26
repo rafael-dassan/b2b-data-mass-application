@@ -108,8 +108,26 @@ def enroll_poc_to_program(account_id, zone, environment):
     program_found = locate_program_for_zone(zone, environment, request_headers)
 
     if program_found != 'false':
-        print(text.Yellow + '\n- [Rewards] This zone already have a reward program created - ID: ' + program_found)
-        return 'error_found'
+
+        # Define url request
+        request_url = get_microservice_base_url(environment) + '/loyalty-business-service/rewards'
+
+        dict_values  = {
+            'accountId' : account_id
+        }
+
+        #Create body
+        request_body = convert_json_to_string(dict_values)
+
+        # Send request
+        response = place_request('POST', request_url, request_body, request_headers)
+
+        if response.status_code == 201:
+            enroll_response = loads(response.text)
+            print(text.Green + '\n- [Rewards] The account has been successfully enrolled to the program "' + enroll_response['programId'] + '"')
+            return 'true'
+        else:
+            return 'false'
 
 
 # Locate Rewards program previously created in the zone
