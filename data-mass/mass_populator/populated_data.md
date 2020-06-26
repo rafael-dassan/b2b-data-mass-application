@@ -309,3 +309,20 @@ Populate products for all countries.
 |0102WEB      |QM Journey 02|Journey  |Bottle / 1000 / ML     |Yes       |2
 |0102ANDROID  |QM Journey 02|Journey  |Bottle / 1000 / ML     |Yes       |2
 |0102IOS      |QM Journey 02|Journey  |Bottle / 1000 / ML     |Yes       |2
+
+
+### Category
+
+The countries will have the categories created with the following products:
+All products should be enabled and associated to accordingly categories 
+
+#### DO
+
+|SKUIdentifier|CategoryName|CategoryParent
+|-------------|------------|--------------
+|0101WEB      |Journey     |Web
+|0101ANDROID  |Journey     |Mobile
+|0101IOS      |Journey     |Mobile
+|0102WEB      |Journey     |Web
+|0102ANDROID  |Journey     |Mobile
+|0102IOS      |Journey     |Mobile

@@ -12,3 +12,12 @@ def populate_products(country, environment):
     populate_product(country, environment, '0102IOS', 'QMJourney02', 'Journey', 'Journey', '0102IOS', 'Botella', '1000', False, 'ML', 2)
 
     logger.info('Products populating finalized.')
+
+def enable_products_magento(country, environment):
+    enable_product_magento(country, environment, '0101WEB')
+    enable_product_magento(country, environment, '0101ANDROID')
+    enable_product_magento(country, environment, '0101IOS')
+    enable_product_magento(country, environment, '0102WEB')
+    enable_product_magento(country, environment, '0102ANDROID')
+    enable_product_magento(country, environment, '0102IOS')
+    

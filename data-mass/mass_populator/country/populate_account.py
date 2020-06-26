@@ -13,14 +13,23 @@ logger = logging.getLogger(__name__)
 
 
 # Populate the POC
-def populate_poc(country, environment, account_id, account_name, payment_method, credit, balance, amount_of_products,
-                 has_delivery_window):
-    populate_account(country, environment, account_id,
-                     account_name, payment_method)
+def populate_poc(country, environment, 
+        account_id, 
+        account_name, 
+        payment_method, 
+        credit, 
+        balance, 
+        amount_of_products,
+        has_delivery_window, 
+        products=None):
+    
+    populate_account(country, environment, account_id,account_name, payment_method)
     if has_delivery_window:
         populate_delivery_window(country, environment, account_id)
     populate_credit(country, environment, account_id, credit, balance)
     populate_product(account_id, country, environment, amount_of_products)
+    if products:
+        associate_products_to_account(country, environment, account_id, products)
 
 
 # Populate an account
@@ -53,12 +62,13 @@ def populate_product(account_id, country, environment, amount_of_products):
         "deliveryCenterId": account_id,
         "accountId": account_id
     }
-    if "success" != add_product_to_account(account_data, country, environment, amount_of_products):
+    if "success" != add_products_to_account(account_data, country, environment, amount_of_products):
         logger.error(log(Message.PRODUCT_ERROR, {"account_id": account_id}))
 
 
-def add_product_to_account(account, country, environment, amount_of_products):
-    """Associate products by account
+# Populate the products for an account
+def add_products_to_account(account, country, environment, amount_of_products):
+    """Add products to account
     Arguments:
         - account: Object account
         - country: (e.g, BR,ZA,DO)
@@ -101,3 +111,24 @@ def add_product_to_account(account, country, environment, amount_of_products):
         logger.debug(
             "Account already has the desired amount of products, not needed to populate!")
         return 'success'
+
+
+# Populate association products for an account
+def associate_products_to_account(country, environment, account_id, products):
+    """Associate products to account
+    Arguments:
+        - country: (e.g, BR,ZA,DO)
+        - environment: (e.g, UAT,SIT)
+        - account_id: account id
+        - products: products to associate to account
+    """
+    account = {
+        "deliveryCenterId": account_id,
+        "accountId": account_id
+    }
+
+    products_length = len(products)
+    products_data = list(zip(generate_random_price_ids(products_length), [{'sku': products[i]} for i in range(products_length)]))
+
+    if "success" != request_post_products_account_microservice(account['accountId'], country, environment, account['deliveryCenterId'], products_data):
+        logger.error(log(Message.PRODUCT_ERROR, {"account_id": account_id}))

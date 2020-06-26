@@ -11,7 +11,7 @@ def get_categories(country, environment, parent_id):
         - Parent ID
     Return list of categories
     """
-	response = request_get_categories(country, environment, parent_id)
+	response = request_get_categories(country, environment, { 'parent_id': parent_id })
 	if response.status_code == 200:
 		arr = loads(response.text)
 		return arr['items']
@@ -76,9 +76,14 @@ def request_associate_product_to_category(country, environment, product_sku, cat
 	return place_request("POST", url, convert_json_to_string(data), headers)
 
 
-def request_get_categories(country, environment, parent_id = 0):
+def request_get_categories(country, environment, searchCriteria = { 'parent_id': 0 }):
+	
+	search = '&'.join(['searchCriteria[filterGroups][{0}][filters][0][field]={1}&searchCriteria[filterGroups][{0}][filters][0][value]={2}'
+    	.format(index, searchField, searchValue) 
+			for index, (searchField, searchValue) in enumerate(searchCriteria.items())])
+
 	# Get header request
-	url = get_magento_base_url(environment, country) + "/rest/V1/categories/list?searchCriteria[filterGroups][0][filters][0][field]=parent_id&searchCriteria[filterGroups][0][filters][0][value]=" + str(parent_id) 
+	url = get_magento_base_url(environment, country) + "/rest/V1/categories/list?" + search
     
 	# Get base URL
 	access_token = get_magento_datamass_access_token(environment, country)

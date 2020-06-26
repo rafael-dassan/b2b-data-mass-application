@@ -16,6 +16,8 @@ from mass_populator.country.BR.recommendation import populate_recomendations as 
 from mass_populator.country.DO.recommendation import populate_recomendations as populate_recommendations_do
 from mass_populator.country.ZA.recommendation import populate_recomendations as populate_recommendations_za
 from mass_populator.country.CO.recommendation import populate_recomendations as populate_recommendations_co
+from mass_populator.country.DO.category import associate_product_to_category as associate_product_to_category_do
+from mass_populator.country.DO.product import enable_products_magento as enable_product_magento_do
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +26,9 @@ def execute_common(country, environment):
     populate_accounts(country, environment)
     populate_users_magento(country, environment)
     populate_recommendations(country, environment)
+
+    enable_products_magento(country, environment)
+    associate_products_to_categories(country, environment)
 
     return True
 
@@ -87,3 +92,39 @@ def populate_recommendations(country, environment):
     if function != "":
         logger.info("populate_recommendations for %s/%s", country, environment)
         function(environment)
+
+
+def enable_products_magento(country, environment):
+    allowed_countries = ["DO"]
+
+    if (country not in allowed_countries):
+        logger.info(
+            "Skipping enable products magento, because the country is not supported!")
+        return False
+
+    enable_product_magento_switcher = {
+        "DO": enable_product_magento_do
+    }
+
+    function = enable_product_magento_switcher.get(country)
+    if function != "":
+        logger.info("enable products magento %s/%s", country, environment)
+        function(country, environment)
+
+
+def associate_products_to_categories(country, environment):
+    allowed_countries = ["DO"]
+
+    if (country not in allowed_countries):
+        logger.info(
+            "Skipping associate products to categories, because the country is not supported!")
+        return False
+
+    associate_products_to_categories_switcher = {
+        "DO": associate_product_to_category_do
+    }
+
+    function = associate_products_to_categories_switcher.get(country)
+    if function != "":
+        logger.info("associate products to categories %s/%s", country, environment)
+        function(country, environment)
