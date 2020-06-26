@@ -43,7 +43,8 @@ def showMenu():
             '2': check_simulation_service_mdw_menu,
             '3': account_information_menu,
             '4': product_information_menu,
-            '5': deals_information_menu
+            '5': deals_information_menu,
+            '6': order_information_menu
         }
     elif selection_structure == '3':
         switcher = {
@@ -1139,6 +1140,29 @@ def create_categories_menu():
             print("{text_green}{success}".format(text_green=text.Green, success="Success to create category"))
 
     print("- {id}, {name}".format(id=category['id'],name=category['name']))
+
+
+def order_information_menu():
+    zone = print_zone_menu_for_ms()
+    environment = printEnvironmentMenu()
+    abi_id = print_account_id_menu(zone)
+
+    account = check_account_exists_microservice(abi_id, zone, environment)
+
+    if account == 'false':
+        print(text.Red + '\n- [Account] Something went wrong, please try again')
+        printFinishApplicationMenu()
+    elif len(account) == 0:
+        print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
+        printFinishApplicationMenu()
+
+    order_id = print_order_id_menu()
+
+    orders = check_if_order_exists(abi_id, zone.upper(), environment.upper(), order_id)
+    if orders != 'false':
+        display_specific_order_information(abi_id, zone.upper(), environment.upper(), order_id)
+
+
 
 
 # Init

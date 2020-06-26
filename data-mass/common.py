@@ -562,6 +562,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(3), text.Yellow + 'POC information')
         print(text.default_text_color + str(4), text.Yellow + 'Product information by account')
         print(text.default_text_color + str(5), text.Yellow + 'Deals information by account')
+        print(text.default_text_color + str(6), text.Yellow + 'Orders')
 
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_option_request_selection(selection) == 'false':
@@ -572,6 +573,7 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(3), text.Yellow + 'POC information')
             print(text.default_text_color + str(4), text.Yellow + 'Product information by account')
             print(text.default_text_color + str(5), text.Yellow + 'Deals information by account')
+            print(text.default_text_color + str(6), text.Yellow + 'Orders')
 
             selection = input(text.default_text_color + '\nPlease select: ')
 
