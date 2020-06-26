@@ -3,6 +3,7 @@ import time
 from datetime import date, datetime, timedelta
 from products import *
 from deals import *
+from account import create_account_ms, check_account_exists_microservice, display_account_information
 from random import *
 
 # Create Rewards Program
@@ -125,10 +126,31 @@ def enroll_poc_to_program(account_id, zone, environment):
         if response.status_code == 201:
             enroll_response = loads(response.text)
             print(text.Green + '\n- [Rewards] The account has been successfully enrolled to the program "' + enroll_response['programId'] + '"')
-            return 'true'
-        else:
-            return 'false'
+        elif response.status_code == 406:
+            turn_eligible = input(text.Yellow + '\nThe account is not eligible to any Reward program. Do you want to make it eligible now? y/N: ')
+            turn_eligible = turn_eligible.upper()
 
+            if turn_eligible == 'Y':
+                account_eligible = turn_account_eligible(account_id, zone, environment, request_headers)
+
+        elif response.status_code == 409:
+            print(text.Yellow + '\n- [Rewards] The account is already enrolled to a Reward program')
+        else:
+            print(text.Red + '\n- [Rewards] Something went wrong, please try again')
+        
+        return
+
+
+# Turn an account eligible to a Reward program
+def turn_account_eligible(abi_id, zone, environment, header_request):
+
+    # Call check account exists function
+    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+
+    if account != 'false':
+        print(account)
+
+    return 'false'
 
 # Locate Rewards program previously created in the zone
 def locate_program_for_zone(zone, environment, header_request):

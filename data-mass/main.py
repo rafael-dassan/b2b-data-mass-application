@@ -157,7 +157,7 @@ def create_rewards_to_account():
         else:
             print(text.Green + '\n- [Rewards] The new program has been created successfully - ID: ' + create_pgm)
             printFinishApplicationMenu()
-    elif reward_option == 'ENROLL_POC':
+    elif reward_option == 'ENROLL_POC':     # Option to enroll POC to a program
         abi_id = print_account_id_menu(zone)
 
         # Call check account exists function
@@ -170,8 +170,10 @@ def create_rewards_to_account():
             print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
             printFinishApplicationMenu()
         
-        enroll_poc = enroll_poc_to_program(abi_id, zone, environment)
-    
+        enroll_poc_to_program(abi_id, zone, environment)
+
+        printFinishApplicationMenu()  
+
 
 # Input Orders to account (active and cancelled ones)
 def input_orders_to_account():
