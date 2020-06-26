@@ -148,7 +148,22 @@ def turn_account_eligible(abi_id, zone, environment, header_request):
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
 
     if account != 'false':
+        print('ACCOUNT')
         print(account)
+
+        json_data = account
+        json_object = update_value_to_json(json_data, 'potential', 'DM-POTENT')
+        json_object = update_value_to_json(json_data, 'segment', 'DM-SEG')
+        json_object = update_value_to_json(json_data, 'subSegment', 'DM-SUBSEG')
+
+        print('JSON OBJECT')
+        print(json_object)
+
+        # Create body
+        request_body = convert_json_to_string(json_object)
+
+        print('REQUEST BODY')
+        print(request_body)
 
     return 'false'
 
