@@ -29,6 +29,14 @@ def create_new_program(zone, environment):
 
     # Verify if the zone has at least 3 combos available
     if len(deals) >= 3:
+
+        balance = input(text.Yellow + '\nDo you want to create the program with an initial balance? y/N: ')
+        balance = balance.upper()
+
+        if balance == 'Y':
+            initial_balance = 10000
+        else:
+            initial_balance = 0
         
         print(text.default_text_color + '\nCreating new Rewards program in ' + zone + ' - ' + environment + '. Please wait...')
 
@@ -70,12 +78,17 @@ def create_new_program(zone, environment):
                 'combos[2].comboId' : generated_combos[2],
                 'combos[3].comboId' : generated_combos[3],
                 'combos[4].comboId' : generated_combos[4],
-                'categories[0].description' : categories[0],
-                'categories[0].buttonLabel' : categories[1],
-                'categories[0].image' : categories[2],
-                'categories[1].description' : categories[3],
-                'categories[1].buttonLabel' : categories[4],
-                'categories[1].image' : categories[5],
+                'initialBalance' : initial_balance,
+                'categories[0].categoryId' : categories[0],
+                'categories[0].categoryIdWeb' : categories[1],
+                'categories[0].description' : categories[2],
+                'categories[0].buttonLabel' : categories[3],
+                'categories[0].image' : categories[4],
+                'categories[1].categoryId' : categories[5],
+                'categories[1].categoryIdWeb' : categories[6],
+                'categories[1].description' : categories[7],
+                'categories[1].buttonLabel' : categories[8],
+                'categories[1].image' : categories[9],
                 'termsAndConditions[0].documentURL' : terms[0],
                 'termsAndConditions[0].changeLog' : terms[1]
             }
@@ -105,7 +118,7 @@ def enroll_poc_to_program(account_id, zone, environment):
     # Define headers
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
 
-    # Verify if the zone already have a reward program created
+    # Check if the zone already have a reward program created
     program_found = locate_program_for_zone(zone, environment, request_headers)
 
     if program_found != 'false':
@@ -126,28 +139,32 @@ def enroll_poc_to_program(account_id, zone, environment):
         if response.status_code == 201:
             enroll_response = loads(response.text)
             print(text.Green + '\n- [Rewards] The account has been successfully enrolled to the program "' + enroll_response['programId'] + '"')
+            return 'true'
         elif response.status_code == 406:
             turn_eligible = input(text.Yellow + '\nThe account is not eligible to any Reward program. Do you want to make it eligible now? y/N: ')
             turn_eligible = turn_eligible.upper()
 
             if turn_eligible == 'Y':
-                account_eligible = turn_account_eligible(account_id, zone, environment, request_headers)
+                account_eligible = make_account_eligible(account_id, zone, environment, request_headers)
 
                 if account_eligible == 'true':
                     print(text.Green + '\n- [Rewards] The account is now eligible to be enrolled to a Reward program')
-                    print(text.Yellow + '\n- [Rewards] To proceed with the enrollment, now back to the menu and use the option "2" again')
+                    print(text.Green + '\n- [Rewards] To proceed with the enrollment, now back to the menu and use the option "2" again')
+                    return 'true'
                 else:
-                    print(text.Red + '\n- [Rewards] Something went wrong, please try again')
+                    return 'false'
         elif response.status_code == 409:
-            print(text.Yellow + '\n- [Rewards] The account is already enrolled to a Reward program')
+            print(text.Red + '\n- [Rewards] The account is already enrolled to a Reward program')
+            return 'true'
         else:
-            print(text.Red + '\n- [Rewards] Something went wrong, please try again')
-        
-        return
+            return 'false'
+    else:
+        print(text.Red + '\n- [Rewards] The zone does not have a program created. Please use the menu option "1" to create one first')
+        return 'true'
 
 
-# Turn an account eligible to a Reward program
-def turn_account_eligible(abi_id, zone, environment, header_request):
+# Make an account eligible to a Reward program
+def make_account_eligible(abi_id, zone, environment, header_request):
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
@@ -227,19 +244,59 @@ def generate_combos_information(deals_list):
 def generate_categories_information(zone):
     category_info = list()
     
-    if zone == 'DO' or zone == 'CO' or zone == 'AR':
+    if zone == 'DO':
+        # Premium category
+        category_info.append('96')
+        category_info.append('94')
+        category_info.append('Gana 100 puntos por cada RD $1000 pesos de compra en estos productos')
+        category_info.append('COMPRA AHORA')
+        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/core/img_punto_1.png')
+        
+        # Core category
+        category_info.append('0')
+        category_info.append('0')
+        category_info.append('Gana 50 puntos por cada RD $1000 pesos de compra en estos productos')
+        category_info.append('COMPRA AHORA')
+        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/core/img_punto_1.png')
+    elif zone == 'CO':
+        # Premium category
+        category_info.append('124')
+        category_info.append('304')
         category_info.append('Gana 100 puntos por cada RD $1000 pesos de compra en estos productos')
         category_info.append('COMPRA AHORA')
         category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/core/img_punto_1.png')
     
+        # Core category
+        category_info.append('123')
+        category_info.append('261')
+        category_info.append('Gana 50 puntos por cada RD $1000 pesos de compra en estos productos')
+        category_info.append('COMPRA AHORA')
+        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/core/img_punto_1.png')
+    elif zone == 'AR':
+        # Premium category
+        category_info.append('582')
+        category_info.append('494')
+        category_info.append('Gana 100 puntos por cada RD $1000 pesos de compra en estos productos')
+        category_info.append('COMPRA AHORA')
+        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/core/img_punto_1.png')
+
+        # Core category
+        category_info.append('581')
+        category_info.append('493')
         category_info.append('Gana 50 puntos por cada RD $1000 pesos de compra en estos productos')
         category_info.append('COMPRA AHORA')
         category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/core/img_punto_1.png')
     elif zone == 'BR':
+        # Premium category
+        category_info.append('272')
+        category_info.append('236')
         category_info.append('Ganhe 100 pontos para cada R$1000,00 gastos em compras e troque por produtos gratis.')
         category_info.append('COMPRAR AGORA')
         category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/br/premium/img-premium-br-rules-2.png')
 
+        # Core category
+        category_info.append('262')
+        category_info.append('226')
         category_info.append('Ganhe 50 pontos para cada R$1000,00 gastos em compras e troque por produtos gratis.')
         category_info.append('COMPRAR AGORA')
         category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/br/premium/img-premium-br-rules-2.png')

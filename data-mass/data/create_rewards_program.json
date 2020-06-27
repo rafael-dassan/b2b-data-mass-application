@@ -53,21 +53,21 @@
         "DM-SUBSEG"
       ]
     },
-    "initialBalance": 10000,
+    "initialBalance": "string",
     "calculationType": "SUBTOTAL",
     "freeGoodEnabled": true,
     "categories": [
       {
-        "categoryId": "0",
-        "categoryIdWeb": "0",
+        "categoryId": "string",
+        "categoryIdWeb": "string",
         "description": "string",
         "buttonLabel": "string",
         "buttonName": "Premium-product-button",
         "image": "string"
       },
       {
-        "categoryId": "0",
-        "categoryIdWeb": "0",
+        "categoryId": "string",
+        "categoryIdWeb": "string",
         "description": "string",
         "buttonLabel": "string",
         "buttonName": "Core-product-button",
