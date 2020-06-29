@@ -34,7 +34,7 @@ def create_new_program(zone, environment):
         balance = balance.upper()
 
         if balance == 'Y':
-            initial_balance = 10000
+            initial_balance = 20000
         else:
             initial_balance = 0
         
@@ -141,25 +141,24 @@ def enroll_poc_to_program(account_id, zone, environment):
             print(text.Green + '\n- [Rewards] The account has been successfully enrolled to the program "' + enroll_response['programId'] + '"')
             return 'true'
         elif response.status_code == 406:
-            turn_eligible = input(text.Yellow + '\nThe account is not eligible to any Reward program. Do you want to make it eligible now? y/N: ')
+            turn_eligible = input(text.Yellow + '\nThis account is not eligible to any Reward program. Do you want to make it eligible now? y/N: ')
             turn_eligible = turn_eligible.upper()
 
             if turn_eligible == 'Y':
                 account_eligible = make_account_eligible(account_id, zone, environment, request_headers)
 
                 if account_eligible == 'true':
-                    print(text.Green + '\n- [Rewards] The account is now eligible to be enrolled to a Reward program')
-                    print(text.Green + '\n- [Rewards] To proceed with the enrollment, now back to the menu and use the option "2" again')
+                    print(text.Green + '\n- [Rewards] The account is now eligible. Back to menu option "2" to resume the enrollment process')
                     return 'true'
                 else:
                     return 'false'
         elif response.status_code == 409:
-            print(text.Red + '\n- [Rewards] The account is already enrolled to a Reward program')
+            print(text.Red + '\n- [Rewards] This account already have a Reward program enrolled to it')
             return 'true'
         else:
             return 'false'
     else:
-        print(text.Red + '\n- [Rewards] The zone does not have a program created. Please use the menu option "1" to create one first')
+        print(text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "1" to create it')
         return 'true'
 
 
