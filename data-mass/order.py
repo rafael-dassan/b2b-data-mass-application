@@ -173,8 +173,8 @@ def change_order(account_id, zone, environment, order_option, order_id):
     else:
         items = order_info['items']
         item_qtd = 10
-        item_subtotal = items[0]['price'] * 10
-        item_total = items[0]['price'] * 10
+        item_subtotal = round(items[0]['price'] * 10, 2)
+        item_total = round(items[0]['price'] * 10, 2)
         dif_item_total = round(items[0]['total'] - item_total, 2)
         dif_item_subtotal = round(items[0]['subtotal'] - item_subtotal, 2)
 

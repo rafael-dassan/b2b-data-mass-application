@@ -1470,3 +1470,26 @@ def check_if_order_exists(abi_id, zone, environment, order_id):
         print(text.Red + '\n- [Order Service] Failure to retrieve order information. Response Status: '
               + str(response.status_code) + '. Response message ' + response.text)
         return 'false'
+
+
+# Validate deals
+def validate_accounts(option):
+    if option == '1' or option == '2':
+        return 'true'
+    else:
+        return 'false'
+
+
+def print_get_account_menu():
+    print(text.default_text_color + '\nWhich option to retrieve account do you want?')
+    print(text.default_text_color + str(1), text.Yellow + 'All information from one account')
+    print(text.default_text_color + str(2), text.Yellow + 'All accounts active in the zone')
+    structure = input(text.default_text_color + '\nPlease select: ')
+    while validate_accounts(structure) == 'false':
+        print(text.Red + '\n- Invalid option')
+        print(text.default_text_color + '\nWhich option to retrieve account do you want?')
+        print(text.default_text_color + str(1), text.Yellow + 'All information from one account')
+        print(text.default_text_color + str(2), text.Yellow + 'All accounts active in the zone')
+        structure = input(text.default_text_color + '\nPlease select: ')
+
+    return structure

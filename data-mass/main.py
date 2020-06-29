@@ -1,4 +1,4 @@
-from account import create_account_ms, check_account_exists_microservice, display_account_information
+from account import *
 from credit import add_credit_to_account_microservice
 from delivery_window import create_delivery_window_microservice, validate_alternative_delivery_date
 from beer_recommender import *
@@ -109,20 +109,32 @@ def product_information_menu():
 
 
 def account_information_menu():
+    selection_structure = print_get_account_menu()
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu(zone)
 
-    account = check_account_exists_microservice(abi_id, zone, environment)
+    switcher = {
+        '1': 'ONE_ACCOUNT',
+        '2': 'ALL_ACCOUNT'
+    }
 
-    if account == 'false':
-        print(text.Red + '\n- [Account] Something went wrong, please try again')
-        printFinishApplicationMenu()
-    elif len(account) == 0:
-        print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
-        printFinishApplicationMenu()
+    account_type = switcher.get(selection_structure, 'false')
 
-    display_account_information(account)
+    if account_type == 'ONE_ACCOUNT':
+        abi_id = print_account_id_menu(zone)
+        account = check_account_exists_microservice(abi_id, zone, environment)
+
+        if account == 'false':
+            print(text.Red + '\n- [Account] Something went wrong, please try again')
+            printFinishApplicationMenu()
+        elif len(account) == 0:
+            print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
+            printFinishApplicationMenu()
+
+        display_account_information(account)
+    else:
+        account = check_account_exists_microservice('', zone, environment)
+        display_all_account_info(account)
 
 
 # Input Rewards to account
