@@ -194,3 +194,34 @@ def display_account_information(account):
 
     print(text.default_text_color + '\nAccount - Maximum Order Information')
     print(tabulate(maximum_order_information, headers='keys', tablefmt='grid'))
+
+
+def display_all_account_info(account):
+    """Display account information
+    Arguments:
+        - account: all account data
+    Print a table containing informations about whats accounts it's active on the zone (accountID, taxId and LiquorLicense)
+    """
+    account_info = list()
+    size_account = len(account)
+
+    if len(account) == 0:
+        account_values = {
+            'Accounts': 'None'
+        }
+        account_info.append(account_values)
+    else:
+        for i in range(size_account):
+            if account[i]['status'] == 'ACTIVE':
+                account_values = {
+                    'Account ID': account[i]['accountId'],
+                    'Tax Id': account[i]['taxId'],
+                    'Status': account[i]['status']
+                }
+                liquor_license = account[i]['liquorLicense']
+                for y in range(len(liquor_license)):
+                    set_to_dictionary(account_values, 'Liquor License', liquor_license[y]['number'])
+                account_info.append(account_values)
+
+    print(text.default_text_color + '\nAccount - Account ID e Tax ID e Liquor License information ')
+    print(tabulate(account_info, headers='keys', tablefmt='grid'))
