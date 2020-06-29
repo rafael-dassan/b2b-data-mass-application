@@ -558,21 +558,23 @@ def print_available_options(selection_structure):
 
     elif selection_structure == '2':
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
-        print(text.default_text_color + str(1), text.Yellow + '(Beta) - Order simulation via Microservice')
-        print(text.default_text_color + str(2), text.Yellow + '(Beta) - Order simulation via Middleware')
+        print(text.default_text_color + str(1), text.Yellow + 'Order simulation via Microservice')
+        print(text.default_text_color + str(2), text.Yellow + 'Order simulation via Middleware')
         print(text.default_text_color + str(3), text.Yellow + 'POC information')
         print(text.default_text_color + str(4), text.Yellow + 'Product information by account')
         print(text.default_text_color + str(5), text.Yellow + 'Deals information by account')
+        print(text.default_text_color + str(6), text.Yellow + 'Order information by account')
 
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_option_request_selection(selection) == 'false':
             print(text.Red + '\n- Invalid option\n')
             print(text.default_text_color + str(0), text.Yellow + 'Close application')
-            print(text.default_text_color + str(1), text.Yellow + '(Beta) - Order simulation via Microservice')
-            print(text.default_text_color + str(2), text.Yellow + '(Beta) - Order simulation via Middleware')
+            print(text.default_text_color + str(1), text.Yellow + 'Order simulation via Microservice')
+            print(text.default_text_color + str(2), text.Yellow + 'Order simulation via Middleware')
             print(text.default_text_color + str(3), text.Yellow + 'POC information')
             print(text.default_text_color + str(4), text.Yellow + 'Product information by account')
             print(text.default_text_color + str(5), text.Yellow + 'Deals information by account')
+            print(text.default_text_color + str(6), text.Yellow + 'Order information by account')
 
             selection = input(text.default_text_color + '\nPlease select: ')
 
@@ -1448,7 +1450,7 @@ def print_recommendation_type_menu():
     return recommendation_type
 
 
-def check_if_order_exist(abi_id, zone, environment, order_id):
+def check_if_order_exists(abi_id, zone, environment, order_id):
     # Get header request
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
 
@@ -1461,5 +1463,10 @@ def check_if_order_exist(abi_id, zone, environment, order_id):
     json_data = loads(response.text)
     if response.status_code == 200 and len(json_data) != 0:
         return json_data
+    elif response.status_code == 200 and len(json_data) == 0:
+        print(text.Red + '\n- [Order Service] The order ' + order_id + ' does not exist')
+        return 'false'
     else:
+        print(text.Red + '\n- [Order Service] Failure to retrieve order information. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
         return 'false'
