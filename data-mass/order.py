@@ -259,6 +259,7 @@ def display_specific_order_information(orders):
         'Order ID': orders[0]['orderNumber'],
         'Status': orders[0]['status'],
         'Placement Date': orders[0]['placementDate'],
+        'Delivery Date': orders[0]['delivery']['date'],
         'Payment Method': orders[0]['paymentMethod'],
         'Subtotal': orders[0]['subtotal'],
         'Tax': orders[0]['tax'],

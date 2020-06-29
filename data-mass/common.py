@@ -1463,5 +1463,10 @@ def check_if_order_exists(abi_id, zone, environment, order_id):
     json_data = loads(response.text)
     if response.status_code == 200 and len(json_data) != 0:
         return json_data
+    elif response.status_code == 200 and len(json_data) == 0:
+        print(text.Red + '\n- [Order Service] The order ' + order_id + ' does not exist')
+        return 'false'
     else:
+        print(text.Red + '\n- [Order Service] Failure to retrieve order information. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
         return 'false'
