@@ -16,8 +16,17 @@ from mass_populator.country.BR.recommendation import populate_recomendations as 
 from mass_populator.country.DO.recommendation import populate_recomendations as populate_recommendations_do
 from mass_populator.country.ZA.recommendation import populate_recomendations as populate_recommendations_za
 from mass_populator.country.CO.recommendation import populate_recomendations as populate_recommendations_co
+from mass_populator.country.AR.category import associate_product_to_category as associate_product_to_category_ar
+from mass_populator.country.AR.product import enable_products_magento as enable_product_magento_ar
+from mass_populator.country.BR.category import associate_product_to_category as associate_product_to_category_br
+from mass_populator.country.BR.product import enable_products_magento as enable_product_magento_br
+from mass_populator.country.CO.category import associate_product_to_category as associate_product_to_category_co
+from mass_populator.country.CO.product import enable_products_magento as enable_product_magento_co
 from mass_populator.country.DO.category import associate_product_to_category as associate_product_to_category_do
 from mass_populator.country.DO.product import enable_products_magento as enable_product_magento_do
+from mass_populator.country.ZA.category import associate_product_to_category as associate_product_to_category_za
+from mass_populator.country.ZA.product import enable_products_magento as enable_product_magento_za
+
 
 logger = logging.getLogger(__name__)
 
@@ -95,15 +104,19 @@ def populate_recommendations(country, environment):
 
 
 def enable_products_magento(country, environment):
-    allowed_countries = ["DO"]
+    allowed_countries = ["AR","BR", "DO", "ZA", "CO"]
 
     if (country not in allowed_countries):
         logger.info(
-            "Skipping enable products magento, because the country is not supported!")
+            "Skipping products activation in Magento, because the country is not supported!")
         return False
-
+    
     enable_product_magento_switcher = {
-        "DO": enable_product_magento_do
+        "BR": enable_product_magento_br,
+        "DO": enable_product_magento_do,
+        "AR": enable_product_magento_ar,
+        "ZA": enable_product_magento_za,
+        "CO": enable_product_magento_co
     }
 
     function = enable_product_magento_switcher.get(country)
@@ -113,15 +126,19 @@ def enable_products_magento(country, environment):
 
 
 def associate_products_to_categories(country, environment):
-    allowed_countries = ["DO"]
+    allowed_countries = ["AR","BR", "DO", "ZA", "CO"]
 
     if (country not in allowed_countries):
         logger.info(
-            "Skipping associate products to categories, because the country is not supported!")
+            "Skipping products association to categories, because the country is not supported!")
         return False
-
+    
     associate_products_to_categories_switcher = {
-        "DO": associate_product_to_category_do
+        "BR": associate_product_to_category_br,
+        "DO": associate_product_to_category_do,
+        "AR": associate_product_to_category_ar,
+        "ZA": associate_product_to_category_za,
+        "CO": associate_product_to_category_co
     }
 
     function = associate_products_to_categories_switcher.get(country)
