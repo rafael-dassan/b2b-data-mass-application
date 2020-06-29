@@ -25,91 +25,78 @@ def create_new_program(zone, environment):
     # Define url request
     request_url = get_microservice_base_url(environment) + '/rewards-service/programs/' + reward_id
 
-    deals = request_get_deals_promo_fusion_service(zone, environment)
+    balance = input(text.Yellow + '\nDo you want to create the program with an initial balance? y/N: ')
+    balance = balance.upper()
 
-    # Verify if the zone has at least 3 combos available
-    if len(deals) >= 3:
-
-        balance = input(text.Yellow + '\nDo you want to create the program with an initial balance? y/N: ')
-        balance = balance.upper()
-
-        if balance == 'Y':
-            initial_balance = 20000
-        else:
-            initial_balance = 0
-        
-        print(text.default_text_color + '\nCreating new Rewards program in ' + zone + ' - ' + environment + '. Please wait...')
-
-        sku_rules = generate_skus_for_rules(zone, environment)
-
-        # Verify if the zone has at least 20 SKUs available
-        if len(sku_rules) >= 20:
-            sku_rules_premium = list()
-            sku_rules_core = list()
-            i = 0
-
-            while i <= 9:
-                # Getting 10 SKUs for premium rule
-                sku_rules_premium.append(sku_rules[i])
-
-                # Getting 10 SKUs for core rule
-                sku_rules_core.append(sku_rules[i+10])
-                i += 1
-
-            # Getting all the basic information for the Program to be created
-            generated_combos = generate_combos_information(deals)
-            categories = generate_categories_information(zone)
-            terms = generate_terms_information(zone)
-
-            # Create file path
-            path = os.path.abspath(os.path.dirname(__file__))
-            file_path = os.path.join(path, 'data/create_rewards_program.json')
-
-            # Load JSON file
-            with open(file_path) as file:
-                json_data = json.load(file)
-
-            dict_values  = {
-                'name' : reward_id,
-                'rules[0].moneySpentSkuRule.skus' : sku_rules_premium,
-                'rules[1].moneySpentSkuRule.skus' : sku_rules_core,
-                'combos[0].comboId' : generated_combos[0],
-                'combos[1].comboId' : generated_combos[1],
-                'combos[2].comboId' : generated_combos[2],
-                'combos[3].comboId' : generated_combos[3],
-                'combos[4].comboId' : generated_combos[4],
-                'initialBalance' : initial_balance,
-                'categories[0].categoryId' : categories[0],
-                'categories[0].categoryIdWeb' : categories[1],
-                'categories[0].description' : categories[2],
-                'categories[0].buttonLabel' : categories[3],
-                'categories[0].image' : categories[4],
-                'categories[1].categoryId' : categories[5],
-                'categories[1].categoryIdWeb' : categories[6],
-                'categories[1].description' : categories[7],
-                'categories[1].buttonLabel' : categories[8],
-                'categories[1].image' : categories[9],
-                'termsAndConditions[0].documentURL' : terms[0],
-                'termsAndConditions[0].changeLog' : terms[1]
-            }
-
-            for key in dict_values.keys():
-                json_object = update_value_to_json(json_data, key, dict_values[key])
-
-            #Create body
-            request_body = convert_json_to_string(json_object)
-
-            # Send request
-            response = place_request('PUT', request_url, request_body, request_headers)
-
-            if response.status_code == 200:
-                return reward_id
-            else:
-                return 'false'
-        else:
-            return 'error_len_sku'
+    if balance == 'Y':
+        initial_balance = 20000
     else:
-        return 'error_len_combo'
+        initial_balance = 0
+    
+    print(text.default_text_color + '\nCreating new Rewards program in ' + zone + ' - ' + environment + '. Please wait...')
+
+    sku_rules = generate_skus_for_rules(zone, environment)
+
+    # Verify if the zone has at least 20 SKUs available
+    if len(sku_rules) >= 20:
+        sku_rules_premium = list()
+        sku_rules_core = list()
+        i = 0
+
+        while i <= 9:
+            # Getting 10 SKUs for premium rule
+            sku_rules_premium.append(sku_rules[i])
+
+            # Getting 10 SKUs for core rule
+            sku_rules_core.append(sku_rules[i+10])
+            i += 1
+
+        # Getting all the basic information for the Program to be created
+        categories = generate_categories_information(zone)
+        terms = generate_terms_information(zone)
+
+        # Create file path
+        path = os.path.abspath(os.path.dirname(__file__))
+        file_path = os.path.join(path, 'data/create_rewards_program.json')
+
+        # Load JSON file
+        with open(file_path) as file:
+            json_data = json.load(file)
+
+        dict_values  = {
+            'name' : reward_id,
+            'rules[0].moneySpentSkuRule.skus' : sku_rules_premium,
+            'rules[1].moneySpentSkuRule.skus' : sku_rules_core,
+            'initialBalance' : initial_balance,
+            'categories[0].categoryId' : categories[0],
+            'categories[0].categoryIdWeb' : categories[1],
+            'categories[0].description' : categories[2],
+            'categories[0].buttonLabel' : categories[3],
+            'categories[0].image' : categories[4],
+            'categories[1].categoryId' : categories[5],
+            'categories[1].categoryIdWeb' : categories[6],
+            'categories[1].description' : categories[7],
+            'categories[1].buttonLabel' : categories[8],
+            'categories[1].image' : categories[9],
+            'termsAndConditions[0].documentURL' : terms[0],
+            'termsAndConditions[0].changeLog' : terms[1]
+        }
+
+        for key in dict_values.keys():
+            json_object = update_value_to_json(json_data, key, dict_values[key])
+
+        #Create body
+        request_body = convert_json_to_string(json_object)
+
+        # Send request
+        response = place_request('PUT', request_url, request_body, request_headers)
+
+        if response.status_code == 200:
+            return reward_id
+        else:
+            return 'false'
+    else:
+        return 'error_len_sku'
 
 
 # Enroll POC to a zone's reward program
@@ -226,17 +213,6 @@ def generate_skus_for_rules(zone, environment):
         sku_rules.append(products[i]['sku'])
 
     return sku_rules
-
-
-# Generates the Combos for Rewards program
-def generate_combos_information(deals_list):
-    combos = deals_list['combos']
-    combos_id = list()
-
-    for i in range(len(combos)):
-        combos_id.append(combos[i]['id'])
-
-    return combos_id
 
 
 # Generates the Categories for Rewards program

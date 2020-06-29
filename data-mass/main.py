@@ -146,9 +146,6 @@ def create_rewards_to_account():
         if create_pgm == 'error_len_sku':
             print(text.Red + '\n- [Rewards] The zone must have at least 20 products to proceed')
             printFinishApplicationMenu()
-        elif create_pgm == 'error_len_combo':
-            print(text.Red + '\n- [Rewards] The zone must have at least 3 combos available to proceed')
-            printFinishApplicationMenu()
         elif create_pgm == 'false':
             print(text.Red + '\n- [Rewards] Something went wrong, please try again.')
             printFinishApplicationMenu()
