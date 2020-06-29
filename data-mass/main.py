@@ -1,5 +1,4 @@
-from account import create_account_ms, check_account_exists_microservice, display_account_information, \
-    display_all_account_info
+from account import *
 from credit import add_credit_to_account_microservice
 from delivery_window import create_delivery_window_microservice, validate_alternative_delivery_date
 from beer_recommender import *

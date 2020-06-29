@@ -200,7 +200,7 @@ def display_all_account_info(account):
     """Display account information
     Arguments:
         - account: all account data
-    Print a table containing informations about whats accounts it's active on the zone (accountID, taxId and LiquorLicense)
+    Print a table containing information about which accounts it's active on the zone (accountID, taxId and LiquorLicense)
     """
     account_info = list()
     size_account = len(account)
@@ -223,5 +223,5 @@ def display_all_account_info(account):
                     set_to_dictionary(account_values, 'Liquor License', liquor_license[y]['number'])
                 account_info.append(account_values)
 
-    print(text.default_text_color + '\nAccount - Account ID e Tax ID e Liquor License information ')
+    print(text.default_text_color + '\nAccount - Account ID, Tax ID and Liquor License information ')
     print(tabulate(account_info, headers='keys', tablefmt='grid'))
