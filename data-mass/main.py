@@ -157,8 +157,8 @@ def create_rewards_to_account():
         else:
             print(text.Green + '\n- [Rewards] The new program has been created successfully - ID: ' + create_pgm)
             printFinishApplicationMenu()
-
-    elif reward_option == 'ENROLL_POC':   # Option to enroll POC to a program
+    # Option to enroll POC to a program
+    elif reward_option == 'ENROLL_POC':   
         
         abi_id = print_account_id_menu(zone)
 
