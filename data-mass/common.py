@@ -1476,8 +1476,16 @@ def check_if_order_exists(abi_id, zone, environment, order_id):
         return 'false'
 
 
-# Validate deals
+# Validate account sub-menus
 def validate_accounts(option):
+    if option == '1' or option == '2':
+        return 'true'
+    else:
+        return 'false'
+
+
+# Validate order sub-menus
+def validate_order_sub_menu(option):
     if option == '1' or option == '2':
         return 'true'
     else:
@@ -1516,6 +1524,21 @@ def print_get_products_menu():
         print(text.default_text_color + '\nWhich option to retrieve products information do you want?')
         print(text.default_text_color + str(1), text.Yellow + 'Products information by account')
         print(text.default_text_color + str(2), text.Yellow + 'Products inventory information by account')
+        structure = input(text.default_text_color + '\nPlease select: ')
+
+    return structure
+
+
+def print_get_order_menu():
+    print(text.default_text_color + '\nWhich option to retrieve orders do you want?')
+    print(text.default_text_color + str(1), text.Yellow + 'Specific order information by account')
+    print(text.default_text_color + str(2), text.Yellow + 'All order information by account')
+    structure = input(text.default_text_color + '\nPlease select: ')
+    while validate_order_sub_menu(structure) == 'false':
+        print(text.Red + '\n- Invalid option')
+        print(text.default_text_color + '\nWhich option to retrieve orders do you want?')
+        print(text.default_text_color + str(1), text.Yellow + 'Specific order information by account')
+        print(text.default_text_color + str(2), text.Yellow + 'All order information by account')
         structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure
