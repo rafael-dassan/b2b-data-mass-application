@@ -1162,6 +1162,7 @@ def create_categories_menu():
 
 
 def order_information_menu():
+    selection_structure = print_get_order_menu()
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
@@ -1175,11 +1176,16 @@ def order_information_menu():
         print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
-    order_id = print_order_id_menu()
+    if selection_structure == '1':
+        order_id = print_order_id_menu()
+        orders = check_if_order_exists(abi_id, zone.upper(), environment.upper(), order_id)
+        if orders != 'false':
+            display_specific_order_information(orders)
+    else:
+        orders = check_if_order_exists(abi_id, zone.upper(), environment.upper(), '')
+        if orders != 'false':
+            display_all_order_information(orders)
 
-    orders = check_if_order_exists(abi_id, zone.upper(), environment.upper(), order_id)
-    if orders != 'false':
-        display_specific_order_information(orders)
 
 
 

@@ -276,3 +276,29 @@ def display_specific_order_information(orders):
 
     print(text.default_text_color + '\nOrder combos')
     print(tabulate(combo_information, headers='keys', tablefmt='grid'))
+
+
+def display_all_order_information(orders):
+    """Display all order information by POC
+    Arguments:
+        - orders: order data by account
+    Print a table containing the available order information
+    """
+    order_information = list()
+
+    for i in range(len(orders)):
+        order_values = {
+            'Order ID': orders[i]['orderNumber'],
+            'Status': orders[i]['status'],
+            'Placement Date': orders[i]['placementDate'],
+            'Delivery Date': orders[i]['delivery']['date'],
+            'Payment Method': orders[i]['paymentMethod'],
+            'Subtotal': orders[i]['subtotal'],
+            'Tax': orders[i]['tax'],
+            'Discount': orders[i]['discount'],
+            'Total': orders[i]['total']
+        }
+        order_information.append(order_values)
+
+    print(text.default_text_color + '\nAll Order Information By Account')
+    print(tabulate(order_information, headers='keys', tablefmt='grid'))
