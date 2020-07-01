@@ -19,7 +19,13 @@ def create_new_program(zone, environment):
         print(text.Yellow + '\n- [Rewards] This zone already have a reward program created - ID: ' + program_found)
         return 'error_found'
 
-    print(text.default_text_color + '\nCreating new Rewards program in ' + zone + ' - ' + environment + '. Please wait...')
+    balance = input(text.Yellow + '\nDo you want to create the program with initial balance ($20.000)? y/N: ')
+    balance = balance.upper()
+
+    if balance == 'Y':
+        initial_balance = 20000
+    else:
+        initial_balance = 0
 
     # Generates the new Program ID
     reward_id = 'DM-REWARDS-' + str(randint(100,900))
@@ -27,23 +33,18 @@ def create_new_program(zone, environment):
     # Define url request
     request_url = get_microservice_base_url(environment) + '/rewards-service/programs/' + reward_id
 
-    deals = request_get_deals_promo_fusion_service(zone, environment)
+    deals = request_get_dt_combos(zone, environment, request_headers)
 
     # Verify if the zone has combos available
     if len(deals) > 0:
-
-        balance = input(text.Yellow + '\nDo you want to create the program with an initial balance? y/N: ')
-        balance = balance.upper()
-
-        if balance == 'Y':
-            initial_balance = 20000
-        else:
-            initial_balance = 0
 
         sku_rules = generate_skus_for_rules(zone, environment)
 
         # Verify if the zone has at least 20 SKUs available
         if len(sku_rules) >= 20:
+
+            print(text.default_text_color + '\nCreating new Rewards program in ' + zone + ' - ' + environment + '. Please wait...')
+            
             sku_rules_premium = list()
             sku_rules_core = list()
             i = 0
@@ -99,7 +100,8 @@ def create_new_program(zone, environment):
             response = place_request('PUT', request_url, request_body, request_headers)
 
             if response.status_code == 200:
-                return reward_id
+                print(text.Green + '\n- [Rewards] The new program "' + reward_id + '" has been created successfully. Initial balance = ' + str(initial_balance))
+                return 'true'
             else:
                 return 'false'
         else:
@@ -187,6 +189,20 @@ def make_account_eligible(abi_id, zone, environment, header_request):
             return 'true'
         else:
             return 'false'
+
+
+# Retrieve Digital Trade combos (DT Combos) for the specified zone
+def request_get_dt_combos(zone, environment, header_request):
+
+    # Define url request
+    request_url = get_microservice_base_url(environment) + '/combos/?types=DT&includeDeleted=false&includeDisabled=false'
+    
+    # Send request
+    response = place_request('GET', request_url, '', header_request)
+    
+    dt_combos_list = loads(response.text)
+
+    return dt_combos_list
 
 
 # Locate Rewards program previously created in the zone

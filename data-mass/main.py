@@ -145,6 +145,7 @@ def create_rewards_to_account():
 
         if create_pgm == 'error_len_sku':
             print(text.Red + '\n- [Rewards] The zone must have at least 20 products to proceed')
+            printFinishApplicationMenu()
         elif create_pgm == 'error_len_combo':
             print(text.Red + '\n- [Rewards] The zone must have combos available to proceed')
             printFinishApplicationMenu()
@@ -154,7 +155,6 @@ def create_rewards_to_account():
         elif create_pgm == 'error_found':
             printFinishApplicationMenu()
         else:
-            print(text.Green + '\n- [Rewards] The new program has been created successfully - ID: ' + create_pgm)
             printFinishApplicationMenu()
     # Option to enroll POC to a program
     elif reward_option == 'ENROLL_POC':   

@@ -53,7 +53,7 @@
         "DM-SUBSEG"
       ]
     },
-    "initialBalance": "string",
+    "initialBalance": 0,
     "calculationType": "SUBTOTAL",
     "freeGoodEnabled": true,
     "categories": [
