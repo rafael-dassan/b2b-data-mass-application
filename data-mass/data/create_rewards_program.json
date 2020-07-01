@@ -20,6 +20,28 @@
         }
       }
     ],
+    "combos": [
+      {
+        "comboId": "string",
+        "points": 400
+      },
+      {
+        "comboId": "string",
+        "points": 500
+      },
+      {
+        "comboId": "string",
+        "points": 600
+      },
+      {
+        "comboId": "string",
+        "points": 700
+      },
+      {
+        "comboId": "string",
+        "points": 800
+      }
+    ],
     "filter": {
       "potential": [
         "DM-POTENT"
