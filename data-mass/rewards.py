@@ -100,7 +100,7 @@ def create_new_program(zone, environment):
             response = place_request('PUT', request_url, request_body, request_headers)
 
             if response.status_code == 200:
-                print(text.Green + '\n- [Rewards] The new program "' + reward_id + '" has been created successfully. Initial balance = ' + str(initial_balance))
+                print(text.Green + '\n- [Rewards] The new program has been created successfully. ID: ' + reward_id + ' - Initial balance = ' + str(initial_balance))
                 return 'true'
             else:
                 return 'false'
