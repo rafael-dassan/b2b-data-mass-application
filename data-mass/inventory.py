@@ -154,39 +154,8 @@ def validate_sku(sku_id, enabled_skus):
 
 
 def display_inventory_by_account(zone, environment, abi_id, delivery_center_id):
-
-    if zone == 'ZA':
-        sku_inventory = request_get_offers_middleware(abi_id, zone, environment, 'true')
-
-        if sku_inventory != 'false':
-            dict_values = {
-                'fulfillmentCenterId': delivery_center_id,
-                'skus': sku_inventory
-            }
-            request_body = convert_json_to_string(dict_values)
-            response = get_delivery_center_inventory(dict_values, environment, zone, request_body)
-
-            json_data = loads(response.text)
-            inventory_info = list()
-
-            if len(json_data) == 0:
-                inventory_values = {
-                    'Inventory': 'None'
-                }
-                inventory_info.append(inventory_values)
-            else:
-                for i in range(len(json_data['inventory'])):
-                    inventory_values = {
-                            'sku': json_data['inventory'][i]['sku'],
-                            'quantity': json_data['inventory'][i]['quantity']
-                    }
-                    inventory_info.append(inventory_values)
-
-            print(text.default_text_color + '\nInventory - Sku and Inventory from one account ')
-            print(tabulate(inventory_info, headers='keys', tablefmt='grid'))
-    else:
-        product_offers = request_get_account_product_assortment(abi_id, zone, environment, delivery_center_id)
-
+    product_offers = request_get_account_product_assortment(abi_id, zone, environment, delivery_center_id)
+    if len(product_offers) != 0:
         dict_values = {
             'fulfillmentCenterId': delivery_center_id,
             'skus': product_offers
@@ -210,8 +179,8 @@ def display_inventory_by_account(zone, environment, abi_id, delivery_center_id):
                 }
                 inventory_info.append(inventory_values)
 
-        print(text.default_text_color + '\nInventory - Sku and Inventory from one account ')
-        print(tabulate(inventory_info, headers='keys', tablefmt='grid'))
+            print(text.default_text_color + '\nInventory - Sku and Inventory from one account ')
+            print(tabulate(inventory_info, headers='keys', tablefmt='grid'))
 
 
 def get_delivery_center_inventory(dict_values, environment, zone, request_body):
