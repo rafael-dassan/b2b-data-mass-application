@@ -564,6 +564,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(4), text.Yellow + 'Product information by account')
         print(text.default_text_color + str(5), text.Yellow + 'Deals information by account')
         print(text.default_text_color + str(6), text.Yellow + 'Order information by account')
+        print(text.default_text_color + str(7), text.Yellow + 'Products Inventory information by account')
 
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_option_request_selection(selection) == 'false':
@@ -575,6 +576,7 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(4), text.Yellow + 'Product information by account')
             print(text.default_text_color + str(5), text.Yellow + 'Deals information by account')
             print(text.default_text_color + str(6), text.Yellow + 'Order information by account')
+            print(text.default_text_color + str(7), text.Yellow + 'Products Inventory information by account')
 
             selection = input(text.default_text_color + '\nPlease select: ')
 
@@ -1493,3 +1495,24 @@ def print_get_account_menu():
         structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure
+
+
+def check_sku_by_account(zone, environment, abi_id):
+    # Define headers
+    request_headers = get_header_request(zone, 'true', 'false', 'false')
+
+    # Define url request
+    request_url = get_microservice_base_url(environment) + '/products/offers?accountId=' + abi_id
+
+    response = place_request('GET', request_url, '', request_headers)
+
+    json_data = loads(response.text)
+    if response.status_code == 200 and len(json_data) != 0:
+        return json_data
+    elif response.status_code == 200 and len(json_data) == 0:
+        print(text.Red + '\n- [Product Service] The accountId ' + abi_id + ' didn`t has products')
+        return 'false'
+    else:
+        print(text.Red + '\n- [Product Service] Failure to retrieve inventory information. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
+        return 'false'
