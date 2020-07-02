@@ -43,8 +43,7 @@ def showMenu():
             '3': account_information_menu,
             '4': product_information_menu,
             '5': deals_information_menu,
-            '6': order_information_menu,
-            '7': inventory_information_menu
+            '6': order_information_menu
         }
     elif selection_structure == '3':
         switcher = {
@@ -54,8 +53,7 @@ def showMenu():
             '3': associateUserToAccount,
             '4': get_categories_menu,
             '5': associate_product_to_category_menu,
-            '6': create_categories_menu,
-            '7': inventory_information_menu
+            '6': create_categories_menu
         }
     else:
         finishApplication()
@@ -89,25 +87,52 @@ def deals_information_menu():
 
 
 def product_information_menu():
-    zone = print_zone_menu_for_ms()
-    environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu(zone)
+    selection_structure = print_get_products_menu()
 
-    account = check_account_exists_microservice(abi_id, zone, environment)
+    switcher = {
+        '1': 'PRODUCT',
+        '2': 'INVENTORY',
+    }
 
-    if account == 'false':
-        print(text.Red + '\n- [Account] Something went wrong, please try again')
-        printFinishApplicationMenu()
-    elif len(account) == 0:
-        print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
-        printFinishApplicationMenu()
+    products_type = switcher.get(selection_structure, 'false')
 
-    product_offers = request_get_products_by_account_microservice(abi_id, zone, environment)
-    if len(product_offers) == 0:
-        print(text.Red + '\n- [Product Offers] The account ' + abi_id + ' does not have products')
-        printFinishApplicationMenu()
+    if products_type == 'PRODUCT':
+        zone = print_zone_menu_for_ms()
+        environment = printEnvironmentMenu()
+        abi_id = print_account_id_menu(zone)
+
+        account = check_account_exists_microservice(abi_id, zone, environment)
+
+        if account == 'false':
+            print(text.Red + '\n- [Account] Something went wrong, please try again')
+            printFinishApplicationMenu()
+        elif len(account) == 0:
+            print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
+            printFinishApplicationMenu()
+
+        product_offers = request_get_products_by_account_microservice(abi_id, zone, environment)
+        if len(product_offers) == 0:
+            print(text.Red + '\n- [Product Offers] The account ' + abi_id + ' does not have products')
+            printFinishApplicationMenu()
+        else:
+            display_product_information(product_offers)
     else:
-        display_product_information(product_offers)
+        zone = print_zone_menu_for_inventory()
+        environment = printEnvironmentMenu()
+        abi_id = print_account_id_menu(zone)
+
+        account = check_account_exists_microservice(abi_id, zone, environment)
+
+        if account == 'false':
+            print(text.Red + '\n- [Account] Something went wrong, please try again')
+            printFinishApplicationMenu()
+        elif len(account) == 0:
+            print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
+            printFinishApplicationMenu()
+
+        delivery_center_id = account[0]['deliveryCenterId']
+        display_inventory_by_account(zone, environment, abi_id, delivery_center_id)
+
 
 
 def account_information_menu():
@@ -1183,25 +1208,6 @@ def order_information_menu():
     orders = check_if_order_exists(abi_id, zone.upper(), environment.upper(), order_id)
     if orders != 'false':
         display_specific_order_information(orders)
-
-
-def inventory_information_menu():
-    zone = print_zone_menu_for_inventory()
-    environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu(zone)
-
-    account = check_account_exists_microservice(abi_id, zone, environment)
-
-    if account == 'false':
-        print(text.Red + '\n- [Account] Something went wrong, please try again')
-        printFinishApplicationMenu()
-    elif len(account) == 0:
-        print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
-        printFinishApplicationMenu()
-
-    delivery_window_id = account[0]['deliveryCenterId']
-    display_inventory_by_account(zone, environment, abi_id, delivery_window_id)
-
 
 
 # Init

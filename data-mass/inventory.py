@@ -1,9 +1,8 @@
 from json import loads
 from tabulate import tabulate
-from products import request_get_account_product_assortment, check_item_enabled, get_sku_name
+from products import request_get_account_product_assortment, check_item_enabled, get_sku_name, request_get_offers_middleware
 from classes.text import text
-from common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request, \
-    check_sku_by_account
+from common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request
 
 
 # Show all available SKUs of the account in the screen
@@ -154,22 +153,18 @@ def validate_sku(sku_id, enabled_skus):
         aux_index = aux_index + 1
 
 
-def display_inventory_by_account(zone, environment, abi_id, delivery_window_id):
+def display_inventory_by_account(zone, environment, abi_id, delivery_center_id):
 
     if zone == 'ZA':
-        sku_inventory = check_sku_by_account(zone, environment, abi_id)
+        sku_inventory = request_get_offers_middleware(abi_id, zone, environment, 'true')
+
         if sku_inventory != 'false':
-            sku_list = list()
-
-            for i in range(len(sku_inventory)):
-                sku_list.append(sku_inventory[i]['sku'])
-
             dict_values = {
-                'fulfillmentCenterId': delivery_window_id,
-                'skus': sku_list
+                'fulfillmentCenterId': delivery_center_id,
+                'skus': sku_inventory
             }
             request_body = convert_json_to_string(dict_values)
-            response = inventory_sku(dict_values, environment, zone, request_body)
+            response = get_delivery_center_inventory(dict_values, environment, zone, request_body)
 
             json_data = loads(response.text)
             inventory_info = list()
@@ -190,14 +185,14 @@ def display_inventory_by_account(zone, environment, abi_id, delivery_window_id):
             print(text.default_text_color + '\nInventory - Sku and Inventory from one account ')
             print(tabulate(inventory_info, headers='keys', tablefmt='grid'))
     else:
-        product_offers = request_get_account_product_assortment(abi_id, zone, environment, delivery_window_id)
+        product_offers = request_get_account_product_assortment(abi_id, zone, environment, delivery_center_id)
 
         dict_values = {
-            'fulfillmentCenterId': delivery_window_id,
+            'fulfillmentCenterId': delivery_center_id,
             'skus': product_offers
         }
         request_body = convert_json_to_string(dict_values)
-        response = inventory_sku(dict_values, environment, zone, request_body)
+        response = get_delivery_center_inventory(dict_values, environment, zone, request_body)
 
         json_data = loads(response.text)
         inventory_info = list()
@@ -219,7 +214,7 @@ def display_inventory_by_account(zone, environment, abi_id, delivery_window_id):
         print(tabulate(inventory_info, headers='keys', tablefmt='grid'))
 
 
-def inventory_sku(dict_values, environment, zone, request_body):
+def get_delivery_center_inventory(dict_values, environment, zone, request_body):
     # Define headers
     request_headers = get_header_request(zone, 'true', 'false', 'false')
     # Define url request
