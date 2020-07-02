@@ -88,6 +88,7 @@ def deals_information_menu():
 
 def product_information_menu():
     selection_structure = print_get_products_menu()
+    environment = printEnvironmentMenu()
 
     switcher = {
         '1': 'PRODUCT',
@@ -98,9 +99,7 @@ def product_information_menu():
 
     if products_type == 'PRODUCT':
         zone = print_zone_menu_for_ms()
-        environment = printEnvironmentMenu()
         abi_id = print_account_id_menu(zone)
-
         account = check_account_exists_microservice(abi_id, zone, environment)
 
         if account == 'false':
@@ -118,9 +117,8 @@ def product_information_menu():
             display_product_information(product_offers)
     else:
         zone = print_zone_menu_for_inventory()
-        environment = printEnvironmentMenu()
         abi_id = print_account_id_menu(zone)
-
+        
         account = check_account_exists_microservice(abi_id, zone, environment)
 
         if account == 'false':

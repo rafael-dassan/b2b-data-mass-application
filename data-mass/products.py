@@ -426,13 +426,7 @@ def request_get_response_products_by_account_microservice(abi_id, zone, environm
         environment) + '/catalog-service/catalog?accountId=' + abi_id + '&projection=LIST'
 
     # Send request
-    response = place_request('GET', request_url, '', request_headers)
-    json_data = loads(response.text)
-    if response.status_code == 200 and len(json_data) != 0:
-        return response
-    else:
-        print('[Product Service] Status code: ' + str(response.status_code) + ' error message: ' + response.text)
-        return 'false'
+    return place_request('GET', request_url, '', request_headers)
 
 
 def request_get_products_by_account_microservice(abi_id, zone, environment):
