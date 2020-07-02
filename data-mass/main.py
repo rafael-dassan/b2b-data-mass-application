@@ -145,7 +145,8 @@ def create_rewards_to_account():
 
     switcher = {
         '1': 'NEW_PROGRAM',
-        '2': 'ENROLL_POC'
+        '2': 'ENROLL_POC',
+        '3': 'ADD_CHALLENGE'
     }
 
     reward_option = switcher.get(selection_structure, 'false')
@@ -188,7 +189,28 @@ def create_rewards_to_account():
         if enroll_poc == 'false':
             print(text.Red + '\n- [Rewards] Something went wrong, please try again')
 
-        printFinishApplicationMenu()  
+        printFinishApplicationMenu()
+    # Option to input challenges to a specific zone
+    elif reward_option == 'ADD_CHALLENGE':
+           
+        abi_id = print_account_id_menu(zone)
+
+        # Call check account exists function
+        account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+
+        if account == 'false':
+            print(text.Red + '\n- [Account] Something went wrong, please try again')
+            printFinishApplicationMenu()
+        elif len(account) == 0:
+            print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
+            printFinishApplicationMenu()
+        
+        add_challenge = input_challenge_to_zone(zone, environment)
+
+        if add_challenge == 'false':
+            print(text.Red + '\n- [Rewards] Something went wrong, please try again')
+
+        printFinishApplicationMenu()
 
 
 # Input Orders to account (active and cancelled ones)

@@ -1,0 +1,27 @@
+{
+  "title": "string",
+  "description": "string",
+  "detailedDescription": "string",
+  "points": 350,
+  "startDate": "string",
+  "endDate": "2099-12-31T23:59:59.123Z",
+  "image": "string",
+  "type": "EXECUTION_PTC",
+  "filter": {
+    "potential": [
+      "DM-POTENT"
+    ],
+    "segment": [
+      "DM-SEG"
+    ]
+  },
+  "executionMethod": "string",
+  "goodPhotoSample": "string",
+  "badPhotoSample": "string",
+  "skus": [
+    {
+      "sku": "-B000001",
+      "quantity": 2
+    }
+  ]
+}

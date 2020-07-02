@@ -160,6 +160,157 @@ def enroll_poc_to_program(account_id, zone, environment):
         return 'true'
 
 
+############################################# E S T O U   A Q U I #######################################################
+
+# Add Challenges to a defined zone
+def input_challenge_to_zone(zone, environment):
+
+    error_flag = 'false'
+
+    i = 1
+
+    # Generates six challenges - two of each type (take_photo, mark_completed and purchase)
+    while i <= 6:
+        # Generates the new Program ID
+        challenge_id = 'DM-CHALLENGE-' + str(randint(100,900))
+
+        # Getting all the basic information to create the challenges
+        if i == 1:
+            generated_challenges = challenge_execution_method(1)
+        elif i == 3:
+            generated_challenges = challenge_execution_method(2)
+        elif i == 5:
+            generated_challenges = challenge_execution_method(3)
+
+        # Create file path
+        path = os.path.abspath(os.path.dirname(__file__))
+        file_path = os.path.join(path, 'data/create_rewards_challenges.json')
+
+        # Load JSON file
+        with open(file_path) as file:
+            json_data = json.load(file)
+
+        if i == 1 or i == 3 or i == 5:
+            dict_values  = {
+                'title' : challenge_id,
+                'description' : generated_challenges[0],
+                'detailedDescription' : generated_challenges[1],
+                'startDate' : generated_challenges[2],
+                'image' : generated_challenges[3],
+                'executionMethod' : generated_challenges[4],
+                'goodPhotoSample' : generated_challenges[5],
+                'badPhotoSample' : generated_challenges[6]
+            }
+        elif i == 2 or i == 4 or i == 6:
+            dict_values  = {
+                'title' : challenge_id,
+                'description' : generated_challenges[7],
+                'detailedDescription' : generated_challenges[8],
+                'startDate' : generated_challenges[9],
+                'image' : generated_challenges[10],
+                'executionMethod' : generated_challenges[11],
+                'goodPhotoSample' : generated_challenges[12],
+                'badPhotoSample' : generated_challenges[13]
+            }
+
+        for key in dict_values.keys():
+            json_object = update_value_to_json(json_data, key, dict_values[key])
+
+        #Create body
+        request_body = convert_json_to_string(json_object)
+
+        # Define headers
+        request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+
+        # Define url request
+        request_url = get_microservice_base_url(environment) + '/rewards-service/challenges/' + challenge_id
+
+        # Send request
+        response = place_request('PUT', request_url, request_body, request_headers)
+
+        if response.status_code == 200:
+            print(text.Green + '\n- [Rewards] The new challenge has been created successfully. ID: ' + challenge_id)
+        else:
+            error_flag = 'true'
+
+        i += 1
+
+    # Verify if all challenges were created succesfully or if some failed
+    if error_flag == 'true':
+        return 'false'
+    else:
+        return 'true'
+
+
+def challenge_execution_method(challenge_type):
+
+    # Sets the format of the challenge's start date (current date and time)
+    start_date = datetime.now()
+    start_date = start_date.strftime('%Y-%m-%dT%H:%M:%S')
+    start_date = start_date + 'Z'
+
+    expiration_date = datetime.now() + timedelta(days=60)
+    expiration_date = expiration_date.strftime('%Y-%m-%dT%H:%M:%S')
+    expiration_date = expiration_date + '+Z'
+
+    print(expiration_date)
+
+    challenge_details = list()
+
+    if challenge_type == 1:
+        # Details of the take photo #1
+        challenge_details.append('DESCRIPTION_01')
+        challenge_details.append('DETAILED DESCRIPTION_01')
+        challenge_details.append(start_date)
+        challenge_details.append('https://b2bfilemgmtsagbtest.blob.core.windows.net/files-do/rewards-admin_challenge-image.png?sig=IzFb2Eo16gb61Y92j3qry%2BiC61kqijYPkAZxuqf4ESI%3D&se=3019-06-23T15%3A38%3A29Z&sv=2015-04-05&sp=r&sr=b')
+        challenge_details.append('TAKE_PHOTO')
+        challenge_details.append('https://b2bstaticwebsagbdev.blob.core.windows.net/digitaltrade/uat/images/br/challenges/1659/photo_of_cooler_ok.jpg')
+        challenge_details.append('https://b2bstaticwebsagbdev.blob.core.windows.net/digitaltrade/uat/images/br/challenges/1659/photo_of_cooler_nok.jpg')
+        # Details of the take photo #2
+        challenge_details.append('DESCRIPTION_02')
+        challenge_details.append('DETAILED DESCRIPTION_02')
+        challenge_details.append(start_date)
+        challenge_details.append('https://b2bfilemgmtsagbtest.blob.core.windows.net/files-do/rewards-admin_challenge-image.png?sig=IzFb2Eo16gb61Y92j3qry%2BiC61kqijYPkAZxuqf4ESI%3D&se=3019-06-23T15%3A38%3A29Z&sv=2015-04-05&sp=r&sr=b')
+        challenge_details.append('TAKE_PHOTO')
+        challenge_details.append('https://b2bstaticwebsagbdev.blob.core.windows.net/digitaltrade/uat/images/br/challenges/1659/photo_of_cooler_ok.jpg')
+        challenge_details.append('https://b2bstaticwebsagbdev.blob.core.windows.net/digitaltrade/uat/images/br/challenges/1659/photo_of_cooler_nok.jpg')
+    elif challenge_type == 2:
+        # Details of the mark complete #1
+        challenge_details.append('DESCRIPTION_01')
+        challenge_details.append('DETAILED DESCRIPTION_01')
+        challenge_details.append(start_date)
+        challenge_details.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/br/challenges/1661/execution_2nd_display.jpg')
+        challenge_details.append('MARK_COMPLETE')
+        challenge_details.append('')
+        challenge_details.append('')
+        # Details of the mark complete #2
+        challenge_details.append('DESCRIPTION_02')
+        challenge_details.append('DETAILED DESCRIPTION_02')
+        challenge_details.append(start_date)
+        challenge_details.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/br/challenges/1661/execution_2nd_display.jpg')
+        challenge_details.append('MARK_COMPLETE')
+        challenge_details.append('')
+        challenge_details.append('')
+    elif challenge_type == 3:
+        # Details of the challenge #1
+        challenge_details.append('DESCRIPTION_01')
+        challenge_details.append('DETAILED DESCRIPTION_01')
+        challenge_details.append(start_date)
+        challenge_details.append('https://b2bstaticwebsagbprod.blob.core.windows.net/challenge/DO/images/afiche_12oz_PTE.jpg')
+        challenge_details.append('PURCHASE')
+        challenge_details.append('')
+        challenge_details.append('')
+        # Details of the challenge #2
+        challenge_details.append('DESCRIPTION_02')
+        challenge_details.append('DETAILED DESCRIPTION_02')
+        challenge_details.append(start_date)
+        challenge_details.append('https://b2bstaticwebsagbprod.blob.core.windows.net/challenge/DO/images/afiche_12oz_PTE.jpg')
+        challenge_details.append('PURCHASE')
+        challenge_details.append('')
+        challenge_details.append('')
+
+    return challenge_details
+
 # Make an account eligible to a Reward program
 def make_account_eligible(abi_id, zone, environment, header_request):
 
