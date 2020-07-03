@@ -255,18 +255,10 @@ def display_specific_order_information(orders):
             combo_information.append(combo_values)
 
     order_information = list()
-    order_values = {
-        'Order ID': orders[0]['orderNumber'],
-        'Status': orders[0]['status'],
-        'Placement Date': orders[0]['placementDate'],
-        'Delivery Date': orders[0]['delivery']['date'],
-        'Payment Method': orders[0]['paymentMethod'],
-        'Subtotal': orders[0]['subtotal'],
-        'Tax': orders[0]['tax'],
-        'Discount': orders[0]['discount'],
-        'Total': orders[0]['total']
-    }
-    order_information.append(order_values)
+
+    for i in range(len(orders)):
+        order_values = validate_order_parameters(orders[i])
+        order_information.append(order_values)
 
     print(text.default_text_color + '\nOrder Information By Account')
     print(tabulate(order_information, headers='keys', tablefmt='grid'))
@@ -276,3 +268,75 @@ def display_specific_order_information(orders):
 
     print(text.default_text_color + '\nOrder combos')
     print(tabulate(combo_information, headers='keys', tablefmt='grid'))
+
+
+def display_all_order_information(orders):
+    """Display all order information by POC
+    Arguments:
+        - orders: order data by account
+    Print a table containing the available order information
+    """
+    order_information = list()
+
+    for i in range(len(orders)):
+        order_values = validate_order_parameters(orders[i])
+        order_information.append(order_values)
+
+    print(text.default_text_color + '\nAll Order Information By Account')
+    print(tabulate(order_information, headers='keys', tablefmt='grid'))
+
+
+def validate_order_parameters(order):
+    if 'subtotal' not in order:
+        subtotal = 'null'
+    else:
+        subtotal = order['subtotal']
+
+    if 'tax' not in order:
+        tax = 'null'
+    else:
+        tax = order['tax']
+
+    if 'total' not in order:
+        total = 'null'
+    else:
+        total = order['total']
+
+    json_str = convert_json_to_string(order)
+    payment_method = find_values('paymentMethod', json_str)
+    delivery_date = find_values('date', json_str)
+    placement_date = find_values('placementDate', json_str).split('T')[0]
+    discount = find_values('discount', json_str)
+
+    order_values = {
+        'Order ID': order['orderNumber'],
+        'Status': order['status'],
+        'Placement Date': placement_date,
+        'Delivery Date': delivery_date,
+        'Payment Method': payment_method,
+        'Subtotal': subtotal,
+        'Tax': tax,
+        'Discount': discount,
+        'Total': total
+    }
+
+    return order_values
+
+
+def find_values(key, json_str):
+    results = list()
+
+    def _decode_dict(a_dict):
+        try:
+            results.append(a_dict[key])
+        except KeyError:
+            pass
+        return a_dict
+
+    json.loads(json_str, object_hook=_decode_dict)
+
+    if len(results) == 0:
+        return 'None'
+    else:
+        return results[0]
+
