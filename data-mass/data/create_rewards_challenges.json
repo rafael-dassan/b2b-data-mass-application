@@ -1,0 +1,22 @@
+{
+  "title": "string",
+  "description": "string",
+  "detailedDescription": "string",
+  "points": 350,
+  "startDate": "string",
+  "endDate": "string",
+  "image": "string",
+  "type": "EXECUTION_PTC",
+  "filter": {
+    "potential": [
+      "DM-POTENT"
+    ],
+    "segment": [
+      "DM-SEG"
+    ]
+  },
+  "executionMethod": "string",
+  "goodPhotoSample": "string",
+  "badPhotoSample": "string",
+  "skus": []
+}
