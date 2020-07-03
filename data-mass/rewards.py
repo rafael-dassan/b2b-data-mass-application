@@ -279,8 +279,6 @@ def input_challenge_to_zone(abi_id, zone, environment):
 
 def challenge_details(challenge_type, sku_ids = None):
 
-    #print(sku_ids)
-
     # Sets the format of the challenge's start date (current date and time)
     start_date = datetime.now()
     start_date = start_date.strftime('%Y-%m-%dT%H:%M:%S')
