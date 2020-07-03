@@ -204,8 +204,8 @@ def create_rewards_to_account():
         elif len(account) == 0:
             print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
             printFinishApplicationMenu()
-        
-        add_challenge = input_challenge_to_zone(zone, environment)
+    
+        add_challenge = input_challenge_to_zone(abi_id, zone, environment)
 
         if add_challenge == 'false':
             print(text.Red + '\n- [Rewards] Something went wrong, please try again')

@@ -4,7 +4,7 @@
   "detailedDescription": "string",
   "points": 350,
   "startDate": "string",
-  "endDate": "2099-12-31T23:59:59.123Z",
+  "endDate": "string",
   "image": "string",
   "type": "EXECUTION_PTC",
   "filter": {
@@ -18,10 +18,5 @@
   "executionMethod": "string",
   "goodPhotoSample": "string",
   "badPhotoSample": "string",
-  "skus": [
-    {
-      "sku": "-B000001",
-      "quantity": 2
-    }
-  ]
+  "skus": []
 }
