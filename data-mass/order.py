@@ -52,7 +52,7 @@ def create_order_account(account_id, zone, environment, delivery_center_id, orde
     enabled_counter = 0
     
     while (aux_index < len(product_offers)) and (enabled_counter < 2):
-        if zone == 'ZA' or zone == 'AR':
+        if zone == 'AR':
             sku_offer = product_offers[aux_index]
         else:
             sku_offer = product_offers[aux_index]['sku']
