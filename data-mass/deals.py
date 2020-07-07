@@ -148,8 +148,7 @@ def create_free_good_group(sku, zone, environment):
 
 # Input discount business rules to Cart Calculation microservice
 def input_discount_to_cart_calculation(deal_id, accounts, zone, environment, skus, discount_type, discount_value, minimum_quantity):
-    if zone != "ZA":
-        product_sku = skus[0]['sku']
+    product_sku = skus[0]['sku']
     
     # Get base URL
     request_url = get_microservice_base_url(environment) + "/cart-calculation-relay/deals"
@@ -188,8 +187,7 @@ def input_discount_to_cart_calculation(deal_id, accounts, zone, environment, sku
         return response.status_code
 
 def input_stepped_discount_with_qtd_to_cart_calculation(deal_id, accounts, zone, environment, skus, quantity, index_range, discount_type, discount_range):
-    if zone != "ZA":
-        product_sku = skus[0]['sku']
+    product_sku = skus[0]['sku']
     
     # Get base URL
     request_url = get_microservice_base_url(environment) + "/cart-calculation-relay/deals"
@@ -238,8 +236,7 @@ def input_stepped_discount_with_qtd_to_cart_calculation(deal_id, accounts, zone,
         return response.status_code
 
 def input_stepped_discount_to_cart_calculation(deal_id, accounts, zone, environment, skus, discount_type, index_range, discount_range):
-    if zone != "ZA":
-        product_sku = skus[0]['sku']
+    product_sku = skus[0]['sku']
     
     # Get base URL
     request_url = get_microservice_base_url(environment) + "/cart-calculation-relay/deals"
@@ -297,8 +294,7 @@ def input_stepped_discount_to_cart_calculation(deal_id, accounts, zone, environm
         return response.status_code
 
 def input_free_good_to_cart_calculation(deal_id, accounts, zone, environment, skus, minimum_quantity, quantity):
-    if zone != "ZA":
-        product_sku = skus[0]['sku']
+    product_sku = skus[0]['sku']
     
     # Get base URL
     request_url = get_microservice_base_url(environment) + "/cart-calculation-relay/deals"
@@ -338,8 +334,7 @@ def input_free_good_to_cart_calculation(deal_id, accounts, zone, environment, sk
         return response.status_code
 
 def input_stepped_free_good_to_cart_calculation(deal_id, accounts, zone, environment, skus, index_range, quantity_range):
-    if zone != "ZA":
-        product_sku = skus[0]['sku']
+    product_sku = skus[0]['sku']
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + "/cart-calculation-relay/deals"
@@ -501,8 +496,7 @@ def input_stepped_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_ty
 
 #Input free goods in cart calculation relay using v2 deals contract
 def input_free_good_to_cart_calculation_v2(deal_id, accounts, zone, environment, skus, minimum_quantity, quantity):
-    if zone != "ZA":
-        product_sku = skus[0]['sku']
+    product_sku = skus[0]['sku']
     
     # Get base URL
     request_url = get_microservice_base_url(environment, "false") + "/cart-calculation-relay/v2/deals"
@@ -557,8 +551,7 @@ def input_free_good_to_cart_calculation_v2(deal_id, accounts, zone, environment,
 #Use deals v2 contract for register stepped free goods on
 #cart calculator relay
 def input_stepped_free_good_to_cart_calculation_v2(deal_id, accounts, zone, environment, skus, index_range, quantity_range):
-    if zone != "ZA":
-        product_sku = skus[0]['sku']
+    product_sku = skus[0]['sku']
     
     # Get base URL
     request_url = get_microservice_base_url(environment, "false") + "/cart-calculation-relay/v2/deals"
@@ -612,8 +605,7 @@ def input_stepped_free_good_to_cart_calculation_v2(deal_id, accounts, zone, envi
 
 # Input deals v2 discount business rules to Cart Calculation microservice
 def input_discount_to_cart_calculation_v2(deal_id, accounts, zone, environment, skus, discount_type, discount_value, minimum_quantity):
-    if zone != "ZA":
-        product_sku = skus[0]['sku']
+    product_sku = skus[0]['sku']
     
     if discount_type == "percentOff":
         discount_type = "%"
@@ -666,8 +658,7 @@ def input_discount_to_cart_calculation_v2(deal_id, accounts, zone, environment, 
 
 # Input deals v2 stepped discount business rules to Cart Calculation microservice
 def input_stepped_discount_to_cart_calculation_v2(deal_id, accounts, zone, environment, skus, discount_type, index_range, discount_range):
-    if zone != "ZA":
-        product_sku = skus[0]['sku']
+    product_sku = skus[0]['sku']
     
     if discount_type == "percentOff":
         discount_type = "%"
@@ -726,8 +717,7 @@ def input_stepped_discount_to_cart_calculation_v2(deal_id, accounts, zone, envir
 
 # Input deals v2 stepped discount with maximum quantity business rules to Cart Calculation microservice
 def input_stepped_discount_with_qtd_to_cart_calculation_v2(deal_id, accounts, zone, environment, skus, quantity, index_range, discount_type, discount_range):
-    if zone != "ZA":
-        product_sku = skus[0]['sku']
+    product_sku = skus[0]['sku']
     
     if discount_type == "percentOff":
         discount_type = "%"
