@@ -515,7 +515,7 @@ def input_recommendation_to_account_menu():
     enabled_skus = list()
     aux_index = 0
     while aux_index < len(product_offers):
-        if zone == 'ZA' or zone == 'AR':
+        if zone == 'AR':
             sku = product_offers[aux_index]
         else:
             sku = product_offers[aux_index]['sku']
@@ -616,28 +616,21 @@ def inputDealsMenu():
     else:
         index_offers = randint(0, (len(product_offers) - 1))
         product = product_offers[index_offers]
+        product_sku = product['sku']
 
-        if zone.upper() == "ZA":
-            product_sku = product
-        else:
-            product_sku = product['sku']
         # Check if the SKU is enabled on Items MS
         deal_sku = check_item_enabled(product_sku, zone.upper(), environment.upper(), True)
         while deal_sku == False:
             index_offers = randint(0, (len(product_offers) - 1))
             product = product_offers[index_offers]
-            if zone.upper() == "ZA":
-                product_sku = product
-            else:
-                product_sku = product['sku']
+            product_sku = product['sku']
 
             deal_sku = check_item_enabled(product_sku, zone.upper(), environment.upper(), True)
 
         skus = list()
         skus.append(product)
 
-    if zone.upper() != "ZA":
-        deal_sku = skus[0]['sku']
+    deal_sku = skus[0]['sku']
 
     if selectionStructure == "1":
         input_discount_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(), environment.upper())
@@ -828,7 +821,7 @@ def input_products_to_account_menu():
             aux_index = 0
 
             while aux_index <= (len(products) - 1):
-                if zone.upper() == 'ZA' or zone.upper() == 'AR':
+                if zone.upper() == 'AR':
                     skus_id.append(products[aux_index])
                 else:
                     skus_id.append(products[aux_index]['sku'])
@@ -927,7 +920,7 @@ def create_account_menu():
         aux_index = 0
 
         while aux_index <= (len(products) - 1):
-            if zone.upper() == 'ZA' or zone.upper() == 'AR':
+            if zone.upper() == 'AR':
                 skus_id.append(products[aux_index])
             else:
                 skus_id.append(products[aux_index]['sku'])

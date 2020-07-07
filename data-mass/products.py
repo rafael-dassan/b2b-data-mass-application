@@ -266,7 +266,7 @@ def product_post_requests_microservice(product_data, abi_id, zone, environment, 
     if product_inclusion_ms_result == 'false':
         return 'false'
 
-    if zone == 'ZA' or zone == 'AR':
+    if zone == 'AR':
         product_inclusion_mdw_result = product_post_requests_middleware(product_data, abi_id, zone, environment)
         if product_inclusion_mdw_result == 'false':
             return 'false'
@@ -332,7 +332,7 @@ def get_body_price_inclusion_microservice_request(delivery_center_id):
 
 # Get offers account in microservice
 def request_get_offers_microservice(abi_id, zone, environment, delivery_center_id, return_product_data = False):
-    if zone == 'ZA' or zone == 'AR':
+    if zone == 'AR':
         product_offers = request_get_offers_middleware(abi_id, zone, environment, True)
         return product_offers
 
