@@ -79,27 +79,19 @@ def create_invoice_request(abi_id, zone, environment, order_id):
 
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
-    if zone == 'BR':
-        json_object = set_to_dictionary(json_data, 'date', order_details.get('placementDate'))
-        json_object = set_to_dictionary(json_data, 'orderDate', order_details.get('placementDate'))
 
     if 'itemsQuantity' not in order_data:
-        json_object = set_to_dictionary(json_data, 'itemsQuantity', size_items)
+        set_to_dictionary(json_data, 'itemsQuantity', size_items)
     else:
-        json_object = set_to_dictionary(json_data, 'itemsQuantity', order_data['itemsQuantity'])
+        set_to_dictionary(json_data, 'itemsQuantity', order_data['itemsQuantity'])
 
     items = set_to_dictionary(json_object, 'items', order_items)
 
     # Send request
-    if zone == 'ZA':
-        request_url = get_middleware_base_url(zone, environment, 'v4') + '/invoices'
-        request_headers = get_header_request(zone, 'false', 'true', 'false', 'false')
-        request_body = convert_json_to_string(items)
-    else:
-        request_url = get_microservice_base_url(environment) + '/invoices-relay'
-        request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
-        list_dict_values = create_list(items)
-        request_body = convert_json_to_string(list_dict_values)
+    request_url = get_microservice_base_url(environment) + '/invoices-relay'
+    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+    list_dict_values = create_list(items)
+    request_body = convert_json_to_string(list_dict_values)
 
     response = place_request('POST', request_url, request_body, request_headers)
 
