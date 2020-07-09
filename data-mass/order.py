@@ -172,40 +172,79 @@ def change_order(account_id, zone, environment, order_option, order_id):
               order_info['status'])
     else:
         items = order_info['items']
-        item_qtd = 10
-        item_subtotal = round(items[0]['price'] * 10, 2)
-        item_total = round(items[0]['price'] * 10, 2)
-        dif_item_total = round(items[0]['total'] - item_total, 2)
-        dif_item_subtotal = round(items[0]['subtotal'] - item_subtotal, 2)
+        if len(items) == 1:
+            if items[0]['quantity'] == 1:
+                print(
+                    text.Red + '\n- [Order Service] Its not possible change this order because the order has only one '
+                               'product with quantity equal 1')
+            else:
+                item_qtd = 1
+                item_subtotal = items[0]['price']
+                item_total = items[0]['price']
+                dif_item_total = round(items[0]['total'] - item_total, 2)
+                dif_item_subtotal = round(items[0]['subtotal'] - item_subtotal, 2)
 
-        order_total = round(order_info['total'] - dif_item_total, 2)
-        order_subtotal = round(order_info['subtotal'] - dif_item_subtotal, 2)
+                order_total = round(order_info['total'] - dif_item_total, 2)
+                order_subtotal = round(order_info['subtotal'] - dif_item_subtotal, 2)
 
-        json_data = order_data
-        json_object = update_value_to_json(order_info, 'items[0].quantity', item_qtd)
-        json_object = update_value_to_json(order_info, 'items[0].subtotal', item_subtotal)
-        json_object = update_value_to_json(order_info, 'items[0].total', item_total)
-        json_object = update_value_to_json(order_info, 'subtotal', order_subtotal)
-        json_object = update_value_to_json(order_info, 'total', order_total)
+                update_value_to_json(order_info, 'items[0].quantity', item_qtd)
+                update_value_to_json(order_info, 'items[0].subtotal', item_subtotal)
+                update_value_to_json(order_info, 'items[0].total', item_total)
+                update_value_to_json(order_info, 'subtotal', order_subtotal)
+                update_value_to_json(order_info, 'total', order_total)
 
-        # Create body
-        request_body = convert_json_to_string(json_object)
-        request_body = '[' + request_body + ']'
+                # Create body
+                request_body = convert_json_to_string(order_info)
+                request_body = '[' + request_body + ']'
 
-        # Define headers
-        request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+                # Define headers
+                request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
 
-        # Define url request
-        request_url = get_microservice_base_url(environment) + '/order-relay/'
+                # Define url request
+                request_url = get_microservice_base_url(environment) + '/order-relay/'
 
-        # Send request
-        response = place_request('POST', request_url, request_body, request_headers)
+                # Send request
+                response = place_request('POST', request_url, request_body, request_headers)
 
-        if response.status_code == 202:
-            print(text.Green + 'Order: ' + order_id + ' was change')
-            return response
+                if response.status_code == 202:
+                    print(text.Green + 'Order: ' + order_id + ' was change')
+                    return response
+                else:
+                    return 'false'
         else:
-            return 'false'
+            for i in range(len(items)):
+                if items[i]['quantity'] > 1:
+                    item_qtd = 1
+                    item_subtotal = items[i]['price']
+                    item_total = items[i]['price']
+
+                    dict_values = {
+                        'items['+str(i)+'].quantity': item_qtd,
+                        'items['+str(i)+'].subtotal': item_subtotal,
+                        'items['+str(i)+'].total': item_total
+                    }
+
+            for key in dict_values.keys():
+                json_object = update_value_to_json(order_info, key, dict_values[key])
+
+            # Create body
+            request_body = convert_json_to_string(json_object)
+            request_body = '[' + request_body + ']'
+
+            # Define headers
+            request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+
+            # Define url request
+            request_url = get_microservice_base_url(environment) + '/order-relay/'
+
+            # Send request
+            response = place_request('POST', request_url, request_body, request_headers)
+
+            if response.status_code == 202:
+                print(text.Green + 'Order: ' + order_id + ' was change')
+                return response
+            else:
+                return 'false'
 
 
 def display_specific_order_information(orders):
