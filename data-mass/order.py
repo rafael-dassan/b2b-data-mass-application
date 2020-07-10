@@ -146,6 +146,17 @@ def set_file_request_order(url, headers, abi_id, zone, delivery_center_id, enabl
     elif order_option == 'CANCELLED':
         json_object = set_to_dictionary(json_object, 'status', 'CANCELLED')
         json_object = set_to_dictionary(json_object, 'cancellationReason', 'ORDER CANCELLED FOR TESTING PURPOSES')
+    elif order_option == 'DELIVERED':
+        # Sets the format of the delivery date of the order (current date and time more one day)
+        delivery_date_old = datetime.now() - timedelta(days=1)
+        delivery_date_old = delivery_date_old.strftime('%Y-%m-%d')
+        dict_values = {
+            'delivery.date': delivery_date_old,
+        }
+        for key in dict_values.keys():
+            json_object = update_value_to_json(json_data, key, dict_values[key])
+
+        json_object = set_to_dictionary(json_object, 'status', 'DELIVERED')
 
     # Create body
     request_body = convert_json_to_string(json_object)

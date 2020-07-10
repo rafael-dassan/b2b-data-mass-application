@@ -248,7 +248,8 @@ def input_orders_to_account():
     switcher = {
         '1': 'ACTIVE',
         '2': 'CANCELLED',
-        '3': 'CHANGED'
+        '3': 'CHANGED',
+        '4': 'DELIVERED'
     }
 
     order_type = switcher.get(selection_structure, 'false')
@@ -263,7 +264,7 @@ def input_orders_to_account():
         print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
-    if order_type == 'ACTIVE' or order_type == 'CANCELLED':
+    if order_type == 'ACTIVE' or order_type == 'CANCELLED' or order_type == 'DELIVERED':
         print(
             text.default_text_color + '\nChecking enabled products for the account ' + abi_id + '. It may take a while...')
 
