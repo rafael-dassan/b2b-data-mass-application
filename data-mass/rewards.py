@@ -166,27 +166,34 @@ def input_challenge_to_zone(abi_id, zone, environment):
     # Gets the account's SKUs to use only for challenge type = PURCHASE
     product_offers = request_get_products_by_account_microservice(abi_id, zone, environment)
     
-    # Verify if the account has SKUs inside for PURCHASE type
-    if len(product_offers) > 0:
+    # Verify if the account has at least 10 SKUs inside for PURCHASE type
+    if len(product_offers) > 10:
         sku_list = list()
-        i = 0
-        while i < len(product_offers):
-            sku_list.append(product_offers[i]['sku'])
-            i += 1
+        counter_offers = 0
+        while counter_offers < len(product_offers):
+            sku_list.append(product_offers[counter_offers]['sku'])
+            counter_offers += 1
+
+        if counter_offers > 0:
+            offers_flag = 'true'
+        else:
+            offers_flag = 'false'
+    else:
+        offers_flag = 'false'  
 
     # Generates six challenges - two of each type (take_photo, mark_complete and purchase)
     i = 1
     error_flag = 'false'
-    while i <= 6:
+    while i <= 9:
         # Generates the new Program ID
         challenge_id = 'DM-CHALLENGE-' + str(randint(100,900))
 
         # Getting all the basic information to create the challenges
         if i == 1:
             generated_challenges = challenge_details(1)
-        elif i == 3:
+        elif i == 4:
             generated_challenges = challenge_details(2)
-        elif i == 5:
+        elif i == 7 and offers_flag == 'true':
             generated_challenges = challenge_details(3, sku_list)
 
         # Create file path
@@ -197,7 +204,7 @@ def input_challenge_to_zone(abi_id, zone, environment):
         with open(file_path) as file:
             json_data = json.load(file)
 
-        if i == 1 or i == 3:
+        if i == 1 or i == 4:
             dict_values  = {
                 'title' : challenge_id,
                 'description' : generated_challenges[0],
@@ -209,7 +216,7 @@ def input_challenge_to_zone(abi_id, zone, environment):
                 'goodPhotoSample' : generated_challenges[6],
                 'badPhotoSample' : generated_challenges[7]
             }
-        elif i == 2 or i == 4:
+        elif i == 2 or i == 5:
             dict_values  = {
                 'title' : challenge_id,
                 'description' : generated_challenges[8],
@@ -221,7 +228,19 @@ def input_challenge_to_zone(abi_id, zone, environment):
                 'goodPhotoSample' : generated_challenges[14],
                 'badPhotoSample' : generated_challenges[15]
             }
-        elif i == 5:
+        elif i == 3 or i == 6:
+            dict_values  = {
+                'title' : challenge_id,
+                'description' : generated_challenges[16],
+                'detailedDescription' : generated_challenges[17],
+                'startDate' : generated_challenges[18],
+                'endDate' : generated_challenges[19],
+                'image' : generated_challenges[20],
+                'executionMethod' : generated_challenges[21],
+                'goodPhotoSample' : generated_challenges[22],
+                'badPhotoSample' : generated_challenges[23]
+            }   
+        elif i == 7 and offers_flag == 'true':
             dict_values  = {
                 'title' : challenge_id,
                 'description' : generated_challenges[0],
@@ -234,7 +253,7 @@ def input_challenge_to_zone(abi_id, zone, environment):
                 'badPhotoSample' : generated_challenges[7],
                 'skus' : generated_challenges[8]
             }
-        elif i == 6:
+        elif i == 8 and offers_flag == 'true':
             dict_values  = {
                 'title' : challenge_id,
                 'description' : generated_challenges[9],
@@ -246,6 +265,19 @@ def input_challenge_to_zone(abi_id, zone, environment):
                 'goodPhotoSample' : generated_challenges[15],
                 'badPhotoSample' : generated_challenges[16],
                 'skus' : generated_challenges[17]
+            }
+        elif i == 9 and offers_flag == 'true':
+            dict_values  = {
+                'title' : challenge_id,
+                'description' : generated_challenges[18],
+                'detailedDescription' : generated_challenges[19],
+                'startDate' : generated_challenges[20],
+                'endDate' : generated_challenges[21],
+                'image' : generated_challenges[22],
+                'executionMethod' : generated_challenges[23],
+                'goodPhotoSample' : generated_challenges[24],
+                'badPhotoSample' : generated_challenges[25],
+                'skus' : generated_challenges[26]
             }
 
         for key in dict_values.keys():
@@ -260,15 +292,20 @@ def input_challenge_to_zone(abi_id, zone, environment):
         # Define url request
         request_url = get_microservice_base_url(environment) + '/rewards-service/challenges/' + challenge_id
 
-        # Send request
-        response = place_request('PUT', request_url, request_body, request_headers)
+        # Verify if the challenge is PURCHASE and the account has at least 10 SKUs inside
+        if i <= 6 or (i >= 7 and offers_flag == 'true'):
+            # Send request
+            response = place_request('PUT', request_url, request_body, request_headers)
 
-        if response.status_code == 200:
-            print(text.Green + '\n- [Rewards] The new challenge has been created successfully. ID: ' + challenge_id)
-        else:
-            error_flag = 'true'
+            if response.status_code == 200:
+                print(text.Green + '\n- [Rewards] The new challenge has been created successfully. ID: ' + challenge_id)
+            else:
+                error_flag = 'true'
 
         i += 1
+
+    if offers_flag == 'false':
+        print(text.Yellow + '\n- [Rewards] The PURCHASE challenges could not be created. The specified account needs at least 10 SKUs inside for that')
 
     # Verify if all challenges were created succesfully or if some failed
     if error_flag == 'true':
@@ -284,54 +321,84 @@ def challenge_details(challenge_type, sku_ids = None):
     start_date = start_date.strftime('%Y-%m-%dT%H:%M:%S')
     start_date = start_date + 'Z'
 
-    # Sets the format of the end date with expiration within 30 days
-    exp_date_one = datetime.now() + timedelta(days=30)
-    exp_date_one = exp_date_one.strftime('%Y-%m-%dT%H:%M:%S')
-    exp_date_one = exp_date_one + 'Z'
+    # Sets the format of the challenge's end date with expiration within 30 days
+    end_date_one = datetime.now() + timedelta(days=30)
+    end_date_one = end_date_one.strftime('%Y-%m-%dT%H:%M:%S')
+    end_date_one = end_date_one + 'Z'
 
-    # Sets the format of the end date with expiration within 60 days
-    exp_date_two = datetime.now() + timedelta(days=60)
-    exp_date_two = exp_date_two.strftime('%Y-%m-%dT%H:%M:%S')
-    exp_date_two = exp_date_two + 'Z'
+    # Sets the format of the challenge's end date with expiration within 60 days
+    end_date_two = datetime.now() + timedelta(days=60)
+    end_date_two = end_date_two.strftime('%Y-%m-%dT%H:%M:%S')
+    end_date_two = end_date_two + 'Z'
+
+    # Sets the format of the challenge's past start date (for expired challenges)
+    expired_start_date = datetime.now() - timedelta(days=60)
+    expired_start_date = expired_start_date.strftime('%Y-%m-%dT%H:%M:%S')
+    expired_start_date = expired_start_date + 'Z'
+
+    # Sets the format of the challenge's end date already expired (for expired challenges)
+    expired_end_date = datetime.now() - timedelta(days=30)
+    expired_end_date = expired_end_date.strftime('%Y-%m-%dT%H:%M:%S')
+    expired_end_date = expired_end_date + 'Z'
 
     challenge_details = list()
 
     if challenge_type == 1:
-        # Details of the take photo #1
+        # Details of the take photo #1 (expiration within 30 days)
         challenge_details.append('TAKE A PHOTO')
         challenge_details.append('Complete this challenge and receive extra points')
         challenge_details.append(start_date)
-        challenge_details.append(exp_date_one)
+        challenge_details.append(end_date_one)
         challenge_details.append('https://b2bfilemgmtsagbtest.blob.core.windows.net/files-do/rewards-admin_challenge-image.png?sig=IzFb2Eo16gb61Y92j3qry%2BiC61kqijYPkAZxuqf4ESI%3D&se=3019-06-23T15%3A38%3A29Z&sv=2015-04-05&sp=r&sr=b')
         challenge_details.append('TAKE_PHOTO')
         challenge_details.append('https://b2bstaticwebsagbdev.blob.core.windows.net/digitaltrade/uat/images/br/challenges/1659/photo_of_cooler_ok.jpg')
         challenge_details.append('https://b2bstaticwebsagbdev.blob.core.windows.net/digitaltrade/uat/images/br/challenges/1659/photo_of_cooler_nok.jpg')
         
-        # Details of the take photo #2
+        # Details of the take photo #2 (expiration within 60 days)
         challenge_details.append('TAKE A PHOTO')
         challenge_details.append('Complete this challenge and receive extra points')
         challenge_details.append(start_date)
-        challenge_details.append(exp_date_two)
+        challenge_details.append(end_date_two)
+        challenge_details.append('https://b2bfilemgmtsagbtest.blob.core.windows.net/files-do/rewards-admin_challenge-image.png?sig=IzFb2Eo16gb61Y92j3qry%2BiC61kqijYPkAZxuqf4ESI%3D&se=3019-06-23T15%3A38%3A29Z&sv=2015-04-05&sp=r&sr=b')
+        challenge_details.append('TAKE_PHOTO')
+        challenge_details.append('https://b2bstaticwebsagbdev.blob.core.windows.net/digitaltrade/uat/images/br/challenges/1659/photo_of_cooler_ok.jpg')
+        challenge_details.append('https://b2bstaticwebsagbdev.blob.core.windows.net/digitaltrade/uat/images/br/challenges/1659/photo_of_cooler_nok.jpg')
+
+       # Details of the take photo #3 (already expired)
+        challenge_details.append('TAKE A PHOTO')
+        challenge_details.append('Complete this challenge and receive extra points')
+        challenge_details.append(expired_start_date)
+        challenge_details.append(expired_end_date)
         challenge_details.append('https://b2bfilemgmtsagbtest.blob.core.windows.net/files-do/rewards-admin_challenge-image.png?sig=IzFb2Eo16gb61Y92j3qry%2BiC61kqijYPkAZxuqf4ESI%3D&se=3019-06-23T15%3A38%3A29Z&sv=2015-04-05&sp=r&sr=b')
         challenge_details.append('TAKE_PHOTO')
         challenge_details.append('https://b2bstaticwebsagbdev.blob.core.windows.net/digitaltrade/uat/images/br/challenges/1659/photo_of_cooler_ok.jpg')
         challenge_details.append('https://b2bstaticwebsagbdev.blob.core.windows.net/digitaltrade/uat/images/br/challenges/1659/photo_of_cooler_nok.jpg')
     elif challenge_type == 2:
-        # Details of the mark complete #1
+        # Details of the mark complete #1 (expiration within 30 days)
         challenge_details.append('MARK COMPLETE')
         challenge_details.append('Complete this challenge and receive extra points')
         challenge_details.append(start_date)
-        challenge_details.append(exp_date_one)
+        challenge_details.append(end_date_one)
         challenge_details.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/br/challenges/1661/execution_2nd_display.jpg')
         challenge_details.append('MARK_COMPLETE')
         challenge_details.append('')
         challenge_details.append('')
         
-        # Details of the mark complete #2
+        # Details of the mark complete #2 (expiration within 60 days)
         challenge_details.append('MARK COMPLETE')
         challenge_details.append('Complete this challenge and receive extra points')
         challenge_details.append(start_date)
-        challenge_details.append(exp_date_two)
+        challenge_details.append(end_date_two)
+        challenge_details.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/br/challenges/1661/execution_2nd_display.jpg')
+        challenge_details.append('MARK_COMPLETE')
+        challenge_details.append('')
+        challenge_details.append('')
+
+        # Details of the mark complete #3 (already expired)
+        challenge_details.append('MARK COMPLETE')
+        challenge_details.append('Complete this challenge and receive extra points')
+        challenge_details.append(expired_start_date)
+        challenge_details.append(expired_end_date)
         challenge_details.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/br/challenges/1661/execution_2nd_display.jpg')
         challenge_details.append('MARK_COMPLETE')
         challenge_details.append('')
@@ -383,22 +450,33 @@ def challenge_details(challenge_type, sku_ids = None):
         else:
             dict_values_purchase = None
 
-        # Details of the purchase #1
+        # Details of the purchase #1 (expiration within 30 days)
         challenge_details.append('PURCHASE')
         challenge_details.append('Complete this challenge and receive extra points')
         challenge_details.append(start_date)
-        challenge_details.append(exp_date_one)
+        challenge_details.append(end_date_one)
         challenge_details.append('https://b2bstaticwebsagbprod.blob.core.windows.net/challenge/DO/images/afiche_12oz_PTE.jpg')
         challenge_details.append('PURCHASE')
         challenge_details.append('')
         challenge_details.append('')
         challenge_details.append(dict_values_purchase)
 
-        # Details of the purchase #2
+        # Details of the purchase #2 (expiration within 60 days)
         challenge_details.append('PURCHASE')
         challenge_details.append('Complete this challenge and receive extra points')
         challenge_details.append(start_date)
-        challenge_details.append(exp_date_two)
+        challenge_details.append(end_date_two)
+        challenge_details.append('https://b2bstaticwebsagbprod.blob.core.windows.net/challenge/DO/images/afiche_12oz_PTE.jpg')
+        challenge_details.append('PURCHASE')
+        challenge_details.append('')
+        challenge_details.append('')
+        challenge_details.append(dict_values_purchase)
+
+        # Details of the purchase #3 (already expired)
+        challenge_details.append('PURCHASE')
+        challenge_details.append('Complete this challenge and receive extra points')
+        challenge_details.append(expired_start_date)
+        challenge_details.append(expired_end_date)
         challenge_details.append('https://b2bstaticwebsagbprod.blob.core.windows.net/challenge/DO/images/afiche_12oz_PTE.jpg')
         challenge_details.append('PURCHASE')
         challenge_details.append('')
