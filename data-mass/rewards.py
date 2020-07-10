@@ -19,7 +19,7 @@ def create_new_program(zone, environment):
         print(text.Yellow + '\n- [Rewards] This zone already have a reward program created - ID: ' + program_found)
         return 'error_found'
 
-    balance = input(text.Yellow + '\nDo you want to create the program with initial balance ($20.000)? y/N: ')
+    balance = input(text.Yellow + '\nDo you want to create the program with initial balance (20.000)? y/N: ')
     balance = balance.upper()
 
     if balance == 'Y':
@@ -158,6 +158,57 @@ def enroll_poc_to_program(account_id, zone, environment):
     else:
         print(text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "1" to create it')
         return 'true'
+
+
+
+
+
+
+# Updates the program's initial balance
+def update_program_balance(zone, environment):
+
+    # Define headers
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+
+    # Check if the zone already have a reward program created
+    program_found = locate_program_for_zone(zone, environment, request_headers)
+
+    if program_found != 'false':
+
+        confirm_program = input(text.Yellow + '\nDo you confirm update the balance for the program ' + program_found + '? y/N: ')
+        confirm_program = confirm_program.upper()
+
+        while confirm_program != 'Y' and confirm_program != 'N':
+            print(text.Red + "\n- Invalid option\n")
+            confirm_program = input(text.Yellow + '\nDo you confirm update the balance for the program ' + program_found + '? y/N: ')
+            confirm_program = confirm_program.upper()
+
+        if confirm_program == 'Y':
+            new_balance = input(text.Yellow + '\nPlease inform the new balance ammount: ')
+
+            while is_number(new_balance) == 'false':
+                print(text.Red + "\n- Invalid option\n")
+                new_balance = input(text.Yellow + '\nPlease inform the new balance ammount: ')
+
+            while int(new_balance) < 0:
+                print(text.Red + "\n- Invalid option. Only positive numbers are allowed\n")
+                new_balance = input(text.Yellow + '\nPlease inform the new balance ammount: ')
+
+            # Define url request
+            request_url = get_microservice_base_url(environment) + '/rewards-service/programs/' + program_found
+
+            # Send request
+            response = place_request('GET', request_url, '', request_headers)
+
+            print(response.text)
+
+            return 'true'
+        else:
+            return 'no_confirm'
+    else:
+        return 'no_program'
+
+    return 'false'
 
 
 # Add Reward challenges to a zone
