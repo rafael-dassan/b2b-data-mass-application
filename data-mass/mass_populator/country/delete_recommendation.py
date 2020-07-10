@@ -9,7 +9,8 @@ def delete_sell_up_recommendation(abi_id, zone, environment, use_case='CROSS_SEL
     up_sell_data = get_recommendation_by_account(abi_id, zone, environment, use_case)
 
     if up_sell_data == 'not_found':
-        logger.info('Skipping the removal of sell up recommendation because there is none for the account %s', abi_id)
+        logger.info('Skipping the removal of sell up recommendation because there is none for the account {account_id}'
+                    .format(account_id=abi_id))
     elif up_sell_data == 'false':
         logger.error(log(Message.RETRIEVE_RECOMMENDER_SELL_UP_ERROR, {'account_id': abi_id}))
     else:
