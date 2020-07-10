@@ -69,7 +69,6 @@ Accounts list:
 | account_id_poc_2 | 9883300002 |
 | account_id_poc_3 | 9883300003 |
 
-
 - User created with email: **qm.team.do+222@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
 - User created with email: **qm.team.do+333@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
 - User created with email: **qm.team.do+10000@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_1,account_id_poc_3]**
@@ -84,8 +83,6 @@ Accounts list:
 - User created with email: **qm.team.do+33@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
 - User created with email: **qm.team.do+1000@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_2,account_id_poc_3]**
 
-
-
 #### BR
 
 Accounts list:
@@ -94,7 +91,6 @@ Accounts list:
 | account_id_poc_1 | 99481543000135 |
 | account_id_poc_2 | 56338831000122 |
 | account_id_poc_3 | 42282891000166 |
-
 
 - User created with email: **qm.team.br+222@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
 - User created with email: **qm.team.br+333@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
@@ -119,7 +115,6 @@ Accounts list:
 | account_id_poc_2 | 9932094352 |
 | account_id_poc_3 | 1669325565 |
 
-
 - User created with email: **qm.team.ar+222@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
 - User created with email: **qm.team.ar+333@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
 - User created with email: **qm.team.ar+10000@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_1,account_id_poc_3]**
@@ -142,7 +137,6 @@ Accounts list:
 | account_id_poc_1 | 2323434554 |
 | account_id_poc_2 | 1020303040 |
 | account_id_poc_3 | 3325534210 |
-
 
 - User created with email: **qm.team.cl+222@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
 - User created with email: **qm.team.cl+333@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
@@ -167,7 +161,6 @@ Accounts list:
 | account_id_poc_2 | 9883300102 |
 | account_id_poc_3 | 9883300103 |
 
-
 - User created with email: **qm.team.za+222@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
 - User created with email: **qm.team.za+333@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
 - User created with email: **qm.team.za+10000@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_1,account_id_poc_3]**
@@ -191,7 +184,6 @@ Accounts list:
 | account_id_poc_2 | 9883300202 |
 | account_id_poc_3 | 9883300203 |
 
-
 - User created with email: **qm.team.co+222@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
 - User created with email: **qm.team.co+333@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
 - User created with email: **qm.team.co+10000@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_1,account_id_poc_3]**
@@ -205,6 +197,7 @@ Accounts list:
 - User created with email: **qm.team.co+22@gmail.com**, password: **Password1**, with Account **[account_id_poc_2,account_id_poc_3]**
 - User created with email: **qm.team.co+33@gmail.com**, password: **Password1**, with Account **[account_id_poc_1]**
 - User created with email: **qm.team.co+1000@gmail.com**, password: **Pass()12**, with Account **[account_id_poc_2,account_id_poc_3]**
+
 
 ### Recommendations
 The countries will have the recommendations described bellow.
@@ -230,6 +223,7 @@ The countries will have the recommendations described bellow.
 ##### CO
 
 - Beer Recommender associated with POC **9883300201** and POC **9883300202**.
+
 
 ## All
 
@@ -274,7 +268,6 @@ Populate products for all countries.
 |0102ANDROID  |QM Journey 02|Journey  |Botella / 1000 / ML    |No        |2
 |0102IOS      |QM Journey 02|Journey  |Botella / 1000 / ML    |No        |2
 
-
 ##### CL
 
 |SKUIdentifier|ItemName     |BrandName|ContainerName/Size/Unit|Returnable|SalesRanking
@@ -286,7 +279,6 @@ Populate products for all countries.
 |0102ANDROID  |QM Journey 02|Journey  |Botella / 1000 / ML    |No        |2
 |0102IOS      |QM Journey 02|Journey  |Botella / 1000 / ML    |No        |2
 
-
 ##### DO
 
 |SKUIdentifier|ItemName     |BrandName|ContainerName/Size/Unit|Returnable|SalesRanking
@@ -297,7 +289,6 @@ Populate products for all countries.
 |0102WEB      |QM Journey 02|Journey  |Botella / 1000 / ML    |No        |2
 |0102ANDROID  |QM Journey 02|Journey  |Botella / 1000 / ML    |No        |2
 |0102IOS      |QM Journey 02|Journey  |Botella / 1000 / ML    |No        |2
-
 
 ##### ZA
 
@@ -326,3 +317,55 @@ All products should be enabled and associated to accordingly categories
 |0102WEB      |Journey     |Web
 |0102ANDROID  |Journey     |Mobile
 |0102IOS      |Journey     |Mobile
+
+#### AR
+
+|SKUIdentifier|CategoryName|CategoryParent
+|-------------|------------|--------------
+|0101WEB      |Journey     |Web
+|0101ANDROID  |Journey     |Mobile
+|0101IOS      |Journey     |Mobile
+|0102WEB      |Journey     |Web
+|0102ANDROID  |Journey     |Mobile
+|0102IOS      |Journey     |Mobile
+
+#### BR
+
+|SKUIdentifier|CategoryName|CategoryParent
+|-------------|------------|--------------
+|0101WEB      |Journey     |Web
+|0101ANDROID  |Journey     |Mobile
+|0101IOS      |Journey     |Mobile
+|0102WEB      |Journey     |Web
+|0102ANDROID  |Journey     |Mobile
+|0102IOS      |Journey     |Mobile
+
+#### CO
+
+|SKUIdentifier|CategoryName|CategoryParent
+|-------------|------------|--------------
+|0101WEB      |Journey     |Web
+|0101ANDROID  |Journey     |Mobile
+|0101IOS      |Journey     |Mobile
+|0102WEB      |Journey     |Web
+|0102ANDROID  |Journey     |Mobile
+|0102IOS      |Journey     |Mobile
+
+#### ZA
+
+|SKUIdentifier|CategoryName|CategoryParent
+|-------------|------------|--------------
+|0101WEB      |Journey     |Web
+|0101ANDROID  |Journey     |Mobile
+|0101IOS      |Journey     |Mobile
+|0102WEB      |Journey     |Web
+|0102ANDROID  |Journey     |Mobile
+|0102IOS      |Journey     |Mobile
+
+
+## Troubleshooting - Create and enable products on Magento
+Magento has a cache in its internal database that needs to be re-indexed after changes are made to Magento entities from scripts. This process is performed automatically in a few circumstances:
+* Deploy the environment
+* Success cron job execution *abinbev_combo_service_importer*
+In practice, re-indexing can take days to complete.
+In some scenarios, it may be that the re-indexing process is not effective, and needs to be done manually for the changes made to take effect. This can happen over system instability, environment configuration changes and it will impact the enabling of new products and their association with categories.
