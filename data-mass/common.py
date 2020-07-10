@@ -261,7 +261,7 @@ def validate_rewards(option):
 
 # Validate deals
 def validate_orders(option):
-    if option == '1' or option == '2' or option == '3':
+    if option == '1' or option == '2' or option == '3' or option == '4':
         return 'true'
     else:
         return 'false'
@@ -657,6 +657,7 @@ def print_orders_menu():
     print(text.default_text_color + str(1), text.Yellow + 'Input Active Order')
     print(text.default_text_color + str(2), text.Yellow + 'Input Cancelled Order')
     print(text.default_text_color + str(3), text.Yellow + 'Input Changed Order')
+    print(text.default_text_color + str(4), text.Yellow + 'Input Delivered Order')
     structure = input(text.default_text_color + '\nPlease select: ')
     while validate_orders(structure) == 'false':
         print(text.Red + '\n- Invalid option')
@@ -664,6 +665,7 @@ def print_orders_menu():
         print(text.default_text_color + str(1), text.Yellow + 'Input Active Order')
         print(text.default_text_color + str(2), text.Yellow + 'Input Cancelled Order')
         print(text.default_text_color + str(3), text.Yellow + 'Input Changed Order')
+        print(text.default_text_color + str(4), text.Yellow + 'Input Delivered Order')
         structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure
