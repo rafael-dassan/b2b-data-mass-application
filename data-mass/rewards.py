@@ -175,7 +175,7 @@ def update_program_balance(zone, environment):
         confirm_program = confirm_program.upper()
 
         while confirm_program != 'Y' and confirm_program != 'N':
-            print(text.Red + "\n- Invalid option\n")
+            print(text.Red + '\n- Invalid option\n')
             confirm_program = input(text.Yellow + '\nDo you confirm update the balance for the program ' + program_found + '? y/N: ')
             confirm_program = confirm_program.upper()
 
@@ -183,11 +183,11 @@ def update_program_balance(zone, environment):
             new_balance = input(text.Yellow + '\nPlease inform the new balance ammount: ')
 
             while is_number(new_balance) == 'false':
-                print(text.Red + "\n- Invalid option\n")
+                print(text.Red + '\n- Invalid option\n')
                 new_balance = input(text.Yellow + '\nPlease inform the new balance ammount: ')
 
             while int(new_balance) < 0:
-                print(text.Red + "\n- Invalid option. Only positive numbers are allowed\n")
+                print(text.Red + '\n- Invalid option. Only positive numbers are allowed\n')
                 new_balance = input(text.Yellow + '\nPlease inform the new balance ammount: ')
 
             # Define url request to read the Rewards program selected
