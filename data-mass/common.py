@@ -572,7 +572,7 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(1), text.Yellow + 'Order simulation via Microservice')
             print(text.default_text_color + str(2), text.Yellow + 'Order simulation via Middleware')
             print(text.default_text_color + str(3), text.Yellow + 'POC information')
-            print(text.default_text_color + str(4), text.Yellow + 'Product information by account')
+            print(text.default_text_color + str(4), text.Yellow + 'Product information')
             print(text.default_text_color + str(5), text.Yellow + 'Deals information by account')
             print(text.default_text_color + str(6), text.Yellow + 'Order information by account')
 
@@ -1513,7 +1513,7 @@ def print_get_account_menu():
 
 
 def validate_get_products(option):
-    if option == '1' or option == '2':
+    if option == '1' or option == '2' or option == '3':
         return 'true'
     else:
         return 'false'
@@ -1523,12 +1523,14 @@ def print_get_products_menu():
     print(text.default_text_color + '\nWhich option to retrieve products information do you want?')
     print(text.default_text_color + str(1), text.Yellow + 'Products information by account')
     print(text.default_text_color + str(2), text.Yellow + 'Products inventory information by account')
+    print(text.default_text_color + str(3), text.Yellow + 'Products information by zone')
     structure = input(text.default_text_color + '\nPlease select: ')
     while validate_get_products(structure) == 'false':
         print(text.Red + '\n- Invalid option')
         print(text.default_text_color + '\nWhich option to retrieve products information do you want?')
         print(text.default_text_color + str(1), text.Yellow + 'Products information by account')
         print(text.default_text_color + str(2), text.Yellow + 'Products inventory information by account')
+        print(text.default_text_color + str(3), text.Yellow + 'Products information by zone')
         structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure
