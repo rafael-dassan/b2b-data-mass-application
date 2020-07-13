@@ -1,15 +1,15 @@
-from mass_populator.log import *
 from mass_populator.country.populate_product import *
 
 logger = logging.getLogger(__name__)
 
+
 def populate_products(country, environment):
-    populate_product(country, environment, '0101WEB', 'QMJourney01', 'Journey', 'Journey', '0101WEB', 'Garrafa', '1000', False, 'ML', 1)
-    populate_product(country, environment, '0101ANDROID', 'QMJourney01', 'Journey', 'Journey', '0101ANDROID', 'Garrafa', '1000', False, 'ML', 1)
-    populate_product(country, environment, '0101IOS', 'QMJourney01', 'Journey', 'Journey', '0101IOS', 'Garrafa', '1000', False, 'ML', 1)
-    populate_product(country, environment, '0102WEB', 'QMJourney02', 'Journey', 'Journey', '0102WEB', 'Garrafa', '1000', False, 'ML', 2)
-    populate_product(country, environment, '0102ANDROID', 'QMJourney02', 'Journey', 'Journey', '0102ANDROID', 'Garrafa', '1000', False, 'ML', 2)
-    populate_product(country, environment, '0102IOS', 'QMJourney02', 'Journey', 'Journey', '0102IOS', 'Garrafa', '1000', False, 'ML', 2)
+    populate_product(country, environment, '0101WEB', 'QMWEB01', 'Journey', 'Journey', '0101WEB', 'Garrafa', '1000', False, 'ML', 1)
+    populate_product(country, environment, '0101ANDROID', 'QMANDROID01', 'Journey', 'Journey', '0101ANDROID', 'Garrafa', '1000', False, 'ML', 1)
+    populate_product(country, environment, '0101IOS', 'QMIOS01', 'Journey', 'Journey', '0101IOS', 'Garrafa', '1000', False, 'ML', 1)
+    populate_product(country, environment, '0102WEB', 'QMWEB02', 'Journey', 'Journey', '0102WEB', 'Garrafa', '1000', False, 'ML', 2)
+    populate_product(country, environment, '0102ANDROID', 'QMANDROID02', 'Journey', 'Journey', '0102ANDROID', 'Garrafa', '1000', False, 'ML', 2)
+    populate_product(country, environment, '0102IOS', 'QMIOS02', 'Journey', 'Journey', '0102IOS', 'Garrafa', '1000', False, 'ML', 2)
 
     logger.info('Products populating finalized.')
 
