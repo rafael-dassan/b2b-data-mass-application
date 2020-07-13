@@ -43,7 +43,8 @@ def showMenu():
             '3': account_information_menu,
             '4': product_information_menu,
             '5': deals_information_menu,
-            '6': order_information_menu
+            '6': order_information_menu,
+            '7': recommender_information_menu
         }
     elif selection_structure == '3':
         switcher = {
@@ -1255,6 +1256,13 @@ def order_information_menu():
         if orders != 'false':
             display_all_order_information(orders)
 
+
+def recommender_information_menu():
+    zone = print_zone_menu_for_ms()
+    environment = printEnvironmentMenu()
+    abi_id = print_account_id_menu(zone)
+
+    display_recommendations_by_account(zone, environment, abi_id)
 
 
 # Init
