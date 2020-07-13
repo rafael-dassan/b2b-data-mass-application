@@ -701,7 +701,7 @@ def display_items_information_zone(zone, environment):
     headers = get_header_request(zone, 'true')
 
     # Get url base
-    request_url = get_microservice_base_url(environment, 'false') + '/items/?includeDisabled=false&includeDisabled=false'
+    request_url = get_microservice_base_url(environment, 'false') + '/items/?includeDisabled=false&includeDeleted=false'
 
     # Place request
     response = place_request('GET', request_url, '', headers)
