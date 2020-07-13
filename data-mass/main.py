@@ -170,8 +170,9 @@ def create_rewards_to_account():
 
     switcher = {
         '1': 'NEW_PROGRAM',
-        '2': 'ENROLL_POC',
-        '3': 'ADD_CHALLENGE'
+        '2': 'UPDATE_BALANCE',
+        '3': 'ENROLL_POC',
+        '4': 'ADD_CHALLENGE'
     }
 
     reward_option = switcher.get(selection_structure, 'false')
@@ -236,7 +237,21 @@ def create_rewards_to_account():
             print(text.Red + '\n- [Rewards] Something went wrong, please try again')
 
         printFinishApplicationMenu()
+    # Option to update initial balance of a program
+    elif reward_option == 'UPDATE_BALANCE':
 
+        update_balance = update_program_balance(zone.upper(), environment.upper())
+
+        if update_balance == 'false':
+            print(text.Red + '\n- [Rewards] Something went wrong, please try again')
+            printFinishApplicationMenu()
+        elif update_balance == 'no_confirm':
+            printFinishApplicationMenu()
+        elif update_program_balance == 'no_program':
+            print(text.Red + '\n- [Rewards] There is no rewards program available for this zone')
+            printFinishApplicationMenu()
+        else:
+            printFinishApplicationMenu()
 
 # Input Orders to account (active and cancelled ones)
 def input_orders_to_account():
