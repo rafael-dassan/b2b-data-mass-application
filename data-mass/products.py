@@ -694,38 +694,3 @@ def get_sku_name(zone, environment, sku_id):
     sku_name = json_data['itemName']
 
     return sku_name
-
-
-def display_items_information_zone(zone, environment):
-    # Get header request
-    headers = get_header_request(zone, 'true')
-
-    # Get url base
-    request_url = get_microservice_base_url(environment, 'false') + '/items/?includeDisabled=false&includeDeleted=false'
-
-    # Place request
-    response = place_request('GET', request_url, '', headers)
-
-    json_data = loads(response.text)
-    items_len = len(json_data['items'])
-    items = json_data['items']
-    list_items = list()
-    if items_len != 0:
-        for i in range(items_len):
-            dict_values = {
-                'SKU': items[i]['sku'],
-                'Name': items[i]['itemName'],
-                'Description': items[i]['description'],
-                'Brand Name': items[i]['brandName'],
-                'Returnable': items[i]['container']['returnable']
-            }
-            list_items.append(dict_values)
-    else:
-        dict_values = {
-            'Products': 'None'
-        }
-        list_items.append(dict_values)
-
-    print(text.default_text_color + '\nProduct Information By Account')
-    print(tabulate(list_items, headers='keys', tablefmt='grid'))
-
