@@ -100,7 +100,7 @@ def create_new_program(zone, environment):
             response = place_request('PUT', request_url, request_body, request_headers)
 
             if response.status_code == 200:
-                print(text.Green + '\n- [Rewards] The new program has been created successfully. ID: ' + reward_id + ' - Initial balance = ' + str(initial_balance))
+                print(text.Green + '\n- [Rewards] The new program has been successfully created. ID: ' + reward_id + ' - Initial balance = ' + str(initial_balance))
                 return 'true'
             else:
                 return 'false'
@@ -160,10 +160,6 @@ def enroll_poc_to_program(account_id, zone, environment):
         return 'true'
 
 
-
-
-
-
 # Updates the program's initial balance
 def update_program_balance(zone, environment):
 
@@ -194,19 +190,28 @@ def update_program_balance(zone, environment):
                 print(text.Red + "\n- Invalid option. Only positive numbers are allowed\n")
                 new_balance = input(text.Yellow + '\nPlease inform the new balance ammount: ')
 
-            # Define url request
+            # Define url request to read the Rewards program selected
             request_url = get_microservice_base_url(environment) + '/rewards-service/programs/' + program_found
 
             # Send request
             response = place_request('GET', request_url, '', request_headers)
 
-            json_data = loads(response.text)
+            json_rewards_old = loads(response.text)
+            json_rewards_new = update_value_to_json(json_rewards_old, 'initialBalance', int(new_balance))
 
-            json_object = update_value_to_json(json_data, 'initialBalance', 0)
+            # Define url request to update the Rewards program selected
+            request_url = get_microservice_base_url(environment) + '/rewards-service/programs/' + program_found
 
-            print(json_object)
+            request_body = convert_json_to_string(json_rewards_new)
 
-            return 'true'
+            # Send request
+            response = place_request('PUT', request_url, request_body, request_headers)
+
+            if response.status_code == 200:
+                print(text.Green + '\n- [Rewards] The program ' + program_found + ' has been successfully updated. Initial balance = ' + str(new_balance))
+                return 'true'
+            else:
+                return 'false'
         else:
             return 'no_confirm'
     else:
@@ -353,7 +358,7 @@ def input_challenge_to_zone(abi_id, zone, environment):
             response = place_request('PUT', request_url, request_body, request_headers)
 
             if response.status_code == 200:
-                print(text.Green + '\n- [Rewards] The new challenge has been created successfully. ID: ' + challenge_id)
+                print(text.Green + '\n- [Rewards] The new challenge has been successfully created. ID: ' + challenge_id)
             else:
                 error_flag = 'true'
 

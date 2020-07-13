@@ -238,7 +238,7 @@ def create_rewards_to_account():
 
         printFinishApplicationMenu()
     # Option to update initial balance of a program
-    elif reward_option == "UPDATE_BALANCE":
+    elif reward_option == 'UPDATE_BALANCE':
 
         update_balance = update_program_balance(zone.upper(), environment.upper())
 
@@ -247,12 +247,11 @@ def create_rewards_to_account():
             printFinishApplicationMenu()
         elif update_balance == 'no_confirm':
             printFinishApplicationMenu()
-        elif update_program_balance == "no_program":
+        elif update_program_balance == 'no_program':
             print(text.Red + '\n- [Rewards] There is no rewards program available for this zone')
             printFinishApplicationMenu()
         else:
-            print(text.Green + '\n- [Rewards] Balance ammount updated successfull')
-
+            printFinishApplicationMenu()
 
 # Input Orders to account (active and cancelled ones)
 def input_orders_to_account():
