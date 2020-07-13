@@ -146,7 +146,7 @@ def enroll_poc_to_program(account_id, zone, environment):
                 account_eligible = make_account_eligible(account_id, zone, environment, request_headers)
 
                 if account_eligible == 'true':
-                    print(text.Green + '\n- [Rewards] The account is now eligible. Back to menu option "2" to resume the enrollment process')
+                    print(text.Green + '\n- [Rewards] The account is now eligible. Back to menu option "Enroll POC" to resume the enrollment process')
                     return 'true'
                 else:
                     return 'false'
@@ -156,7 +156,7 @@ def enroll_poc_to_program(account_id, zone, environment):
         else:
             return 'false'
     else:
-        print(text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "1" to create it')
+        print(text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "Create new" to create it')
         return 'true'
 
 
@@ -200,7 +200,11 @@ def update_program_balance(zone, environment):
             # Send request
             response = place_request('GET', request_url, '', request_headers)
 
-            print(response.text)
+            json_data = loads(response.text)
+
+            json_object = update_value_to_json(json_data, 'initialBalance', 0)
+
+            print(json_object)
 
             return 'true'
         else:
