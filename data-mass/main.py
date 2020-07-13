@@ -134,7 +134,6 @@ def product_information_menu():
 
 
 
-
 def account_information_menu():
     selection_structure = print_get_account_menu()
     zone = print_zone_menu_for_ms()
