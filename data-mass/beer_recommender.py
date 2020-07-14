@@ -344,9 +344,9 @@ def display_recommendations_by_account(zone, environment, abi_id):
     combo_list = list()
     if len(recommendations) == 0:
         dict_value = {
-            'Quick Order': None,
-            'Forgotten Items': None,
-            'Up Sell Contextual Model': None
+            'Quick Order': 'None',
+            'Forgotten Items': 'None',
+            'Up Sell Contextual Model': 'None'
         }
         recommender_list.append(dict_value)
     else:
@@ -363,7 +363,7 @@ def display_recommendations_by_account(zone, environment, abi_id):
             for x in range(len(items)):
                 if len(items) == 0:
                     items_value = {
-                        'Items': None
+                        'Items': 'None'
                     }
                     items_list.append(items_value)
                 else:
@@ -378,7 +378,7 @@ def display_recommendations_by_account(zone, environment, abi_id):
             for z in range(len(combos)):
                 if len(combos) == 0:
                     combos_value = {
-                        'Combos': None
+                        'Combos': 'None'
                     }
                     combo_list.append(combos_value)
                 else:
