@@ -333,3 +333,71 @@ def delete_recommendation_by_id(environment, recommendation_data):
         print(text.Red + '\n- [Global Recommendation Service] Failure to delete a recommendation. Response Status: '
               + str(response.status_code) + '. Response message ' + response.text)
         return 'false'
+
+
+def display_recommendations_by_account(zone, environment, abi_id):
+    case_id = 'QUICK_ORDER&useCase=FORGOTTEN_ITEMS&useCase=CROSS_SELL_UP_SELL'
+    data = get_recommendation_by_account(abi_id, zone, environment, case_id)
+    recommendations = data['content']
+    recommender_list = list()
+    items_list = list()
+    combo_list = list()
+    if len(recommendations) == 0:
+        dict_value = {
+            'Quick Order': 'None',
+            'Forgotten Items': 'None',
+            'Up Sell Contextual Model': 'None'
+        }
+        recommender_list.append(dict_value)
+    else:
+        for i in range(len(recommendations)):
+            dict_value = {
+                'Name': recommendations[i]['recommendationId'],
+                'Use Case': recommendations[i]['useCase'],
+                'Created Date': recommendations[i]['createdDate'],
+                'Update Date': recommendations[i]['updatedDate']
+            }
+            recommender_list.append(dict_value)
+            items = recommendations[i]['items']
+            combos = recommendations[i]['combos']
+            for x in range(len(items)):
+                if len(items) == 0:
+                    items_value = {
+                        'Items': 'None'
+                    }
+                    items_list.append(items_value)
+                else:
+                    items_value = {
+                        'Recommendation': recommendations[i]['recommendationId'],
+                        'SKU': items[x]['sku'],
+                        'Quantity': items[x]['quantity'],
+                        'Score': items[x]['score'],
+                        'Discount': items[x]['discount']
+                    }
+                    items_list.append(items_value)
+            for z in range(len(combos)):
+                if len(combos) == 0:
+                    combos_value = {
+                        'Combos': 'None'
+                    }
+                    combo_list.append(combos_value)
+                else:
+                    combos_value = {
+                        'Recommendation': recommendations[i]['recommendationId'],
+                        'ID Combo': combos[z]['id'],
+                        'Quantity': combos[z]['quantity'],
+                        'Score': combos[z]['score'],
+                        'Type': combos[z]['type']
+                    }
+                    combo_list.append(combos_value)
+
+    print(text.default_text_color + '\nRecommendations Information By Account')
+    print(tabulate(recommender_list, headers='keys', tablefmt='grid'))
+
+    print(text.default_text_color + '\nItems Recommendations Information By Account')
+    print(tabulate(items_list, headers='keys', tablefmt='grid'))
+
+    print(text.default_text_color + '\nCombos Recommendations Information By Account')
+    print(tabulate(combo_list, headers='keys', tablefmt='grid'))
+
+

@@ -564,7 +564,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(4), text.Yellow + 'Product information by account')
         print(text.default_text_color + str(5), text.Yellow + 'Deals information by account')
         print(text.default_text_color + str(6), text.Yellow + 'Order information by account')
-
+        print(text.default_text_color + str(7), text.Yellow + 'Recommender information by account')
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_option_request_selection(selection) == 'false':
             print(text.Red + '\n- Invalid option\n')
@@ -572,10 +572,10 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(1), text.Yellow + 'Order simulation via Microservice')
             print(text.default_text_color + str(2), text.Yellow + 'Order simulation via Middleware')
             print(text.default_text_color + str(3), text.Yellow + 'POC information')
-            print(text.default_text_color + str(4), text.Yellow + 'Product information by account')
+            print(text.default_text_color + str(4), text.Yellow + 'Product information')
             print(text.default_text_color + str(5), text.Yellow + 'Deals information by account')
             print(text.default_text_color + str(6), text.Yellow + 'Order information by account')
-
+            print(text.default_text_color + str(7), text.Yellow + 'Recommender information by account')
             selection = input(text.default_text_color + '\nPlease select: ')
 
     elif selection_structure == '3':
