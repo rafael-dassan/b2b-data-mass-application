@@ -726,6 +726,6 @@ def display_items_information_zone(zone, environment):
         }
         list_items.append(dict_values)
 
-    print(text.default_text_color + '\nProduct Information By Account')
+    print(text.default_text_color + '\nProduct Information By Zone')
     print(tabulate(list_items, headers='keys', tablefmt='grid'))
 
