@@ -229,6 +229,21 @@ def validate_zone_for_deals(zone):
     return value
 
 
+def validate_zone_for_delivery_window(zone):
+    switcher = {
+        'BR': 'true',
+        'DO': 'true',
+        'ZA': 'true',
+        'CO': 'true',
+        'MX': 'true',
+        'AR': 'true',
+        'CL': 'true'
+    }
+
+    value = switcher.get(zone, 'false')
+    return value
+
+
 def validate_zone_for_ms(zone):
     switcher = {
         'BR': 'true',
@@ -875,6 +890,16 @@ def print_zone_menu_data_searching_deals():
     while validate_zone_data_searching_deals(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
         zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO): ')
+
+    return zone.upper()
+
+
+# Print zone menu for Delivery Window
+def print_zone_menu_for_delivery_window():
+    zone = input(text.default_text_color + 'Zone (AR, CL, BR, DO, ZA, CO, MX): ')
+    while validate_zone_for_delivery_window(zone.upper()) == 'false':
+        print(text.Red + '\n- Invalid option\n')
+        zone = input(text.default_text_color + 'Zone (AR, CL, BR, DO, ZA, CO, MX): ')
 
     return zone.upper()
 
