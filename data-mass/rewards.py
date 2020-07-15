@@ -121,25 +121,20 @@ def enroll_poc_to_program(account_id, zone, environment):
 
     if program_found != 'false':
 
-        # Define url request
-        request_url = get_microservice_base_url(environment) + '/loyalty-business-service/rewards'
-
-        dict_values  = {
-            'accountId' : account_id
-        }
-
-        #Create body
-        request_body = convert_json_to_string(dict_values)
-
+        # Define url request to get account information
+        request_url = get_microservice_base_url(environment) + '/accounts/?accountId=' + account_id
+        
         # Send request
-        response = place_request('POST', request_url, request_body, request_headers)
+        response = place_request('GET', request_url, '', request_headers)
 
-        if response.status_code == 201:
-            enroll_response = loads(response.text)
-            print(text.Green + '\n- [Rewards] The account has been successfully enrolled to the program "' + enroll_response['programId'] + '"')
-            return 'true'
-        elif response.status_code == 406:
-            turn_eligible = input(text.Yellow + '\nThis account is not eligible to any Reward program. Do you want to make it eligible now? y/N: ')
+        json_data = loads(response.text)
+
+        seg_account = json_data[0]['segment']
+        subseg_account = json_data[0]['subSegment']
+        potent_account = json_data[0]['potential']
+
+        if seg_account != 'DM-SEG' or subseg_account != 'DM-SUBSEG' or potent_account != 'DM-POTENT':
+            turn_eligible = input(text.Yellow + '\nThis account is not eligible to a Reward program. Do you want to make it eligible now? y/N: ')
             turn_eligible = turn_eligible.upper()
 
             if turn_eligible == 'Y':
@@ -150,11 +145,32 @@ def enroll_poc_to_program(account_id, zone, environment):
                     return 'true'
                 else:
                     return 'false'
-        elif response.status_code == 409:
-            print(text.Red + '\n- [Rewards] This account already have a Reward program enrolled to it')
-            return 'true'
         else:
-            return 'false'
+            # Define url request
+            request_url = get_microservice_base_url(environment) + '/loyalty-business-service/rewards'
+
+            dict_values  = {
+                'accountId' : account_id
+            }
+
+            #Create body
+            request_body = convert_json_to_string(dict_values)
+
+            # Send request
+            response = place_request('POST', request_url, request_body, request_headers)
+
+            if response.status_code == 201:
+                enroll_response = loads(response.text)
+                print(text.Green + '\n- [Rewards] The account has been successfully enrolled to the program "' + enroll_response['programId'] + '"')
+                return 'true'
+            elif response.status_code == 406:
+                print(text.Red + '\nThere are no Reward programs available for this account')
+                return 'true'
+            elif response.status_code == 409:
+                print(text.Red + '\n- [Rewards] This account already have a Reward program enrolled to it')
+                return 'true'
+            else:
+                return 'false'
     else:
         print(text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "Create new" to create it')
         return 'true'
