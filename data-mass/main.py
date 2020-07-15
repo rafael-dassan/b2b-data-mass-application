@@ -852,7 +852,7 @@ def input_products_to_account_menu():
 
 
 def input_delivery_window_menu():
-    zone = print_zone_menu_for_ms()
+    zone = print_zone_menu_for_delivery_window()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
 
