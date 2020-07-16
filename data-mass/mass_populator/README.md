@@ -62,3 +62,52 @@ sed -i 's/level=logging.INFO/level=logging.DEBUG/' log.py
 ```sh
 sed -i 's/level=logging.DEBUG/level=logging.INFO/' log.py
 ```
+
+## Change data to populate
+
+The data folder will provide all data information for populator script to use. On root level, the file contain standard data that can be used for all zones/countries, if it is needed specific data, the user can customize it for each country. In order to do that, create a file inside a country folder and this file will be used on populator instead of the standard one.
+
+Each csv file contains information of a specific entity that populator currently support. The file format is defined in the header of each csv and must be used in this way for it to work. To add new data, include new lines following the header definition of data.
+
+Example: 
+
+1) We have file account.csv which belongs to data folder (standard folder), the country BR has a file account.csv, thereby its content will be used to populate instead of standard file account.py.
+
+2) Country BR hasn’t file category.csv, so will be populated standard file. 
+
+``` 
+📦data
+ ┣ 📂ar
+ ┃ ┣ 📜account.csv
+ ┃ ┣ 📜product.csv
+ ┃ ┣ 📜recommendation.csv
+ ┃ ┗ 📜user.csv
+ ┣ 📂br
+ ┃ ┣ 📜account.csv
+ ┃ ┣ 📜product.csv
+ ┃ ┣ 📜recommendation.csv
+ ┃ ┗ 📜user.csv
+ ┣ 📂cl
+ ┃ ┣ 📜account.csv
+ ┃ ┣ 📜product.csv
+ ┃ ┗ 📜user.csv
+ ┣ 📂co
+ ┃ ┣ 📜account.csv
+ ┃ ┣ 📜product.csv
+ ┃ ┣ 📜recommendation.csv
+ ┃ ┗ 📜user.csv
+ ┣ 📂do
+ ┃ ┣ 📜account.csv
+ ┃ ┣ 📜product.csv
+ ┃ ┣ 📜recommendation.csv
+ ┃ ┗ 📜user.csv
+ ┣ 📂za
+ ┃ ┣ 📜account.csv
+ ┃ ┣ 📜product.csv
+ ┃ ┣ 📜recommendation.csv
+ ┃ ┗ 📜user.csv
+ ┗ 📜category.csv
+ ┗ 📜account.csv
+```
+
+Notes: It's important to check file data-mass/mass-populator/common.py if country you want to populate some data has permissions to do that.

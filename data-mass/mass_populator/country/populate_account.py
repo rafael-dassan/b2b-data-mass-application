@@ -1,3 +1,4 @@
+import pandas as pd
 from account import create_account_ms
 from delivery_window import create_delivery_window_microservice
 from credit import add_credit_to_account_microservice
@@ -12,6 +13,23 @@ from common import validate_state
 from mass_populator.log import *
 
 logger = logging.getLogger(__name__)
+
+
+# Populate the POCS
+def populate_pocs(country, environment, dataframe_accounts):
+    dataframe_accounts.apply(apply_populate_poc, args=(country, environment), axis=1)
+
+
+def apply_populate_poc(row, country, environment):
+    populate_poc(country, environment,
+        row['account_id'],
+        row['account_name'],
+        row['payment_method'],
+        row['credit'],
+        row['balance'],
+        row['amount_of_products'],
+        row['has_delivery_window'],
+        row['products'])
 
 
 # Populate the POC

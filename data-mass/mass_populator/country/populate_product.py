@@ -1,8 +1,28 @@
+import pandas as pd
 from products import create_item
 from products_magento import enable_product
 from mass_populator.log import *
 
 logger = logging.getLogger(__name__)
+
+
+def populate_products(country, environment, dataframe_products):
+    dataframe_products.apply(apply_populate_product, 
+    args=(country, environment), axis=1)
+
+
+def apply_populate_product(row, country, environment):
+    populate_product(country, environment,
+        row['sku'],
+        row['name'],
+        row['brand_name'],
+        row['sub_brand_name'],
+        row['package_id'],
+        row['container_name'],
+        row['container_size'],
+        row['container_returnable'],
+        row['container_unitOfMeasurement'],
+        row['sales_ranking'])
 
 
 def populate_product(country, environment,
@@ -46,6 +66,16 @@ def populate_product(country, environment,
     response = create_item(country, environment, item_data)
     if response is None:
         logger.error(log(Message.PRODUCT_CREATE_ERROR,{"sku": sku}))
+
+
+def enable_products_magento(country, environment, dataframe_products):
+    dataframe_products.apply(apply_enable_products_magento, 
+    args=(country, environment), axis=1)
+
+
+def apply_enable_products_magento(row, country, environment):
+    for product in row['products']:
+        enable_product_magento(country, environment, product)
 
 
 def enable_product_magento(country, environment, product_sku):
