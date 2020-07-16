@@ -9,7 +9,8 @@ logger = logging.getLogger(__name__)
 
 
 def associate_products_to_category_magento_base(country, environment, dataframe_products):
-    dataframe_products.apply(apply_associate_products_to_category_magento_base,
+    if dataframe_products is not None:
+        dataframe_products.apply(apply_associate_products_to_category_magento_base,
         args=(country, environment), axis=1)
 
 
@@ -108,7 +109,7 @@ def get_categories_magento_mobile(country, environment, sub_category_name):
                 nodes_items_parent_category = node_parent_category_obj['items']
 
                 if node_parent_category_obj and not nodes_items_parent_category:
-                    custom_attributes["brand_id"] = "Journey" + str(parent_id)
+                    custom_attributes["brand_id"] = sub_category_name + str(parent_id)
                     parent_category_id = _create_category(country, environment, parent_category_name, parent_id,
                                                           custom_attributes)
                 else:
@@ -120,7 +121,7 @@ def get_categories_magento_mobile(country, environment, sub_category_name):
                 nodes_items_sub_category = node_sub_category_obj['items']
 
                 if node_sub_category_obj and not nodes_items_sub_category:
-                    custom_attributes["brand_id"] = "Journey" + str(parent_category_id)
+                    custom_attributes["brand_id"] = sub_category_name + str(parent_category_id)
                     sub_category_id = _create_category(country, environment, sub_category_name, parent_category_id,
                                                        custom_attributes)
                 else:

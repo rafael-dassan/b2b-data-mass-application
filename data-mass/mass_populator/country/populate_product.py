@@ -7,8 +7,9 @@ logger = logging.getLogger(__name__)
 
 
 def populate_products(country, environment, dataframe_products):
-    dataframe_products.apply(apply_populate_product, 
-    args=(country, environment), axis=1)
+    if dataframe_products is not None:
+        dataframe_products.apply(apply_populate_product, 
+        args=(country, environment), axis=1)
 
 
 def apply_populate_product(row, country, environment):
@@ -69,8 +70,9 @@ def populate_product(country, environment,
 
 
 def enable_products_magento(country, environment, dataframe_products):
-    dataframe_products.apply(apply_enable_products_magento, 
-    args=(country, environment), axis=1)
+    if dataframe_products is not None:
+        dataframe_products.apply(apply_enable_products_magento, 
+        args=(country, environment), axis=1)
 
 
 def apply_enable_products_magento(row, country, environment):
