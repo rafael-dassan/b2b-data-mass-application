@@ -121,17 +121,11 @@ def enroll_poc_to_program(account_id, zone, environment):
 
     if program_found != 'false':
 
-        # Define url request to get account information
-        request_url = get_microservice_base_url(environment) + '/accounts/?accountId=' + account_id
-        
-        # Send request
-        response = place_request('GET', request_url, '', request_headers)
+        account_data = check_account_exists_microservice(account_id, zone, environment)
 
-        json_data = loads(response.text)
-
-        seg_account = json_data[0]['segment']
-        subseg_account = json_data[0]['subSegment']
-        potent_account = json_data[0]['potential']
+        seg_account = account_data[0]['segment']
+        subseg_account = account_data[0]['subSegment']
+        potent_account = account_data[0]['potential']
 
         if seg_account != 'DM-SEG' or subseg_account != 'DM-SUBSEG' or potent_account != 'DM-POTENT':
             turn_eligible = input(text.Yellow + '\nThis account is not eligible to a Reward program. Do you want to make it eligible now? y/N: ')
