@@ -52,10 +52,7 @@ def create_order_account(account_id, zone, environment, delivery_center_id, orde
     enabled_counter = 0
     
     while (aux_index < len(product_offers)) and (enabled_counter < 2):
-        if zone == 'AR':
-            sku_offer = product_offers[aux_index]
-        else:
-            sku_offer = product_offers[aux_index]['sku']
+        sku_offer = product_offers[aux_index]['sku']
         
         # Check if the SKU is enabled on Items MS
         sku_enable = check_item_enabled(sku_offer, zone, environment)

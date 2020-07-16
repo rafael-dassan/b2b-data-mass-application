@@ -208,12 +208,13 @@ def validate_zone_for_rewards(zone):
 
 def validate_zone_for_inventory(zone):
     switcher = {
-        "ZA": "true",
-        "CO": "true",
-        "MX": "true"
+        'ZA': 'true',
+        'CO': 'true',
+        'MX': 'true',
+        'AR': 'true'
     }
 
-    value = switcher.get(zone, "false")
+    value = switcher.get(zone, 'false')
     return value
 
 
@@ -926,10 +927,10 @@ def print_zone_menu_for_rewards():
 
 # Print zone menu for inventory
 def print_zone_menu_for_inventory():
-    zone = input(text.default_text_color + "Zone (ZA, CO, MX): ")
+    zone = input(text.default_text_color + "Zone (AR, ZA, CO, MX): ")
     while validate_zone_for_inventory(zone.upper()) == "false":
         print(text.Red + "\n- Invalid option\n")
-        zone = input(text.default_text_color + "Zone (ZA, CO, MX): ")
+        zone = input(text.default_text_color + "Zone (AR, ZA, CO, MX): ")
 
     return zone.upper()
 

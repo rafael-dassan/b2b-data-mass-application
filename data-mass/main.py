@@ -532,11 +532,7 @@ def input_recommendation_to_account_menu():
     enabled_skus = list()
     aux_index = 0
     while aux_index < len(product_offers):
-        if zone == 'AR':
-            sku = product_offers[aux_index]
-        else:
-            sku = product_offers[aux_index]['sku']
-
+        sku = product_offers[aux_index]['sku']
         enabled_skus.append(sku)
         aux_index = aux_index + 1
 
@@ -831,24 +827,19 @@ def input_products_to_account_menu():
             print(text.Red + '\n- [Products] Something went wrong, please try again')
             printFinishApplicationMenu()
 
-        products = request_get_offers_microservice(abi_id, zone.upper(), environment.upper(), delivery_center_id, True)
+        products = request_get_account_product_assortment(abi_id, zone.upper(), environment.upper(), delivery_center_id)
 
-        if zone.upper() == 'ZA' or zone.upper() == 'CO' or zone.upper() == 'MX' or zone.upper() == 'AR':
-            skus_id = list()
-            aux_index = 0
+        skus_id = list()
+        aux_index = 0
 
-            while aux_index <= (len(products) - 1):
-                if zone.upper() == 'AR':
-                    skus_id.append(products[aux_index])
-                else:
-                    skus_id.append(products[aux_index]['sku'])
-                aux_index = aux_index + 1
+        while aux_index <= (len(products) - 1):
+            skus_id.append(products[aux_index])
+            aux_index = aux_index + 1
 
-            update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id,
-                                                           skus_id)
+        update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id, skus_id)
 
-            if update_sku != 'true':
-                print(text.Red + '\n- [Inventory] Something went wrong, please try again.')
+        if update_sku != 'true':
+            print(text.Red + '\n- [Inventory] Something went wrong, please try again.')
 
 
 def input_delivery_window_menu():
@@ -930,23 +921,19 @@ def create_account_menu():
         print(text.Red + '\n\n- [Products] Something went wrong, please try again')
         printFinishApplicationMenu()
 
-    products = request_get_offers_microservice(abi_id, zone.upper(), environment.upper(), delivery_center_id, True)
+    products = request_get_account_product_assortment(abi_id, zone.upper(), environment.upper(), delivery_center_id)
 
-    if zone.upper() == 'ZA' or zone.upper() == 'CO' or zone.upper() == 'MX' or zone.upper() == 'AR':
-        skus_id = list()
-        aux_index = 0
+    skus_id = list()
+    aux_index = 0
 
-        while aux_index <= (len(products) - 1):
-            if zone.upper() == 'AR':
-                skus_id.append(products[aux_index])
-            else:
-                skus_id.append(products[aux_index]['sku'])
-            aux_index = aux_index + 1
+    while aux_index <= (len(products) - 1):
+        skus_id.append(products[aux_index])
+        aux_index = aux_index + 1
 
-        update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id, skus_id)
+    update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id, skus_id)
 
-        if update_sku != 'true':
-            print(text.Red + '\n- [Inventory] Something went wrong, please try again.')
+    if update_sku != 'true':
+        print(text.Red + '\n- [Inventory] Something went wrong, please try again.')
 
     if zone == 'BR' or zone == 'ZA':
         # Validate if is alternative delivery window
