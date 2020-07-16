@@ -24,11 +24,7 @@ def populate_recommendation(country, environment, account_id):
     enabled_skus = list()
     aux_index = 0
     while aux_index < len(product_offers):
-        if country.upper() == "AR":
-            sku = product_offers[aux_index]
-        else:
-            sku = product_offers[aux_index]['sku']
-
+        sku = product_offers[aux_index]['sku']
         enabled_skus.append(sku)
         aux_index = aux_index + 1
 

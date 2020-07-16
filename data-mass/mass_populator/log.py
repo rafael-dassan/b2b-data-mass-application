@@ -28,3 +28,4 @@ class Message(Enum):
     PRODUCT_ENABLE_ERROR = "Fail on enable product for sku: {sku}"
     CATEGORY_PRODUCT_ASSOCIATE_ERROR = "Fail on associate category {category} to product {sku}."
     CATEGORY_CREATE_ERROR = "Fail on create category {category}."
+    INVENTORY_CREATE_ERROR = "Fail on creating inventory for account {account_id}."
