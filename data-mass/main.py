@@ -93,7 +93,8 @@ def product_information_menu():
 
     switcher = {
         '1': 'PRODUCT',
-        '2': 'INVENTORY'
+        '2': 'INVENTORY',
+        '3': 'PRODUCT_ZONE',
     }
 
     products_type = switcher.get(selection_structure, 'false')
@@ -116,7 +117,7 @@ def product_information_menu():
             printFinishApplicationMenu()
         else:
             display_product_information(product_offers)
-    else:
+    elif products_type == 'INVENTORY':
         zone = print_zone_menu_for_inventory()
         abi_id = print_account_id_menu(zone)
         
@@ -131,7 +132,9 @@ def product_information_menu():
 
         delivery_center_id = account[0]['deliveryCenterId']
         display_inventory_by_account(zone, environment, abi_id, delivery_center_id)
-
+    else:
+        zone = print_zone_menu_for_ms()
+        display_items_information_zone(zone, environment)
 
 
 def account_information_menu():
