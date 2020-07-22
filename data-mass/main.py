@@ -615,7 +615,7 @@ def inputDealsMenu():
 
     if zone.upper() == "CO" or zone.upper() == "MX":
         skus = list()
-        while len(skus) <= 1:
+        while len(skus) <= 2:
             index_offers = randint(0, (len(product_offers) - 1))
             product = product_offers[index_offers]
             product_sku = product['sku']
