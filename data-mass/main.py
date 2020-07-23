@@ -613,7 +613,7 @@ def inputDealsMenu():
         print(text.Red + "\n- [Products] The account " + str(abi_id) + " has no available products for purchase")
         printFinishApplicationMenu()
 
-    if zone.upper() == "CO" or zone.upper() == "MX":
+    if zone.upper() == "CO" or zone.upper() == "MX" or zone.upper() == "AR":
         skus = list()
         while len(skus) <= 2:
             index_offers = randint(0, (len(product_offers) - 1))

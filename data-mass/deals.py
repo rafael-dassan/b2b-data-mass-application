@@ -462,7 +462,7 @@ def input_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone
 
     promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
 
-    if zone == "CO" or zone == "MX":
+    if zone == "CO" or zone == "MX" or zone == "AR":
         cart_response = input_free_good_to_cart_calculation_v2(promotion_response, accounts, zone.upper(), environment.upper(), skus, minimum_quantity, quantity)
     else:
         cart_response = input_free_good_to_cart_calculation(promotion_response, accounts, zone.upper(), environment.upper(), skus, minimum_quantity, quantity)
@@ -503,11 +503,16 @@ def input_free_good_to_cart_calculation_v2(deal_id, accounts, zone, environment,
 
     dates_payload = return_first_and_last_date_year_payload()
 
+    accumulation_type = ""
+    if zone == "AR":
+        accumulation_type = "UNIQUE"
+
     #Inputs for default payload of simple free goods for cart calculation v2
     dict_values = {
         "accounts": accounts,
         "deals[0].dealId": deal_id,
         "deals[0].externalId": deal_id,
+        "deals[0].accumulationType": accumulation_type,
         "deals[0].conditions.simulationDateTime[0].startDate": dates_payload['startDate'],
         "deals[0].conditions.simulationDateTime[0].endDate": dates_payload['endDate'],
         "deals[0].conditions.lineItem.skus": [product_sku],
