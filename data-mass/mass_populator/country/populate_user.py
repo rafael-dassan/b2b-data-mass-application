@@ -1,3 +1,4 @@
+import pandas as pd
 from mass_populator.log import *
 from user_creation_magento import \
     create_user, user_already_exists_with_account, check_user, UserCheckDict, authenticate_user, \
@@ -5,6 +6,18 @@ from user_creation_magento import \
 from account import check_account_exists_microservice
 
 logger = logging.getLogger(__name__)
+
+
+def populate_users(country, environment, dataframe_users):
+    dataframe_users.apply(apply_populate_user,
+        args=(country, environment), axis=1)
+
+
+def apply_populate_user(row, country, environment):
+    populate_user(country, environment, 
+        row['username'],
+        row['password'],
+        row['account_ids'])
 
 
 def populate_user(country, environment, username, password, account_ids, phone=""):

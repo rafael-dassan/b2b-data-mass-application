@@ -5,3 +5,4 @@ jsonpath-rw-ext>=1.2.2
 jsonpath-rw>=1.4.0
 pyotp>=2.3.0
 tabulate>=0.8.0
+pandas>=1.0.5

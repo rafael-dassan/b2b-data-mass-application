@@ -1,24 +1,33 @@
+import json
+import pandas as pd
 from category_magento import *
 from products_magento import *
 from mass_populator.log import *
-import json
 
 
 logger = logging.getLogger(__name__)
 
 
-def associate_products_to_category_magento(country, environment, products):
+def associate_products_to_category_magento_base(country, environment, dataframe_products):
+    dataframe_products.apply(apply_associate_products_to_category_magento_base,
+        args=(country, environment), axis=1)
+
+
+def apply_associate_products_to_category_magento_base(row, country, environment):
+    associate_products_to_category_magento(country, environment, row['name'], row['products'])
+
+
+def associate_products_to_category_magento(country, environment, category, products):
     """Associate product to category
     Input Arguments:
         - Country (BR, DO, AR, CL, ZA, CO)
         - Environment (UAT, SIT)
+        - Category Name
         - List Products SKU
-		- Category Name
-        - Depth to populate categories
     """
     # get categories
-    categories_web = get_categories_magento_web(country, environment)
-    categories_mobile = get_categories_magento_mobile(country, environment)
+    categories_web = get_categories_magento_web(country, environment, category)
+    categories_mobile = get_categories_magento_mobile(country, environment, category)
 
     # associate by context
     associate(country, environment, categories_web, distinct_list(products, ['WEB']))
@@ -33,15 +42,13 @@ def associate(country, environment, categories, products):
                 logger.error(log(Message.CATEGORY_PRODUCT_ASSOCIATE_ERROR,{"category": category, "sku": sku}))
 
 
-def get_categories_magento_web(country, environment):
+def get_categories_magento_web(country, environment, category_name):
     """Get categories
     Input Arguments:
         - Country (BR, DO, AR, CL, ZA, CO)
         - Environment (UAT, SIT)
-		- Depth to find categories
         - Category Name
     """
-    category_name = 'Journey'
     nodes = request_get_categories(country, environment, {'level': 2})
     nodes_obj = json.loads(nodes.text)
     categories = []
@@ -67,16 +74,14 @@ def get_categories_magento_web(country, environment):
     return categories
 
 
-def get_categories_magento_mobile(country, environment):
+def get_categories_magento_mobile(country, environment, sub_category_name):
     """Get categories
     Input Arguments:
         - Country (BR, DO, AR, CL, ZA, CO)
         - Environment (UAT, SIT)
-		- Depth to find categories
-        - Category Name
+        - Sub Category Name
     """
     parent_category_name = 'Journey Category'
-    sub_category_name = 'Journey'
     custom_attributes = {
         "brand_id": "",
         "web_brand_is_active": "0",

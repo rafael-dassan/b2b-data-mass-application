@@ -1,4 +1,5 @@
-# Populated Data
+# Populated Data 
+DEPRECATED: csv data files contain the same information. this will no longer be updated, please refer to the csv file
 
 ## Common
 
@@ -369,3 +370,4 @@ Magento has a cache in its internal database that needs to be re-indexed after c
 * Success cron job execution *abinbev_combo_service_importer*
 In practice, re-indexing can take days to complete.
 In some scenarios, it may be that the re-indexing process is not effective, and needs to be done manually for the changes made to take effect. This can happen over system instability, environment configuration changes and it will impact the enabling of new products and their association with categories.
+

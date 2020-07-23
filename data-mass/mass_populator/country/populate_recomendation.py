@@ -1,8 +1,18 @@
+import pandas as pd
 from products import request_get_offers_microservice
 from beer_recommender import request_quick_order, request_forgotten_items
 from mass_populator.log import *
 
 logger = logging.getLogger(__name__)
+
+
+def populate_recommendations(country, environment, dataframe_recommendations):
+    dataframe_recommendations.apply(apply_populate_recommendation,
+        args=(country, environment), axis=1)
+
+
+def apply_populate_recommendation(row, country, environment):
+    populate_recommendation(country, environment, row['account_id'])
 
 
 def populate_recommendation(country, environment, account_id):
