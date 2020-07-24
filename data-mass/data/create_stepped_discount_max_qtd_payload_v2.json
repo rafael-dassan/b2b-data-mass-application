@@ -4,7 +4,7 @@
         {
             "dealId": "string",
             "externalId": "string",
-            "accumulationType": null,
+            "accumulationType": "UNIQUE",
             "priority": 1,
             "budget": null,
             "quantityLimit": null,
