@@ -1240,7 +1240,7 @@ def print_input_number_with_default(input_text, default_value = 0):
         input_number = input("{default_text_color}{input_text} - [default: {default_value}]: ".format(
             default_text_color=text.default_text_color,
             input_text=input_text, default_value=default_value)).strip() or str(default_value)
-        
+
         if input_number.lstrip("-").isdigit():
             return int(input_number)
 
@@ -1251,7 +1251,7 @@ def print_input_number(input_text):
         input_number = input("{default_text_color}{input_text}: ".format(
             default_text_color=text.default_text_color,
             input_text=input_text)).strip()
-        
+
         if input_number.lstrip("-").isdigit():
             return int(input_number)
 
@@ -1262,7 +1262,7 @@ def print_input_text(input_text):
         input_str = input("{default_text_color}{input_text}: ".format(
             default_text_color=text.default_text_color,
             input_text=input_text)).strip()
-        
+
         if not is_blank(input_str):
             return input_str
 
@@ -1578,3 +1578,23 @@ def print_get_order_menu():
         structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure
+
+
+def validate_invoice_status(option):
+    if option == '1' or option == '2':
+        return 'true'
+    else:
+        return 'false'
+
+
+def invoice_status_menu():
+    status = input(
+        text.default_text_color + 'Do you want to create the invoice with which status: 1. CLOSED or 2. OPEN: ')
+    while validate_invoice_status(status) == 'false':
+        print(text.Red + '\n- Invalid option')
+        status = input(
+            text.default_text_color + 'Do you want to create the invoice with which status: 1. CLOSED or 2. OPEN: ')
+    if status == '1':
+        return 'CLOSED'
+    else:
+        return 'OPEN'

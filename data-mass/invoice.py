@@ -44,7 +44,7 @@ def get_order_details(order_data):
     return order_details
 
 
-def create_invoice_request(abi_id, zone, environment, order_id):
+def create_invoice_request(abi_id, zone, environment, order_id, status):
     order_data = order_info(abi_id, zone, environment, order_id)
 
     order_details = get_order_details(order_data)
@@ -73,6 +73,7 @@ def create_invoice_request(abi_id, zone, environment, order_id):
         'paymentTerm': order_details.get('paymentTerm'),
         'subtotal': order_details.get('subtotal'),
         'invoiceId': invoice_id,
+        'status': status,
         'tax': order_details.get('tax'),
         'total': order_details.get('total')
     }
@@ -102,4 +103,3 @@ def create_invoice_request(abi_id, zone, environment, order_id):
         print(text.Green + '\n- Invoice ' + invoice_id + ' successfully created')
         print(text.Yellow + '- Please, run the cron job `webjump_invoicelistabi_import_invoices` to import your '
                             'invoice, so it can be used in the front-end applications')
-
