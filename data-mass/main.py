@@ -1146,7 +1146,8 @@ def create_invoice_menu():
         print(text.Red + '\n- [Order] The Order Id ' + order_id + ' does not exist')
         printFinishApplicationMenu()
 
-    create_invoice_request(abi_id, zone.upper(), environment.upper(), order_id)
+    status = invoice_status_menu()
+    create_invoice_request(abi_id, zone.upper(), environment.upper(), order_id, status)
 
     printFinishApplicationMenu()
 
