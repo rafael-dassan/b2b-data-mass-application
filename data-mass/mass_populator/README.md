@@ -110,4 +110,11 @@ Example:
  ┗ 📜account.csv
 ```
 
-Notes: It's important to check file data-mass/mass-populator/common.py if country you want to populate some data has permissions to do that.
+Notes: 
+
+1) It's important to check file data-mass/mass-populator/common.py if country you want to populate some data has permissions to do that.
+
+2) To create products on file product.csv the column named 'name' should contains as substring: [ANDROID, IOS or WEB]
+This is not required, but it's needed to associate products to specific category properly.
+
+Examples: 0101WEB, 0101ANDROID, 0101IOS 

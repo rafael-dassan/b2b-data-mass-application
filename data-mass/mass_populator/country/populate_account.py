@@ -17,7 +17,9 @@ logger = logging.getLogger(__name__)
 
 # Populate the POCS
 def populate_pocs(country, environment, dataframe_accounts):
-    dataframe_accounts.apply(apply_populate_poc, args=(country, environment), axis=1)
+    if dataframe_accounts is not None:
+        dataframe_accounts.apply(apply_populate_poc, 
+        args=(country, environment), axis=1)
 
 
 def apply_populate_poc(row, country, environment):

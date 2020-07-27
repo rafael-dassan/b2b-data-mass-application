@@ -9,7 +9,8 @@ logger = logging.getLogger(__name__)
 
 
 def populate_users(country, environment, dataframe_users):
-    dataframe_users.apply(apply_populate_user,
+    if dataframe_users is not None:
+        dataframe_users.apply(apply_populate_user, 
         args=(country, environment), axis=1)
 
 

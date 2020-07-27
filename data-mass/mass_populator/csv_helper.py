@@ -44,14 +44,15 @@ def search_file_path(country, entity, is_default_file=True):
     return '{}/{}'.format(absolute_path, default_file)
 
 
-def search_file_content(country, entity, file_path):
+def search_file_content(country, entity, file_path, is_default_file):
     try:
         return pd.read_csv(file_path,
         converters=converter_string_to_list(converters_by_entity(entity)),
         dtype=converter_dtype_to_string_by_entity(entity))
     except FileNotFoundError:
-        logger.error("file not found for: {}, entity: {}, path: {}".format(
-            country, entity, file_path))
+        if is_default_file:
+            logger.error("file not found for: {}, entity: {}, path: {}".format(
+                country, entity, file_path))
         return None
     except Exception as e:
         logger.error("Unexpected error: {}".format(e))
@@ -59,8 +60,8 @@ def search_file_content(country, entity, file_path):
 
 
 def search_data(country, entity, is_default_file=False):
-    file_path = search_file_path(country, entity, is_default_file)    
-    return search_file_content(country, entity, file_path)
+    file_path = search_file_path(country, entity, is_default_file)
+    return search_file_content(country, entity, file_path, is_default_file)
 
 
 def search_data_by(country, entity):
