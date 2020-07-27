@@ -49,7 +49,7 @@
                                             "measureUnit": "UNIT"
                                         }
                                     ],
-                                    "quantity": "string"
+                                    "quantity": 0
                                 }
                             ],
                             "fixed": "false",
@@ -65,7 +65,7 @@
                                             "measureUnit": "UNIT"
                                         }
                                     ],
-                                    "quantity": "string"
+                                    "quantity": 0
                                 }
                             ],
                             "fixed": "false",

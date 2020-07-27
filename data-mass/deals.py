@@ -1,4 +1,4 @@
-from json import dumps, loads
+from json import dumps
 from random import randint
 from common import *
 from tabulate import tabulate
@@ -146,113 +146,11 @@ def create_free_good_group(sku, zone, environment):
         return free_good_group_id
 
 
-def input_free_good_to_cart_calculation(deal_id, accounts, zone, environment, skus, minimum_quantity, quantity):
-    product_sku = skus[0]['sku']
-    
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + "/cart-calculation-relay/deals"
-
-    # Create body
-    request_body = dumps({
-        "accounts": accounts,
-        "deals": [
-            {
-                "dealId": deal_id,
-                "dealRules": {
-                    "dealSKURule": {
-                        "skus": [product_sku],
-                        "minimumQuantity": minimum_quantity
-                    }
-                },
-                "dealOutput": {
-                    "dealOutputFreeGoods": {
-                        "skus": [product_sku],
-                        "quantity": quantity,
-                        "measureUnit": "UNIT"
-                    }
-                },
-                "externalId": deal_id
-            }
-    ]})
-
-    # Get header request
-    request_headers = get_header_request(zone, "false", "false", "false", "false")
-
-    # Send request
-    response = place_request("PUT", request_url, request_body, request_headers)
-
-    if response.status_code == 202:
-	    return "success"
-    else:
-        return response.status_code
-
-
-def input_stepped_free_good_to_cart_calculation(deal_id, accounts, zone, environment, skus, index_range, quantity_range):
-    product_sku = skus[0]['sku']
-
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + "/cart-calculation-relay/deals"
-
-    # Create body
-    request_body = dumps({
-        "accounts": accounts,
-        "deals": [
-            {
-                "dealId": deal_id,
-                "dealRules": {
-                    "dealSKUScaledRule": {
-                        "skus": [product_sku],
-                        "ranges": [
-                            {
-                                "rangeIndex": 0,
-                                "from": index_range[0],
-                                "to": index_range[1]
-                            },
-                            {
-                                "rangeIndex": 1,
-                                "from": index_range[2],
-                                "to": index_range[3]
-                            }
-                        ]
-                    }
-                },
-                "dealOutput": {
-                    "dealOutputScaledFreeGoods": [
-                        {
-                            "rangeIndex": 0,
-                            "skus": [product_sku],
-                            "quantity": quantity_range[0],
-                            "measureUnit": "UNIT"
-                        },
-                        {
-                            "rangeIndex": 1,
-                            "skus": [product_sku],
-                            "quantity": quantity_range[1],
-                            "measureUnit": "UNIT"
-                        }
-                    ]
-                },
-                "externalId": deal_id
-            }
-    ]})
-
-    # Get header request
-    request_headers = get_header_request(zone, "false", "false", "false", "false")
-
-    # Send request
-    response = place_request("PUT", request_url, request_body, request_headers)
-
-    if response.status_code == 202:
-	    return "success"
-    else:
-        return response.status_code
-
-
 def input_discount_to_account(abi_id, accounts, deal_sku, deal_type, zone, environment):
     free_good_sku = []
-    minimum_quantity = printMinimumQuantityMenu()
+    minimum_quantity = print_minimum_quantity_menu()
     discount_type = print_discount_type_menu()
-    discount_value = printDiscountValueMenu(discount_type)
+    discount_value = print_discount_value_menu(discount_type)
 
     promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone, environment)
 
@@ -264,8 +162,6 @@ def input_discount_to_account(abi_id, accounts, deal_sku, deal_type, zone, envir
     else:
         print(text.Green + '\n- Deal successfully registered')
         print(text.default_text_color + '\n- Deal ID: ' + promotion_response)
-        print(text.default_text_color + '- Buy at least ' + str(minimum_quantity) + ' of ' + deal_sku + ' and get '
-              + str(discount_value) + ' ' + str(discount_type) + ' discount')
 
 
 def input_stepped_discount_with_qtd_to_account(abi_id, accounts, deal_sku, deal_type, zone, environment):
@@ -286,9 +182,6 @@ def input_stepped_discount_with_qtd_to_account(abi_id, accounts, deal_sku, deal_
     else:
         print(text.Green + '\n- Deal successfully registered')
         print(text.default_text_color + '\n- Deal ID: ' + promotion_response)
-        print(text.default_text_color + '- Buy from ' + str(index_range[0]) + ' to ' + str(index_range[1]) + ' of '
-              + deal_sku + ' and get ' + str(discount_range[0]) + ' ' + str(discount_type) + ' discount in ' + quantity
-              + ' items')
 
 
 def input_stepped_discount_to_account(abi_id, accounts, deal_sku, deal_type, zone, environment):
@@ -307,162 +200,189 @@ def input_stepped_discount_to_account(abi_id, accounts, deal_sku, deal_type, zon
     else:
         print(text.Green + '\n- Deal successfully registered')
         print(text.default_text_color + '\n- Deal ID: ' + promotion_response)
-        print(text.default_text_color + '- Buy from ' + str(index_range[0]) + ' to ' + str(index_range[1]) + ' of '
-              + deal_sku + ' and get ' + str(discount_range[0]) + ' ' + str(discount_type) + ' discount')
-        print(text.default_text_color + '- Buy from ' + str(index_range[2]) + ' to ' + str(index_range[3]) + ' of '
-              + deal_sku + ' and get ' + str(discount_range[1]) + ' ' + str(discount_type) + ' discount')
 
 
-def input_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone, environment):
+def input_free_good_to_account(abi_id, accounts, deal_sku, sku_list, deal_type, zone, environment):
     free_good_sku = deal_sku
-    minimum_quantity = printMinimumQuantityMenu()
-    quantity = printQuantityMenu()
+    minimum_quantity = print_minimum_quantity_menu()
+    quantity = print_quantity_menu()
 
-    promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
+    promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone, environment)
 
-    if zone == "CO" or zone == "MX" or zone == "AR":
-        cart_response = input_free_good_to_cart_calculation_v2(promotion_response, accounts, zone.upper(), environment.upper(), skus, minimum_quantity, quantity)
+    cart_response = input_free_good_to_cart_calculation_v2(promotion_response, accounts, zone, environment, sku_list,
+                                                           minimum_quantity, quantity)
+
+    if promotion_response == 'false' or cart_response != 'success':
+        print(text.Red + '\n- [Deals] Something went wrong, please try again')
     else:
-        cart_response = input_free_good_to_cart_calculation(promotion_response, accounts, zone.upper(), environment.upper(), skus, minimum_quantity, quantity)
+        print(text.Green + '\n- Deal successfully registered')
+        print(text.default_text_color + '\n- Deal ID: ' + promotion_response)
 
-    if promotion_response == "false" or cart_response != "success":
-        print(text.Red + "\n- [Deals] Something went wrong, please try again")
-    else:
-        print(text.Green + "\n- Deal successfully registered")
-        print(text.default_text_color + "\n- Deal ID: " + promotion_response)
-        print(text.default_text_color + "- Buy at least " + str(minimum_quantity) + " of " + deal_sku + " and get " + str(quantity) + " of " + deal_sku + " for free")
 
-def input_stepped_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone, environment):
+def input_stepped_free_good_to_account(abi_id, accounts, deal_sku, deal_type, zone, environment):
     free_good_sku = deal_sku
     index_range = print_index_range_menu()
-    quantity_range = printQuantityRangeMenu()
+    quantity_range = print_quantity_range_menu()
 
-    promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone.upper(), environment.upper())
-    
-    if zone == "CO" or zone == "MX":
-        cart_response = input_stepped_free_good_to_cart_calculation_v2(promotion_response, accounts, zone.upper(), environment.upper(), skus, index_range, quantity_range)
+    promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone, environment)
+
+    cart_response = input_stepped_free_good_to_cart_calculation_v2(promotion_response, accounts, zone, environment,
+                                                                   deal_sku, index_range, quantity_range)
+
+    if promotion_response == 'false' or cart_response != 'success':
+        print(text.Red + '\n- [Deals] Something went wrong, please try again')
     else:
-        cart_response = input_stepped_free_good_to_cart_calculation(promotion_response, accounts, zone.upper(), environment.upper(), skus, index_range, quantity_range)
+        print(text.Green + '\n- Deal successfully registered')
+        print(text.default_text_color + '\n- Deal ID: ' + promotion_response)
 
-    if promotion_response == "false" or cart_response != "success":
-        print(text.Red + "\n- [Deals] Something went wrong, please try again")
+
+def input_free_good_to_cart_calculation_v2(deal_id, accounts, zone, environment, sku_list, minimum_quantity, quantity):
+    """
+    Input deal type free good rules (API version 2) to the Pricing Engine Relay Service
+    Args:
+        deal_id: deal unique identifier
+        accounts: account list
+        zone: e.g., BR, DO, CO
+        environment: e.g., DEV, SIT, UAT
+        sku_list: list of SKUs used as free goods
+        minimum_quantity: SKU minimum's quantity for the free good to be applied
+        quantity: quantity of SKUs to offer as free goods
+
+    Returns: Success if the request went ok and the status code if there's a problem
+    """
+
+    # Change the accumulationType to UNIQUE only for AR
+    if zone == 'AR':
+        accumulation_type = 'UNIQUE'
     else:
-        print(text.Green + "\n- Deal successfully registered")
-        print(text.default_text_color + "\n- Deal ID: " + promotion_response)
-        print(text.default_text_color + "- Buy from " + str(index_range[0]) + " to " + str(index_range[1]) + " of " + deal_sku + " and get " + str(quantity_range[0]) + " of " + deal_sku + " for free")
-        print(text.default_text_color + "- Buy from " + str(index_range[2]) + " to " + str(index_range[3]) + " of " + deal_sku + " and get " + str(quantity_range[1]) + " of " + deal_sku + " for free")
-
-#Input free goods in cart calculation relay using v2 deals contract
-def input_free_good_to_cart_calculation_v2(deal_id, accounts, zone, environment, skus, minimum_quantity, quantity):
-    product_sku = skus[0]['sku']
+        accumulation_type = None
     
     # Get base URL
-    request_url = get_microservice_base_url(environment, "false") + "/cart-calculation-relay/v2/deals"
+    request_url = get_microservice_base_url(environment, 'false') + '/cart-calculation-relay/v2/deals'
 
+    # Get deal's start and end dates
     dates_payload = return_first_and_last_date_year_payload()
 
-    accumulation_type = ""
-    if zone == "AR":
-        accumulation_type = "UNIQUE"
-
-    #Inputs for default payload of simple free goods for cart calculation v2
+    # Create dictionary with deal's values
     dict_values = {
-        "accounts": accounts,
-        "deals[0].dealId": deal_id,
-        "deals[0].externalId": deal_id,
-        "deals[0].accumulationType": accumulation_type,
-        "deals[0].conditions.simulationDateTime[0].startDate": dates_payload['startDate'],
-        "deals[0].conditions.simulationDateTime[0].endDate": dates_payload['endDate'],
-        "deals[0].conditions.lineItem.skus": [product_sku],
-        "deals[0].conditions.lineItem.minimumQuantity": minimum_quantity,
-        "deals[0].output.freeGoods.proportion": minimum_quantity,
-        "deals[0].output.freeGoods.freeGoods[0].skus[0].sku": product_sku,
-        "deals[0].output.freeGoods.freeGoods[0].skus[0].price": skus[0]['price'],
-        "deals[0].output.freeGoods.freeGoods[0].quantity": quantity,
-        "deals[0].output.freeGoods.freeGoods[1].skus[0].sku": skus[1]['sku'],
-        "deals[0].output.freeGoods.freeGoods[1].skus[0].price": skus[1]['price'],
-        "deals[0].output.freeGoods.freeGoods[1].skus[1].sku": skus[2]['sku'],
-        "deals[0].output.freeGoods.freeGoods[1].skus[1].price": skus[2]['price'],
-        "deals[0].output.freeGoods.freeGoods[1].quantity": quantity,
+        'accounts': accounts,
+        'deals[0].dealId': deal_id,
+        'deals[0].externalId': deal_id,
+        'deals[0].accumulationType': accumulation_type,
+        'deals[0].conditions.simulationDateTime[0].startDate': dates_payload['startDate'],
+        'deals[0].conditions.simulationDateTime[0].endDate': dates_payload['endDate'],
+        'deals[0].conditions.lineItem.skus': [sku_list[0]['sku']],
+        'deals[0].conditions.lineItem.minimumQuantity': minimum_quantity,
+        'deals[0].output.freeGoods.proportion': minimum_quantity,
+        'deals[0].output.freeGoods.freeGoods[0].skus[0].sku': sku_list[0]['sku'],
+        'deals[0].output.freeGoods.freeGoods[0].skus[0].price': sku_list[0]['price'],
+        'deals[0].output.freeGoods.freeGoods[0].quantity': quantity,
+        'deals[0].output.freeGoods.freeGoods[1].skus[0].sku': sku_list[1]['sku'],
+        'deals[0].output.freeGoods.freeGoods[1].skus[0].price': sku_list[1]['price'],
+        'deals[0].output.freeGoods.freeGoods[1].skus[1].sku': sku_list[2]['sku'],
+        'deals[0].output.freeGoods.freeGoods[1].skus[1].price': sku_list[2]['price'],
+        'deals[0].output.freeGoods.freeGoods[1].quantity': quantity
     }
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, "data/input_simple_freegoods_v2_payload.json")
+    file_path = os.path.join(path, 'data/create_free_good_payload_v2.json')
 
     # Load JSON file
     with open(file_path) as file:
         json_data = json.load(file)
 
+    # Update the deal's values in runtime
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
     # Create body
     request_body = convert_json_to_string(json_object)
 
-    # Get header request
-    request_headers = get_header_request(zone, "false", "false", "false", "false")
+    # Get headers
+    request_headers = get_header_request(zone, 'false', 'false', 'false', 'false')
 
     # Send request
-    response = place_request("PUT", request_url, request_body, request_headers)
+    response = place_request('PUT', request_url, request_body, request_headers)
 
     if response.status_code == 202:
-	    return "success"
+        return 'success'
     else:
         return response.status_code
 
-#Use deals v2 contract for register stepped free goods on
-#cart calculator relay
-def input_stepped_free_good_to_cart_calculation_v2(deal_id, accounts, zone, environment, skus, index_range, quantity_range):
-    product_sku = skus[0]['sku']
-    
-    # Get base URL
-    request_url = get_microservice_base_url(environment, "false") + "/cart-calculation-relay/v2/deals"
 
+def input_stepped_free_good_to_cart_calculation_v2(deal_id, accounts, zone, environment, deal_sku, index_range,
+                                                   quantity_range):
+    """
+    Input deal type stepped free good rules (API version 2) to the Pricing Engine Relay Service
+    Args:
+        deal_id: deal unique identifier
+        accounts: account list
+        zone: e.g., BR, DO, CO
+        environment: e.g., DEV, SIT, UAT
+        deal_sku: SKU that will have free good applied
+        index_range: range of SKU quantities that the free good is valid to be applied
+        quantity_range: different free good values to be applied according to the index_range parameter
+
+    Returns: Success if the request went ok and the status code if there's a problem
+    """
+
+    # Change the accumulationType to UNIQUE only for AR
+    if zone == 'AR':
+        accumulation_type = 'UNIQUE'
+    else:
+        accumulation_type = None
+
+    # Get base URL
+    request_url = get_microservice_base_url(environment, 'false') + '/cart-calculation-relay/v2/deals'
+
+    # Get deal's start and end dates
     dates_payload = return_first_and_last_date_year_payload()
 
-    #Inputs for default payload of stepped free goods for cart calculation v2
+    # Create dictionary with deal's values
     dict_values = {
-        "accounts": accounts,
-        "deals[0].dealId": deal_id,
-        "deals[0].externalId": deal_id,
-        "deals[0].conditions.simulationDateTime[0].startDate": dates_payload['startDate'],
-        "deals[0].conditions.simulationDateTime[0].endDate": dates_payload['endDate'],
-        "deals[0].conditions.scaledLineItem.skus": [product_sku],
-        "deals[0].conditions.scaledLineItem.ranges[0].from": index_range[0],
-        "deals[0].conditions.scaledLineItem.ranges[0].to": index_range[1],
-        "deals[0].conditions.scaledLineItem.ranges[1].from": index_range[2],
-        "deals[0].conditions.scaledLineItem.ranges[1].to": index_range[3],
-        "deals[0].output.scaledFreeGoods.ranges[0].freeGoods[0].skus[0].sku": product_sku,
-        "deals[0].output.scaledFreeGoods.ranges[0].freeGoods[0].quantity": quantity_range[0],
-        "deals[0].output.scaledFreeGoods.ranges[0].proportion": quantity_range[0],
-        "deals[0].output.scaledFreeGoods.ranges[1].freeGoods[0].skus[0].sku": product_sku,
-        "deals[0].output.scaledFreeGoods.ranges[1].freeGoods[0].quantity": quantity_range[1],
-        "deals[0].output.scaledFreeGoods.ranges[1].proportion": quantity_range[1],
+        'accounts': accounts,
+        'deals[0].dealId': deal_id,
+        'deals[0].externalId': deal_id,
+        'deals[0].accumulationType': accumulation_type,
+        'deals[0].conditions.simulationDateTime[0].startDate': dates_payload['startDate'],
+        'deals[0].conditions.simulationDateTime[0].endDate': dates_payload['endDate'],
+        'deals[0].conditions.scaledLineItem.skus': [deal_sku],
+        'deals[0].conditions.scaledLineItem.ranges[0].from': index_range[0],
+        'deals[0].conditions.scaledLineItem.ranges[0].to': index_range[1],
+        'deals[0].conditions.scaledLineItem.ranges[1].from': index_range[2],
+        'deals[0].conditions.scaledLineItem.ranges[1].to': index_range[3],
+        'deals[0].output.scaledFreeGoods.ranges[0].freeGoods[0].skus[0].sku': deal_sku,
+        'deals[0].output.scaledFreeGoods.ranges[0].freeGoods[0].quantity': quantity_range[0],
+        'deals[0].output.scaledFreeGoods.ranges[0].proportion': quantity_range[0],
+        'deals[0].output.scaledFreeGoods.ranges[1].freeGoods[0].skus[0].sku': deal_sku,
+        'deals[0].output.scaledFreeGoods.ranges[1].freeGoods[0].quantity': quantity_range[1],
+        'deals[0].output.scaledFreeGoods.ranges[1].proportion': quantity_range[1]
     }
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, "data/input_stepped_freegods_v2_payload.json")
+    file_path = os.path.join(path, "data/create_stepped_free_good_payload_v2.json")
 
     # Load JSON file
     with open(file_path) as file:
         json_data = json.load(file)
 
+    # Update the deal's values in runtime
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
     # Create body
     request_body = convert_json_to_string(json_object)
 
-    # Get header request
-    request_headers = get_header_request(zone, "false", "false", "false", "false")
+    # Get headers
+    request_headers = get_header_request(zone, 'false', 'false', 'false', 'false')
 
     # Send request
-    response = place_request("PUT", request_url, request_body, request_headers)
+    response = place_request('PUT', request_url, request_body, request_headers)
 
     if response.status_code == 202:
-	    return "success"
+        return 'success'
     else:
         return response.status_code
 
