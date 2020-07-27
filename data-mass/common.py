@@ -199,7 +199,8 @@ def validate_zone_for_rewards(zone):
         'BR': 'true',
         'DO': 'true',
         'CO': 'true',
-        'AR': 'true'
+        'AR': 'true',
+        'ZA': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -928,10 +929,10 @@ def print_zone_menu_for_ms():
 
 # Print zone menu for rewards
 def print_zone_menu_for_rewards():
-    zone = input(text.default_text_color + 'Zone (BR, DO, CO, AR): ')
+    zone = input(text.default_text_color + 'Zone (BR, DO, CO, AR, ZA): ')
     while validate_zone_for_rewards(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (BR, DO, CO, AR): ')
+        zone = input(text.default_text_color + 'Zone (BR, DO, CO, AR, ZA): ')
 
     return zone.upper()
 

@@ -706,6 +706,20 @@ def generate_categories_information(zone):
         category_info.append('Ganhe 50 pontos para cada R$1000,00 gastos em compras e troque por produtos gratis.')
         category_info.append('COMPRAR AGORA')
         category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/br/premium/img-premium-br-rules-2.png')
+    elif zone == 'ZA':
+        # Premium category
+        category_info.append('217')
+        category_info.append('214')
+        category_info.append('Earn 1 point for each R100 spent on quarts products.')
+        category_info.append('BUY NOW')
+        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/za/quarts-brands.png')
+
+        # Core category
+        category_info.append('219')
+        category_info.append('216')
+        category_info.append('Earn 10 points for each R100 spent on bonus products.')
+        category_info.append('BUY NOW')
+        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/za/bonus-brands.png')
 
     return category_info
 
@@ -720,5 +734,8 @@ def generate_terms_information(zone):
     elif zone == 'BR':
         terms_info.append('https://b2bstaticwebsagbdev.blob.core.windows.net/digitaltrade/terms/terms-br.html')
         terms_info.append('Termos iniciais introduzidos ao programa')
+    elif zone == 'ZA':
+        terms_info.append('https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/terms/terms-za.html')
+        terms_info.append('Initial terms added to the program')
 
     return terms_info
