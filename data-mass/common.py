@@ -220,14 +220,24 @@ def validate_zone_for_inventory(zone):
 
 def validate_zone_for_deals(zone):
     switcher = {
-        "BR": "true",
-        "DO": "true",
-        "CO": "true",
-        "MX": "true",
-        "AR": "true"
+        'BR': 'true',
+        'DO': 'true',
+        'CO': 'true',
+        'MX': 'true',
+        'AR': 'true'
     }
 
-    value = switcher.get(zone, "false")
+    value = switcher.get(zone, 'false')
+    return value
+
+
+def validate_zone_for_combos(zone):
+    switcher = {
+        'BR': 'true',
+        'DO': 'true'
+    }
+
+    value = switcher.get(zone, 'false')
     return value
 
 
@@ -691,7 +701,7 @@ def print_orders_menu():
 
 
 # Print deals menu
-def printDealsMenu():
+def print_deals_menu():
     print(text.default_text_color + "\nWhich type of deal do you want to create?")
     print(text.default_text_color + str(1), text.Yellow + "Input deal type discount")
     print(text.default_text_color + str(2), text.Yellow + "Input deal type stepped discount")
@@ -699,7 +709,7 @@ def printDealsMenu():
     print(text.default_text_color + str(4), text.Yellow + "Input deal type stepped free good")
     print(text.default_text_color + str(5), text.Yellow + "Input deal type stepped discount with quantity")
     structure = input(text.default_text_color + "\nPlease select: ")
-    while validate_deals(structure) == "false":
+    while validate_deals(structure) == 'false':
         print(text.Red + "\n- Invalid option")
         print(text.default_text_color + "\nWhich type of deal do you want to create?")
         print(text.default_text_color + str(1), text.Yellow + "Input deal type discount")
@@ -938,10 +948,20 @@ def print_zone_menu_for_inventory():
 
 # Print zone menu for deals
 def print_zone_menu_for_deals():
-    zone = input(text.default_text_color + "Zone (BR, DO, CO, MX, AR): ")
-    while validate_zone_for_deals(zone.upper()) == "false":
-        print(text.Red + "\n- Invalid option\n")
-        zone = input(text.default_text_color + "Zone (BR, DO, CO, MX, AR): ")
+    zone = input(text.default_text_color + 'Zone (AR, BR, CO, DO, MX): ')
+    while validate_zone_for_deals(zone.upper()) == 'false':
+        print(text.Red + '\n- Invalid option\n')
+        zone = input(text.default_text_color + 'Zone (AR, BR, CO, DO, MX): ')
+
+    return zone.upper()
+
+
+# Print zone menu for combos
+def print_zone_menu_for_combos():
+    zone = input(text.default_text_color + 'Zone (BR, DO): ')
+    while validate_zone_for_combos(zone.upper()) == 'false':
+        print(text.Red + '\n- Invalid option\n')
+        zone = input(text.default_text_color + 'Zone (BR, DO): ')
 
     return zone.upper()
 

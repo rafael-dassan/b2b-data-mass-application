@@ -29,7 +29,7 @@ def showMenu():
             '5': input_recommendation_to_account_menu,
             '6': inputInventoryToProduct,
             '7': input_orders_to_account,
-            '8': inputDealsMenu,
+            '8': input_deals_menu,
             '9': input_combos_menu,
             '10': create_item_menu,
             '11': create_invoice_menu,
@@ -577,90 +577,70 @@ def input_recommendation_to_account_menu():
 
 
 # Input Deals to an account
-def inputDealsMenu():
-    selectionStructure = printDealsMenu()
+def input_deals_menu():
+    selection_structure = print_deals_menu()
     zone = print_zone_menu_for_deals()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
 
     switcher = {
-        "1": "DISCOUNT",
-        "2": "STEPPED_DISCOUNT",
-        "3": "FREE_GOOD",
-        "4": "STEPPED_FREE_GOOD",
-        "5": "STEPPED_DISCOUNT"
+        '1': 'DISCOUNT',
+        '2': 'STEPPED_DISCOUNT',
+        '3': 'FREE_GOOD',
+        '4': 'STEPPED_FREE_GOOD',
+        '5': 'STEPPED_DISCOUNT'
     }
 
-    deal_type = switcher.get(selectionStructure, "false")
+    deal_type = switcher.get(selection_structure, 'false')
 
     # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+    account = check_account_exists_microservice(abi_id, zone, environment)
 
     if account == 'false':
-        print(text.Red + '\n- [Account] Something went wrong, please try again')
+        print(text.Red + "\n- [Account] Something went wrong, please try again")
         printFinishApplicationMenu()
     elif len(account) == 0:
-        print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
+        print(text.Red + "\n- [Account] The account " + abi_id + " does not exist")
         printFinishApplicationMenu()
 
     accounts = list()
     accounts.append(abi_id)
 
-    # For Zones which use the microservice integration
+    # Request POC's associated products
     product_offers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'], True)
 
     if len(product_offers) == 0:
-        print(text.Red + "\n- [Products] The account " + str(abi_id) + " has no available products for purchase")
+        print(text.Red + "\n- [Products] The account " + abi_id + " has no available products for purchase")
         printFinishApplicationMenu()
 
-    if zone.upper() == "CO" or zone.upper() == "MX" or zone.upper() == "AR":
-        skus = list()
-        while len(skus) <= 2:
-            index_offers = randint(0, (len(product_offers) - 1))
-            product = product_offers[index_offers]
-            product_sku = product['sku']
-
-            # Check if the SKU is enabled on Items MS
-            deal_sku = check_item_enabled(product_sku, zone.upper(), environment.upper(), True)
-            while deal_sku == False:
-                index_offers = randint(0, (len(product_offers) - 1))
-                product = product_offers[index_offers]
-                product_sku = product['sku']
-                deal_sku = check_item_enabled(product_sku, zone.upper(), environment.upper(), True)
-
-            skus.append(product)
-    else:
+    sku_list = list()
+    while len(sku_list) <= 2:
         index_offers = randint(0, (len(product_offers) - 1))
         product = product_offers[index_offers]
         product_sku = product['sku']
 
         # Check if the SKU is enabled on Items MS
-        deal_sku = check_item_enabled(product_sku, zone.upper(), environment.upper(), True)
-        while deal_sku == False:
+        deal_sku = check_item_enabled(product_sku, zone, environment, True)
+        while not deal_sku:
             index_offers = randint(0, (len(product_offers) - 1))
             product = product_offers[index_offers]
             product_sku = product['sku']
+            deal_sku = check_item_enabled(product_sku, zone, environment, True)
 
-            deal_sku = check_item_enabled(product_sku, zone.upper(), environment.upper(), True)
+        sku_list.append(product)
 
-        skus = list()
-        skus.append(product)
+    deal_sku = sku_list[0]['sku']
 
-    deal_sku = skus[0]['sku']
-
-    if selectionStructure == "1":
-        input_discount_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(), environment.upper())
-    elif selectionStructure == "2":
-        input_stepped_discount_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(),
-                                          environment.upper())
-    elif selectionStructure == "3":
-        input_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(), environment.upper())
-    elif selectionStructure == "4":
-        input_stepped_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(),
-                                           environment.upper())
+    if selection_structure == '1':
+        input_discount_to_account(abi_id, accounts, deal_sku, deal_type, zone, environment)
+    elif selection_structure == '2':
+        input_stepped_discount_to_account(abi_id, accounts, deal_sku, deal_type, zone, environment)
+    elif selection_structure == '3':
+        input_free_good_to_account(abi_id, accounts, deal_sku, sku_list, deal_type, zone, environment)
+    elif selection_structure == '4':
+        input_stepped_free_good_to_account(abi_id, accounts, deal_sku, sku_list, deal_type, zone, environment)
     else:
-        input_stepped_discount_with_qtd_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone.upper(),
-                                                   environment.upper())
+        input_stepped_discount_with_qtd_to_account(abi_id, accounts, deal_sku, deal_type, zone, environment)
 
     printFinishApplicationMenu()
 
@@ -668,7 +648,7 @@ def inputDealsMenu():
 # Input combos by account
 def input_combos_menu():
     selection_structure = print_combos_menu()
-    zone = print_zone_menu_for_deals()
+    zone = print_zone_menu_for_combos()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
 
