@@ -260,12 +260,12 @@ def input_discount_to_account(abi_id, accounts, deal_sku, deal_type, zone, envir
                                                           discount_type, discount_value, minimum_quantity)
 
     if promotion_response == 'false' or cart_response != 'success':
-        print(text.Red + "\n- [Deals] Something went wrong, please try again")
+        print(text.Red + '\n- [Deals] Something went wrong, please try again')
     else:
-        print(text.Green + "\n- Deal successfully registered")
-        print(text.default_text_color + "\n- Deal ID: " + promotion_response)
-        print(text.default_text_color + "- Buy at least " + str(minimum_quantity) + " of " + deal_sku + " and get "
-              + str(discount_value) + " " + str(discount_type) + " discount")
+        print(text.Green + '\n- Deal successfully registered')
+        print(text.default_text_color + '\n- Deal ID: ' + promotion_response)
+        print(text.default_text_color + '- Buy at least ' + str(minimum_quantity) + ' of ' + deal_sku + ' and get '
+              + str(discount_value) + ' ' + str(discount_type) + ' discount')
 
 
 def input_stepped_discount_with_qtd_to_account(abi_id, accounts, deal_sku, deal_type, zone, environment):
@@ -273,7 +273,7 @@ def input_stepped_discount_with_qtd_to_account(abi_id, accounts, deal_sku, deal_
     index_range = print_index_range_menu(2)
     discount_type = print_discount_type_menu()
     discount_range = print_discount_range_menu(1)
-    quantity = input(text.default_text_color + "Quantity: ")
+    quantity = input(text.default_text_color + 'Quantity: ')
 
     promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone, environment)
 
@@ -282,13 +282,13 @@ def input_stepped_discount_with_qtd_to_account(abi_id, accounts, deal_sku, deal_
                                                                            discount_type, discount_range)
 
     if promotion_response == 'false' or cart_response != 'success':
-        print(text.Red + "\n- [Deals] Something went wrong, please try again")
+        print(text.Red + '\n- [Deals] Something went wrong, please try again')
     else:
-        print(text.Green + "\n- Deal successfully registered")
-        print(text.default_text_color + "\n- Deal ID: " + promotion_response)
-        print(text.default_text_color + "- Buy from " + str(index_range[0]) + " to " + str(index_range[1]) + " of "
-              + deal_sku + " and get " + str(discount_range[0]) + " " + str(discount_type) + " discount in " + quantity
-              + " items ")
+        print(text.Green + '\n- Deal successfully registered')
+        print(text.default_text_color + '\n- Deal ID: ' + promotion_response)
+        print(text.default_text_color + '- Buy from ' + str(index_range[0]) + ' to ' + str(index_range[1]) + ' of '
+              + deal_sku + ' and get ' + str(discount_range[0]) + ' ' + str(discount_type) + ' discount in ' + quantity
+              + ' items')
 
 
 def input_stepped_discount_to_account(abi_id, accounts, deal_sku, deal_type, zone, environment):
@@ -303,14 +303,14 @@ def input_stepped_discount_to_account(abi_id, accounts, deal_sku, deal_type, zon
                                                                   deal_sku, discount_type, index_range, discount_range)
 
     if promotion_response == 'false' or cart_response != 'success':
-        print(text.Red + "\n- [Deals] Something went wrong, please try again")
+        print(text.Red + '\n- [Deals] Something went wrong, please try again')
     else:
-        print(text.Green + "\n- Deal successfully registered")
-        print(text.default_text_color + "\n- Deal ID: " + promotion_response)
-        print(text.default_text_color + "- Buy from " + str(index_range[0]) + " to " + str(index_range[1]) + " of "
-              + deal_sku + " and get " + str(discount_range[0]) + " " + str(discount_type) + " discount")
-        print(text.default_text_color + "- Buy from " + str(index_range[2]) + " to " + str(index_range[3]) + " of "
-              + deal_sku + " and get " + str(discount_range[1]) + " " + str(discount_type) + " discount")
+        print(text.Green + '\n- Deal successfully registered')
+        print(text.default_text_color + '\n- Deal ID: ' + promotion_response)
+        print(text.default_text_color + '- Buy from ' + str(index_range[0]) + ' to ' + str(index_range[1]) + ' of '
+              + deal_sku + ' and get ' + str(discount_range[0]) + ' ' + str(discount_type) + ' discount')
+        print(text.default_text_color + '- Buy from ' + str(index_range[2]) + ' to ' + str(index_range[3]) + ' of '
+              + deal_sku + ' and get ' + str(discount_range[1]) + ' ' + str(discount_type) + ' discount')
 
 
 def input_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone, environment):

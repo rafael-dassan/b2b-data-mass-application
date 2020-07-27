@@ -233,8 +233,8 @@ def validate_zone_for_deals(zone):
 
 def validate_zone_for_combos(zone):
     switcher = {
-        'BR': "true",
-        'DO': "true"
+        'BR': 'true',
+        'DO': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -948,20 +948,20 @@ def print_zone_menu_for_inventory():
 
 # Print zone menu for deals
 def print_zone_menu_for_deals():
-    zone = input(text.default_text_color + "Zone (AR, BR, CO, DO, MX): ")
+    zone = input(text.default_text_color + 'Zone (AR, BR, CO, DO, MX): ')
     while validate_zone_for_deals(zone.upper()) == 'false':
-        print(text.Red + "\n- Invalid option\n")
-        zone = input(text.default_text_color + "Zone (AR, BR, CO, DO, MX): ")
+        print(text.Red + '\n- Invalid option\n')
+        zone = input(text.default_text_color + 'Zone (AR, BR, CO, DO, MX): ')
 
     return zone.upper()
 
 
 # Print zone menu for combos
 def print_zone_menu_for_combos():
-    zone = input(text.default_text_color + "Zone (BR, DO): ")
+    zone = input(text.default_text_color + 'Zone (BR, DO): ')
     while validate_zone_for_combos(zone.upper()) == 'false':
-        print(text.Red + "\n- Invalid option\n")
-        zone = input(text.default_text_color + "Zone (BR, DO): ")
+        print(text.Red + '\n- Invalid option\n')
+        zone = input(text.default_text_color + 'Zone (BR, DO): ')
 
     return zone.upper()
 
