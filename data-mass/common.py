@@ -220,11 +220,11 @@ def validate_zone_for_inventory(zone):
 
 def validate_zone_for_deals(zone):
     switcher = {
-        'BR': "true",
-        'DO': "true",
-        'CO': "true",
-        'MX': "true",
-        'AR': "true"
+        'BR': 'true',
+        'DO': 'true',
+        'CO': 'true',
+        'MX': 'true',
+        'AR': 'true'
     }
 
     value = switcher.get(zone, 'false')

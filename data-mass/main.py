@@ -584,11 +584,11 @@ def input_deals_menu():
     abi_id = print_account_id_menu(zone)
 
     switcher = {
-        '1': "DISCOUNT",
-        '2': "STEPPED_DISCOUNT",
-        '3': "FREE_GOOD",
-        '4': "STEPPED_FREE_GOOD",
-        '5': "STEPPED_DISCOUNT"
+        '1': 'DISCOUNT',
+        '2': 'STEPPED_DISCOUNT',
+        '3': 'FREE_GOOD',
+        '4': 'STEPPED_FREE_GOOD',
+        '5': 'STEPPED_DISCOUNT'
     }
 
     deal_type = switcher.get(selection_structure, 'false')

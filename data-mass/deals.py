@@ -467,24 +467,47 @@ def input_stepped_free_good_to_cart_calculation_v2(deal_id, accounts, zone, envi
         return response.status_code
 
 
-# Input deals v2 discount business rules to Cart Calculation microservice
 def input_discount_to_cart_calculation_v2(deal_id, accounts, zone, environment, deal_sku, discount_type, discount_value,
                                           minimum_quantity):
+    """
+    Input deal type discount rules (API version 2) to the Pricing Engine Relay Service
+    Args:
+        deal_id: deal unique identifier
+        accounts: account list
+        zone: e.g., BR, DO, CO
+        environment: e.g., DEV, SIT, UAT
+        deal_sku: SKU that will have discount applied
+        discount_type: type of discount being applied (percent or amount)
+        discount_value: value of discount being applied
+        minimum_quantity: SKU minimum's quantity for the discount to be applied
+
+    Returns: Success if the request went ok and the status code if there's a problem
+    """
+
+    # Get the correct discount type
     if discount_type == 'percentOff':
         discount_type = '%'
     else:
         discount_type = '$'
-    
+
+    # Change the accumulationType to UNIQUE only for AR
+    if zone == 'AR':
+        accumulation_type = 'UNIQUE'
+    else:
+        accumulation_type = None
+
     # Get base URL
     request_url = get_microservice_base_url(environment, 'false') + '/cart-calculation-relay/v2/deals'
 
+    # Get deal's start and end dates
     dates_payload = return_first_and_last_date_year_payload()
-    
-    # Input for default payload of simple discount for cart calculation v2
+
+    # Create dictionary with deal's values
     dict_values = {
         'accounts': accounts,
         'deals[0].dealId': deal_id,
         'deals[0].externalId': deal_id,
+        'deals[0].accumulationType': accumulation_type,
         'deals[0].conditions.simulationDateTime[0].startDate': dates_payload['startDate'],
         'deals[0].conditions.simulationDateTime[0].endDate': dates_payload['endDate'],
         'deals[0].conditions.lineItem.skus': [deal_sku],
@@ -502,13 +525,14 @@ def input_discount_to_cart_calculation_v2(deal_id, accounts, zone, environment, 
     with open(file_path) as file:
         json_data = json.load(file)
 
+    # Update the deal's values in runtime
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
     # Create body
     request_body = convert_json_to_string(json_object)
 
-    # Get header request
+    # Get headers
     request_headers = get_header_request(zone, 'false', 'false', 'false', 'false')
 
     # Send request
@@ -520,24 +544,47 @@ def input_discount_to_cart_calculation_v2(deal_id, accounts, zone, environment, 
         return response.status_code
 
 
-# Input deals v2 stepped discount business rules to Cart Calculation microservice
 def input_stepped_discount_to_cart_calculation_v2(deal_id, accounts, zone, environment, deal_sku, discount_type,
                                                   index_range, discount_range):
+    """
+    Input deal type stepped discount rules (API version 2) to the Pricing Engine Relay Service
+    Args:
+        deal_id: deal unique identifier
+        accounts: account list
+        zone: e.g., BR, DO, CO
+        environment: e.g., DEV, SIT, UAT
+        deal_sku: SKU that will have discount applied
+        discount_type: type of discount being applied (percent or amount)
+        index_range: range of SKU quantities that the discount is valid to be applied
+        discount_range: different discount values to be applied according to the index_range parameter
+
+    Returns: Success if the request went ok and the status code if there's a problem
+    """
+
+    # Get the correct discount type
     if discount_type == 'percentOff':
         discount_type = '%'
     else:
         discount_type = '$'
+
+    # Change the accumulationType to UNIQUE only for AR
+    if zone == 'AR':
+        accumulation_type = 'UNIQUE'
+    else:
+        accumulation_type = None
     
     # Get base URL
     request_url = get_microservice_base_url(environment, 'false') + '/cart-calculation-relay/v2/deals'
 
+    # Get deal's start and end dates
     dates_payload = return_first_and_last_date_year_payload()
 
-    # Input for default payload of stepped discount for cart calculation v2
+    # Create dictionary with deal's values
     dict_values = {
         'accounts': accounts,
         'deals[0].dealId': deal_id,
         'deals[0].externalId': deal_id,
+        'deals[0].accumulationType': accumulation_type,
         'deals[0].conditions.simulationDateTime[0].startDate': dates_payload['startDate'],
         'deals[0].conditions.simulationDateTime[0].endDate': dates_payload['endDate'],
         'deals[0].conditions.scaledLineItem.skus': [deal_sku],
@@ -561,13 +608,14 @@ def input_stepped_discount_to_cart_calculation_v2(deal_id, accounts, zone, envir
     with open(file_path) as file:
         json_data = json.load(file)
 
+    # Update the deal's values in runtime
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
     # Create body
     request_body = convert_json_to_string(json_object)
 
-    # Get header request
+    # Get headers
     request_headers = get_header_request(zone, 'false', 'false', 'false', 'false')
 
     # Send request
@@ -579,24 +627,48 @@ def input_stepped_discount_to_cart_calculation_v2(deal_id, accounts, zone, envir
         return response.status_code
 
 
-# Input deals v2 stepped discount with maximum quantity business rules to Cart Calculation microservice
 def input_stepped_discount_with_qtd_to_cart_calculation_v2(deal_id, accounts, zone, environment, deal_sku, quantity,
                                                            index_range, discount_type, discount_range):
+    """
+    Input deal type stepped discount rules (API version 2) to the Pricing Engine Relay Service
+    Args:
+        deal_id: deal unique identifier
+        accounts: account list
+        zone: e.g., BR, DO, CO
+        environment: e.g., DEV, SIT, UAT
+        deal_sku: SKU that will have discount applied
+        quantity: quantity limit for the deal to be applied
+        discount_type: type of discount being applied (percent or amount)
+        index_range: range of SKU quantities that the discount is valid to be applied
+        discount_range: different discount values to be applied according to the index_range parameter
+
+    Returns: Success if the request went ok and the status code if there's a problem
+    """
+
+    # Get the correct discount type
     if discount_type == 'percentOff':
         discount_type = '%'
     else:
         discount_type = '$'
+
+    # Change the accumulationType to UNIQUE only for AR
+    if zone == 'AR':
+        accumulation_type = 'UNIQUE'
+    else:
+        accumulation_type = None
     
     # Get base URL
     request_url = get_microservice_base_url(environment, 'false') + '/cart-calculation-relay/v2/deals'
 
+    # Get deal's start and end dates
     dates_payload = return_first_and_last_date_year_payload()
 
-    # Input for default payload of stepped discount with quantity for cart calculation v2
+    # Create dictionary with deal's values
     dict_values = {
         'accounts': accounts,
         'deals[0].dealId': deal_id,
         'deals[0].externalId': deal_id,
+        'deals[0].accumulationType': accumulation_type,
         'deals[0].conditions.simulationDateTime[0].startDate': dates_payload['startDate'],
         'deals[0].conditions.simulationDateTime[0].endDate': dates_payload['endDate'],
         'deals[0].conditions.scaledLineItem.skus': [deal_sku],
@@ -616,13 +688,14 @@ def input_stepped_discount_with_qtd_to_cart_calculation_v2(deal_id, accounts, zo
     with open(file_path) as file:
         json_data = json.load(file)
 
+    # Update the deal's values in runtime
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
     # Create body
     request_body = convert_json_to_string(json_object)
 
-    # Get header request
+    # Get headers
     request_headers = get_header_request(zone, 'false', 'false', 'false', 'false')
 
     # Send request
