@@ -766,21 +766,21 @@ def print_discount_type_menu():
 
 
 # Print Discount value menu
-def printDiscountValueMenu(discount_type):
-    if discount_type == "percentOff":
+def print_discount_value_menu(discount_type):
+    if discount_type == 'percentOff':
         while True:
             try:
-                discount_value = float(input(text.default_text_color + "Discount percentage (%): "))
+                discount_value = float(input(text.default_text_color + 'Discount percentage (%): '))
                 break
             except ValueError:
-                print(text.Red + "\n- Invalid value")
+                print(text.Red + '\n- Invalid value')
     else:
         while True:
             try:
-                discount_value = float(input(text.default_text_color + "Discount amount: "))
+                discount_value = float(input(text.default_text_color + 'Discount amount: '))
                 break
             except ValueError:
-                print(text.Red + "\n- Invalid value")
+                print(text.Red + '\n- Invalid value')
 
     return discount_value
 
@@ -816,14 +816,14 @@ def print_discount_range_menu(indexs=2):
 
 
 # Print quantity range menu
-def printQuantityRangeMenu():
+def print_quantity_range_menu():
     index_list = list()
 
     for x in range(2):
-        quantity_value = input(text.default_text_color + "SKU quantity for index #" + str(x) + ": ")
-        while quantity_value == "" or int(quantity_value) <= 0:
-            print(text.Red + "\n- SKU quantity must be greater than 0")
-            quantity_value = input(text.default_text_color + "\nSKU quantity for index #" + str(x) + ": ")
+        quantity_value = input(text.default_text_color + 'SKU quantity for index #' + str(x) + ': ')
+        while quantity_value == '' or int(quantity_value) <= 0:
+            print(text.Red + '\n- SKU quantity must be greater than 0')
+            quantity_value = input(text.default_text_color + '\nSKU quantity for index #' + str(x) + ': ')
 
         index_list.append(quantity_value)
 
@@ -831,21 +831,22 @@ def printQuantityRangeMenu():
 
 
 # Print minimum quantity menu
-def printMinimumQuantityMenu():
+def print_minimum_quantity_menu():
     minimum_quantity = input(text.default_text_color + 'Desired quantity needed to buy to get a discount/free good: ')
     while minimum_quantity == '' or int(minimum_quantity) <= 0:
         print(text.Red + '\n- Minimum quantity must be greater than 0')
-        minimum_quantity = input(text.default_text_color + 'Desired quantity needed to buy to get a discount/free good: ')
+        minimum_quantity = input(text.default_text_color + 'Desired quantity needed to buy to get a discount/free '
+                                                           'good: ')
 
     return minimum_quantity
 
 
 # Print quantity menu
-def printQuantityMenu():
-    quantity = input(text.default_text_color + "Desired quantity of free goods to offer: ")
-    while quantity == "" or int(quantity) <= 0:
-        print(text.Red + "\n- SKU quantity must be greater than 0")
-        quantity = input(text.default_text_color + "Desired quantity of free goods to offer: ")
+def print_quantity_menu():
+    quantity = input(text.default_text_color + 'Desired quantity of free goods to offer: ')
+    while quantity == '' or int(quantity) <= 0:
+        print(text.Red + '\n- SKU quantity must be greater than 0')
+        quantity = input(text.default_text_color + 'Desired quantity of free goods to offer: ')
 
     return quantity
 

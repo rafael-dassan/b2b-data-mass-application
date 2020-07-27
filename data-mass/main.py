@@ -597,10 +597,10 @@ def input_deals_menu():
     account = check_account_exists_microservice(abi_id, zone, environment)
 
     if account == 'false':
-        print(text.Red + "\n- [Account] Something went wrong, please try again")
+        print(text.Red + '\n- [Account] Something went wrong, please try again')
         printFinishApplicationMenu()
     elif len(account) == 0:
-        print(text.Red + "\n- [Account] The account " + abi_id + " does not exist")
+        print(text.Red + '\n- [Account] The account " + abi_id + " does not exist')
         printFinishApplicationMenu()
 
     accounts = list()
@@ -610,7 +610,7 @@ def input_deals_menu():
     product_offers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'], True)
 
     if len(product_offers) == 0:
-        print(text.Red + "\n- [Products] The account " + abi_id + " has no available products for purchase")
+        print(text.Red + '\n- [Products] The account ' + abi_id + ' has no available products for purchase')
         printFinishApplicationMenu()
 
     sku_list = list()
@@ -638,7 +638,7 @@ def input_deals_menu():
     elif selection_structure == '3':
         input_free_good_to_account(abi_id, accounts, deal_sku, sku_list, deal_type, zone, environment)
     elif selection_structure == '4':
-        input_stepped_free_good_to_account(abi_id, accounts, deal_sku, sku_list, deal_type, zone, environment)
+        input_stepped_free_good_to_account(abi_id, accounts, deal_sku, deal_type, zone, environment)
     else:
         input_stepped_discount_with_qtd_to_account(abi_id, accounts, deal_sku, deal_type, zone, environment)
 

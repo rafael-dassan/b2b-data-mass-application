@@ -38,7 +38,7 @@
                                     "price": "string"
                                 }
                             ],
-                            "quantity": 3
+                            "quantity": 0
                         },
                         {
                             "skus": [
@@ -53,7 +53,7 @@
                                     "price": "string"
                                 }
                             ],
-                            "quantity": 5
+                            "quantity": 0
                         }
                     ]
                 }
