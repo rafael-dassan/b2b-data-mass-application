@@ -44,6 +44,13 @@ def get_order_details(order_data):
     return order_details
 
 
+def validate_status(option):
+    if option == '1' or option == '2':
+        return 'true'
+    else:
+        return 'false'
+
+
 def create_invoice_request(abi_id, zone, environment, order_id):
     order_data = order_info(abi_id, zone, environment, order_id)
 
@@ -84,6 +91,16 @@ def create_invoice_request(abi_id, zone, environment, order_id):
         set_to_dictionary(json_data, 'itemsQuantity', size_items)
     else:
         set_to_dictionary(json_data, 'itemsQuantity', order_data['itemsQuantity'])
+
+    status = input(text.default_text_color + 'Do you want to create the invoice with which status: 1. CLOSED or 2. OPEN: ')
+    while validate_status(status) == 'false':
+        print(text.Red + '\n- Invalid option')
+        status = input(text.default_text_color + 'Do you want to create the invoice with which status: 1. CLOSED or 2. OPEN: ')
+
+    if status == 1:
+        set_to_dictionary(json_data, 'status', 'CLOSED')
+    else:
+        set_to_dictionary(json_data, 'status', 'OPEN')
 
     items = set_to_dictionary(json_object, 'items', order_items)
 
