@@ -266,6 +266,10 @@ def input_discount_to_account(abi_id, accounts, deal_sku, deal_type, zone, envir
         print(text.default_text_color + '\n- Deal ID: ' + promotion_response)
         print(text.default_text_color + '- Buy at least ' + str(minimum_quantity) + ' of ' + deal_sku + ' and get '
               + str(discount_value) + ' ' + str(discount_type) + ' discount')
+        if zone == 'ZA':
+            print(text.Yellow + '- Please, run the cron jobs `webjump_discount_import` and `webjump_discount_update_'
+                                'online_customers` to import your deal, so it can be used in the front-end '
+                                'applications')
 
 
 def input_stepped_discount_with_qtd_to_account(abi_id, accounts, deal_sku, deal_type, zone, environment):
@@ -289,6 +293,10 @@ def input_stepped_discount_with_qtd_to_account(abi_id, accounts, deal_sku, deal_
         print(text.default_text_color + '- Buy from ' + str(index_range[0]) + ' to ' + str(index_range[1]) + ' of '
               + deal_sku + ' and get ' + str(discount_range[0]) + ' ' + str(discount_type) + ' discount in ' + quantity
               + ' items')
+        if zone == 'ZA':
+            print(text.Yellow + '- Please, run the cron jobs `webjump_discount_import` and `webjump_discount_update_'
+                                'online_customers` to import your deal, so it can be used in the front-end '
+                                'applications')
 
 
 def input_stepped_discount_to_account(abi_id, accounts, deal_sku, deal_type, zone, environment):
@@ -311,6 +319,10 @@ def input_stepped_discount_to_account(abi_id, accounts, deal_sku, deal_type, zon
               + deal_sku + ' and get ' + str(discount_range[0]) + ' ' + str(discount_type) + ' discount')
         print(text.default_text_color + '- Buy from ' + str(index_range[2]) + ' to ' + str(index_range[3]) + ' of '
               + deal_sku + ' and get ' + str(discount_range[1]) + ' ' + str(discount_type) + ' discount')
+        if zone == 'ZA':
+            print(text.Yellow + '- Please, run the cron jobs `webjump_discount_import` and `webjump_discount_update_'
+                                'online_customers` to import your deal, so it can be used in the front-end '
+                                'applications')
 
 
 def input_free_good_to_account(abi_id, accounts, deal_sku, skus, deal_type, zone, environment):

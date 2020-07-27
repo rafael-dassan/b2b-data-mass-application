@@ -224,7 +224,8 @@ def validate_zone_for_deals(zone):
         'DO': 'true',
         'CO': 'true',
         'MX': 'true',
-        'AR': 'true'
+        'AR': 'true',
+        'ZA': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -948,10 +949,10 @@ def print_zone_menu_for_inventory():
 
 # Print zone menu for deals
 def print_zone_menu_for_deals():
-    zone = input(text.default_text_color + 'Zone (AR, BR, CO, DO, MX): ')
+    zone = input(text.default_text_color + 'Zone (AR, BR, CO, DO, MX, ZA): ')
     while validate_zone_for_deals(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (AR, BR, CO, DO, MX): ')
+        zone = input(text.default_text_color + 'Zone (AR, BR, CO, DO, MX, ZA): ')
 
     return zone.upper()
 
