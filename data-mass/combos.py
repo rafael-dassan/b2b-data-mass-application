@@ -203,3 +203,22 @@ def update_combo_consumption(abi_id, zone, environment, combo_id):
               + str(response.status_code) + '. Response message ' + response.text)
     else:
         return 'true'
+
+
+def check_combo_exists_microservice(abi_id, zone, environment, combo_id):
+    # Get header request
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+
+    # Get base URL
+    request_url = get_microservice_base_url(environment) + '/combos/?accountID=' + abi_id + '&comboIds=' + combo_id + '&includeDeleted=false&includeDisabled=false'
+
+    # Place request
+    response = place_request('GET', request_url, '', request_headers)
+
+    json_data = loads(response.text)
+    if response.status_code == 200 and len(json_data) != 0:
+        return json_data
+    elif response.status_code == 200 and len(json_data) == 0:
+        return json_data
+    else:
+        return 'false'

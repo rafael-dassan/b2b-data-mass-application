@@ -762,7 +762,13 @@ def input_combos_menu():
                       + str(response.status_code) + '. Response message ' + response.text)
                 printFinishApplicationMenu()
     else:
-        combo_id = input(text.default_text_color + 'Combo ID: ')
+        combo_id = print_combo_id_menu()
+
+        combo = check_combo_exists_microservice(abi_id, zone, environment, combo_id)
+        if combo == 'false':
+            print(text.Red + '\n- [Combo] The Combo ' + combo_id + ' does not exist')
+            printFinishApplicationMenu()
+
         update_combo = update_combo_consumption(abi_id, zone, environment, combo_id)
         if update_combo == 'true':
             print(text.Green + '\n- Combo ' + combo_id + ' Updated')
