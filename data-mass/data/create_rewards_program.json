@@ -23,23 +23,28 @@
     "combos": [
       {
         "comboId": "string",
-        "points": 400
+        "points": 400,
+        "redeemLimit" : 1
       },
       {
         "comboId": "string",
-        "points": 500
+        "points": 500,
+        "redeemLimit" : 1
       },
       {
         "comboId": "string",
-        "points": 600
+        "points": 600,
+        "redeemLimit" : 1
       },
       {
         "comboId": "string",
-        "points": 700
+        "points": 700,
+        "redeemLimit" : 1
       },
       {
         "comboId": "string",
-        "points": 800
+        "points": 800,
+        "redeemLimit" : 1
       }
     ],
     "filter": {
