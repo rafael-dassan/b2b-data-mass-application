@@ -662,84 +662,98 @@ def input_combos_menu():
         print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
-    product_offers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'], True)
+    if selection_structure != '4':
+        product_offers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'], True)
 
-    if len(product_offers) == 0:
-        print(text.Red + '\n- [Products] The account ' + str(abi_id) + ' has no products available for purchase')
-        printFinishApplicationMenu()
+        if len(product_offers) == 0:
+            print(text.Red + '\n- [Products] The account ' + str(abi_id) + ' has no products available for purchase')
+            printFinishApplicationMenu()
 
-    index_offers = randint(0, (len(product_offers) - 1))
-    sku = product_offers[index_offers]['sku']
-
-    # Check if the SKU is enabled on Items MS
-    combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
-    while not combo_item:
         index_offers = randint(0, (len(product_offers) - 1))
         sku = product_offers[index_offers]['sku']
+
+        # Check if the SKU is enabled on Items MS
         combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
-
-    if selection_structure == '1':
-        while True:
-            try:
-                discount_value = int(input(text.default_text_color + 'Discount percentage (%): '))
-                break
-            except ValueError:
-                print(text.Red + '\n- Invalid value')
-
-        response = input_combo_type_discount(abi_id, zone, environment, combo_item, discount_value)
-
-        if response != 'success':
-            print(text.Red + '\n- [Combo Service] Failure to combo type discount. Response Status: '
-                  + str(response.status_code) + '. Response message ' + response.text)
-            printFinishApplicationMenu()
-
-    elif selection_structure == "2":
-        combo_free_good = list()
-        aux_index = 0
-        while aux_index < 3:
+        while not combo_item:
             index_offers = randint(0, (len(product_offers) - 1))
             sku = product_offers[index_offers]['sku']
-
-            # Check if the SKU is enabled on Items MS
             combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
-            while not combo_item:
+
+        if selection_structure == '1':
+            while True:
+                try:
+                    discount_value = int(input(text.default_text_color + 'Discount percentage (%): '))
+                    break
+                except ValueError:
+                    print(text.Red + '\n- Invalid value')
+
+            response = input_combo_type_discount(abi_id, zone, environment, combo_item, discount_value)
+
+            if response != 'success':
+                print(text.Red + '\n- [Combo Service] Failure to combo type discount. Response Status: '
+                      + str(response.status_code) + '. Response message ' + response.text)
+                printFinishApplicationMenu()
+
+        elif selection_structure == "2":
+            combo_free_good = list()
+            aux_index = 0
+            while aux_index < 3:
                 index_offers = randint(0, (len(product_offers) - 1))
                 sku = product_offers[index_offers]['sku']
+
+                # Check if the SKU is enabled on Items MS
                 combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
+                while not combo_item:
+                    index_offers = randint(0, (len(product_offers) - 1))
+                    sku = product_offers[index_offers]['sku']
+                    combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
 
-            combo_free_good.append(combo_item)
-            aux_index = aux_index + 1
+                combo_free_good.append(combo_item)
+                aux_index = aux_index + 1
 
-        response = input_combo_type_free_good(abi_id, zone, environment, combo_item, combo_free_good)
+            response = input_combo_type_free_good(abi_id, zone, environment, combo_item, combo_free_good)
 
-        if response != 'success':
-            print(text.Red + '\n- [Combo Service] Failure to combo type free good. Response Status: '
-                  + str(response.status_code) + '. Response message ' + response.text)
-            printFinishApplicationMenu()
+            if response != 'success':
+                print(text.Red + '\n- [Combo Service] Failure to combo type free good. Response Status: '
+                      + str(response.status_code) + '. Response message ' + response.text)
+                printFinishApplicationMenu()
 
+        else:
+            combo_free_good = list()
+            aux_index = 0
+            while aux_index < 3:
+                index_offers = randint(0, (len(product_offers) - 1))
+                sku = product_offers[index_offers]['sku']
+
+                # Check if the SKU is enabled on Items MS
+                combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
+                while not combo_item:
+                    index_offers = randint(0, (len(product_offers) - 1))
+                    sku = product_offers[index_offers]['sku']
+                    combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
+
+                combo_free_good.append(combo_item)
+                aux_index = aux_index + 1
+
+            response = input_combo_free_good_only(abi_id, zone, environment, combo_free_good)
+
+            if response != 'success':
+                print(text.Red + '\n- [Combo Service] Failure to combo with only free good. Response Status: '
+                      + str(response.status_code) + '. Response message ' + response.text)
+                printFinishApplicationMenu()
     else:
-        combo_free_good = list()
-        aux_index = 0
-        while aux_index < 3:
-            index_offers = randint(0, (len(product_offers) - 1))
-            sku = product_offers[index_offers]['sku']
+        combo_id = print_combo_id_menu()
 
-            # Check if the SKU is enabled on Items MS
-            combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
-            while not combo_item:
-                index_offers = randint(0, (len(product_offers) - 1))
-                sku = product_offers[index_offers]['sku']
-                combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
-
-            combo_free_good.append(combo_item)
-            aux_index = aux_index + 1
-
-        response = input_combo_free_good_only(abi_id, zone, environment, combo_free_good)
-
-        if response != 'success':
-            print(text.Red + '\n- [Combo Service] Failure to combo with only free good. Response Status: '
-                  + str(response.status_code) + '. Response message ' + response.text)
+        combo = check_combo_exists_microservice(abi_id, zone, environment, combo_id)
+        if combo == 'false':
+            print(text.Red + '\n- [Combo] The Combo ' + combo_id + ' does not exist')
             printFinishApplicationMenu()
+
+        update_combo = update_combo_consumption(abi_id, zone, environment, combo_id)
+        if update_combo == 'true':
+            print(text.Green + '\n- Combo ' + combo_id + ' Updated')
+            print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to update the available '
+                                'quantity in your combo, so it can be used in the front-end applications')
 
 
 # Input credit account on microservice
