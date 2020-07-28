@@ -1,5 +1,5 @@
 from random import randint, uniform
-from json import loads, dumps
+from json import dumps
 import concurrent.futures
 from common import *
 from tabulate import tabulate
@@ -18,62 +18,9 @@ def generate_random_price_ids(qtd):
     return list(array_random_ids)
 
 
-# Get body request for product's price
-def get_body_price_middleware_request(body_id, price_list_id, price_values):
-    price = price_values.get('basePrice') + price_values.get('tax') + price_values.get('deposit')
-
-    dict_values = {
-        'id': body_id,
-        'price': round(price, 2),
-        'priceListId': price_list_id
-    }
-
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/price_inclusion_middleware.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
-
-    for key in dict_values.keys():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
-
-    # Create body
-    put_price_body = convert_json_to_string(json_object)
-
-    return put_price_body
-
-
 # Slices a list of products, returning the first X elements
 def slice_array_products(quantity, products):
     return products[0: quantity]
-
-
-# Does the necessary requests to add a product in a middleware-based zone
-def product_post_requests_middleware(product_data, abi_id, zone, environment):
-    index, product = product_data
-    price_list_id = abi_id
-    delivery_center_id = abi_id
-
-    price_values = generate_price_values_v1()
-
-    # Request to create price on microservice
-    post_price_ms_result = request_post_price_microservice(abi_id, zone, environment, product['sku'], index,
-                                                           price_values)
-
-    # Request to create price on middleware
-    post_price_middleware_result = request_post_price_middleware(zone, environment, product['sku'], index,
-                                                                 price_list_id, price_values)
-
-    # Request to include a product into a specific delivery center
-    product_inclusion_result = product_inclusion_middleware(zone, environment, product['sku'], index,
-                                                            delivery_center_id)
-
-    if post_price_ms_result == 'false' or post_price_middleware_result == 'false' or product_inclusion_result == 'false':
-        return 'false'
-
-    return 'true'
 
 
 def format_seconds_to_mmss(seconds):
@@ -92,7 +39,7 @@ def request_post_price_microservice(abi_id, zone, environment, sku_product, prod
         request_url = get_microservice_base_url(environment, 'false') + '/cart-calculation-relay/v2/prices'
 
         # Get request body
-        request_body = get_body_price_microservice_request_v2(abi_id, sku_product, product_price_id)
+        request_body = get_body_price_microservice_request_v2(abi_id, sku_product, product_price_id, price_values)
     else:
         # Get url base
         request_url = get_microservice_base_url(environment) + '/cart-calculation-relay/prices'
@@ -110,102 +57,67 @@ def request_post_price_microservice(abi_id, zone, environment, sku_product, prod
     return 'true'
 
 
-# Get body product price microservice request
 def get_body_price_microservice_request(abi_id, sku_product, product_price_id, price_values):
-    put_price_microservice_body = dumps({
-        "accounts": [abi_id],
-        "prices": [
-            {
-                "sku": sku_product,
-                "taxes": [
-                    {
-                        "taxId": product_price_id,
-                        "type": "$",
-                        "value": str(price_values.get('tax')),
-                        "taxBaseInclusionIds": [
-                        ]
-                    }
-                ],
-                "basePrice": price_values.get('basePrice'),
-                "measureUnit": "CS",
-                "minimumPrice": 0,
-                "tax": price_values.get('tax'),
-                "deposit": price_values.get('deposit'),
-                "quantityPerPallet": round(uniform(1, 2000), 2)
-            }
-        ]
-    })
+    """
+    Create body for posting new product price rules (API version 1) to the Pricing Engine Relay Service
+    Args:
+        abi_id: account_id
+        sku_product: SKU unique identifier
+        product_price_id: price record unique identifier
+        price_values: price values dict, including tax, base price and deposit
 
-    return put_price_microservice_body
+    Returns: new price body
+    """
 
-
-# Generate random price values
-def generate_price_values_v1():
-    price_values = {
-        'basePrice': round(uniform(1, 2000), 2),
-        'tax': randint(1, 20),
-        'deposit': round(uniform(1, 5), 2)
-    }
-
-    return price_values
-
-
-# Post request product price middleware
-def request_post_price_middleware(zone, environment, sku_product, product_price_id, price_list_id, price_values):
-    # Get header request
-    request_headers = get_header_request(zone, 'false', 'true')
-
-    # Get url base
-    request_url = get_middleware_base_url(zone, environment, 'v4') + '/products/' + str(sku_product) + '/prices'
-
-    # Get request body
-    request_body = get_body_price_middleware_request(product_price_id, price_list_id, price_values)
-
-    # Place request
-    response = place_request('POST', request_url, request_body, request_headers)
-    if response.status_code != 202:
-        print(text.Red + '\n- [Price Inclusion] Failure to define a product price. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
-        return 'false'
-
-    return 'true'
-
-
-# Post request product inclusion middleware
-def product_inclusion_middleware(zone, environment, sku_product, inclusion_id, delivery_center_id):
-    # Define headers
-    request_headers = get_header_request(zone, 'false', 'true')
-
-    # Get base URL
-    request_url = get_middleware_base_url(zone, environment, 'v4') + '/products/' + str(sku_product) + '/inclusions'
-
+    # Create dictionary with price values
     dict_values = {
-        'deliveryCenterId': delivery_center_id,
-        'id': inclusion_id
+        'accounts': [abi_id],
+        'prices[0].sku': sku_product,
+        'prices[0].basePrice': price_values.get('basePrice'),
+        'prices[0].deposit': price_values.get('deposit'),
+        'prices[0].quantityPerPallet': price_values.get('quantityPerPallet'),
+        'prices[0].taxes[0].taxId': product_price_id,
+        'prices[0].taxes[0].value': str(price_values.get('tax'))
     }
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/product_inclusion_middleware.json')
+    file_path = os.path.join(path, 'data/create_sku_price_payload.json')
 
     # Load JSON file
     with open(file_path) as file:
         json_data = json.load(file)
 
+    # Update the price values in runtime
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
     # Create body
-    request_body = convert_json_to_string(json_object)
+    put_price_microservice_body = convert_json_to_string(json_object)
 
-    response = place_request('POST', request_url, request_body, request_headers)
+    return put_price_microservice_body
 
-    if response.status_code != 202:
-        print(text.Red + '\n- [Product Inclusion] Product inclusion has failed. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
-        return 'false'
 
-    return 'true'
+# Generate random price values
+def generate_price_values(zone, product):
+    # Generate random base price
+    base_price = round(uniform(50, 2000), 2)
+
+    # Check if the SKU is returnable for ZA and DO (the ones that have deposit value enabled in order summary)
+    if zone == 'ZA' or zone == 'DO' and product['container']['returnable']:
+        deposit = ((2 / 100) * base_price)
+    else:
+        deposit = None
+
+    # Create dictionary with price values
+    price_values = {
+        'basePrice': base_price,
+        'tax': randint(1, 5),
+        'deposit': deposit,
+        'quantityPerPallet': round(uniform(1, 2000), 2)
+    }
+
+    return price_values
 
 
 # Add products in microservice account
@@ -259,7 +171,7 @@ def request_get_products_microservice(zone, environment, page_size=100000):
 # Does the necessary requests to add a product in a microservice-based zone
 def product_post_requests_microservice(product_data, abi_id, zone, environment, delivery_center_id):
     index, product = product_data
-    price_values = generate_price_values_v1()
+    price_values = generate_price_values(zone, product)
 
     product_inclusion_ms_result = request_post_price_inclusion_microservice(zone, environment, product['sku'], index,
                                                                             delivery_center_id)
@@ -350,34 +262,6 @@ def request_get_offers_microservice(abi_id, zone, environment, delivery_center_i
               + str(response.status_code) + '. Response message ' + response.text)
 
 
-# Get offers by account on middleware
-def request_get_offers_middleware(abi_id, zone, environment, return_product_data=False):
-    # Get base URL
-    request_url = get_middleware_base_url(zone, environment, 'v4') + '/products/offers?accountId=' + abi_id
-
-    # Define headers
-    headers = get_header_request(zone, 'false', 'true', 'false', 'false')
-
-    # Place request
-    response = place_request('GET', request_url, '', headers)
-
-    json_data = loads(response.text)
-    if response.status_code == 200 and len(json_data) != 0:
-        if return_product_data:
-            sku_list = list()
-            for dict in json_data:
-                sku = dict['sku']
-                sku_list.append(sku)
-            return sku_list
-        else:
-            return True
-    elif response.status_code == 200 and len(json_data) == 0:
-        return json_data
-    else:
-        print(text.Red + '\n- [Product Offers Middleware] Failure to get product offers. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
-
-
 def check_item_enabled(sku, zone, environment, return_item_data=False):
     # Get base URL
     request_url = get_microservice_base_url(environment, 'false') + '/items/' + sku + '?includeDisabled=false'
@@ -412,7 +296,7 @@ def request_get_response_products_by_account_microservice(abi_id, zone, environm
     # Define headers
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
 
-    # Define URL Middleware
+    # Define base URL
     request_url = get_microservice_base_url(
         environment) + '/catalog-service/catalog?accountId=' + abi_id + '&projection=LIST'
 
@@ -435,46 +319,38 @@ def request_get_products_by_account_microservice(abi_id, zone, environment):
         return 'false'
 
 
-# Get body product price microservice request v2
-def get_body_price_microservice_request_v2(abi_id, sku_product, product_price_id):
-    base_price = round(uniform(1, 2000), 2)
-    promotion_price = base_price - ((10 / 100) * base_price)
-    minimum_price = 0
-    deposit = ((2 / 100) * base_price)
-    charge_amount = ((4 / 100) * base_price)
-    charge_base = ((2 / 100) * base_price)
+def get_body_price_microservice_request_v2(abi_id, sku_product, product_price_id, price_values):
+    """
+    Create body for posting new product price rules (API version 2) to the Pricing Engine Relay Service
+    Args:
+        abi_id: account_id
+        sku_product: SKU unique identifier
+        product_price_id: price record unique identifier
+        price_values: price values dict, including tax, base price and deposit
 
-    if minimum_price < 0.0:
-        minimum_price = 0.0
+    Returns: new price body
+    """
 
-    if promotion_price < 0.0:
-        promotion_price = 0.0
-
-    # Inputs for default payload of price microservice
+    # Create dictionary with price values
     dict_values = {
-        "accounts": [abi_id],
-        "prices[0].sku": sku_product,
-        "prices[0].basePrice": base_price,
-        "prices[0].deposit": deposit,
-        "prices[0].quantityPerPallet": round(uniform(1, 2000), 2),
-        "prices[0].taxes[0].taxId": product_price_id,
-        "prices[0].taxes[0].type": "$",
-        "prices[0].taxes[0].value": str(randint(1, 5)),
-        "prices[0].charges[0].chargeId": product_price_id + "LOGISTIC_COST",
-        "prices[0].charges[0].type": "$",
-        "prices[0].charges[0].value": charge_amount,
-        "prices[0].charges[0].base": charge_base,
-        "prices[0].charges[0].tax": None
+        'accounts': [abi_id],
+        'prices[0].sku': sku_product,
+        'prices[0].basePrice': price_values.get('basePrice'),
+        'prices[0].deposit': price_values.get('deposit'),
+        'prices[0].quantityPerPallet': price_values.get('quantityPerPallet'),
+        'prices[0].taxes[0].taxId': product_price_id,
+        'prices[0].taxes[0].value': str(price_values.get('tax'))
     }
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, "data/put_price_sku_microservice_v2_payload.json")
+    file_path = os.path.join(path, 'data/create_sku_price_payload_v2.json')
 
     # Load JSON file
     with open(file_path) as file:
         json_data = json.load(file)
 
+    # Update the price values in runtime
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
 

@@ -16,22 +16,13 @@
             "taxes": [
                 {
                     "taxId": "string",
-                    "type": "string",
+                    "type": "$",
                     "value": "string",
-                    "taxBaseInclusionIds": [
-                    ],
+                    "taxBaseInclusionIds": [],
                     "hidden": false
                 }
             ],
-            "charges": [
-                {
-                    "chargeId": "string",
-                    "type": "$",
-                    "value": "string",
-                    "base": "string",
-                    "tax": "string"
-                }
-            ]
+            "charges": []
         }
     ]
 }
