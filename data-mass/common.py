@@ -718,6 +718,7 @@ def print_combos_menu():
     print(text.default_text_color + str(1), text.Yellow + 'Input combo type discount')
     print(text.default_text_color + str(2), text.Yellow + 'Input combo type free good')
     print(text.default_text_color + str(3), text.Yellow + 'Input combo with only free goods')
+    print(text.default_text_color + str(4), text.Yellow + 'Set combo consumed 0')
     structure = input(text.default_text_color + '\nPlease select: ')
     while validate_combo_structure(structure) == 'false':
         print(text.Red + '\n- Invalid option')
@@ -725,6 +726,7 @@ def print_combos_menu():
         print(text.default_text_color + str(1), text.Yellow + 'Input combo type discount')
         print(text.default_text_color + str(2), text.Yellow + 'Input combo type free good')
         print(text.default_text_color + str(3), text.Yellow + 'Input combo with only free goods')
+        print(text.default_text_color + str(4), text.Yellow + 'Set combo consumed 0')
         structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure
@@ -732,7 +734,7 @@ def print_combos_menu():
 
 # Validate combo type structure
 def validate_combo_structure(option):
-    if option == '1' or option == '2' or option == '3':
+    if option == '1' or option == '2' or option == '3' or option == '4':
         return 'true'
     else:
         return 'false'

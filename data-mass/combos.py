@@ -201,3 +201,5 @@ def update_combo_consumption(abi_id, zone, environment, combo_id):
     if response.status_code != 201:
         print(text.Red + '\n- [Combo Service] Failure to update combo consumption. Response Status: '
               + str(response.status_code) + '. Response message ' + response.text)
+    else:
+        return 'true'
