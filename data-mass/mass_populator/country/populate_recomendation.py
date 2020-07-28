@@ -2,17 +2,19 @@ import pandas as pd
 from products import request_get_offers_microservice
 from beer_recommender import request_quick_order, request_forgotten_items
 from mass_populator.log import *
+from mass_populator.country.delete_recommendation import delete_recommendation
 
 logger = logging.getLogger(__name__)
 
 
 def populate_recommendations(country, environment, dataframe_recommendations):
     if dataframe_recommendations is not None:
-        dataframe_recommendations.apply(apply_populate_recommendation, 
-        args=(country, environment), axis=1)
+        dataframe_recommendations.apply(apply_populate_recommendation,
+            args=(country, environment), axis=1)
 
 
 def apply_populate_recommendation(row, country, environment):
+    delete_recommendation(row['account_id'], country, environment, 'CROSS_SELL_UP_SELL')
     populate_recommendation(country, environment, row['account_id'])
 
 

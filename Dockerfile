@@ -1,8 +1,5 @@
-FROM python:3.6-alpine
+FROM python:3.8-slim
 
-RUN apk add --update curl gcc g++ \
-    && rm -rf /var/cache/apk/*
-RUN ln -s /usr/include/locale.h /usr/include/xlocale.h
 RUN pip install -U pip
 COPY data-mass/requirements.txt /
 RUN pip install --no-cache-dir -r /requirements.txt
