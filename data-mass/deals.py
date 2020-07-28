@@ -162,6 +162,10 @@ def input_discount_to_account(abi_id, accounts, deal_sku, deal_type, zone, envir
     else:
         print(text.Green + '\n- Deal successfully registered')
         print(text.default_text_color + '\n- Deal ID: ' + promotion_response)
+        if zone == 'ZA':
+            print(text.Yellow + '- Please, run the cron jobs `webjump_discount_import` and `webjump_discount_update_'
+                                'online_customers` to import your deal, so it can be used in the front-end '
+                                'applications')
 
 
 def input_stepped_discount_with_qtd_to_account(abi_id, accounts, deal_sku, deal_type, zone, environment):
@@ -182,6 +186,10 @@ def input_stepped_discount_with_qtd_to_account(abi_id, accounts, deal_sku, deal_
     else:
         print(text.Green + '\n- Deal successfully registered')
         print(text.default_text_color + '\n- Deal ID: ' + promotion_response)
+        if zone == 'ZA':
+            print(text.Yellow + '- Please, run the cron jobs `webjump_discount_import` and `webjump_discount_update_'
+                                'online_customers` to import your deal, so it can be used in the front-end '
+                                'applications')
 
 
 def input_stepped_discount_to_account(abi_id, accounts, deal_sku, deal_type, zone, environment):
@@ -200,6 +208,10 @@ def input_stepped_discount_to_account(abi_id, accounts, deal_sku, deal_type, zon
     else:
         print(text.Green + '\n- Deal successfully registered')
         print(text.default_text_color + '\n- Deal ID: ' + promotion_response)
+        if zone == 'ZA':
+            print(text.Yellow + '- Please, run the cron jobs `webjump_discount_import` and `webjump_discount_update_'
+                                'online_customers` to import your deal, so it can be used in the front-end '
+                                'applications')
 
 
 def input_free_good_to_account(abi_id, accounts, deal_sku, sku_list, deal_type, zone, environment):
