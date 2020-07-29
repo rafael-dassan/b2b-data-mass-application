@@ -114,7 +114,7 @@ Notes:
 
 1) It's important to check file data-mass/mass-populator/common.py if country you want to populate some data has permissions to do that.
 
-2) To create products on file product.csv the column named 'name' should contains as substring: [ANDROID, IOS or WEB]
-This is not required, but it's needed to associate products to specific category properly.
+2) To associate product to category, the algorithm uses substring from the product name to determine which category it belongs to. So, for a product to be associated to a category, when creating it on file product.csv the column 'name' should contain as substring one of the following: [ANDROID, IOS or WEB]
+This is not required, but it's needed to associate products to mobile or web categories properly.
 
 Examples: 0101WEB, 0101ANDROID, 0101IOS 

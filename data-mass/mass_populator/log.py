@@ -29,3 +29,5 @@ class Message(Enum):
     CATEGORY_PRODUCT_ASSOCIATE_ERROR = "Fail on associate category {category} to product {sku}."
     CATEGORY_CREATE_ERROR = "Fail on create category {category}."
     INVENTORY_CREATE_ERROR = "Fail on creating inventory for account {account_id}."
+    SUBCATEGORY_CREATION_ERROR = "It was not possible to create the subcategory {subcategory_name}" \
+                                 " within the parent category of id {parent_id}."

@@ -54,7 +54,7 @@ def get_categories_magento_web(country, environment, category_name):
     nodes_obj = json.loads(nodes.text)
     categories = []
     nodes_items = nodes_obj['items']
-    
+
     if nodes_obj and nodes_items:
         for node in nodes_items:        
             parent_id = node['id']
@@ -70,7 +70,12 @@ def get_categories_magento_web(country, environment, category_name):
                     category_id = _create_category(country, environment, category_name, parent_id)
                 else:
                     category_id = nodes_items_children[0]['id']
-                categories.append(category_id)
+
+                if category_id is not None:
+                    categories.append(category_id)
+                else:
+                    logger.error(log(Message.SUBCATEGORY_CREATION_ERROR,
+                                     {"subcategory_name": str(category_name), "parent_id": str(parent_id)}))
 
     return categories
 
@@ -87,7 +92,7 @@ def get_categories_magento_mobile(country, environment, sub_category_name):
         "brand_id": "",
         "web_brand_is_active": "0",
         "display_mode": "PRODUCTS",
-        "disable_cross_category": "0",
+        "automatic_sorting": "0",
         "custom_use_parent_settings": "0",
         "custom_apply_to_products": "0"
     }
@@ -115,6 +120,10 @@ def get_categories_magento_mobile(country, environment, sub_category_name):
                 else:
                     parent_category_id = nodes_items_parent_category[0]['id']
 
+                if parent_category_id is None:
+                    logger.error(log(Message.SUBCATEGORY_CREATION_ERROR,
+                                     {"subcategory_name": str(parent_category_name), "parent_id": str(parent_id)}))
+
                 node_sub_category = request_get_categories(country, environment,
                                                            {'parent_id': parent_category_id, 'name': sub_category_name})
                 node_sub_category_obj = json.loads(node_sub_category.text)
@@ -127,7 +136,12 @@ def get_categories_magento_mobile(country, environment, sub_category_name):
                 else:
                     sub_category_id = nodes_items_sub_category[0]['id']
 
-                categories.append(sub_category_id)
+                if sub_category_id is not None:
+                    categories.append(sub_category_id)
+                else:
+                    logger.error(log(Message.SUBCATEGORY_CREATION_ERROR,
+                                     {"subcategory_name": str(sub_category_name),
+                                      "parent_id": str(parent_category_id)}))
 
     return categories
 
