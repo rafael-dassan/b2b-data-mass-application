@@ -7,9 +7,8 @@ from products import request_get_products_microservice
 from products import generate_random_price_ids
 from products import slice_array_products
 from products import request_post_products_account_microservice
-from products import request_get_account_product_assortment
-from inventory import update_sku_inventory_microservice
 from common import validate_state
+from mass_populator.country.populate_inventory import populate_default_inventory
 from mass_populator.log import *
 
 logger = logging.getLogger(__name__)
@@ -155,13 +154,6 @@ def associate_products_to_account(country, environment, account_id, products):
     if "success" != request_post_products_account_microservice(account['accountId'], country, environment, account['deliveryCenterId'], products_data):
         logger.error(log(Message.PRODUCT_ERROR, {"account_id": account_id}))
 
-    products = request_get_account_product_assortment(account_id, country, environment, account['deliveryCenterId'])
-
-    sku_list = list()
-    aux_index = 0
-    while aux_index <= (len(products) - 1):
-        sku_list.append(products[aux_index])
-        aux_index = aux_index + 1
-
-    if "true" != update_sku_inventory_microservice(country, environment, account['deliveryCenterId'], sku_list):
-        logger.error(log(Message.INVENTORY_CREATE_ERROR, {"account_id": account_id}))
+    if country != "BR":
+        # Populate the default inventory for AR, CO, DO and ZA
+        populate_default_inventory(account_id, country, environment, account['deliveryCenterId'])
