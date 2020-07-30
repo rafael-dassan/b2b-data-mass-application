@@ -582,6 +582,7 @@ def input_deals_menu():
     zone = print_zone_menu_for_deals()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
+    option_sku = print_option_sku(zone)
 
     switcher = {
         '1': 'DISCOUNT',
@@ -629,7 +630,15 @@ def input_deals_menu():
 
         sku_list.append(product)
 
-    deal_sku = sku_list[0]['sku']
+    if option_sku == '1':
+        deal_sku = input(text.default_text_color + 'SKU: ')
+        exist_sku = check_item_enabled(deal_sku, zone, environment)
+        while not exist_sku:
+            print(text.Red + '\n- SKU not found for country')
+            deal_sku = input(text.default_text_color + 'SKU: ')
+            exist_sku = check_item_enabled(deal_sku, zone, environment)
+    else:
+        deal_sku = sku_list[0]['sku']
 
     if selection_structure == '1':
         input_discount_to_account(abi_id, accounts, deal_sku, deal_type, zone, environment)
