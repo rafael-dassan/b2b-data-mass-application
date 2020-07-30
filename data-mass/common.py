@@ -1632,3 +1632,21 @@ def print_combo_id_menu():
         print(text.Red + '\n- Combo ID should not be empty')
         combo_id = input(text.default_text_color + 'Combo ID: ')
     return combo_id
+
+
+def validate_option_sku(option):
+    if option == '1' or option == '2':
+        return 'true'
+    else:
+        return 'false'
+
+
+def print_option_sku(zone):
+    if zone == 'DO':
+        option = input(text.default_text_color + 'Do you want to input this type of deal to a specific SKU (1. YES or 2. NO): ')
+
+        while validate_option_sku(option) != 'true':
+            print(text.Red + '\n- Invalid option')
+            option = input(
+                text.default_text_color + 'Do you want to input this type of deal to a specific SKU (1. YES or 2. NO): ')
+        return option

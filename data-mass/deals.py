@@ -221,8 +221,8 @@ def input_free_good_to_account(abi_id, accounts, deal_sku, sku_list, deal_type, 
 
     promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone, environment)
 
-    cart_response = input_free_good_to_cart_calculation_v2(promotion_response, accounts, zone, environment, sku_list,
-                                                           minimum_quantity, quantity)
+    cart_response = input_free_good_to_cart_calculation_v2(promotion_response, accounts, zone, environment, deal_sku,
+                                                           sku_list, minimum_quantity, quantity)
 
     if promotion_response == 'false' or cart_response != 'success':
         print(text.Red + '\n- [Deals] Something went wrong, please try again')
@@ -248,7 +248,7 @@ def input_stepped_free_good_to_account(abi_id, accounts, deal_sku, deal_type, zo
         print(text.default_text_color + '\n- Deal ID: ' + promotion_response)
 
 
-def input_free_good_to_cart_calculation_v2(deal_id, accounts, zone, environment, sku_list, minimum_quantity, quantity):
+def input_free_good_to_cart_calculation_v2(deal_id, accounts, zone, environment, deal_sku, sku_list, minimum_quantity, quantity):
     """
     Input deal type free good rules (API version 2) to the Pricing Engine Relay Service
     Args:
@@ -283,7 +283,7 @@ def input_free_good_to_cart_calculation_v2(deal_id, accounts, zone, environment,
         'deals[0].accumulationType': accumulation_type,
         'deals[0].conditions.simulationDateTime[0].startDate': dates_payload['startDate'],
         'deals[0].conditions.simulationDateTime[0].endDate': dates_payload['endDate'],
-        'deals[0].conditions.lineItem.skus': [sku_list[0]['sku']],
+        'deals[0].conditions.lineItem.skus': [deal_sku],
         'deals[0].conditions.lineItem.minimumQuantity': minimum_quantity,
         'deals[0].output.freeGoods.proportion': minimum_quantity,
         'deals[0].output.freeGoods.freeGoods[0].skus[0].sku': sku_list[0]['sku'],
