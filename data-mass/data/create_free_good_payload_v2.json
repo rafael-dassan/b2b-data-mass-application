@@ -27,6 +27,7 @@
             },
             "output": {
                 "freeGoods": {
+                    "partial": "string",
                     "fixed": false,
                     "proportion": "string",
                     "freeGoods": [

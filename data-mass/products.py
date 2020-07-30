@@ -556,9 +556,11 @@ def get_sku_name(zone, environment, sku_id):
 
     # Place request
     response = place_request('GET', request_url, '', headers)
-
     json_data = loads(response.text)
-    sku_name = json_data['itemName']
+    if response.status_code == 200 and len(json_data) != 0:
+        sku_name = json_data['itemName']
+    else:
+        sku_name = ""
 
     return sku_name
 

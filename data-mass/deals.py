@@ -215,14 +215,21 @@ def input_stepped_discount_to_account(abi_id, accounts, deal_sku, deal_type, zon
 
 
 def input_free_good_to_account(abi_id, accounts, deal_sku, sku_list, deal_type, zone, environment):
+    if zone != 'BR':
+        partial_free_good = 'N'
+    else:
+        partial_free_good = input(text.default_text_color + 'Would you like to register this free goods as an optional SKU rescue?: (y/n): ')
+        while partial_free_good.upper() != 'Y' and partial_free_good.upper() != 'N':
+            print(text.Red + '\n- Invalid option')
+            partial_free_good = input(text.default_text_color + 'Would you like to register this free goods as an optional SKU rescue? (y/n): ')
+
     free_good_sku = deal_sku
     minimum_quantity = print_minimum_quantity_menu()
     quantity = print_quantity_menu()
 
     promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone, environment)
 
-    cart_response = input_free_good_to_cart_calculation_v2(promotion_response, accounts, zone, environment, deal_sku,
-                                                           sku_list, minimum_quantity, quantity)
+    cart_response = input_free_good_to_cart_calculation_v2(promotion_response, accounts, zone, environment, deal_sku, sku_list, minimum_quantity, quantity, partial_free_good)
 
     if promotion_response == 'false' or cart_response != 'success':
         print(text.Red + '\n- [Deals] Something went wrong, please try again')
@@ -248,7 +255,7 @@ def input_stepped_free_good_to_account(abi_id, accounts, deal_sku, deal_type, zo
         print(text.default_text_color + '\n- Deal ID: ' + promotion_response)
 
 
-def input_free_good_to_cart_calculation_v2(deal_id, accounts, zone, environment, deal_sku, sku_list, minimum_quantity, quantity):
+def input_free_good_to_cart_calculation_v2(deal_id, accounts, zone, environment, deal_sku, sku_list, minimum_quantity, quantity, partial_free_good):
     """
     Input deal type free good rules (API version 2) to the Pricing Engine Relay Service
     Args:
@@ -262,6 +269,11 @@ def input_free_good_to_cart_calculation_v2(deal_id, accounts, zone, environment,
 
     Returns: Success if the request went ok and the status code if there's a problem
     """
+    # Define if free good promotion is partial sku rescue
+    if partial_free_good.upper() == 'Y':
+        boolean_partial_free_good = 'True'
+    else:
+        boolean_partial_free_good = 'False'
 
     # Change the accumulationType to UNIQUE only for AR
     if zone == 'AR':
@@ -286,6 +298,7 @@ def input_free_good_to_cart_calculation_v2(deal_id, accounts, zone, environment,
         'deals[0].conditions.lineItem.skus': [deal_sku],
         'deals[0].conditions.lineItem.minimumQuantity': minimum_quantity,
         'deals[0].output.freeGoods.proportion': minimum_quantity,
+        'deals[0].output.freeGoods.partial': boolean_partial_free_good,
         'deals[0].output.freeGoods.freeGoods[0].skus[0].sku': sku_list[0]['sku'],
         'deals[0].output.freeGoods.freeGoods[0].skus[0].price': sku_list[0]['price'],
         'deals[0].output.freeGoods.freeGoods[0].quantity': quantity,
