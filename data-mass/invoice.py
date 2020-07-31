@@ -61,7 +61,10 @@ def create_invoice_request(abi_id, zone, environment, order_id, status):
 
     invoice_id = 'DM-' + str(randint(1, 100000))
     order_placement_date = order_details.get('placementDate')
-    placement_date = order_placement_date.split('+')[0] + 'Z'
+    if zone == 'DO':
+        placement_date = order_placement_date.split('T')[0] + 'T00:00:00Z'
+    else:
+        placement_date = order_placement_date.split('+')[0] + 'Z'
 
     dict_values = {
         'accountId': order_details.get('accountId'),
