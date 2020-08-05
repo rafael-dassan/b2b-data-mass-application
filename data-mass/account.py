@@ -19,6 +19,8 @@ def check_account_exists_microservice(abi_id, zone, environment):
     elif response.status_code == 200 and len(json_data) == 0:
         return json_data
     else:
+        print(text.Red + '\n- [Account Service] Failure to retrieve account. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
         return 'false'
 
 
