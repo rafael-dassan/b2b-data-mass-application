@@ -15,57 +15,6 @@ from unicodedata import numeric
 from os import path
 
 
-def get_magento_user_v3_params(environment):
-    if environment == "UAT":
-        return get_magento_user_v3_params_uat()
-    else:
-        return get_magento_user_v3_params_dev()
-
-
-def get_magento_user_v3_params_uat():
-    b2b_server_name = "b2biamgbusuat1.b2clogin.com"
-    b2b_path = "b2biamgbusuat1.onmicrosoft.com"
-    b2b_signin_policy = "B2C_1A_AB2CSignin_DR_Dev_UAT"
-    b2b_signup_policy = "B2C_1A_AB2CSignUp_DR_Dev_UAT"
-    b2b_onboarding_policy = "B2C_1A_AB2COnboarding_DR_Dev_UAT"
-    params = {
-        "B2B_SERVER_NAME": b2b_server_name,
-        "B2B_PATH": b2b_path,
-        "REDIRECT_URL": "com.abi.Socio-Cerveceria://oauth/redirect",
-        "CLIENT_ID": "2fb9932f-5ac2-4f9d-91d7-35ea363cde34",
-        "B2B_SIGNIN_POLICY": b2b_signin_policy,
-        "B2B_SIGNUP_POLICY": b2b_signup_policy,
-        "B2B_ONBOARDING_POLICY": b2b_onboarding_policy,
-        "OPT_SECRET": "1NcRfUjXn2r4u7x!A%D*G-KaPdSgVkYp",
-        "OPT_INTERVAL": 600,
-        "BASE_SIGNIN_URL": "https://{0}/{1}/{2}".format(b2b_server_name, b2b_path, b2b_signin_policy),
-        "BASE_SIGNUP_URL": "https://{0}/{1}/{2}".format(b2b_server_name, b2b_path, b2b_signup_policy),
-        "BASE_ONBOARDING_URL": "https://{0}/{1}/{2}".format(b2b_server_name, b2b_path, b2b_onboarding_policy)}
-    return params
-
-
-def get_magento_user_v3_params_dev():
-    b2b_server_name = "b2biamgbusdev.b2clogin.com"
-    b2b_path = "b2biamgbusdev.onmicrosoft.com"
-    b2b_signin_policy = "B2C_1A_AB2CSIGNIN_DR"
-    b2b_signup_policy = "B2C_1A_AB2CSIGNUP_DR"
-    b2b_onboarding_policy = "B2C_1A_AB2CONBOARDING_DR"
-    params = {
-        "B2B_SERVER_NAME": b2b_server_name,
-        "B2B_PATH": b2b_path,
-        "REDIRECT_URL": "com.abi.Socio-Cerveceria://oauth/redirect",
-        "CLIENT_ID": "496d9127-5493-4d0b-b98b-e3d8fb2e557e",
-        "B2B_SIGNIN_POLICY": b2b_signin_policy,
-        "B2B_SIGNUP_POLICY": b2b_signup_policy,
-        "B2B_ONBOARDING_POLICY": b2b_onboarding_policy,
-        "OPT_SECRET": "1NcRfUjXn2r4u7x!A%D*G-KaPdSgVkYp",
-        "OPT_INTERVAL": 60,
-        "BASE_SIGNIN_URL": "https://{0}/{1}/{2}".format(b2b_server_name, b2b_path, b2b_signin_policy),
-        "BASE_SIGNUP_URL": "https://{0}/{1}/{2}".format(b2b_server_name, b2b_path, b2b_signup_policy),
-        "BASE_ONBOARDING_URL": "https://{0}/{1}/{2}".format(b2b_server_name, b2b_path, b2b_onboarding_policy)}
-    return params
-
-
 # Validate option menu selection
 def validate_option_request_selection(selection):
     switcher = {
@@ -365,7 +314,7 @@ def place_request(request_type, request_url, request_body, request_headers):
     logging.debug("Request method: " + request_type)
     logging.debug("Request headers: " + json.dumps(request_headers))
     logging.debug("Request URL: " + request_url)
-    logging.debug("Request body: " + request_body)
+    logging.debug("Request body: " + str(request_body))
     logging.debug("Response code: " + str(response.status_code))
     logging.debug("Response body: " + response.text)
     logging.debug("Request finished!\n")
@@ -1292,43 +1241,43 @@ def print_input_text(input_text):
             return input_str
 
 
-def validate_country_menu_in_user_create_iam(country):
+def validate_country_menu_in_user_create_iam(zone):
     switcher = {
-        "DO": "true"
+        'CO': 'true'
     }
-    return switcher.get(country, "false")
+    return switcher.get(zone, 'false')
 
 
 def validate_environment_menu_in_user_create_iam(environment):
     switcher = {
-        "DEV": "true",
-        "UAT": "true"
+        'SIT': 'true',
+        'UAT': 'true'
     }
-    return switcher.get(environment, "false")
+    return switcher.get(environment, 'false')
 
 
 def print_country_menu_in_user_create_iam():
     """Print Country Menu to Create User IAM
     Requirements:
-        - DR 
+        - CO
     """
-    country = input(text.default_text_color + "Country (DO): ")
-    while validate_country_menu_in_user_create_iam(country.upper()) == "false":
-        print(text.Red + "\n- Invalid option\n")
-        country = input(text.default_text_color + "Country (DO): ")
-    return country.upper()
+    zone = input(text.default_text_color + 'Zone (CO): ')
+    while validate_country_menu_in_user_create_iam(zone.upper()) == 'false':
+        print(text.Red + '\n- Invalid option\n')
+        zone = input(text.default_text_color + 'Zone (CO): ')
+    return zone.upper()
 
 
 def print_environment_menu_in_user_create_iam():
     """Print Environment Menu to Create User IAM
         Requirements:
-        - DEV
+        - SIT
         - UAT
     """
-    environment = input(text.default_text_color + "Environment (DEV, UAT): ")
+    environment = input(text.default_text_color + 'Environment (SIT, UAT): ')
     while validate_environment_menu_in_user_create_iam(environment.upper()) == 'false':
         print(text.Red + '\n- Invalid option')
-        environment = input(text.default_text_color + "Environment (DEV, UAT): ")
+        environment = input(text.default_text_color + 'Environment (SIT, UAT): ')
     return environment.upper()
 
 
