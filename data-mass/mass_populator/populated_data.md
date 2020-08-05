@@ -295,12 +295,12 @@ Populate products for all countries.
 
 |SKUIdentifier|ItemName   |BrandName|ContainerName/Size/Unit|Returnable|SalesRanking
 |-------------|-----------|---------|-----------------------|----------|----------
-|0101WEB      |QMWEB01    |Journey  |Bottle / 1000 / ML     |Yes       |1
-|0101ANDROID  |QMANDROID01|Journey  |Bottle / 1000 / ML     |Yes       |1
-|0101IOS      |QMIOS01    |Journey  |Bottle / 1000 / ML     |Yes       |1
-|0102WEB      |QMWEB02    |Journey  |Bottle / 1000 / ML     |Yes       |2
-|0102ANDROID  |QMANDROID02|Journey  |Bottle / 1000 / ML     |Yes       |2
-|0102IOS      |QMIOS02    |Journey  |Bottle / 1000 / ML     |Yes       |2
+|0101WEB      |QMWEB01    |Journey  |Bottle / 1000 / ML     |No        |1
+|0101ANDROID  |QMANDROID01|Journey  |Bottle / 1000 / ML     |No        |1
+|0101IOS      |QMIOS01    |Journey  |Bottle / 1000 / ML     |No        |1
+|0102WEB      |QMWEB02    |Journey  |Bottle / 1000 / ML     |No        |2
+|0102ANDROID  |QMANDROID02|Journey  |Bottle / 1000 / ML     |No        |2
+|0102IOS      |QMIOS02    |Journey  |Bottle / 1000 / ML     |No        |2
 
 
 ### Category
