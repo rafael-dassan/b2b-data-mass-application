@@ -31,3 +31,6 @@ class Message(Enum):
     INVENTORY_CREATE_ERROR = "Fail on creating inventory for account {account_id}."
     SUBCATEGORY_CREATION_ERROR = "It was not possible to create the subcategory {subcategory_name}" \
                                  " within the parent category of id {parent_id}."
+    CREATE_USER_IAM_ERROR = "Fail on populate user IAM B2C {email} with account {account_id}."
+    RETRIEVE_ACCOUNT_ERROR = "Failure to retrieve the account {account_id}."
+    ACCOUNT_NOT_FOUND_ERROR = "The account {account_id} does not exist."
