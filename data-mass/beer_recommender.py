@@ -298,14 +298,15 @@ def get_recommendation_by_account(abi_id, zone, environment, use_case):
     response = place_request('GET', request_url, '', headers)
 
     recommendation_data = loads(response.text)
-    content = recommendation_data['content']
 
-    if response.status_code == 200 and len(content) != 0:
-        return recommendation_data
-    elif response.status_code == 200 and len(content) == 0:
-        print(text.Yellow + '\n- [Global Recommendation Service] The account ' + abi_id
-              + ' does not have recommendation type ' + use_case)
-        return 'not_found'
+    if response.status_code == 200:
+        content = recommendation_data['content']
+        if len(content) != 0:
+            return recommendation_data
+        elif len(content) == 0:
+            print(text.Yellow + '\n- [Global Recommendation Service] The account ' + abi_id
+                  + ' does not have recommendation type ' + use_case)
+            return 'not_found'
     else:
         print(text.Red + '\n- [Global Recommendation Service] Failure to retrieve a recommendation. Response Status: '
               + str(response.status_code) + '. Response message ' + response.text)
