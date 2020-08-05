@@ -369,5 +369,11 @@ Magento has a cache in its internal database that needs to be re-indexed after c
 * Deploy the environment
 * Success cron job execution *abinbev_combo_service_importer*
 In practice, re-indexing can take days to complete.
-In some scenarios, it may be that the re-indexing process is not effective, and needs to be done manually for the changes made to take effect. This can happen over system instability, environment configuration changes and it will impact the enabling of new products and their association with categories.
+In some scenarios, it may be that the re-indexing process is not effective, and needs to be done manually for the changes made to take effect. This can happen over system instability, environment configuration changes and it will impact the enabling of new products and their association with categories
 
+## Troubleshooting - OTP parameters (OTP Secret and OTP Interval)
+The OTP secret and interval should not change often, but in case it occurs, please perform the steps below:
+* Go to the [platform-config](https://ab-inbev.visualstudio.com/GHQ_B2B_Delta/_git/platform-config) repository
+* Go to `microservices/releases/contact-verification-service`
+* Select the specific environment-values file to check the OTP parameters for [SIT](https://ab-inbev.visualstudio.com/GHQ_B2B_Delta/_git/platform-config?path=%2Fmicroservices%2Freleases%2Fcontact-verification-service%2Fcontact-verification-service-qa-values.yaml) and [UAT](https://ab-inbev.visualstudio.com/GHQ_B2B_Delta/_git/platform-config?path=%2Fmicroservices%2Freleases%2Fcontact-verification-service%2Fcontact-verification-service-uat-values.yaml)
+* Update the new values in [data-mass/user_creation_v3.py](../../data-mass/user_creation_v3.py)

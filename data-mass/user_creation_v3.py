@@ -6,8 +6,59 @@ from common import *
 import uuid
 
 
+def get_iam_b2c_params(environment):
+    if environment == 'UAT':
+        return get_iam_b2c_params_uat()
+    else:
+        return get_iam_b2c_params_sit()
+
+
+def get_iam_b2c_params_uat():
+    b2b_server_name = 'b2biamgbusuat1.b2clogin.com'
+    b2b_path = 'b2biamgbusuat1.onmicrosoft.com'
+    b2b_signin_policy = 'B2C_1A_SigninMobile_CO'
+    b2b_signup_policy = 'B2C_1A_SignUp_CO'
+    b2b_onboarding_policy = 'B2C_1A_Onboarding_CO'
+    params = {
+        'B2B_SERVER_NAME': b2b_server_name,
+        'B2B_PATH': b2b_path,
+        'REDIRECT_URL': 'com.abi.bees.colombia://oauth/redirect',
+        'CLIENT_ID': 'f1d909d8-f72a-40cd-a7ff-fec8e5b033fc',
+        'B2B_SIGNIN_POLICY': b2b_signin_policy,
+        'B2B_SIGNUP_POLICY': b2b_signup_policy,
+        'B2B_ONBOARDING_POLICY': b2b_onboarding_policy,
+        'OTP_SECRET': '1NcRfUjXn2r4u7x!A%D*G-KaPdSgVkYp',
+        'OTP_INTERVAL': 600,
+        'BASE_SIGNIN_URL': 'https://{0}/{1}/{2}'.format(b2b_server_name, b2b_path, b2b_signin_policy),
+        'BASE_SIGNUP_URL': 'https://{0}/{1}/{2}'.format(b2b_server_name, b2b_path, b2b_signup_policy),
+        'BASE_ONBOARDING_URL': 'https://{0}/{1}/{2}'.format(b2b_server_name, b2b_path, b2b_onboarding_policy)}
+    return params
+
+
+def get_iam_b2c_params_sit():
+    b2b_server_name = 'b2biamgbussit1.b2clogin.com'
+    b2b_path = 'b2biamgbussit1.onmicrosoft.com'
+    b2b_signin_policy = 'B2C_1A_SigninMobile_CO'
+    b2b_signup_policy = 'B2C_1A_SignUp_CO'
+    b2b_onboarding_policy = 'B2C_1A_Onboarding_CO'
+    params = {
+        'B2B_SERVER_NAME': b2b_server_name,
+        'B2B_PATH': b2b_path,
+        'REDIRECT_URL': 'com.abi.bees.colombia://oauth/redirect',
+        'CLIENT_ID': '70eb36b1-2894-4f1d-b08a-4a1f982a38da',
+        'B2B_SIGNIN_POLICY': b2b_signin_policy,
+        'B2B_SIGNUP_POLICY': b2b_signup_policy,
+        'B2B_ONBOARDING_POLICY': b2b_onboarding_policy,
+        'OTP_SECRET': '1NcRfUjXn2r4u7x!A%D*G-KaPdSgVkYp',
+        'OTP_INTERVAL': 600,
+        'BASE_SIGNIN_URL': 'https://{0}/{1}/{2}'.format(b2b_server_name, b2b_path, b2b_signin_policy),
+        'BASE_SIGNUP_URL': 'https://{0}/{1}/{2}'.format(b2b_server_name, b2b_path, b2b_signup_policy),
+        'BASE_ONBOARDING_URL': 'https://{0}/{1}/{2}'.format(b2b_server_name, b2b_path, b2b_onboarding_policy)}
+    return params
+
+
 def authenticate_user_iam(environment, country, user_name, password):
-    params = get_magento_user_v3_params(environment)
+    params = get_iam_b2c_params(environment)
 
     logging.debug("Calling logon_authorize_request...")
     authorize_iam_response = authorize_iam(params)
@@ -160,7 +211,7 @@ def confirmed_logon_request(params, self_asserted_response):
 
 
 def create_user(environment, country, email, password, account_id, tax_id):
-    params = get_magento_user_v3_params(environment)
+    params = get_iam_b2c_params(environment)
 
     authorize_load_response = authorize_load_request(params)
     if authorize_load_response == "fail":
@@ -388,11 +439,11 @@ def confirmed_email_request(params, last_response):
         return confirmed_email_response
 
 
-def generate_otp(opt_secret, opt_interval, email):
-    secret = opt_secret + email
+def generate_otp(otp_secret, otp_interval, email):
+    secret = otp_secret + email
     bytes_secret = bytes(secret, "utf8")
     base64_secret = base64.b32encode(bytes_secret)
-    totp = pyotp.TOTP(base64_secret, interval=opt_interval).now()
+    totp = pyotp.TOTP(base64_secret, interval=otp_interval).now()
     logging.debug("OTP generated: {0}".format(totp))
     return totp
 
@@ -401,7 +452,7 @@ def self_asserted_otp_request(email, params, confirmed_email_response):
     logging.debug("Calling self_asserted_otp_request...")
     data = {
         "readonlyEmail": urllib.parse.quote(email),
-        "otp": generate_otp(params["OPT_SECRET"], params["OPT_INTERVAL"], email),
+        "otp": generate_otp(params["OTP_SECRET"], params["OTP_INTERVAL"], email),
         "request_type": "RESPONSE"
     }
 
