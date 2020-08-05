@@ -154,6 +154,6 @@ def associate_products_to_account(country, environment, account_id, products):
     if "success" != request_post_products_account_microservice(account['accountId'], country, environment, account['deliveryCenterId'], products_data):
         logger.error(log(Message.PRODUCT_ERROR, {"account_id": account_id}))
 
-    if country != "BR":
+    if country != "BR" and country != "CL":
         # Populate the default inventory for AR, CO, DO and ZA
         populate_default_inventory(account_id, country, environment, account['deliveryCenterId'])
