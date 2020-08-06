@@ -765,14 +765,14 @@ def input_combos_menu():
                                 'quantity in your combo, so it can be used in the front-end applications')
 
 
-# Input credit account on microservice
+# Input credit to account
 def input_credit_menu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
 
-    # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+    # Check if account exists
+    account = check_account_exists_microservice(abi_id, zone, environment)
 
     if account == 'false':
         print(text.Red + '\n- [Account] Something went wrong, please try again')
@@ -781,18 +781,16 @@ def input_credit_menu():
         print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
-    credit = input(text.default_text_color + 'Desire credit (Default 5000): ')
-    balance = input(text.default_text_color + 'Desire balance (Default 15000): ')
+    credit = input(text.default_text_color + 'Desired credit available (Default 5000): ')
+    balance = input(text.default_text_color + 'Desired credit balance (Default 15000): ')
 
-    # Call add credit to account function
-    credit = add_credit_to_account_microservice(abi_id, zone.upper(), environment.upper(), credit, balance)
+    # Add credit to account
+    credit = add_credit_to_account_microservice(abi_id, zone, environment, credit, balance)
 
     if credit == 'success':
-        print(text.Green + '\n- Credit added successfully')
+        print(text.Green + '\n- Credit added successfully for account ' + abi_id)
     else:
-        print(text.Red + '\n- [Credit] Something went wrong, please try again')
-
-    printFinishApplicationMenu()
+        printFinishApplicationMenu()
 
 
 def input_products_to_account_menu():
