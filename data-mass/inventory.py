@@ -140,6 +140,8 @@ def update_sku_inventory_microservice(zone, environment, delivery_center_id, lis
     if response.status_code == 202:
         return 'true'
     else:
+        print(text.Red + '\n- [Inventory Relay Service] Failure to add stock for products. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
         return 'false'
 
 
@@ -161,7 +163,7 @@ def display_inventory_by_account(zone, environment, abi_id, delivery_center_id):
             'skus': product_offers
         }
         request_body = convert_json_to_string(dict_values)
-        response = get_delivery_center_inventory(dict_values, environment, zone, request_body)
+        response = get_delivery_center_inventory(environment, zone, request_body)
 
         json_data = loads(response.text)
         inventory_info = list()
@@ -183,16 +185,13 @@ def display_inventory_by_account(zone, environment, abi_id, delivery_center_id):
             print(tabulate(inventory_info, headers='keys', tablefmt='grid'))
 
 
-def get_delivery_center_inventory(dict_values, environment, zone, request_body):
+def get_delivery_center_inventory(environment, zone, request_body):
     # Define headers
     request_headers = get_header_request(zone, 'true', 'false', 'false')
+
     # Define url request
     request_url = get_microservice_base_url(environment) + '/inventory/'
+
     response = place_request('POST', request_url, request_body, request_headers)
+
     return response
-
-
-
-
-
-
