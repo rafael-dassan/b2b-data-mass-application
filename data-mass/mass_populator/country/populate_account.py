@@ -66,7 +66,7 @@ def populate_delivery_window(country, environment, account_id):
         "deliveryScheduleId": account_id,
         "accountId": account_id
     }
-    if "success" != create_delivery_window_microservice(account_id, country, environment, account_data, "false"):
+    if "success" != create_delivery_window_microservice(country, environment, account_data, "false"):
         logger.error(log(Message.DELIVERY_WINDOW_ERROR,
                          {"account_id": account_id}))
 

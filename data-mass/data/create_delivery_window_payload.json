@@ -1,0 +1,8 @@
+{
+    "alternative": true,
+    "deliveryScheduleId": "string",
+    "endDate": "string",
+    "expirationDate": "string",
+    "id": "string",
+    "startDate": "string"
+  }
