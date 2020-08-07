@@ -1,4 +1,3 @@
-from json import loads
 from common import *
 from tabulate import tabulate
 
@@ -17,8 +16,11 @@ def check_account_exists_microservice(abi_id, zone, environment):
     if response.status_code == 200 and len(json_data) != 0:
         return json_data
     elif response.status_code == 200 and len(json_data) == 0:
-        return json_data
+        print(text.Red + '\n- [Account Service] The account ' + abi_id + ' does not exist')
+        return 'false'
     else:
+        print(text.Red + '\n- [Account Service] Failure to retrieve the account ' + abi_id + '. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
         return 'false'
 
 
@@ -84,7 +86,9 @@ def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environ
     if response.status_code == 202:
         return 'success'
     else:
-        return response.status_code
+        print('\n- [Account Relay Service] Failure to create the account ' + abi_id + '. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
+        return 'false'
 
 
 def display_account_information(account):
