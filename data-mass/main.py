@@ -849,7 +849,7 @@ def input_delivery_window_menu():
     abi_id = print_account_id_menu(zone)
 
     # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+    account = check_account_exists_microservice(abi_id, zone, environment)
 
     if account == 'false':
         print(text.Red + '\n- [Account] Something went wrong, please try again')
@@ -870,15 +870,12 @@ def input_delivery_window_menu():
         is_alternative_delivery_date = 'false'
 
     # Call add delivery window to account function
-    delivery_window = create_delivery_window_microservice(abi_id, zone.upper(), environment.upper(), account[0],
-                                                          is_alternative_delivery_date)
+    delivery_window = create_delivery_window_microservice(zone, environment, account[0], is_alternative_delivery_date)
 
     if delivery_window == 'success':
         print(text.Green + '\n- Delivery window added successfully')
     else:
-        print(text.Red + '\n- [DeliveryWindow] Something went wrong, please try again')
-
-    printFinishApplicationMenu()
+        printFinishApplicationMenu()
 
 
 # Create Account menu for Zones using MS
@@ -949,15 +946,12 @@ def create_account_menu():
         is_alternative_delivery_date = 'false'
 
     # Call add delivery window to account function
-    delivery_window = create_delivery_window_microservice(abi_id, zone.upper(), environment.upper(), account[0],
-                                                          is_alternative_delivery_date)
+    delivery_window = create_delivery_window_microservice(zone, environment, account[0], is_alternative_delivery_date)
 
     if delivery_window == 'success':
         print(text.Green + '\n- Delivery window added successfully')
     else:
-        print(text.Red + '\n- [DeliveryWindow] Something went wrong, please try again')
-
-    printFinishApplicationMenu()
+        printFinishApplicationMenu()
 
 
 # Create User for zones in Microservice
