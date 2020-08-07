@@ -27,7 +27,7 @@ def showMenu():
             '3': input_credit_menu,
             '4': input_delivery_window_menu,
             '5': input_recommendation_to_account_menu,
-            '6': inputInventoryToProduct,
+            '6': input_inventory_to_product,
             '7': input_orders_to_account,
             '8': input_deals_menu,
             '9': input_combos_menu,
@@ -472,14 +472,14 @@ def check_simulation_service_mdw_menu():
     printFinishApplicationMenu()
 
 
-# Input Inventory to a SKU
-def inputInventoryToProduct():
+# Input inventory (stock) to products
+def input_inventory_to_product():
     zone = print_zone_menu_for_inventory()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
 
-    # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+    # Check if the account exists
+    account = check_account_exists_microservice(abi_id, zone, environment)
 
     if account == 'false':
         print(text.Red + '\n- [Account] Something went wrong, please try again')
@@ -488,27 +488,23 @@ def inputInventoryToProduct():
         print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
-    # Call function to check if the account has products inside
-    products_inventory_account = request_get_account_product_assortment(abi_id, zone.upper(), environment.upper(),
-                                                                        account[0]['deliveryCenterId'])
+    # Check if the account has products
+    product_assortment = request_get_account_product_assortment(abi_id, zone, environment,
+                                                                account[0]['deliveryCenterId'])
 
-    if len(products_inventory_account) > 0:
+    if len(product_assortment) > 0:
         # Call function to display the SKUs on the screen
-        product_offers = display_available_products_account(abi_id, zone.upper(), environment.upper(),
-                                                            account[0]['deliveryCenterId'])
+        inventory = display_available_products_account(abi_id, zone, environment, account[0]['deliveryCenterId'])
 
-        if product_offers == "true":
-            print(text.Green + "\n- [Inventory] The inventory of the SKU has been added successfully.")
+        if inventory == 'true':
+            print(text.Green + '\n- The inventory has been added successfully for the account ' + abi_id)
+        elif inventory == 'error_len':
+            print(text.Red + '\n- There are no products available for the account ' + abi_id)
+            printFinishApplicationMenu()
         else:
-            if product_offers == "error_len":
-                print(text.Red + "\n- [Inventory] There are no products available in the chosen account.")
-                printFinishApplicationMenu()
-            else:
-                print(text.Red + "\n- [Inventory] Something went wrong, please try again.")
-                printFinishApplicationMenu()
+            printFinishApplicationMenu()
     else:
-        print(
-            text.Red + "\n- [Inventory] The account has no products inside. Use the menu option 02 to add them first.")
+        print(text.Red + '\n- There is no product associated with the account ' + abi_id)
         printFinishApplicationMenu()
 
 
@@ -844,7 +840,7 @@ def input_products_to_account_menu():
             update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id, skus_id)
 
             if update_sku != 'true':
-                print(text.Red + '\n- [Inventory] Something went wrong, please try again.')
+                printFinishApplicationMenu()
 
 
 def input_delivery_window_menu():
@@ -939,7 +935,7 @@ def create_account_menu():
         update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id, skus_id)
 
         if update_sku != 'true':
-            print(text.Red + '\n- [Inventory] Something went wrong, please try again.')
+            printFinishApplicationMenu()
 
     if zone == 'BR' or zone == 'ZA':
         # Validate if is alternative delivery window
