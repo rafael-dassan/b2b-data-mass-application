@@ -4,33 +4,24 @@ from json import loads
 
 
 def create_all_recommendations(zone, environment, abi_id, products):
-    # Define headers
-    request_headers = get_header_request_recommender(zone, environment)
+    # Get responses
+    quick_order_response = request_quick_order(zone, environment, abi_id, products)
+    sell_up_response = request_sell_up(zone, environment, abi_id, products)
+    forgotten_items_response = request_forgotten_items(zone, environment, abi_id, products)
 
-    # Define url request
-    request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
-
-    # Get Response
-    quick_order_response = create_file_request_quick_order(request_url, request_headers, abi_id, zone, products)
-    sell_up_response = create_file_request_sell_up(request_url, request_headers, abi_id, zone, products)
-    forgotten_items_response = create_file_request_forgotten_items(request_url, request_headers, abi_id, zone, products)
-
-    if quick_order_response.status_code == 202 and sell_up_response.status_code == 202 and \
-            forgotten_items_response.status_code == 202:
-        print(text.Green + '\n- [Global Recommendation Service] All recommendation use cases were added (quick order, '
-                           'up sell and forgotten items)')
-        print(text.Yellow + '- [Global Recommendation Service] Up sell trigger: Add 3 of any products to the cart / '
-                            'Cart viewed with a product inside')
+    if quick_order_response == 'success' and sell_up_response == 'success' and forgotten_items_response == 'success':
+        return 'success'
     else:
         responses_list = [quick_order_response, sell_up_response, forgotten_items_response]
         for x in range(len(responses_list)):
             if responses_list[x].status_code != 202:
-                print(text.Red + '\n- [Global Recommendation Service] Failure to add recommendations. Response Status: '
+                print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendations. Response Status: '
                       + str(responses_list[x].status_code) + '. Response message ' + responses_list[x].text)
+        return 'false'
 
 
 # Define JSON to submmit QUICK ORDER recommendation type
-def create_file_request_quick_order(url, headers, abi_id, zone, product_list):
+def create_quick_order_payload(abi_id, zone, product_list):
     if zone == 'DO' or zone == 'CL' or zone == 'AR' or zone == 'CO':
         language = 'es'
         text = 'Pedido Facil'
@@ -85,14 +76,11 @@ def create_file_request_quick_order(url, headers, abi_id, zone, product_list):
     list_dict_values = create_list(json_object)
     request_body = convert_json_to_string(list_dict_values)
 
-    # Send request
-    response = place_request('POST', url, request_body, headers)
-
-    return response
+    return request_body
 
 
 # Define JSON to submmit FORGOTTEN ITEMS recommendation type
-def create_file_request_forgotten_items(url, headers, abi_id, zone, product_list):
+def create_forgotten_items_payload(abi_id, zone, product_list):
     if zone == 'DO' or zone == 'CL' or zone == 'AR' or zone == 'CO':
         language = 'es'
         text = 'Productos Populares para Negocios como el tuyo'
@@ -147,14 +135,11 @@ def create_file_request_forgotten_items(url, headers, abi_id, zone, product_list
     list_dict_values = create_list(json_object)
     request_body = convert_json_to_string(list_dict_values)
 
-    # Send request
-    response = place_request('POST', url, request_body, headers)
-
-    return response
+    return request_body
 
 
 # Define JSON to submmit UP SELL recommendation type
-def create_file_request_sell_up(url, headers, abi_id, zone, product_list):
+def create_upsell_payload(abi_id, zone, product_list):
     if zone == 'DO' or zone == 'CL' or zone == 'AR' or zone == 'CO':
         language = 'es'
         text = 'Productos Populares para Negocios como el tuyo'
@@ -203,10 +188,7 @@ def create_file_request_sell_up(url, headers, abi_id, zone, product_list):
     list_dict_values = create_list(json_object)
     request_body = convert_json_to_string(list_dict_values)
 
-    # Send request
-    response = place_request('POST', url, request_body, headers)
-
-    return response
+    return request_body
 
 
 def request_quick_order(zone, environment, abi_id, products):
@@ -216,12 +198,17 @@ def request_quick_order(zone, environment, abi_id, products):
     # Define url request 
     request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
 
-    # Get Response
-    response = create_file_request_quick_order(request_url, request_headers, abi_id, zone, products)
+    # Get body
+    request_body = create_quick_order_payload(abi_id, zone, products)
+
+    # Send request
+    response = place_request('POST', request_url, request_body, request_headers)
     
     if response.status_code == 202:
         return 'success'
     else:
+        print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
         return 'false'
 
 
@@ -232,12 +219,17 @@ def request_forgotten_items(zone, environment, abi_id, products):
     # Define url request
     request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
 
-    # Get Response
-    response = create_file_request_forgotten_items(request_url, request_headers, abi_id, zone, products)
+    # Get body
+    request_body = create_forgotten_items_payload(abi_id, zone, products)
+
+    # Send request
+    response = place_request('POST', request_url, request_body, request_headers)
 
     if response.status_code == 202:
         return 'success'
     else:
+        print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
         return 'false'
 
 
@@ -248,12 +240,17 @@ def request_sell_up(zone, environment, abi_id, products):
     # Define url request
     request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
 
-    # Get Response
-    response = create_file_request_sell_up(request_url, request_headers, abi_id, zone, products)
+    # Get body
+    request_body = create_upsell_payload(abi_id, zone, products)
+
+    # Send request
+    response = place_request('POST', request_url, request_body, request_headers)
 
     if response.status_code == 202:
         return 'success'
     else:
+        print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
         return 'false'
 
 
@@ -400,5 +397,3 @@ def display_recommendations_by_account(zone, environment, abi_id):
 
     print(text.default_text_color + '\nCombos Recommendations Information By Account')
     print(tabulate(combo_list, headers='keys', tablefmt='grid'))
-
-

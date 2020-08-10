@@ -492,38 +492,34 @@ def input_recommendation_to_account_menu():
         aux_index = aux_index + 1
 
     if len(enabled_skus) < 25:
-        print(text.Red + '\n- [Global Recommendation Service] The account must have at least 25 enabled products to '
-                         'proceed')
+        print(text.Red + '\n- The account must have at least 25 enabled products to proceed')
         printFinishApplicationMenu()
 
     if recommendation_type == 'QUICK_ORDER':
         quick_order_response = request_quick_order(zone, environment, abi_id, enabled_skus)
         if quick_order_response == 'success':
-            print(text.Green + '\n- [Global Recommendation Service] Quick order items added successfully')
+            print(text.Green + '\n- Quick order items added successfully')
         else:
-            print(text.Red + '\n- [Global Recommendation Service] Failure to add quick order items. Response Status: '
-                  + str(quick_order_response.status_code) + '. Response message ' + quick_order_response.text)
             printFinishApplicationMenu()
     elif recommendation_type == 'CROSS_SELL_UP_SELL':
         sell_up_response = request_sell_up(zone, environment, abi_id, enabled_skus)
         if sell_up_response == 'success':
-            print(text.Green + '\n- [Global Recommendation Service] Up sell items added successfully')
-            print(text.Yellow + '\n- [Global Recommendation Service] Up sell trigger: Add 3 of any products to the cart'
-                                ' / Cart viewed with a product inside')
+            print(text.Green + '\n- Up sell items added successfully')
+            print(text.Yellow + '- Up sell trigger: Add 3 of any products to the cart / Cart viewed with a product '
+                                'inside')
         else:
-            print(text.Red + '\n- [Global Recommendation Service] Failure to add up sell items. Response Status: '
-                  + str(sell_up_response.status_code) + '. Response message ' + sell_up_response.text)
             printFinishApplicationMenu()
     elif recommendation_type == 'FORGOTTEN_ITEMS':
         forgotten_items_response = request_forgotten_items(zone, environment, abi_id, enabled_skus)
         if forgotten_items_response == 'success':
-            print(text.Green + '\n- [Global Recommendation Service] Forgotten items added successfully')
+            print(text.Green + '\n- Forgotten items added successfully')
         else:
-            print(text.Red + '\n- [Global Recommendation Service] Failure to add forgotten items. Response Status: '
-                  + str(forgotten_items_response.status_code) + '. Response message ' + forgotten_items_response.text)
             printFinishApplicationMenu()
     else:
-        create_all_recommendations(zone, environment, abi_id, enabled_skus)
+        if 'success' == create_all_recommendations(zone, environment, abi_id, enabled_skus):
+            print(text.Green + '\n- All recommendation use cases were added (quick order, up sell and forgotten items)')
+            print(text.Yellow + '- Up sell trigger: Add 3 of any products to the cart / Cart viewed with a product '
+                                'inside')
 
 
 # Input Deals to an account
