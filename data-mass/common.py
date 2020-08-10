@@ -5,6 +5,7 @@ from time import time
 import os
 import sys
 import json
+
 from classes.text import text
 from datetime import date, datetime
 from jsonpath_rw import Index, Fields
@@ -102,7 +103,7 @@ def validate_option_request_selection_for_structure_3(option):
 
 
 # Validate lenght of Account ID
-def validateAccount(account_id, zone):
+def validate_account(account_id, zone):
     size_account_id = len(account_id)
 
     if size_account_id == 0:
@@ -855,25 +856,24 @@ def print_quantity_menu():
     return quantity
 
 
-# Print Account ID menu
-#   validate_string_account -- For microservices, a character number pattern was determined 
-#       for account creation, however not all zones use this pattern (e.g. AR, CH, CO). 
-#       Therefore, for simulation, this parameter was created to allow using accounts that do not 
-#       follow this pattern of more than 10 characters
-def print_account_id_menu(zone):
+def print_account_id_menu_create_account(zone):
     abi_id = input(text.default_text_color + 'Account ID: ')
-
-    while validateAccount(str(abi_id), zone) != 'true':
-        if validateAccount(str(abi_id), zone) == 'error_0':
+    attempt = 0
+    while validate_account(str(abi_id), zone) != 'true' and attempt < 3:
+        if validate_account(str(abi_id), zone) == 'error_0':
             print(text.Red + '\n- Account ID should not be empty')
             abi_id = input(text.default_text_color + 'Account ID: ')
-        if validateAccount(str(abi_id), zone) == 'error_10':
+        if validate_account(str(abi_id), zone) == 'error_10':
             print(text.Red + '\n- Account ID must contain at least 10 characters')
             abi_id = input(text.default_text_color + 'Account ID: ')
-        elif validateAccount(str(abi_id), zone) == 'not_number':
+        elif validate_account(str(abi_id), zone) == 'not_number':
             print(text.Red + '\n- The account ID must be Numeric')
             abi_id = input(text.default_text_color + 'Account ID: ')
-    return str(abi_id)
+        attempt = attempt + 1
+    if attempt >= 3:
+        return 'false'
+    else:
+        return str(abi_id)
 
 
 # Print account name menu
@@ -1650,3 +1650,74 @@ def print_option_sku(zone):
             option = input(
                 text.default_text_color + 'Do you want to input this type of deal to a specific SKU (1. YES or 2. NO): ')
         return option
+
+
+def check_account_exists_microservice(abi_id, zone, environment):
+    # Get header request
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+
+    # Get base URL
+    request_url = get_microservice_base_url(environment) + '/accounts?accountId=' + abi_id
+
+    # Place request
+    response = place_request('GET', request_url, '', request_headers)
+
+    json_data = loads(response.text)
+    if response.status_code == 200 and len(json_data) != 0:
+        return json_data
+    elif response.status_code == 200 and len(json_data) == 0:
+        return json_data
+    else:
+        print(
+            text.Red + '\n- [Account Relay Service] Failure to found the account. Response Status: '
+            + str(response.status_code) + '. Response message ' + response.text)
+        return 'false'
+
+
+def validate_if_account_exist(account_id, zone, environment):
+    account = check_account_exists_microservice(account_id, zone, environment)
+    if account == 'false':
+        return 'error_api'
+    elif len(account) == 0:
+        return 'not_exist'
+    elif len(account) != 0:
+        return 'true'
+
+
+def print_account_id_menu(zone, environment):
+    abi_id = input(text.default_text_color + 'Account ID: ')
+    attempt = 0
+    while validate_account(str(abi_id), zone) != 'true' and attempt < 3 \
+            or validate_if_account_exist(abi_id, zone, environment) != 'true':
+        attempt = attempt + 1
+        if validate_account(str(abi_id), zone) == 'error_0':
+            print(text.Red + '\n- Account ID should not be empty')
+            if attempt >= 3:
+                return 'false'
+            else:
+                abi_id = input(text.default_text_color + 'Account ID: ')
+        elif validate_account(str(abi_id), zone) == 'error_10':
+            print(text.Red + '\n- Account ID must contain at least 10 characters')
+            if attempt >= 3:
+                return 'false'
+            else:
+                abi_id = input(text.default_text_color + 'Account ID: ')
+        elif validate_account(str(abi_id), zone) == 'not_number':
+            print(text.Red + '\n- The account ID must be Numeric')
+            if attempt >= 3:
+                return 'false'
+            else:
+                abi_id = input(text.default_text_color + 'Account ID: ')
+        elif validate_if_account_exist(abi_id, zone, environment) == 'not_exist':
+            print(text.Red + '\n- The account ID not exist')
+            if attempt >= 3:
+                return 'false'
+            else:
+                abi_id = input(text.default_text_color + 'Account ID: ')
+
+        elif validate_if_account_exist(abi_id, zone, environment) == 'error_api':
+            if attempt >= 3:
+                return 'false'
+            else:
+                abi_id = input(text.default_text_color + 'Account ID: ')
+    return str(abi_id)

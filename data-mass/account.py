@@ -3,25 +3,6 @@ from common import *
 from tabulate import tabulate
 
 
-def check_account_exists_microservice(abi_id, zone, environment):
-    # Get header request
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
-
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + '/accounts?accountId=' + abi_id
-
-    # Place request
-    response = place_request('GET', request_url, '', request_headers)
-
-    json_data = loads(response.text)
-    if response.status_code == 200 and len(json_data) != 0:
-        return json_data
-    elif response.status_code == 200 and len(json_data) == 0:
-        return json_data
-    else:
-        return 'false'
-
-
 def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environment, state):
     payment_term = None
     if zone.upper() == 'BR' and 'BANK_SLIP' in payment_method:
