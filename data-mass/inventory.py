@@ -3,6 +3,8 @@ from tabulate import tabulate
 from products import request_get_account_product_assortment, check_item_enabled, get_sku_name
 from classes.text import text
 from common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request
+from multiprocessing import Pool
+from itertools import repeat
 
 
 # Show all available SKUs of the account in the screen
@@ -10,37 +12,17 @@ def display_available_products_account(account_id, zone, environment, delivery_c
     # Retrieve all SKUs for the specified Account and DeliveryCenter IDs
     product_offers = request_get_account_product_assortment(account_id, zone, environment, delivery_center_id)
 
-    print(text.default_text_color + '\n[Inventory] Checking enabled products available in the account ' + account_id +
-          '. It may take a while...')
-
+    # Check if the SKU is enabled
     enabled_skus = list()
-    aux_index = 0
+    if len(product_offers):
+        with Pool(20) as pool:
+            enabled_skus = pool.starmap(check_item_enabled, zip(product_offers, repeat(zone), repeat(environment)))
 
-    while aux_index < len(product_offers):
-        # Check if the SKU is enabled on Items MS
-        sku_enable = check_item_enabled(product_offers[aux_index], zone, environment, True)
-
-        while not sku_enable:
-            if aux_index <= (len(product_offers) - 1):
-                aux_index = aux_index + 1
-                sku_enable = check_item_enabled(product_offers[aux_index], zone, environment, True)
-
-        enabled_skus.append(sku_enable)
-        aux_index = aux_index + 1
-
+    # Get SKU name
     if len(enabled_skus) > 0:
         quantity_enabled_skus = len(enabled_skus)
-
-        # Store the name of all enabled SKUs
-        sku_description = list()
-        aux_index = 0
-
-        while aux_index < quantity_enabled_skus:
-            sku_description.append(get_sku_name(zone, environment, enabled_skus[aux_index]))
-            aux_index = aux_index + 1
-
-    # Check if the account has at least one SKU enabled on it
-    if len(enabled_skus) > 0:
+        with Pool(20) as pool:
+            sku_name = pool.starmap(get_sku_name, zip(repeat(zone), repeat(environment), enabled_skus))
 
         stock_option = input(text.Yellow + '\nDo you want to choose which product will have the stock updated? '
                                            '\nIf you don\'t, stock will be added to all products linked to your '
@@ -61,7 +43,7 @@ def display_available_products_account(account_id, zone, environment, delivery_c
 
             while aux_index < quantity_enabled_skus:
                 print(text.default_text_color + '\n SKU: ' + text.Blue + enabled_skus[aux_index] + '  ||  ' +
-                      sku_description[aux_index].upper())
+                      sku_name[aux_index].upper())
                 aux_index = aux_index + 1
 
             sku_id = input(text.default_text_color + '\n Type here the SKU from the list above you want to add '
