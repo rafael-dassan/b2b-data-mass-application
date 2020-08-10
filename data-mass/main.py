@@ -257,10 +257,6 @@ def input_orders_to_account():
         printFinishApplicationMenu()
 
     if order_type == 'ACTIVE' or order_type == 'CANCELLED' or order_type == 'DELIVERED':
-        print(
-            text.default_text_color + '\nChecking enabled products for the account ' + abi_id + '. It may take a '
-                                                                                                'while...')
-
         # Call function to check if the account has products inside
         products_inventory_account = request_get_offers_microservice(abi_id, zone, environment,
                                                                      account[0]['deliveryCenterId'], True)
@@ -571,12 +567,12 @@ def input_deals_menu():
         product_sku = product['sku']
 
         # Check if the SKU is enabled on Items MS
-        deal_sku = check_item_enabled(product_sku, zone, environment, True)
+        deal_sku = check_item_enabled(product_sku, zone, environment)
         while not deal_sku:
             index_offers = randint(0, (len(product_offers) - 1))
             product = product_offers[index_offers]
             product_sku = product['sku']
-            deal_sku = check_item_enabled(product_sku, zone, environment, True)
+            deal_sku = check_item_enabled(product_sku, zone, environment)
 
         sku_list.append(product)
 
@@ -584,8 +580,7 @@ def input_deals_menu():
         deal_sku = input(text.default_text_color + 'SKU: ')
         exist_sku = check_item_enabled(deal_sku, zone, environment)
         while not exist_sku:
-            print(text.Red + '\n- SKU not found for country')
-            deal_sku = input(text.default_text_color + 'SKU: ')
+            deal_sku = input(text.default_text_color + '\nSKU: ')
             exist_sku = check_item_enabled(deal_sku, zone, environment)
     else:
         deal_sku = sku_list[0]['sku']
@@ -628,11 +623,11 @@ def input_combos_menu():
         sku = product_offers[index_offers]['sku']
 
         # Check if the SKU is enabled on Items MS
-        combo_item = check_item_enabled(sku, zone, environment, True)
+        combo_item = check_item_enabled(sku, zone, environment)
         while not combo_item:
             index_offers = randint(0, (len(product_offers) - 1))
             sku = product_offers[index_offers]['sku']
-            combo_item = check_item_enabled(sku, zone, environment, True)
+            combo_item = check_item_enabled(sku, zone, environment)
 
         if selection_structure == '1':
             while True:
@@ -657,11 +652,11 @@ def input_combos_menu():
                 sku = product_offers[index_offers]['sku']
 
                 # Check if the SKU is enabled on Items MS
-                combo_item = check_item_enabled(sku, zone, environment, True)
+                combo_item = check_item_enabled(sku, zone, environment)
                 while not combo_item:
                     index_offers = randint(0, (len(product_offers) - 1))
                     sku = product_offers[index_offers]['sku']
-                    combo_item = check_item_enabled(sku, zone, environment, True)
+                    combo_item = check_item_enabled(sku, zone, environment)
 
                 combo_free_good.append(combo_item)
                 aux_index = aux_index + 1
@@ -681,11 +676,11 @@ def input_combos_menu():
                 sku = product_offers[index_offers]['sku']
 
                 # Check if the SKU is enabled on Items MS
-                combo_item = check_item_enabled(sku, zone, environment, True)
+                combo_item = check_item_enabled(sku, zone, environment)
                 while not combo_item:
                     index_offers = randint(0, (len(product_offers) - 1))
                     sku = product_offers[index_offers]['sku']
-                    combo_item = check_item_enabled(sku, zone, environment, True)
+                    combo_item = check_item_enabled(sku, zone, environment)
 
                 combo_free_good.append(combo_item)
                 aux_index = aux_index + 1
@@ -840,7 +835,7 @@ def create_account_menu():
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone, environment)
 
-    if create_account_response == 'success' and account == 'success':
+    if create_account_response == 'success' and account != 'false':
         print(text.Green + '\n- Your account has been created! Now register on Web or Mobile applications')
     else:
         printFinishApplicationMenu()
