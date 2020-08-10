@@ -27,8 +27,6 @@ def populate_user_iam_b2c(country, environment, email, password, account_id):
                 account_response = check_account_exists_microservice(account_id[x], country, environment)
                 if account_response == 'false':
                     logger.error(log(Message.RETRIEVE_ACCOUNT_ERROR, {'account_id': account_id}))
-                elif len(account_response) == 0:
-                    logger.error(log(Message.ACCOUNT_NOT_FOUND_ERROR, {'account_id': account_id}))
                 else:
                     if 'success' != create_user(environment, country, email, password, account_id, account_id):
                         logger.error(log(Message.CREATE_USER_IAM_ERROR, {'email': email, 'account_id': account_id}))
