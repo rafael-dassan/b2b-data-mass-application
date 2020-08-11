@@ -73,14 +73,17 @@ def deals_information_menu():
     abi_id = print_account_id_menu(zone)
 
     account = check_account_exists_microservice(abi_id, zone, environment)
-
     if account == 'false':
         printFinishApplicationMenu()
 
-    if zone == 'AR' or zone == 'CL':
-        display_deals_information_promotion(abi_id, zone, environment)
+    if zone == 'CL' or zone == 'ZA':
+        deals = request_get_deals_promotion_service(abi_id, zone, environment)
+        if deals != 'false':
+            display_deals_information_promotion(abi_id, deals)
     else:
-        display_deals_information_promo_fusion(abi_id, zone, environment)
+        deals = request_get_deals_promo_fusion_service(zone, environment, abi_id)
+        if deals != 'false':
+            display_deals_information_promo_fusion(abi_id, deals)
 
 
 def product_information_menu():
@@ -546,16 +549,11 @@ def input_deals_menu():
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone, environment)
-
     if account == 'false':
         printFinishApplicationMenu()
 
-    accounts = list()
-    accounts.append(abi_id)
-
     # Request POC's associated products
     product_offers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'], True)
-
     if len(product_offers) == 0:
         print(text.Red + '\n- [Products] The account ' + abi_id + ' has no available products for purchase')
         printFinishApplicationMenu()
@@ -563,40 +561,46 @@ def input_deals_menu():
     sku_list = list()
     while len(sku_list) <= 2:
         index_offers = randint(0, (len(product_offers) - 1))
-        product = product_offers[index_offers]
-        product_sku = product['sku']
+        product_data = product_offers[index_offers]
+        sku = product_data['sku']
 
         # Check if the SKU is enabled on Items MS
-        deal_sku = check_item_enabled(product_sku, zone, environment)
-        while not deal_sku:
+        item_enabled = check_item_enabled(sku, zone, environment)
+        while not item_enabled:
             index_offers = randint(0, (len(product_offers) - 1))
-            product = product_offers[index_offers]
-            product_sku = product['sku']
-            deal_sku = check_item_enabled(product_sku, zone, environment)
+            product_data = product_offers[index_offers]
+            sku = product_data['sku']
+            item_enabled = check_item_enabled(sku, zone, environment)
 
-        sku_list.append(product)
+        sku_list.append(product_data)
 
     if option_sku == '1':
-        deal_sku = input(text.default_text_color + 'SKU: ')
-        exist_sku = check_item_enabled(deal_sku, zone, environment)
-        while not exist_sku:
-            deal_sku = input(text.default_text_color + '\nSKU: ')
-            exist_sku = check_item_enabled(deal_sku, zone, environment)
+        sku = input(text.default_text_color + 'SKU: ')
+        item_enabled = check_item_enabled(sku, zone, environment)
+        while not item_enabled:
+            sku = input(text.default_text_color + '\nSKU: ')
+            item_enabled = check_item_enabled(sku, zone, environment)
     else:
-        deal_sku = sku_list[0]['sku']
+        sku = sku_list[0]['sku']
 
     if selection_structure == '1':
-        input_discount_to_account(abi_id, accounts, deal_sku, deal_type, zone, environment)
+        response = input_discount_to_account(abi_id, sku, deal_type, zone, environment)
     elif selection_structure == '2':
-        input_stepped_discount_to_account(abi_id, accounts, deal_sku, deal_type, zone, environment)
+        response = input_stepped_discount_to_account(abi_id, sku, deal_type, zone, environment)
     elif selection_structure == '3':
-        input_free_good_to_account(abi_id, accounts, deal_sku, sku_list, deal_type, zone, environment)
+        response = input_free_good_to_account(abi_id, sku, sku_list, deal_type, zone, environment)
     elif selection_structure == '4':
-        input_stepped_free_good_to_account(abi_id, accounts, deal_sku, deal_type, zone, environment)
+        response = input_stepped_free_good_to_account(abi_id, sku, deal_type, zone, environment)
     else:
-        input_stepped_discount_with_qtd_to_account(abi_id, accounts, deal_sku, deal_type, zone, environment)
+        response = input_stepped_discount_with_qtd_to_account(abi_id, sku, deal_type, zone, environment)
 
-    printFinishApplicationMenu()
+    if response != 'false':
+        print(text.Green + '\n- Deal ' + response + ' created successfully')
+        if zone == 'ZA':
+            print(text.Yellow + '- Please, run the cron jobs `webjump_discount_import` and `webjump_discount_update_'
+                                'online_customers` to import your deal')
+    else:
+        printFinishApplicationMenu()
 
 
 # Input combos by account
