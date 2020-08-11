@@ -65,7 +65,9 @@ def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environ
     if response.status_code == 202:
         return 'success'
     else:
-        return response.status_code
+        print('\n- [Account Relay Service] Failure to create the account ' + abi_id + '. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
+        return 'false'
 
 
 def display_account_information(account):
