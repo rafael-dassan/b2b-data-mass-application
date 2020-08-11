@@ -1,0 +1,58 @@
+{
+    "accounts": "string",
+    "deals": [
+        {
+            "dealId": "string",
+            "externalId": "string",
+            "accumulationType": null,
+            "priority": 1,
+            "budget": null,
+            "quantityLimit": null,
+            "availability": null,
+            "conditions": {
+                "simulationDateTime": [
+                    {
+                        "startDate": "string",
+                        "endDate": "string",
+                        "startTime": "00:00:00",
+                        "endTime": "23:59:59"
+                    }
+                ]
+            },
+            "output": {
+                "freeGoods": {
+                    "partial": "string",
+                    "fixed": false,
+                    "proportion": "string",
+                    "freeGoods": [
+                        {
+                            "skus": [
+                                {
+                                    "sku": "string",
+                                    "measureUnit": "UNIT",
+                                    "price": "string"
+                                }
+                            ],
+                            "quantity": 0
+                        },
+                        {
+                            "skus": [
+                                {
+                                    "sku": "string",
+                                    "measureUnit": "UNIT",
+                                    "price": "string"
+                                },
+                                {
+                                    "sku": "string",
+                                    "measureUnit": "UNIT",
+                                    "price": "string"
+                                }
+                            ],
+                            "quantity": 0
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

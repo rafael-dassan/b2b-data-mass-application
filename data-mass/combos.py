@@ -4,15 +4,13 @@ from common import *
 from classes.text import text
 
 
-def input_combo_type_discount(abi_id, zone, environment, combo_item, discount_value):
+def input_combo_type_discount(abi_id, zone, environment, sku, discount_value):
     combo_id = 'DM-' + str(randint(1, 100000))
-    accounts = list()
-    accounts.append(abi_id)
     
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/combo-relay/accounts'
     
-    original_price = get_sku_price(abi_id, combo_item, zone, environment)
+    original_price = get_sku_price(abi_id, sku, zone, environment)
     price = round(original_price - original_price * (discount_value/100), 2)
     score = randint(1, 100)
 
@@ -25,10 +23,10 @@ def input_combo_type_discount(abi_id, zone, environment, combo_item, discount_va
         json_data = json.load(file)
 
     dict_values = {
-        'accounts': accounts,
+        'accounts': [abi_id],
         'combos[0].description': combo_id + ' type discount',
         'combos[0].id': combo_id,
-        'combos[0].items[0].sku': combo_item,
+        'combos[0].items[0].sku': sku,
         'combos[0].originalPrice': original_price,
         'combos[0].price': price,
         'combos[0].score': score,
@@ -48,28 +46,28 @@ def input_combo_type_discount(abi_id, zone, environment, combo_item, discount_va
     # Get header request
     request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
 
-    # Send request
-    response = place_request('POST', request_url, request_body, request_headers)
+    # Send requests
+    create_combo_response = place_request('POST', request_url, request_body, request_headers)
+    update_consumption_response = update_combo_consumption(abi_id, zone, environment, combo_id)
 
-    if response.status_code == 201:
-        print(text.Green + '\n- Combo ' + combo_id + ' successfully registered')
-        print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to import your combo, so '
-                            'it can be used in the front-end applications')
-        update_combo_consumption(abi_id, zone, environment, combo_id)
-        return 'success'
+    if create_combo_response.status_code == 201:
+        if update_consumption_response == 'success':
+            return 'success'
+        else:
+            return 'false'
     else:
-        return response
+        print(text.Red + '\n- [Combo Relay Service] Failure when creating a new combo. Response Status: '
+              + str(create_combo_response.status_code) + '. Response message ' + create_combo_response.text)
+        return 'false'
 
 
-def input_combo_type_free_good(abi_id, zone, environment, combo_item, combo_free_good):
+def input_combo_type_free_good(abi_id, zone, environment, sku):
     combo_id = 'DM-' + str(randint(1, 100000))
-    accounts = list()
-    accounts.append(abi_id)
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/combo-relay/accounts'
 
-    price = get_sku_price(abi_id, combo_item, zone, environment)
+    price = get_sku_price(abi_id, sku, zone, environment)
     score = randint(1, 100)
 
     # Create file path
@@ -81,10 +79,10 @@ def input_combo_type_free_good(abi_id, zone, environment, combo_item, combo_free
         json_data = json.load(file)
 
     dict_values = {
-        'accounts': accounts,
+        'accounts': [abi_id],
         'combos[0].description': combo_id + ' type free good',
         'combos[0].id': combo_id,
-        'combos[0].items[0].sku': combo_item,
+        'combos[0].items[0].sku': sku,
         'combos[0].originalPrice': price,
         'combos[0].price': price,
         'combos[0].score': score,
@@ -92,7 +90,7 @@ def input_combo_type_free_good(abi_id, zone, environment, combo_item, combo_free
         'combos[0].type': 'FG',
         'combos[0].externalId': combo_id,
         'combos[0].freeGoods.quantity': 1,
-        'combos[0].freeGoods.skus': combo_free_good
+        'combos[0].freeGoods.skus': [sku]
     }
 
     for key in dict_values.keys():
@@ -105,22 +103,22 @@ def input_combo_type_free_good(abi_id, zone, environment, combo_item, combo_free
     request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
 
     # Send request
-    response = place_request('POST', request_url, request_body, request_headers)
+    create_combo_response = place_request('POST', request_url, request_body, request_headers)
+    update_consumption_response = update_combo_consumption(abi_id, zone, environment, combo_id)
 
-    if response.status_code == 201:
-        print(text.Green + '\n- Combo ' + combo_id + ' successfully registered')
-        print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to import your combo, so '
-                            'it can be used in the front-end applications')
-        update_combo_consumption(abi_id, zone, environment, combo_id)
-        return 'success'
+    if create_combo_response.status_code == 201:
+        if update_consumption_response == 'success':
+            return 'success'
+        else:
+            return 'false'
     else:
-        return response
+        print(text.Red + '\n- [Combo Relay Service] Failure when creating a new combo. Response Status: '
+              + str(create_combo_response.status_code) + '. Response message ' + create_combo_response.text)
+        return 'false'
 
 
-def input_combo_free_good_only(abi_id, zone, environment, combo_free_good):
+def input_combo_free_good_only(abi_id, zone, environment, sku):
     combo_id = 'DM-' + str(randint(1, 100000))
-    accounts = list()
-    accounts.append(abi_id)
     score = randint(1, 100)
 
     # Get base URL
@@ -135,7 +133,7 @@ def input_combo_free_good_only(abi_id, zone, environment, combo_free_good):
         json_data = json.load(file)
 
     dict_values = {
-        'accounts': accounts,
+        'accounts': [abi_id],
         'combos[0].description': combo_id + ' with free good only',
         'combos[0].id': combo_id,
         'combos[0].items': None,
@@ -144,7 +142,7 @@ def input_combo_free_good_only(abi_id, zone, environment, combo_free_good):
         'combos[0].type': 'FG',
         'combos[0].externalId': combo_id,
         'combos[0].freeGoods.quantity': 1,
-        'combos[0].freeGoods.skus': combo_free_good
+        'combos[0].freeGoods.skus': [sku]
     }
 
     for key in dict_values.keys():
@@ -157,16 +155,18 @@ def input_combo_free_good_only(abi_id, zone, environment, combo_free_good):
     request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
 
     # Send request
-    response = place_request('POST', request_url, request_body, request_headers)
+    create_combo_response = place_request('POST', request_url, request_body, request_headers)
+    update_consumption_response = update_combo_consumption(abi_id, zone, environment, combo_id)
 
-    if response.status_code == 201:
-        print(text.Green + '\n- Combo ' + combo_id + ' successfully registered')
-        print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to import your combo, so '
-                            'it can be used in the front-end applications')
-        update_combo_consumption(abi_id, zone, environment, combo_id)
-        return 'success'
+    if create_combo_response.status_code == 201:
+        if update_consumption_response == 'success':
+            return 'success'
+        else:
+            return 'false'
     else:
-        return response
+        print(text.Red + '\n- [Combo Relay Service] Failure when creating a new combo. Response Status: '
+              + str(create_combo_response.status_code) + '. Response message ' + create_combo_response.text)
+        return 'false'
 
 
 # Turn combo quantity available
@@ -198,11 +198,12 @@ def update_combo_consumption(abi_id, zone, environment, combo_id):
 
     response = place_request('POST', request_url, request_body, request_headers)
 
-    if response.status_code != 201:
-        print(text.Red + '\n- [Combo Service] Failure to update combo consumption. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
+    if response.status_code == 201:
+        return 'success'
     else:
-        return 'true'
+        print(text.Red + '\n- [Combo Relay Service] Failure to update combo consumption. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
+        return 'false'
 
 
 def check_combo_exists_microservice(abi_id, zone, environment, combo_id):
@@ -210,7 +211,8 @@ def check_combo_exists_microservice(abi_id, zone, environment, combo_id):
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
 
     # Get base URL
-    request_url = get_microservice_base_url(environment) + '/combos/?accountID=' + abi_id + '&comboIds=' + combo_id + '&includeDeleted=false&includeDisabled=false'
+    request_url = get_microservice_base_url(environment) + '/combos/?accountID=' + abi_id + '&comboIds=' + combo_id \
+                  + '&includeDeleted=false&includeDisabled=false'
 
     # Place request
     response = place_request('GET', request_url, '', request_headers)
@@ -219,6 +221,9 @@ def check_combo_exists_microservice(abi_id, zone, environment, combo_id):
     if response.status_code == 200 and len(json_data) != 0:
         return json_data
     elif response.status_code == 200 and len(json_data) == 0:
-        return json_data
+        print(text.Red + '\n- [Combo Service] The combo ' + combo_id + ' does not exist')
+        return 'false'
     else:
+        print(text.Red + '\n- [Combo Service] Failure to retrieve the combo. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
         return 'false'

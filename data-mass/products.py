@@ -262,7 +262,7 @@ def request_get_offers_microservice(abi_id, zone, environment, delivery_center_i
               + str(response.status_code) + '. Response message ' + response.text)
 
 
-def check_item_enabled(sku, zone, environment, return_item_data=False):
+def check_item_enabled(sku, zone, environment):
     # Get base URL
     request_url = get_microservice_base_url(environment, 'false') + '/items/' + sku + '?includeDisabled=false'
 
@@ -273,16 +273,16 @@ def check_item_enabled(sku, zone, environment, return_item_data=False):
     response = place_request('GET', request_url, '', request_headers)
 
     json_data = loads(response.text)
+
     if response.status_code == 200 and len(json_data) != 0:
-        if return_item_data:
-            return json_data['sku']
-        else:
-            return True
+        return json_data['sku']
     elif response.status_code == 404:
+        print(text.Red + '\n- [Item Service] SKU ' + sku + ' not found for country ' + zone)
         return False
     else:
-        print(text.Red + '\n- [Items] Something went wrong when searching for items')
-        finishApplication()
+        print(text.Red + '\n- [Item Service] Failure to retrieve the SKU ' + sku + '. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
+        return False
 
 
 def request_get_response_products_by_account_microservice(abi_id, zone, environment):

@@ -66,7 +66,7 @@ def populate_delivery_window(country, environment, account_id):
         "deliveryScheduleId": account_id,
         "accountId": account_id
     }
-    if "success" != create_delivery_window_microservice(account_id, country, environment, account_data, "false"):
+    if "success" != create_delivery_window_microservice(country, environment, account_data, "false"):
         logger.error(log(Message.DELIVERY_WINDOW_ERROR,
                          {"account_id": account_id}))
 
@@ -154,6 +154,6 @@ def associate_products_to_account(country, environment, account_id, products):
     if "success" != request_post_products_account_microservice(account['accountId'], country, environment, account['deliveryCenterId'], products_data):
         logger.error(log(Message.PRODUCT_ERROR, {"account_id": account_id}))
 
-    if country != "BR":
+    if country != "BR" and country != "CL":
         # Populate the default inventory for AR, CO, DO and ZA
         populate_default_inventory(account_id, country, environment, account['deliveryCenterId'])

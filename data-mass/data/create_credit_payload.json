@@ -1,0 +1,9 @@
+{
+    "accountId": "string",
+    "available": 0,
+    "balance": 0,
+    "consumption": 0,
+    "overdue": 0,
+    "paymentTerms": null,
+    "total": 0
+  }

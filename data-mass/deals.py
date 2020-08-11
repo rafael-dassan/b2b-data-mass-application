@@ -222,14 +222,28 @@ def input_free_good_to_account(abi_id, accounts, deal_sku, sku_list, deal_type, 
         while partial_free_good.upper() != 'Y' and partial_free_good.upper() != 'N':
             print(text.Red + '\n- Invalid option')
             partial_free_good = input(text.default_text_color + 'Would you like to register this free goods as an optional SKU rescue? (y/n): ')
+    
 
-    free_good_sku = deal_sku
-    minimum_quantity = print_minimum_quantity_menu()
-    quantity = print_quantity_menu()
+    #validate if like optional free good associate in buy something
+    need_buy_product = 'Y'
+    if partial_free_good.upper() == 'Y':
+        need_buy_product = input(text.default_text_color + 'Would you like to link the redemption of an optional free good to the purchase of a sku? (y/n): ')
+        while need_buy_product.upper() != 'Y' and need_buy_product.upper() != 'N':
+            print(text.Red + '\n- Invalid option')
+            need_buy_product = input(text.default_text_color + 'Would you like to link the redemption of an optional free good to the purchase of a sku? (y/n): ')
+
+    if need_buy_product.upper() == 'Y':
+        free_good_sku = deal_sku
+        minimum_quantity = print_minimum_quantity_menu()
+        quantity = print_quantity_menu()
+    else:
+        free_good_sku = deal_sku
+        minimum_quantity = 1
+        quantity = 1
 
     promotion_response = input_deal_to_account(abi_id, deal_sku, free_good_sku, deal_type, zone, environment)
 
-    cart_response = input_free_good_to_cart_calculation_v2(promotion_response, accounts, zone, environment, deal_sku, sku_list, minimum_quantity, quantity, partial_free_good)
+    cart_response = input_free_good_to_cart_calculation_v2(promotion_response, accounts, zone, environment, deal_sku, sku_list, minimum_quantity, quantity, partial_free_good, need_buy_product)
 
     if promotion_response == 'false' or cart_response != 'success':
         print(text.Red + '\n- [Deals] Something went wrong, please try again')
@@ -255,7 +269,7 @@ def input_stepped_free_good_to_account(abi_id, accounts, deal_sku, deal_type, zo
         print(text.default_text_color + '\n- Deal ID: ' + promotion_response)
 
 
-def input_free_good_to_cart_calculation_v2(deal_id, accounts, zone, environment, deal_sku, sku_list, minimum_quantity, quantity, partial_free_good):
+def input_free_good_to_cart_calculation_v2(deal_id, accounts, zone, environment, deal_sku, sku_list, minimum_quantity, quantity, partial_free_good, need_buy_product):
     """
     Input deal type free good rules (API version 2) to the Pricing Engine Relay Service
     Args:
@@ -287,31 +301,54 @@ def input_free_good_to_cart_calculation_v2(deal_id, accounts, zone, environment,
     # Get deal's start and end dates
     dates_payload = return_first_and_last_date_year_payload()
 
-    # Create dictionary with deal's values
-    dict_values = {
-        'accounts': accounts,
-        'deals[0].dealId': deal_id,
-        'deals[0].externalId': deal_id,
-        'deals[0].accumulationType': accumulation_type,
-        'deals[0].conditions.simulationDateTime[0].startDate': dates_payload['startDate'],
-        'deals[0].conditions.simulationDateTime[0].endDate': dates_payload['endDate'],
-        'deals[0].conditions.lineItem.skus': [deal_sku],
-        'deals[0].conditions.lineItem.minimumQuantity': minimum_quantity,
-        'deals[0].output.freeGoods.proportion': minimum_quantity,
-        'deals[0].output.freeGoods.partial': boolean_partial_free_good,
-        'deals[0].output.freeGoods.freeGoods[0].skus[0].sku': sku_list[0]['sku'],
-        'deals[0].output.freeGoods.freeGoods[0].skus[0].price': sku_list[0]['price'],
-        'deals[0].output.freeGoods.freeGoods[0].quantity': quantity,
-        'deals[0].output.freeGoods.freeGoods[1].skus[0].sku': sku_list[1]['sku'],
-        'deals[0].output.freeGoods.freeGoods[1].skus[0].price': sku_list[1]['price'],
-        'deals[0].output.freeGoods.freeGoods[1].skus[1].sku': sku_list[2]['sku'],
-        'deals[0].output.freeGoods.freeGoods[1].skus[1].price': sku_list[2]['price'],
-        'deals[0].output.freeGoods.freeGoods[1].quantity': quantity
-    }
+    if need_buy_product.upper() == 'Y':
+        path_file = 'data/create_free_good_payload_v2.json'
+        # Create dictionary with deal's values
+        dict_values = {
+            'accounts': accounts,
+            'deals[0].dealId': deal_id,
+            'deals[0].externalId': deal_id,
+            'deals[0].accumulationType': accumulation_type,
+            'deals[0].conditions.simulationDateTime[0].startDate': dates_payload['startDate'],
+            'deals[0].conditions.simulationDateTime[0].endDate': dates_payload['endDate'],
+            'deals[0].conditions.lineItem.skus': [deal_sku],
+            'deals[0].conditions.lineItem.minimumQuantity': minimum_quantity,
+            'deals[0].output.freeGoods.proportion': minimum_quantity,
+            'deals[0].output.freeGoods.partial': boolean_partial_free_good,
+            'deals[0].output.freeGoods.freeGoods[0].skus[0].sku': sku_list[0]['sku'],
+            'deals[0].output.freeGoods.freeGoods[0].skus[0].price': sku_list[0]['price'],
+            'deals[0].output.freeGoods.freeGoods[0].quantity': quantity,
+            'deals[0].output.freeGoods.freeGoods[1].skus[0].sku': sku_list[1]['sku'],
+            'deals[0].output.freeGoods.freeGoods[1].skus[0].price': sku_list[1]['price'],
+            'deals[0].output.freeGoods.freeGoods[1].skus[1].sku': sku_list[2]['sku'],
+            'deals[0].output.freeGoods.freeGoods[1].skus[1].price': sku_list[2]['price'],
+            'deals[0].output.freeGoods.freeGoods[1].quantity': quantity
+        }
+    else:
+        path_file = 'data/create_free_good_no_buy_item_payload_v2.json'
+        # Create dictionary with deal's values
+        dict_values = {
+            'accounts': accounts,
+            'deals[0].dealId': deal_id,
+            'deals[0].externalId': deal_id,
+            'deals[0].accumulationType': accumulation_type,
+            'deals[0].conditions.simulationDateTime[0].startDate': dates_payload['startDate'],
+            'deals[0].conditions.simulationDateTime[0].endDate': dates_payload['endDate'],
+            'deals[0].output.freeGoods.proportion': 1,
+            'deals[0].output.freeGoods.partial': boolean_partial_free_good,
+            'deals[0].output.freeGoods.freeGoods[0].skus[0].sku': sku_list[0]['sku'],
+            'deals[0].output.freeGoods.freeGoods[0].skus[0].price': sku_list[0]['price'],
+            'deals[0].output.freeGoods.freeGoods[0].quantity': quantity,
+            'deals[0].output.freeGoods.freeGoods[1].skus[0].sku': sku_list[1]['sku'],
+            'deals[0].output.freeGoods.freeGoods[1].skus[0].price': sku_list[1]['price'],
+            'deals[0].output.freeGoods.freeGoods[1].skus[1].sku': sku_list[2]['sku'],
+            'deals[0].output.freeGoods.freeGoods[1].skus[1].price': sku_list[2]['price'],
+            'deals[0].output.freeGoods.freeGoods[1].quantity': quantity
+        }
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_free_good_payload_v2.json')
+    file_path = os.path.join(path, path_file)
 
     # Load JSON file
     with open(file_path) as file:
