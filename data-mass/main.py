@@ -27,7 +27,7 @@ def showMenu():
             '3': input_credit_menu,
             '4': input_delivery_window_menu,
             '5': input_recommendation_to_account_menu,
-            '6': inputInventoryToProduct,
+            '6': input_inventory_to_product,
             '7': input_orders_to_account,
             '8': input_deals_menu,
             '9': input_combos_menu,
@@ -70,21 +70,19 @@ def showMenu():
 def deals_information_menu():
     zone = print_zone_menu_data_searching_deals()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu(zone)
+    abi_id = print_account_id_menu(zone, environment)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     account = check_account_exists_microservice(abi_id, zone, environment)
 
     if account == 'false':
-        print(text.Red + '\n- [Account] Something went wrong, please try again')
-        printFinishApplicationMenu()
-    elif len(account) == 0:
-        print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
     if zone == 'AR' or zone == 'CL':
-        display_deals_information_promotion(abi_id, zone.upper(), environment.upper())
+        display_deals_information_promotion(abi_id, zone, environment)
     else:
-        display_deals_information_promo_fusion(abi_id, zone.upper(), environment.upper())
+        display_deals_information_promo_fusion(abi_id, zone, environment)
 
 
 def product_information_menu():
@@ -101,14 +99,12 @@ def product_information_menu():
 
     if products_type == 'PRODUCT':
         zone = print_zone_menu_for_ms()
-        abi_id = print_account_id_menu(zone)
+        abi_id = print_account_id_menu(zone, environment)
+        if abi_id == 'false':
+            printFinishApplicationMenu()
         account = check_account_exists_microservice(abi_id, zone, environment)
 
         if account == 'false':
-            print(text.Red + '\n- [Account] Something went wrong, please try again')
-            printFinishApplicationMenu()
-        elif len(account) == 0:
-            print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
             printFinishApplicationMenu()
 
         product_offers = request_get_products_by_account_microservice(abi_id, zone, environment)
@@ -119,15 +115,13 @@ def product_information_menu():
             display_product_information(product_offers)
     elif products_type == 'INVENTORY':
         zone = print_zone_menu_for_inventory()
-        abi_id = print_account_id_menu(zone)
-        
+        abi_id = print_account_id_menu(zone, environment)
+        if abi_id == 'false':
+            printFinishApplicationMenu()
+
         account = check_account_exists_microservice(abi_id, zone, environment)
 
         if account == 'false':
-            print(text.Red + '\n- [Account] Something went wrong, please try again')
-            printFinishApplicationMenu()
-        elif len(account) == 0:
-            print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
             printFinishApplicationMenu()
 
         delivery_center_id = account[0]['deliveryCenterId']
@@ -150,14 +144,12 @@ def account_information_menu():
     account_type = switcher.get(selection_structure, 'false')
 
     if account_type == 'ONE_ACCOUNT':
-        abi_id = print_account_id_menu(zone)
+        abi_id = print_account_id_menu(zone, environment)
+        if abi_id == 'false':
+            printFinishApplicationMenu()
         account = check_account_exists_microservice(abi_id, zone, environment)
 
         if account == 'false':
-            print(text.Red + '\n- [Account] Something went wrong, please try again')
-            printFinishApplicationMenu()
-        elif len(account) == 0:
-            print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
             printFinishApplicationMenu()
 
         display_account_information(account)
@@ -200,20 +192,16 @@ def create_rewards_to_account():
         else:
             printFinishApplicationMenu()
     # Option to enroll POC to a program
-    elif reward_option == 'ENROLL_POC':   
-        
+    elif reward_option == 'ENROLL_POC':
+
         abi_id = print_account_id_menu(zone)
 
         # Call check account exists function
-        account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+        account = check_account_exists_microservice(abi_id, zone, environment)
 
         if account == 'false':
-            print(text.Red + '\n- [Account] Something went wrong, please try again')
             printFinishApplicationMenu()
-        elif len(account) == 0:
-            print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
-            printFinishApplicationMenu()
-        
+
         enroll_poc = enroll_poc_to_program(abi_id, zone, environment)
 
         if enroll_poc == 'false':
@@ -222,19 +210,15 @@ def create_rewards_to_account():
         printFinishApplicationMenu()
     # Option to input challenges to a specific zone
     elif reward_option == 'ADD_CHALLENGE':
-           
+
         abi_id = print_account_id_menu(zone)
 
         # Call check account exists function
-        account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+        account = check_account_exists_microservice(abi_id, zone, environment)
 
         if account == 'false':
-            print(text.Red + '\n- [Account] Something went wrong, please try again')
             printFinishApplicationMenu()
-        elif len(account) == 0:
-            print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
-            printFinishApplicationMenu()
-    
+
         add_challenge = input_challenge_to_zone(abi_id, zone, environment)
 
         if add_challenge == 'false':
@@ -244,7 +228,7 @@ def create_rewards_to_account():
     # Option to update initial balance of a program
     elif reward_option == 'UPDATE_BALANCE':
 
-        update_balance = update_program_balance(zone.upper(), environment.upper())
+        update_balance = update_program_balance(zone, environment)
 
         if update_balance == 'false':
             print(text.Red + '\n- [Rewards] Something went wrong, please try again')
@@ -257,12 +241,15 @@ def create_rewards_to_account():
         else:
             printFinishApplicationMenu()
 
+
 # Input Orders to account (active and cancelled ones)
 def input_orders_to_account():
     selection_structure = print_orders_menu()
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu(zone)
+    abi_id = print_account_id_menu(zone, environment)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     switcher = {
         '1': 'ACTIVE',
@@ -274,47 +261,43 @@ def input_orders_to_account():
     order_type = switcher.get(selection_structure, 'false')
 
     # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+    account = check_account_exists_microservice(abi_id, zone, environment)
 
     if account == 'false':
-        print(text.Red + '\n- [Account] Something went wrong, please try again')
-        printFinishApplicationMenu()
-    elif len(account) == 0:
-        print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
     if order_type == 'ACTIVE' or order_type == 'CANCELLED' or order_type == 'DELIVERED':
-        print(
-            text.default_text_color + '\nChecking enabled products for the account ' + abi_id + '. It may take a while...')
-
         # Call function to check if the account has products inside
-        products_inventory_account = request_get_offers_microservice(abi_id, zone.upper(), environment.upper(),
+        products_inventory_account = request_get_offers_microservice(abi_id, zone, environment,
                                                                      account[0]['deliveryCenterId'], True)
 
         if len(products_inventory_account) != 0:
             # Call function to configure prefix and order number size in the database sequence
-            order_params = configure_order_params(zone.upper(), environment.upper(), 1)
+            order_params = configure_order_params(zone, environment, 1)
 
             if order_params == 'false':
-                print(text.Red + '\n- [Order Creation] Something went wrong when configuring order params, please try again')
+                print(text.Red + '\n- [Order Creation] Something went wrong when configuring order params, please '
+                                 'try again')
                 printFinishApplicationMenu()
             else:
                 # Call function to create the Order according to the 'order_option' parameter (active or cancelled)
-                create_order = create_order_account(abi_id, zone.upper(), environment.upper(), account[0]['deliveryCenterId'], order_type)
+                create_order = create_order_account(abi_id, zone, environment, account[0]['deliveryCenterId'],
+                                                    order_type)
 
                 if create_order == 'error_len':
-                    print(text.Red + '\n- [Order Creation] The account must have at least two enabled products to proceed')
+                    print(text.Red + '\n- [Order Creation] The account must have at least two enabled products to '
+                                     'proceed')
                     printFinishApplicationMenu()
                 elif create_order == 'false':
                     print(text.Red + '\n- [Order Creation] Something went wrong, please try again')
                     printFinishApplicationMenu()
                 elif create_order == 'true':
                     # Call function to re-configure prefix and order number size to the previous format
-                    order_params = configure_order_params(zone.upper(), environment.upper(), 2)
+                    order_params = configure_order_params(zone, environment, 2)
                     printFinishApplicationMenu()
         else:
-            print(
-                text.Red + '\n- [Order Creation] The account has no products inside. Use the menu option 02 to add them first')
+            print(text.Red + '\n- [Order Creation] The account has no products inside. Use the menu option 02 to add '
+                             'them first')
             printFinishApplicationMenu()
     else:
         order_id = print_order_id_menu()
@@ -330,8 +313,8 @@ def create_item_menu():
     environment = printEnvironmentMenu()
     item_data = get_item_input_data()
 
-    response = create_item(zone.upper(), environment.upper(), item_data)
-    if response != None:
+    response = create_item(zone, environment, item_data)
+    if response is not None:
         print(text.Green + '\n- [Item Service] The item was created successfully')
         print(text.default_text_color + '- Item ID: ' + response.get('sku') + ' / Item name: ' + response.get('name'))
 
@@ -340,16 +323,14 @@ def create_item_menu():
 def check_simulation_service_account_microservice_menu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu(zone)
+    abi_id = print_account_id_menu(zone, environment)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+    account = check_account_exists_microservice(abi_id, zone, environment)
 
     if account == 'false':
-        print(text.Red + '\n- [Account] Something went wrong, please try again')
-        printFinishApplicationMenu()
-    elif len(account) == 0:
-        print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
     order_items = list()
@@ -396,7 +377,8 @@ def check_simulation_service_account_microservice_menu():
             more_combo = input(text.default_text_color + "Would you like to include more skus for simulation? (y/N) ")
 
     # input combo sku in simulation
-    input_order_empties = input(text.default_text_color + "Would you like to include a new empties sku for simulation? (y/n) ")
+    input_order_empties = input(
+        text.default_text_color + "Would you like to include a new empties sku for simulation? (y/n) ")
     while input_order_empties.upper() != "Y" and input_order_empties.upper() != "N":
         print(text.Red + "\n- Invalid option\n")
         input_order_empties = input(
@@ -416,7 +398,7 @@ def check_simulation_service_account_microservice_menu():
             more_empties = input(text.default_text_color + "Would you like to include more skus for simulation? (y/N) ")
 
     # Payment Method menu
-    payment_method = print_payment_method_simulation_menu(zone.upper())
+    payment_method = print_payment_method_simulation_menu(zone)
     if payment_method.upper() == "BANK_SLIP":
         payment_term = input(text.default_text_color + "Enter the number of days the bill will expire: ")
         while is_number(payment_term) == "false":
@@ -434,16 +416,14 @@ def check_simulation_service_account_microservice_menu():
 def check_simulation_service_mdw_menu():
     zone = print_zone_simulation_menu("true")
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu(zone)
+    abi_id = print_account_id_menu(zone, environment)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+    account = check_account_exists_microservice(abi_id, zone, environment)
 
     if account == 'false':
-        print(text.Red + '\n- [Account] Something went wrong, please try again')
-        printFinishApplicationMenu()
-    elif len(account) == 0:
-        print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
     order_items = list()
@@ -467,48 +447,42 @@ def check_simulation_service_mdw_menu():
             more_sku = input(text.default_text_color + "Would you like to include more skus for simulation? (y/N) ")
 
     # Payment Method menu
-    payment_method = print_payment_method_simulation_menu(zone.upper())
+    payment_method = print_payment_method_simulation_menu(zone)
     process_simulation_middleware(zone, environment, abi_id, account, order_items, payment_method)
     printFinishApplicationMenu()
 
 
-# Input Inventory to a SKU
-def inputInventoryToProduct():
+# Input inventory (stock) to products
+def input_inventory_to_product():
     zone = print_zone_menu_for_inventory()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu(zone)
+    abi_id = print_account_id_menu(zone, environment)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
-    # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+    # Check if the account exists
+    account = check_account_exists_microservice(abi_id, zone, environment)
 
     if account == 'false':
-        print(text.Red + '\n- [Account] Something went wrong, please try again')
-        printFinishApplicationMenu()
-    elif len(account) == 0:
-        print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
-    # Call function to check if the account has products inside
-    products_inventory_account = request_get_account_product_assortment(abi_id, zone.upper(), environment.upper(),
-                                                                        account[0]['deliveryCenterId'])
+    # Check if the account has products
+    product_assortment = request_get_account_product_assortment(abi_id, zone, environment,
+                                                                account[0]['deliveryCenterId'])
 
-    if len(products_inventory_account) > 0:
+    if len(product_assortment) > 0:
         # Call function to display the SKUs on the screen
-        product_offers = display_available_products_account(abi_id, zone.upper(), environment.upper(),
-                                                            account[0]['deliveryCenterId'])
+        inventory = display_available_products_account(abi_id, zone, environment, account[0]['deliveryCenterId'])
 
-        if product_offers == "true":
-            print(text.Green + "\n- [Inventory] The inventory of the SKU has been added successfully.")
+        if inventory == 'true':
+            print(text.Green + '\n- The inventory has been added successfully for the account ' + abi_id)
+        elif inventory == 'error_len':
+            print(text.Red + '\n- There are no products available for the account ' + abi_id)
+            printFinishApplicationMenu()
         else:
-            if product_offers == "error_len":
-                print(text.Red + "\n- [Inventory] There are no products available in the chosen account.")
-                printFinishApplicationMenu()
-            else:
-                print(text.Red + "\n- [Inventory] Something went wrong, please try again.")
-                printFinishApplicationMenu()
+            printFinishApplicationMenu()
     else:
-        print(
-            text.Red + "\n- [Inventory] The account has no products inside. Use the menu option 02 to add them first.")
+        print(text.Red + '\n- There is no product associated with the account ' + abi_id)
         printFinishApplicationMenu()
 
 
@@ -517,20 +491,17 @@ def input_recommendation_to_account_menu():
     recommendation_type = print_recommendation_type_menu()
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu(zone)
+    abi_id = print_account_id_menu(zone, environment)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+    account = check_account_exists_microservice(abi_id, zone, environment)
 
     if account == 'false':
-        print(text.Red + '\n- [Account] Something went wrong, please try again')
-        printFinishApplicationMenu()
-    elif len(account) == 0:
-        print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
-    product_offers = request_get_offers_microservice(abi_id, zone.upper(), environment.upper(),
-                                                     account[0]['deliveryCenterId'], True)
+    product_offers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'], True)
 
     enabled_skus = list()
     aux_index = 0
@@ -540,40 +511,34 @@ def input_recommendation_to_account_menu():
         aux_index = aux_index + 1
 
     if len(enabled_skus) < 25:
-        print(text.Red + '\n- [Global Recommendation Service] The account must have at least 25 enabled products to '
-                         'proceed')
+        print(text.Red + '\n- The account must have at least 25 enabled products to proceed')
         printFinishApplicationMenu()
 
     if recommendation_type == 'QUICK_ORDER':
-        quick_order_response = request_quick_order(zone.upper(), environment.upper(), abi_id, enabled_skus)
+        quick_order_response = request_quick_order(zone, environment, abi_id, enabled_skus)
         if quick_order_response == 'success':
-            print(text.Green + '\n- [Global Recommendation Service] Quick order items added successfully')
+            print(text.Green + '\n- Quick order items added successfully')
         else:
-            print(text.Red + '\n- [Global Recommendation Service] Failure to add quick order items. Response Status: '
-                  + str(quick_order_response.status_code) + '. Response message ' + quick_order_response.text)
             printFinishApplicationMenu()
     elif recommendation_type == 'CROSS_SELL_UP_SELL':
-        sell_up_response = request_sell_up(zone.upper(), environment.upper(), abi_id, enabled_skus)
+        sell_up_response = request_sell_up(zone, environment, abi_id, enabled_skus)
         if sell_up_response == 'success':
-            print(text.Green + '\n- [Global Recommendation Service] Up sell items added successfully')
-            print(text.Yellow + '\n- [Global Recommendation Service] Up sell trigger: Add 3 of any products to the cart'
-                                ' / Cart viewed with a product inside')
+            print(text.Green + '\n- Up sell items added successfully')
+            print(text.Yellow + '- Up sell trigger: Add 3 of any products to the cart / Cart viewed with a product '
+                                'inside')
         else:
-            print(text.Red + '\n- [Global Recommendation Service] Failure to add up sell items. Response Status: '
-                  + str(sell_up_response.status_code) + '. Response message ' + sell_up_response.text)
             printFinishApplicationMenu()
     elif recommendation_type == 'FORGOTTEN_ITEMS':
-        forgotten_items_response = request_forgotten_items(zone.upper(), environment.upper(), abi_id, enabled_skus)
+        forgotten_items_response = request_forgotten_items(zone, environment, abi_id, enabled_skus)
         if forgotten_items_response == 'success':
-            print(text.Green + '\n- [Global Recommendation Service] Forgotten items added successfully')
+            print(text.Green + '\n- Forgotten items added successfully')
         else:
-            print(text.Red + '\n- [Global Recommendation Service] Failure to add forgotten items. Response Status: '
-                  + str(forgotten_items_response.status_code) + '. Response message ' + forgotten_items_response.text)
             printFinishApplicationMenu()
     else:
-        create_all_recommendations(zone.upper(), environment.upper(), abi_id, enabled_skus)
-
-    printFinishApplicationMenu()
+        if 'success' == create_all_recommendations(zone, environment, abi_id, enabled_skus):
+            print(text.Green + '\n- All recommendation use cases were added (quick order, up sell and forgotten items)')
+            print(text.Yellow + '- Up sell trigger: Add 3 of any products to the cart / Cart viewed with a product '
+                                'inside')
 
 
 # Input Deals to an account
@@ -581,7 +546,10 @@ def input_deals_menu():
     selection_structure = print_deals_menu()
     zone = print_zone_menu_for_deals()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu(zone)
+    abi_id = print_account_id_menu(zone, environment)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
+
     option_sku = print_option_sku(zone)
 
     switcher = {
@@ -598,10 +566,6 @@ def input_deals_menu():
     account = check_account_exists_microservice(abi_id, zone, environment)
 
     if account == 'false':
-        print(text.Red + '\n- [Account] Something went wrong, please try again')
-        printFinishApplicationMenu()
-    elif len(account) == 0:
-        print(text.Red + '\n- [Account] The account " + abi_id + " does not exist')
         printFinishApplicationMenu()
 
     accounts = list()
@@ -621,12 +585,12 @@ def input_deals_menu():
         product_sku = product['sku']
 
         # Check if the SKU is enabled on Items MS
-        deal_sku = check_item_enabled(product_sku, zone, environment, True)
+        deal_sku = check_item_enabled(product_sku, zone, environment)
         while not deal_sku:
             index_offers = randint(0, (len(product_offers) - 1))
             product = product_offers[index_offers]
             product_sku = product['sku']
-            deal_sku = check_item_enabled(product_sku, zone, environment, True)
+            deal_sku = check_item_enabled(product_sku, zone, environment)
 
         sku_list.append(product)
 
@@ -634,8 +598,7 @@ def input_deals_menu():
         deal_sku = input(text.default_text_color + 'SKU: ')
         exist_sku = check_item_enabled(deal_sku, zone, environment)
         while not exist_sku:
-            print(text.Red + '\n- SKU not found for country')
-            deal_sku = input(text.default_text_color + 'SKU: ')
+            deal_sku = input(text.default_text_color + '\nSKU: ')
             exist_sku = check_item_enabled(deal_sku, zone, environment)
     else:
         deal_sku = sku_list[0]['sku']
@@ -654,40 +617,30 @@ def input_deals_menu():
     printFinishApplicationMenu()
 
 
-# Input combos by account
+# Input combos to an account
 def input_combos_menu():
     selection_structure = print_combos_menu()
     zone = print_zone_menu_for_combos()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu(zone)
+    abi_id = print_account_id_menu(zone, environment)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+    account = check_account_exists_microservice(abi_id, zone, environment)
 
     if account == 'false':
-        print(text.Red + '\n- [Account] Something went wrong, please try again')
         printFinishApplicationMenu()
-    elif len(account) == 0:
-        print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
+
+    product_offers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'], True)
+    if len(product_offers) == 0:
+        print(text.Red + '\n- [Products] The account ' + str(abi_id) + ' has no products available for purchase')
         printFinishApplicationMenu()
+
+    index_offers = randint(0, (len(product_offers) - 1))
+    sku = product_offers[index_offers]['sku']
 
     if selection_structure != '4':
-        product_offers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'], True)
-
-        if len(product_offers) == 0:
-            print(text.Red + '\n- [Products] The account ' + str(abi_id) + ' has no products available for purchase')
-            printFinishApplicationMenu()
-
-        index_offers = randint(0, (len(product_offers) - 1))
-        sku = product_offers[index_offers]['sku']
-
-        # Check if the SKU is enabled on Items MS
-        combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
-        while not combo_item:
-            index_offers = randint(0, (len(product_offers) - 1))
-            sku = product_offers[index_offers]['sku']
-            combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
-
         if selection_structure == '1':
             while True:
                 try:
@@ -696,123 +649,74 @@ def input_combos_menu():
                 except ValueError:
                     print(text.Red + '\n- Invalid value')
 
-            response = input_combo_type_discount(abi_id, zone, environment, combo_item, discount_value)
-
-            if response != 'success':
-                print(text.Red + '\n- [Combo Service] Failure to combo type discount. Response Status: '
-                      + str(response.status_code) + '. Response message ' + response.text)
-                printFinishApplicationMenu()
-
-        elif selection_structure == "2":
-            combo_free_good = list()
-            aux_index = 0
-            while aux_index < 3:
-                index_offers = randint(0, (len(product_offers) - 1))
-                sku = product_offers[index_offers]['sku']
-
-                # Check if the SKU is enabled on Items MS
-                combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
-                while not combo_item:
-                    index_offers = randint(0, (len(product_offers) - 1))
-                    sku = product_offers[index_offers]['sku']
-                    combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
-
-                combo_free_good.append(combo_item)
-                aux_index = aux_index + 1
-
-            response = input_combo_type_free_good(abi_id, zone, environment, combo_item, combo_free_good)
-
-            if response != 'success':
-                print(text.Red + '\n- [Combo Service] Failure to combo type free good. Response Status: '
-                      + str(response.status_code) + '. Response message ' + response.text)
-                printFinishApplicationMenu()
-
+            response = input_combo_type_discount(abi_id, zone, environment, sku, discount_value)
+        elif selection_structure == '2':
+            response = input_combo_type_free_good(abi_id, zone, environment, sku)
         else:
-            combo_free_good = list()
-            aux_index = 0
-            while aux_index < 3:
-                index_offers = randint(0, (len(product_offers) - 1))
-                sku = product_offers[index_offers]['sku']
+            response = input_combo_free_good_only(abi_id, zone, environment, sku)
 
-                # Check if the SKU is enabled on Items MS
-                combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
-                while not combo_item:
-                    index_offers = randint(0, (len(product_offers) - 1))
-                    sku = product_offers[index_offers]['sku']
-                    combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
-
-                combo_free_good.append(combo_item)
-                aux_index = aux_index + 1
-
-            response = input_combo_free_good_only(abi_id, zone, environment, combo_free_good)
-
-            if response != 'success':
-                print(text.Red + '\n- [Combo Service] Failure to combo with only free good. Response Status: '
-                      + str(response.status_code) + '. Response message ' + response.text)
-                printFinishApplicationMenu()
-    else:
-        combo_id = print_combo_id_menu()
-
-        combo = check_combo_exists_microservice(abi_id, zone, environment, combo_id)
-        if combo == 'false':
-            print(text.Red + '\n- [Combo] The Combo ' + combo_id + ' does not exist')
+        if response == 'success':
+            print(text.Green + '\n- Combo successfully registered')
+            print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to import your combo,'
+                                ' so it can be used in the front-end applications')
+        else:
             printFinishApplicationMenu()
 
+    else:
+        combo_id = print_combo_id_menu()
+        combo = check_combo_exists_microservice(abi_id, zone, environment, combo_id)
         update_combo = update_combo_consumption(abi_id, zone, environment, combo_id)
-        if update_combo == 'true':
-            print(text.Green + '\n- Combo ' + combo_id + ' Updated')
+
+        if combo != 'false' and update_combo != 'false':
+            print(text.Green + '\n- Combo consumption for ' + combo_id + ' was successfully updated')
             print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to update the available '
                                 'quantity in your combo, so it can be used in the front-end applications')
+        else:
+            printFinishApplicationMenu()
 
 
-# Input credit account on microservice
+# Input credit to account
 def input_credit_menu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu(zone)
+    abi_id = print_account_id_menu(zone, environment)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
-    # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+    # Check if account exists
+    account = check_account_exists_microservice(abi_id, zone, environment)
 
     if account == 'false':
-        print(text.Red + '\n- [Account] Something went wrong, please try again')
-        printFinishApplicationMenu()
-    elif len(account) == 0:
-        print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
-    credit = input(text.default_text_color + 'Desire credit (Default 5000): ')
-    balance = input(text.default_text_color + 'Desire balance (Default 15000): ')
+    credit = input(text.default_text_color + 'Desired credit available (Default 5000): ')
+    balance = input(text.default_text_color + 'Desired credit balance (Default 15000): ')
 
-    # Call add credit to account function
-    credit = add_credit_to_account_microservice(abi_id, zone.upper(), environment.upper(), credit, balance)
+    # Add credit to account
+    credit = add_credit_to_account_microservice(abi_id, zone, environment, credit, balance)
 
     if credit == 'success':
-        print(text.Green + '\n- Credit added successfully')
+        print(text.Green + '\n- Credit added successfully for account ' + abi_id)
     else:
-        print(text.Red + '\n- [Credit] Something went wrong, please try again')
-
-    printFinishApplicationMenu()
+        printFinishApplicationMenu()
 
 
 def input_products_to_account_menu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu(zone)
+    abi_id = print_account_id_menu(zone, environment)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+    account = check_account_exists_microservice(abi_id, zone, environment)
 
     if account == 'false':
-        print(text.Red + '\n- [Account] Something went wrong, please try again')
-        printFinishApplicationMenu()
-    elif len(account) == 0:
-        print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
     delivery_center_id = account[0]['deliveryCenterId']
 
-    products = request_get_offers_microservice(abi_id, zone.upper(), environment.upper(), delivery_center_id, True)
+    products = request_get_offers_microservice(abi_id, zone, environment, delivery_center_id, True)
 
     proceed = 'N'
     if len(products) != 0:
@@ -827,40 +731,38 @@ def input_products_to_account_menu():
 
     if proceed == 'Y':
         # Call add products to account function
-        add_products = add_products_to_account_microservice(abi_id, zone.upper(), environment.upper(),
-                                                            delivery_center_id)
+        add_products = add_products_to_account_microservice(abi_id, zone, environment, delivery_center_id)
         if add_products != 'success':
             print(text.Red + '\n- [Products] Something went wrong, please try again')
             printFinishApplicationMenu()
 
-        products = request_get_account_product_assortment(abi_id, zone.upper(), environment.upper(), delivery_center_id)
+        if zone != 'BR' and zone != 'CL':
+            products = request_get_account_product_assortment(abi_id, zone, environment, delivery_center_id)
 
-        skus_id = list()
-        aux_index = 0
+            skus_id = list()
+            aux_index = 0
 
-        while aux_index <= (len(products) - 1):
-            skus_id.append(products[aux_index])
-            aux_index = aux_index + 1
+            while aux_index <= (len(products) - 1):
+                skus_id.append(products[aux_index])
+                aux_index = aux_index + 1
 
-        update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id, skus_id)
+            update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id, skus_id)
 
-        if update_sku != 'true':
-            print(text.Red + '\n- [Inventory] Something went wrong, please try again.')
+            if update_sku != 'true':
+                printFinishApplicationMenu()
 
 
 def input_delivery_window_menu():
     zone = print_zone_menu_for_delivery_window()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu(zone)
+    abi_id = print_account_id_menu(zone, environment)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+    account = check_account_exists_microservice(abi_id, zone, environment)
 
     if account == 'false':
-        print(text.Red + '\n- [Account] Something went wrong, please try again')
-        printFinishApplicationMenu()
-    elif len(account) == 0:
-        print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
     if zone == 'BR' or zone == 'ZA':
@@ -875,24 +777,21 @@ def input_delivery_window_menu():
         is_alternative_delivery_date = 'false'
 
     # Call add delivery window to account function
-    delivery_window = create_delivery_window_microservice(abi_id, zone.upper(), environment.upper(), account[0],
-                                                          is_alternative_delivery_date)
+    delivery_window = create_delivery_window_microservice(zone, environment, account[0], is_alternative_delivery_date)
 
     if delivery_window == 'success':
         print(text.Green + '\n- Delivery window added successfully')
     else:
-        print(text.Red + '\n- [DeliveryWindow] Something went wrong, please try again')
-
-    printFinishApplicationMenu()
+        printFinishApplicationMenu()
 
 
 # Create Account menu for Zones using MS
 def create_account_menu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu(zone)
+    abi_id = print_account_id_menu_create_account(zone)
     name = printNameMenu()
-    payment_method = printPaymentMethodMenu(zone.upper())
+    payment_method = printPaymentMethodMenu(zone)
     state = validate_state(zone)
 
     option_include = input(text.default_text_color + 'Do you want to include the minimum order parameter? y/N: ')
@@ -906,40 +805,39 @@ def create_account_menu():
         minimum_order = None
 
     # Call create account function
-    create_account_response = create_account_ms(abi_id, name, payment_method, minimum_order, zone.upper(),
-                                                environment.upper(), state)
+    create_account_response = create_account_ms(abi_id, name, payment_method, minimum_order, zone, environment, state)
 
     # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+    account = check_account_exists_microservice(abi_id, zone, environment)
 
-    if create_account_response == 'success' and account != 'false' or len(account) != 0:
+    if create_account_response == 'success' and account != 'false':
         print(text.Green + '\n- Your account has been created! Now register on Web or Mobile applications')
     else:
-        print(text.Red + '\n- [Account] Something went wrong, please try again')
         printFinishApplicationMenu()
 
     delivery_center_id = account[0]['deliveryCenterId']
 
     # Call add products to account function
-    products = add_products_to_account_microservice(abi_id, zone.upper(), environment.upper(), delivery_center_id)
+    products = add_products_to_account_microservice(abi_id, zone, environment, delivery_center_id)
 
     if products != 'success':
         print(text.Red + '\n\n- [Products] Something went wrong, please try again')
         printFinishApplicationMenu()
 
-    products = request_get_account_product_assortment(abi_id, zone.upper(), environment.upper(), delivery_center_id)
+    if zone != 'BR' and zone != 'CL':
+        products = request_get_account_product_assortment(abi_id, zone, environment, delivery_center_id)
 
-    skus_id = list()
-    aux_index = 0
+        skus_id = list()
+        aux_index = 0
 
-    while aux_index <= (len(products) - 1):
-        skus_id.append(products[aux_index])
-        aux_index = aux_index + 1
+        while aux_index <= (len(products) - 1):
+            skus_id.append(products[aux_index])
+            aux_index = aux_index + 1
 
-    update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id, skus_id)
+        update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id, skus_id)
 
-    if update_sku != 'true':
-        print(text.Red + '\n- [Inventory] Something went wrong, please try again.')
+        if update_sku != 'true':
+            printFinishApplicationMenu()
 
     if zone == 'BR' or zone == 'ZA':
         # Validate if is alternative delivery window
@@ -953,15 +851,12 @@ def create_account_menu():
         is_alternative_delivery_date = 'false'
 
     # Call add delivery window to account function
-    delivery_window = create_delivery_window_microservice(abi_id, zone.upper(), environment.upper(), account[0],
-                                                          is_alternative_delivery_date)
+    delivery_window = create_delivery_window_microservice(zone, environment, account[0], is_alternative_delivery_date)
 
     if delivery_window == 'success':
         print(text.Green + '\n- Delivery window added successfully')
     else:
-        print(text.Red + '\n- [DeliveryWindow] Something went wrong, please try again')
-
-    printFinishApplicationMenu()
+        printFinishApplicationMenu()
 
 
 # Create User for zones in Microservice
@@ -984,7 +879,6 @@ def create_user_magento_menu():
 
     account_result = check_account_exists_microservice(account_id, country, env)
     if account_result == "false":
-        print(text.Red + "\n- The account doesn't exist.")
         printFinishApplicationMenu()
     else:
         if account_result[0].get("status") != "ACTIVE":
@@ -1026,7 +920,6 @@ def associateUserToAccount():
     # Check if account exists and is active
     account_result = check_account_exists_microservice(accountId, country, env)
     if account_result == "false":
-        print(text.Red + "\n- The account doesn't exist.")
         printFinishApplicationMenu()
     else:
         if account_result[0].get("status") != "ACTIVE":
@@ -1110,7 +1003,6 @@ def registration_user_iam():
 
     account_result = check_account_exists_microservice(account_id, country, environment)
     if account_result == "false":
-        print(text.Red + "\n- The account doesn't exist.")
         printFinishApplicationMenu()
     else:
         if account_result[0].get("status") != "ACTIVE":
@@ -1128,15 +1020,13 @@ def registration_user_iam():
 def create_invoice_menu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu(zone)
+    abi_id = print_account_id_menu(zone, environment)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
-    account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
+    account = check_account_exists_microservice(abi_id, zone, environment)
 
     if account == 'false':
-        print(text.Red + '\n- [Account] Something went wrong, please try again')
-        printFinishApplicationMenu()
-    elif len(account) == 0:
-        print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
     order_id = print_order_id_menu()
@@ -1150,7 +1040,7 @@ def create_invoice_menu():
         printFinishApplicationMenu()
 
     status = invoice_status_menu()
-    create_invoice_request(abi_id, zone.upper(), environment.upper(), order_id, status)
+    create_invoice_request(abi_id, zone, environment, order_id, status)
 
     printFinishApplicationMenu()
 
@@ -1165,13 +1055,13 @@ def get_categories_menu():
     country = printCountryMenuInUserCreation()
     environment = printEnvironmentMenuInUserCreation()
     parent_id = print_input_number_with_default('Parent id')
-    
-    # Get categories 
+
+    # Get categories
     categories = get_categories(country, environment, parent_id)
     if categories:
         print("Categories: [id, name]")
         for category in categories:
-            print("- {id}, {name}".format(id=category['id'],name=category['name']))
+            print("- {id}, {name}".format(id=category['id'], name=category['name']))
     else:
         print("{text_red}{not_found}".format(text_red=text.Red, not_found="Categories not found"))
         printFinishApplicationMenu()
@@ -1197,12 +1087,14 @@ def associate_product_to_category_menu():
         printFinishApplicationMenu()
     else:
         # Associate product to category
-        response_associate_product_to_category = associate_product_to_category(country, environment, product_sku, category_id)
+        response_associate_product_to_category = associate_product_to_category(country, environment, product_sku,
+                                                                               category_id)
         if response_associate_product_to_category == 'false':
             print("{text_red}{fail}".format(text_red=text.Red, fail="Fail to associate product to category"))
             printFinishApplicationMenu()
-    
-    print("{text_green}{success}".format(text_green=text.Green, success="Success to enable and to associate product to category"))
+
+    print("{text_green}{success}".format(text_green=text.Green,
+                                         success="Success to enable and to associate product to category"))
 
 
 def create_categories_menu():
@@ -1233,31 +1125,29 @@ def create_categories_menu():
         else:
             print("{text_green}{success}".format(text_green=text.Green, success="Success to create category"))
 
-    print("- {id}, {name}".format(id=category['id'],name=category['name']))
+    print("- {id}, {name}".format(id=category['id'], name=category['name']))
 
 
 def order_information_menu():
     selection_structure = print_get_order_menu()
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu(zone)
+    abi_id = print_account_id_menu(zone, environment)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     account = check_account_exists_microservice(abi_id, zone, environment)
 
     if account == 'false':
-        print(text.Red + '\n- [Account] Something went wrong, please try again')
-        printFinishApplicationMenu()
-    elif len(account) == 0:
-        print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
         printFinishApplicationMenu()
 
     if selection_structure == '1':
         order_id = print_order_id_menu()
-        orders = check_if_order_exists(abi_id, zone.upper(), environment.upper(), order_id)
+        orders = check_if_order_exists(abi_id, zone, environment, order_id)
         if orders != 'false':
             display_specific_order_information(orders)
     else:
-        orders = check_if_order_exists(abi_id, zone.upper(), environment.upper(), '')
+        orders = check_if_order_exists(abi_id, zone, environment, '')
         if orders != 'false':
             display_all_order_information(orders)
 
@@ -1265,7 +1155,9 @@ def order_information_menu():
 def recommender_information_menu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
-    abi_id = print_account_id_menu(zone)
+    abi_id = print_account_id_menu(zone, environment)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     display_recommendations_by_account(zone, environment, abi_id)
 
