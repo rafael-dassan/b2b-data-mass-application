@@ -1,0 +1,13 @@
+{
+    "accountGroupIds": "string",
+    "description": "string",
+    "endDate": "2040-03-31T23:59:59.999Z",
+    "freeGoodGroupIds": "string",
+    "id": "string",
+    "promotionsRanking": 100,
+    "score": 0,
+    "skuGroupIds": "string",
+    "startDate": "2020-01-01T00:00:00.000Z",
+    "title": "string",
+    "type": "string"
+  }

@@ -136,7 +136,8 @@ def validate_zone_data_searching_deals(zone):
         'DO': 'true',
         'CO': 'true',
         'AR': 'true',
-        'CL': 'true'
+        'CL': 'true',
+        'ZA': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -852,10 +853,10 @@ def printZoneMenu(isMiddleware="true"):
 
 
 def print_zone_menu_data_searching_deals():
-    zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO): ')
+    zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO, ZA): ')
     while validate_zone_data_searching_deals(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO): ')
+        zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO, ZA): ')
 
     return zone.upper()
 
@@ -1592,10 +1593,11 @@ def validate_option_sku(option):
 
 def print_option_sku(zone):
     if zone == 'DO':
-        option = input(text.default_text_color + 'Do you want to input this type of deal to a specific SKU (1. YES or 2. NO): ')
+        option = input(text.default_text_color + 'Do you want to input this type of deal to a specific SKU? (1. Yes / '
+                                                 '2. No): ')
 
         while validate_option_sku(option) != 'true':
             print(text.Red + '\n- Invalid option')
-            option = input(
-                text.default_text_color + 'Do you want to input this type of deal to a specific SKU (1. YES or 2. NO): ')
+            option = input(text.default_text_color + '\nDo you want to input this type of deal to a specific SKU? '
+                                                     '(1. Yes / 2. No): ')
         return option
