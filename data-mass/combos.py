@@ -118,19 +118,14 @@ def input_combo_type_digital_trade(abi_id, zone, environment, combo_item, combo_
     if create_combo_response.status_code == 201:
         if update_consumption_response == 'success':
             print(text.Green + '\n- Combo ' + combo_id + ' successfully registered')
-            print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to import your combo, so '
-                                'it can be used in the front-end applications')
 
-            if zone == 'DO' or zone == 'CO':
-                print(text.Yellow + '\n- Also on Magento Admin, turn the new combos `enable` through the menu `Catalog -> Products`')
-            
             return 'success'
         else:
             return 'false'
     else:
         print(text.Red + '\n- [Combo Relay Service] Failure when creating a new combo. Response Status: '
               + str(create_combo_response.status_code) + '. Response message ' + create_combo_response.text)
-        return 'false'
+        return create_combo_response
 
 
 def input_combo_type_free_good(abi_id, zone, environment, sku):
@@ -181,7 +176,7 @@ def input_combo_type_free_good(abi_id, zone, environment, sku):
     if create_combo_response.status_code == 201:
         if update_consumption_response == 'success':
             print(text.Green + '\n- Combo ' + combo_id + ' successfully registered')
-            print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to import your combo, so '
+            print(text.Yellow + '\n- Please, run the cron job `abinbev_combos_service_importer` to import your combo, so '
                                 'it can be used in the front-end applications')
 
             if zone == 'DO' or zone == 'CO':
@@ -240,7 +235,7 @@ def input_combo_free_good_only(abi_id, zone, environment, sku):
     if create_combo_response.status_code == 201:
         if update_consumption_response == 'success':
             print(text.Green + '\n- Combo ' + combo_id + ' successfully registered')
-            print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to import your combo, so '
+            print(text.Yellow + '\n- Please, run the cron job `abinbev_combos_service_importer` to import your combo, so '
                                 'it can be used in the front-end applications')
 
             if zone == 'DO' or zone == 'CO':

@@ -649,7 +649,7 @@ def input_combos_menu():
                     print(text.Red + '\n- Invalid value')
 
             response = input_combo_type_discount(abi_id, zone, environment, sku, discount_value)
-        
+
         # Combo type free good
         elif selection_structure == '2':
             response = input_combo_type_free_good(abi_id, zone, environment, sku)
@@ -658,12 +658,7 @@ def input_combos_menu():
         else:
             response = input_combo_free_good_only(abi_id, zone, environment, sku)
 
-        if response == 'success':
-            print(text.Green + '\n- Combo successfully registered')
-            print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to import your combo,'
-                                ' so it can be used in the front-end applications')
-        else:
-            printFinishApplicationMenu()
+        printFinishApplicationMenu()
 
     # Combo type digital trade
     elif selection_structure == '3':
@@ -730,10 +725,7 @@ def input_combos_menu():
 
             response = input_combo_type_digital_trade(abi_id, zone, environment, combo_item, combo_dt)
 
-            if response != 'success':
-                print(text.Red + '\n- [Combo Service] Failure to combo type digital trade. Response Status: '
-                        + str(response.status_code) + '. Response message ' + response.text)
-            else:
+            if response == 'success':
                 combos_success += 1
 
             i += 1
@@ -747,10 +739,13 @@ def input_combos_menu():
 
             if zone == 'DO' or zone == 'CO':
                 print(text.Yellow + '\n- Also on Magento Admin, turn the new combos `enable` through the menu `Catalog -> Products`')
+        else:
+            print(text.Red + '\n- Combos failed: ' + str(combos_failed)) 
+
+        printFinishApplicationMenu()  
 
     # Reset combo consumption to zero
     else:
-
         zone = print_zone_menu_for_combos()
         environment = printEnvironmentMenu()
         abi_id = print_account_id_menu(zone)
@@ -771,7 +766,7 @@ def input_combos_menu():
 
         if combo != 'false' and update_combo != 'false':
             print(text.Green + '\n- Combo consumption for ' + combo_id + ' was successfully updated')
-            print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to update the available '
+            print(text.Yellow + '\n- Please, run the cron job `abinbev_combos_service_importer` to update the available '
                                 'quantity in your combo, so it can be used in the front-end applications')
         else:
             printFinishApplicationMenu()
