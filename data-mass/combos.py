@@ -52,6 +52,78 @@ def input_combo_type_discount(abi_id, zone, environment, sku, discount_value):
 
     if create_combo_response.status_code == 201:
         if update_consumption_response == 'success':
+            print(text.Green + '\n- Combo ' + combo_id + ' successfully registered')
+            print(text.Yellow + '\n- Please, run the cron job `abinbev_combos_service_importer` to import your combo, so '
+                                'it can be used in the front-end applications')
+            
+            if zone == 'DO' or zone == 'CO':
+                print(text.Yellow + '\n- Also on Magento Admin, turn the new combos `enable` through the menu `Catalog -> Products`')
+
+            return 'success'
+        else:
+            return 'false'
+    else:
+        print(text.Red + '\n- [Combo Relay Service] Failure when creating a new combo. Response Status: '
+              + str(create_combo_response.status_code) + '. Response message ' + create_combo_response.text)
+        return 'false'
+
+
+def input_combo_type_digital_trade(abi_id, zone, environment, combo_item, combo_dt):
+    combo_id = 'DM-DT-' + str(randint(1, 100000))
+    accounts = list()
+    accounts.append(abi_id)
+
+    # Get base URL
+    request_url = get_microservice_base_url(environment) + '/combo-relay/accounts'
+
+    price = get_sku_price(abi_id, combo_item, zone, environment)
+    score = randint(1, 100)
+
+    # Create file path
+    path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(path, 'data/create_combo_payload.json')
+
+    # Load JSON file
+    with open(file_path) as file:
+        json_data = json.load(file)
+
+    dict_values = {
+        'accounts': accounts,
+        'combos[0].description': combo_id + ' type digital trade',
+        'combos[0].id': combo_id,
+        'combos[0].items[0].sku': combo_item,
+        'combos[0].originalPrice': price,
+        'combos[0].price': price,
+        'combos[0].score': score,
+        'combos[0].title': combo_id + ' type digital trade',
+        'combos[0].type': 'DT',
+        'combos[0].externalId': combo_id,
+        'combos[0].freeGoods.quantity': 1,
+        'combos[0].freeGoods.skus': combo_dt
+    }
+
+    for key in dict_values.keys():
+        json_object = update_value_to_json(json_data, key, dict_values[key])
+
+    # Create body
+    request_body = convert_json_to_string(json_object)
+
+    # Get header request
+    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+
+    # Send request
+    create_combo_response = place_request('POST', request_url, request_body, request_headers)
+    update_consumption_response = update_combo_consumption(abi_id, zone, environment, combo_id)
+
+    if create_combo_response.status_code == 201:
+        if update_consumption_response == 'success':
+            print(text.Green + '\n- Combo ' + combo_id + ' successfully registered')
+            print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to import your combo, so '
+                                'it can be used in the front-end applications')
+
+            if zone == 'DO' or zone == 'CO':
+                print(text.Yellow + '\n- Also on Magento Admin, turn the new combos `enable` through the menu `Catalog -> Products`')
+            
             return 'success'
         else:
             return 'false'
@@ -108,6 +180,13 @@ def input_combo_type_free_good(abi_id, zone, environment, sku):
 
     if create_combo_response.status_code == 201:
         if update_consumption_response == 'success':
+            print(text.Green + '\n- Combo ' + combo_id + ' successfully registered')
+            print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to import your combo, so '
+                                'it can be used in the front-end applications')
+
+            if zone == 'DO' or zone == 'CO':
+                print(text.Yellow + '\n- Also on Magento Admin, turn the new combos `enable` through the menu `Catalog -> Products`')
+
             return 'success'
         else:
             return 'false'
@@ -160,6 +239,13 @@ def input_combo_free_good_only(abi_id, zone, environment, sku):
 
     if create_combo_response.status_code == 201:
         if update_consumption_response == 'success':
+            print(text.Green + '\n- Combo ' + combo_id + ' successfully registered')
+            print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to import your combo, so '
+                                'it can be used in the front-end applications')
+
+            if zone == 'DO' or zone == 'CO':
+                print(text.Yellow + '\n- Also on Magento Admin, turn the new combos `enable` through the menu `Catalog -> Products`')
+            
             return 'success'
         else:
             return 'false'

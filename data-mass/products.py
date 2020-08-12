@@ -262,7 +262,7 @@ def request_get_offers_microservice(abi_id, zone, environment, delivery_center_i
               + str(response.status_code) + '. Response message ' + response.text)
 
 
-def check_item_enabled(sku, zone, environment):
+def check_item_enabled(sku, zone, environment, return_item_data=False):
     # Get base URL
     request_url = get_microservice_base_url(environment, 'false') + '/items/' + sku + '?includeDisabled=false'
 
@@ -275,7 +275,10 @@ def check_item_enabled(sku, zone, environment):
     json_data = loads(response.text)
 
     if response.status_code == 200 and len(json_data) != 0:
-        return json_data['sku']
+        if return_item_data:
+            return json_data['sku']
+        else:
+            return True
     elif response.status_code == 404:
         print(text.Red + '\n- [Item Service] SKU ' + sku + ' not found for country ' + zone)
         return False

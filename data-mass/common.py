@@ -192,6 +192,19 @@ def validate_zone_for_combos(zone):
     return value
 
 
+def validate_zone_for_combos_dt(zone):
+    switcher = {
+        'BR': 'true',
+        'DO': 'true',
+        'AR': 'true',
+        'CO': 'true',
+        'ZA': 'true'
+    }
+
+    value = switcher.get(zone, 'false')
+    return value
+
+
 def validate_zone_for_delivery_window(zone):
     switcher = {
         'BR': 'true',
@@ -231,7 +244,7 @@ def validateStructure(option):
 
 # Validate rewards
 def validate_rewards(option):
-    if option == '1' or option == '2' or option == '3' or option == '4':
+    if option == '1' or option == '2' or option == '3' or option == '4' or option == '5':
         return 'true'
     else:
         return 'false'
@@ -616,16 +629,18 @@ def print_structure_menu():
 # Print rewards menu
 def print_rewards_menu():
     print(text.default_text_color + str(1), text.Yellow + 'Create new program')
-    print(text.default_text_color + str(2), text.Yellow + 'Update Balance of a Program')
-    print(text.default_text_color + str(3), text.Yellow + 'Enroll POC to a Reward program')
-    print(text.default_text_color + str(4), text.Yellow + 'Input Challenges to Zone')
+    print(text.default_text_color + str(2), text.Yellow + 'Update Initial Balance of a program')
+    print(text.default_text_color + str(3), text.Yellow + 'Enroll POC to a program')
+    print(text.default_text_color + str(4), text.Yellow + 'Input Challenges to zone')
+    print(text.default_text_color + str(5), text.Yellow + 'Input Redeem Products to account')
     structure = input(text.default_text_color + '\nPlease select: ')
     while validate_rewards(structure) == 'false':
         print(text.Red + '\n- Invalid option')
         print(text.default_text_color + str(1), text.Yellow + 'Create new program')
-        print(text.default_text_color + str(2), text.Yellow + 'Update Balance of a Program')
-        print(text.default_text_color + str(3), text.Yellow + 'Enroll POC to a Reward program')
-        print(text.default_text_color + str(4), text.Yellow + 'Input Challenges to Zone')
+        print(text.default_text_color + str(2), text.Yellow + 'Update Initial Balance of a Program')
+        print(text.default_text_color + str(3), text.Yellow + 'Enroll POC to a program')
+        print(text.default_text_color + str(4), text.Yellow + 'Input Challenges to zone')
+        print(text.default_text_color + str(5), text.Yellow + 'Input Redeem Products to account')
         structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure
@@ -678,16 +693,18 @@ def print_combos_menu():
     print(text.default_text_color + '\nWhich type of combo do you want to create?')
     print(text.default_text_color + str(1), text.Yellow + 'Input combo type discount')
     print(text.default_text_color + str(2), text.Yellow + 'Input combo type free good')
-    print(text.default_text_color + str(3), text.Yellow + 'Input combo with only free goods')
-    print(text.default_text_color + str(4), text.Yellow + 'Reset combo consumption to zero')
+    print(text.default_text_color + str(3), text.Yellow + 'Input combo type digital trade')
+    print(text.default_text_color + str(4), text.Yellow + 'Input combo with only free goods')
+    print(text.default_text_color + str(5), text.Yellow + 'Reset combo consumption to zero')
     structure = input(text.default_text_color + '\nPlease select: ')
     while validate_combo_structure(structure) == 'false':
         print(text.Red + '\n- Invalid option')
         print(text.default_text_color + '\nWhich type of combo do you want to create?')
         print(text.default_text_color + str(1), text.Yellow + 'Input combo type discount')
         print(text.default_text_color + str(2), text.Yellow + 'Input combo type free good')
-        print(text.default_text_color + str(3), text.Yellow + 'Input combo with only free goods')
-        print(text.default_text_color + str(4), text.Yellow + 'Reset combo consumption to zero')
+        print(text.default_text_color + str(3), text.Yellow + 'Input combo type digital trade')
+        print(text.default_text_color + str(4), text.Yellow + 'Input combo with only free goods')
+        print(text.default_text_color + str(5), text.Yellow + 'Reset combo consumption to zero')
         structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure
@@ -695,7 +712,7 @@ def print_combos_menu():
 
 # Validate combo type structure
 def validate_combo_structure(option):
-    if option == '1' or option == '2' or option == '3' or option == '4':
+    if option == '1' or option == '2' or option == '3' or option == '4' or option == '5':
         return 'true'
     else:
         return 'false'
@@ -916,6 +933,16 @@ def print_zone_menu_for_combos():
     while validate_zone_for_combos(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
         zone = input(text.default_text_color + 'Zone (BR, DO): ')
+
+    return zone.upper()
+
+
+# Print zone menu for DT combos
+def print_zone_menu_for_combos_dt():
+    zone = input(text.default_text_color + 'Zone (BR, DO, AR, CO, ZA): ')
+    while validate_zone_for_combos_dt(zone.upper()) == 'false':
+        print(text.Red + '\n- Invalid option\n')
+        zone = input(text.default_text_color + 'Zone (BR, DO, AR, CO, ZA): ')
 
     return zone.upper()
 

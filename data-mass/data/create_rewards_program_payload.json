@@ -20,33 +20,7 @@
         }
       }
     ],
-    "combos": [
-      {
-        "comboId": "string",
-        "points": 400,
-        "redeemLimit" : 1
-      },
-      {
-        "comboId": "string",
-        "points": 500,
-        "redeemLimit" : 1
-      },
-      {
-        "comboId": "string",
-        "points": 600,
-        "redeemLimit" : 1
-      },
-      {
-        "comboId": "string",
-        "points": 700,
-        "redeemLimit" : 1
-      },
-      {
-        "comboId": "string",
-        "points": 800,
-        "redeemLimit" : 1
-      }
-    ],
+    "combos": "string",
     "filter": {
       "potential": [
         "DM-POTENT"
