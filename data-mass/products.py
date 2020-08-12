@@ -81,8 +81,8 @@ def get_body_price_microservice_request(abi_id, sku_product, product_price_id, p
     }
 
     # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_sku_price_payload.json')
+    abs_path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(abs_path, 'data/create_sku_price_payload.json')
 
     # Load JSON file
     with open(file_path) as file:
@@ -173,7 +173,7 @@ def product_post_requests_microservice(product_data, abi_id, zone, environment, 
     index, product = product_data
     price_values = generate_price_values(zone, product)
 
-    product_inclusion_ms_result = request_post_price_inclusion_microservice(zone, environment, product['sku'], index,
+    product_inclusion_ms_result = request_post_price_inclusion_microservice(zone, environment, product['sku'],
                                                                             delivery_center_id)
     if product_inclusion_ms_result == 'false':
         return 'false'
@@ -207,7 +207,7 @@ def request_post_products_account_microservice(abi_id, zone, environment, delive
 
 
 # Post request product inclusion microservice
-def request_post_price_inclusion_microservice(zone, environment, sku_product, product_price_id, delivery_center_id):
+def request_post_price_inclusion_microservice(zone, environment, sku_product, delivery_center_id):
     # Get header request
     request_headers = get_header_request(zone, 'false', 'false', 'true', sku_product)
 
@@ -238,7 +238,7 @@ def get_body_price_inclusion_microservice_request(delivery_center_id):
 
 
 # Get offers account in microservice
-def request_get_offers_microservice(abi_id, zone, environment, delivery_center_id, return_product_data=False):
+def request_get_offers_microservice(abi_id, zone, environment):
     # Define headers
     headers = get_header_request(zone, 'true')
 
@@ -251,15 +251,13 @@ def request_get_offers_microservice(abi_id, zone, environment, delivery_center_i
 
     json_data = loads(response.text)
     if response.status_code == 200 and len(json_data) != 0:
-        if return_product_data:
-            return json_data
-        else:
-            return True
-    elif response.status_code == 200 and len(json_data) == 0:
         return json_data
+    elif response.status_code == 200 and len(json_data) == 0:
+        return 'not_found'
     else:
-        print(text.Red + '\n- [Product Offers] Failure to get product offers. Response Status: '
+        print(text.Red + '\n- [Catalog Service] Failure to get a list of available SKUs. Response Status: '
               + str(response.status_code) + '. Response message ' + response.text)
+        return 'false'
 
 
 def check_item_enabled(sku, zone, environment):
@@ -343,8 +341,8 @@ def get_body_price_microservice_request_v2(abi_id, sku_product, product_price_id
     }
 
     # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_sku_price_payload_v2.json')
+    abs_path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(abs_path, 'data/create_sku_price_payload_v2.json')
 
     # Load JSON file
     with open(file_path) as file:
@@ -366,8 +364,8 @@ def request_get_account_product_assortment(account_id, zone, environment, delive
     headers = get_header_request(zone, 'true')
 
     # Get url base
-    request_url = get_microservice_base_url(
-        environment) + '/product-assortment/?accountId=accountId' + account_id + '&deliveryCenterId=' + delivery_center_id
+    request_url = get_microservice_base_url(environment) + '/product-assortment/?accountId=accountId' + account_id \
+                  + '&deliveryCenterId=' + delivery_center_id
 
     # Place request
     response = place_request('GET', request_url, '', headers)
@@ -393,8 +391,8 @@ def create_item(zone, environment, item_data):
     request_url = get_microservice_base_url(environment, 'false') + '/item-relay/items'
 
     # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_item_payload.json')
+    abs_path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(abs_path, 'data/create_item_payload.json')
 
     # Load JSON file
     with open(file_path) as file:
@@ -413,8 +411,8 @@ def create_item(zone, environment, item_data):
 
     if response.status_code == 202:
         update_item_response = set_item_enabled(zone, environment, item_data)
-        get_item_response = check_item_enabled(item_data.get('sku'), zone, environment, False)
-        if update_item_response == True and get_item_response == True:
+        get_item_response = check_item_enabled(item_data.get('sku'), zone, environment)
+        if update_item_response is True and get_item_response is True:
             return item_data
     else:
         print(text.Red + '\n- [Item Service] Failure to create an item. Response Status: ' + str(
@@ -490,8 +488,8 @@ def set_item_enabled(zone, environment, item_data):
     request_url = get_microservice_base_url(environment, 'false') + '/items/' + item_data.get('sku')
 
     # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/update_item_payload.json')
+    abs_path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(abs_path, 'data/update_item_payload.json')
 
     # Load JSON file
     with open(file_path) as file:
