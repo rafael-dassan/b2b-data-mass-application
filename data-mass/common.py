@@ -1593,3 +1593,19 @@ def print_allow_cancellable_order_menu():
         option = input(text.default_text_color + '\nDo you want to make this order cancellable? y/N: ')
 
     return option.upper()
+
+
+def print_product_quantity_menu(all_products_zone):
+    while True:
+        try:
+            qtd = int(input(text.default_text_color + '\nNumber of products you want to add (Maximum: '
+                            + str(len(all_products_zone)) + '): '))
+            while qtd <= 0:
+                print(text.Red + '\n- The product quantity must be more than 0\n')
+                qtd = int(input(text.default_text_color + 'Number of products you want to add (Maximum: '
+                                + str(len(all_products_zone)) + '): '))
+            break
+        except ValueError:
+            print(text.Red + '\n- The product quantity must be Numeric\n')
+
+    return qtd
