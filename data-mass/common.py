@@ -811,26 +811,27 @@ def print_quantity_menu():
 #       Therefore, for simulation, this parameter was created to allow using accounts that do not 
 #       follow this pattern of more than 10 characters
 def print_account_id_menu(zone):
-    abi_id = input(text.default_text_color + 'Account ID: ')
+    abi_id = str(input(text.default_text_color + 'Account ID: '))
     attempt = 0
-    while validate_account(str(abi_id), zone) != 'true' and attempt < 3:
-        attempt = attempt + 1
-        if validate_account(str(abi_id), zone) == 'error_0':
+    while validate_account(abi_id, zone) != 'true' and attempt <= 2:
+        if validate_account(abi_id, zone) == 'error_0':
             print(text.Red + '\n- Account ID should not be empty')
-            if attempt < 3:
-                abi_id = input(text.default_text_color + 'Account ID: ')
-        if validate_account(str(abi_id), zone) == 'error_10':
+            if attempt < 2:
+                abi_id = str(input(text.default_text_color + 'Account ID: '))
+        if validate_account(abi_id, zone) == 'error_10':
             print(text.Red + '\n- Account ID must contain at least 10 characters')
-            if attempt < 3:
-                abi_id = input(text.default_text_color + 'Account ID: ')
-        elif validate_account(str(abi_id), zone) == 'not_number':
+            if attempt < 2:
+                abi_id = str(input(text.default_text_color + 'Account ID: '))
+        elif validate_account(abi_id, zone) == 'not_number':
             print(text.Red + '\n- The account ID must be Numeric')
-            if attempt < 3:
-                abi_id = input(text.default_text_color + 'Account ID: ')
-    if attempt >= 3:
+            if attempt < 2:
+                abi_id = str(input(text.default_text_color + 'Account ID: '))
+        attempt = attempt + 1
+    if attempt == 3:
+        print(text.Yellow + '\n- You have reached maximum attempts')
         return 'false'
     else:
-        return str(abi_id)
+        return abi_id
 
 
 # Print account name menu
