@@ -104,6 +104,7 @@ def create_new_program(zone, environment):
             else:
                 print(text.Red + '\n- [Rewards Service] Failure when creating a new program. Response Status: '
                                 + str(response.status_code) + '. Response message ' + response.text)
+                return 'false'
         else:
             return 'error_len_sku'
     else:
@@ -158,6 +159,7 @@ def enroll_poc_to_program(account_id, zone, environment):
             else:
                 print(text.Red + '\n- [Rewards Service] Failure when enrolling an account to program. Response Status: '
                                 + str(response.status_code) + '. Response message ' + response.text)
+                return 'false'
     else:
         return 'pgm_not_found'
 
@@ -341,7 +343,7 @@ def update_program_balance(zone, environment):
             else:
                 print(text.Red + '\n- [Rewards Service] Failure when enrolling an account to program. Response Status: '
                                 + str(response.status_code) + '. Response message ' + response.text)
-                return 'error'
+                return 'false'
         else:
             return 'no_confirm'
     else:

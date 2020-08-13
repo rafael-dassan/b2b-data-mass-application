@@ -56,7 +56,8 @@ def input_combo_type_discount(abi_id, zone, environment, sku, discount_value):
         else:
             return 'false'
     else:
-        return create_combo_response
+        print(text.Red + '\n- [Combo Relay Service] Failure when creating a new combo. Response Status: '
+                    + str(create_combo_response.status_code) + '. Response message ' + create_combo_response.text) 
 
 
 def input_combo_type_digital_trade(abi_id, zone, environment):
