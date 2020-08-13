@@ -141,7 +141,8 @@ def account_information_menu():
 
     switcher = {
         '1': 'ONE_ACCOUNT',
-        '2': 'ALL_ACCOUNT'
+        '2': 'ALL_ACCOUNT',
+        '3': 'ACCOUNT_PRODUCT'
     }
 
     account_type = switcher.get(selection_structure, 'false')
@@ -156,9 +157,30 @@ def account_information_menu():
             printFinishApplicationMenu()
 
         display_account_information(account)
-    else:
+    elif account_type == 'ALL_ACCOUNT':
         account = check_account_exists_microservice('', zone, environment)
+        if account == 'false':
+            printFinishApplicationMenu()
         display_all_account_info(account)
+    else:
+        print(text.default_text_color + '\nThis process can take some time... ')
+
+        account = check_account_exists_microservice('', zone, environment)
+        if account == 'false':
+            printFinishApplicationMenu()
+        account_info_list = list()
+        for i in range(len(account)):
+            account_id = account[i]['accountId']
+            product = request_get_offers_microservice(account_id, zone, environment)
+            if product != 'false' or product != 'not_found':
+                account_info = {
+                    'Account ID': account_id,
+                    'Tax ID': account[i]['taxId'],
+                    'Poc Name': account[i]['name']
+                }
+                account_info_list.append(account_info)
+
+        display_account_with_products(account_info_list)
 
 
 # Input Rewards to account

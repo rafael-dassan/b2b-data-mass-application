@@ -229,3 +229,8 @@ def display_all_account_info(account):
 
     print(text.default_text_color + '\nAccount - Account ID, Tax ID and Liquor License information ')
     print(tabulate(account_info, headers='keys', tablefmt='grid'))
+
+
+def display_account_with_products(account_info_list):
+    print(text.default_text_color + '\nAccount - Account ID with products per zone')
+    print(tabulate(account_info_list, headers='keys', tablefmt='grid'))
