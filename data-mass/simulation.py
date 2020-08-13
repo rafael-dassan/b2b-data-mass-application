@@ -73,29 +73,31 @@ def process_simulation_middleware(zone, environment, abi_id, account, order_item
     else:
         print(text.Red + "\n- [Middleware] Failure to simulate the order. Response Status: " + str(response.status_code) + ". Response message " + response.text)
 
+
 # Order simulation by Microservice
-def process_simulation_microservice(zone, environment, abi_id, account, order_items, orderCombos, emptiesSkus, payment_method, payment_term):
+def process_simulation_microservice(zone, environment, abi_id, account, order_items, order_combos, empties_skus,
+                                    payment_method, payment_term):
     # Define headers
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
 
     # Define URL Microservice
-    request_url = "https://b2b-services-" + environment.lower() + ".westeurope.cloudapp.azure.com/api/cart-service/v2"
+    request_url = get_microservice_base_url(environment, 'false') + '/cart-service/v2'
 
-    #Inputs for default payload simulation
+    # Inputs for default payload simulation
     dict_values = {
         'accountId': abi_id,
-        'deliveryCenterId': account[0]["deliveryCenterId"],
+        'deliveryCenterId': account[0]['deliveryCenterId'],
         'paymentMethod': payment_method,
         'paymentTerm': int(payment_term),
         'lineItems': order_items,
-        'combos': orderCombos,
+        'combos': order_combos,
         'deliveryDate': None,
-        'empties': emptiesSkus
+        'empties': empties_skus
     }
 
     # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, "data/order_simulation_microservice_payload.json")
+    abs_path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(abs_path, 'data/order_simulation_microservice_payload.json')
 
     # Load JSON file
     with open(file_path) as file:
@@ -121,7 +123,7 @@ def process_simulation_microservice(zone, environment, abi_id, account, order_it
 
         summary_items_values = []
         for item in order_simulation["lineItems"]:
-            itemValues = {
+            item_values = {
                 "Sku": item["sku"],
                 "Quantity": item["quantity"],
                 "OriginalPrice": item["originalPrice"],
@@ -133,11 +135,11 @@ def process_simulation_microservice(zone, environment, abi_id, account, order_it
                 "Total": item["total"],
             }
 
-            summary_items_values.append(itemValues)
+            summary_items_values.append(item_values)
         
         summary_combo_values = []
         for item in order_simulation["combos"]:
-            itemValues = {
+            item_values = {
                 "Sku": item["comboId"],
                 "Quantity": item["quantity"],
                 "OriginalPrice": item["originalPrice"],
@@ -148,12 +150,14 @@ def process_simulation_microservice(zone, environment, abi_id, account, order_it
                 "Total": item["total"],
             }
 
-            summary_combo_values.append(itemValues)
+            summary_combo_values.append(item_values)
 
         print_summary_order_simulation(summary_order_values, summary_items_values, summary_combo_values)
     
     else:
-        print(text.Red + "\n- [Cart Service] Failure to simulate the order. Response Status: " + str(response.status_code) + ". Response message " + response.text)
+        print(text.Red + '\n- [Cart Service] Failure to simulate the order. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
+
 
 # Print Summary order simulation
 def print_summary_order_simulation(summary_order_values, summary_items_values, summary_combo_values):

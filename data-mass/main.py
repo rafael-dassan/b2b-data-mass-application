@@ -138,7 +138,7 @@ def product_information_menu():
         if products == 'false':
             printFinishApplicationMenu()
 
-        display_items_information_zone(zone, environment, products)
+        display_items_information_zone(products)
 
 
 def account_information_menu():
@@ -814,9 +814,6 @@ def input_products_to_account_menu():
 
     products = request_get_offers_microservice(abi_id, zone, environment)
     if products == 'false':
-        printFinishApplicationMenu()
-    elif products == 'not_found':
-        print(text.Red + '\n- [Catalog Service] There is no product associated with the account ' + abi_id)
         printFinishApplicationMenu()
 
     proceed = 'N'
