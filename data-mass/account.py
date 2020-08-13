@@ -1,8 +1,6 @@
 from common import *
 from tabulate import tabulate
 
-from products import request_get_offers_microservice
-
 
 def check_account_exists_microservice(abi_id, zone, environment):
     # Get header request
@@ -237,8 +235,3 @@ def display_account_with_products(account_info_list):
 
     print(text.default_text_color + '\nAccount - Account ID with products per zone')
     print(tabulate(account_info_list, headers='keys', tablefmt='grid'))
-
-
-
-
-
