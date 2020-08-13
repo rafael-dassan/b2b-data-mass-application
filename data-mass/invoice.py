@@ -2,16 +2,6 @@ from random import randint
 from common import *
 
 
-def order_info(abi_id, zone, environment, order_id):
-    order_response = check_if_order_exists(abi_id, zone, environment, order_id)
-
-    if order_response == 'false':
-        return 'error_ms'
-    else:
-        order_data = order_response[0]
-        return order_data
-
-
 def get_order_items(order_data):
     items = order_data['items']
     item_list = list()
@@ -44,9 +34,7 @@ def get_order_details(order_data):
     return order_details
 
 
-def create_invoice_request(abi_id, zone, environment, order_id, status):
-    order_data = order_info(abi_id, zone, environment, order_id)
-
+def create_invoice_request(zone, environment, order_id, status, order_data):
     order_details = get_order_details(order_data)
     order_items = get_order_items(order_data)
     size_items = len(order_items)
@@ -91,18 +79,22 @@ def create_invoice_request(abi_id, zone, environment, order_id, status):
 
     items = set_to_dictionary(json_object, 'items', order_items)
 
-    # Send request
+    # Get base URL
     request_url = get_microservice_base_url(environment) + '/invoices-relay'
+
+    # Get headers
     request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+
+    # Create body
     list_dict_values = create_list(items)
     request_body = convert_json_to_string(list_dict_values)
 
+    # Send request
     response = place_request('POST', request_url, request_body, request_headers)
 
-    if response.status_code != 202:
-        print(text.Red + '\n- [Invoice Service] Failure to create an invoice. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
+    if response.status_code == 202:
+        return invoice_id
     else:
-        print(text.Green + '\n- Invoice ' + invoice_id + ' successfully created')
-        print(text.Yellow + '- Please, run the cron job `webjump_invoicelistabi_import_invoices` to import your '
-                            'invoice, so it can be used in the front-end applications')
+        print(text.Red + '\n- [Invoice Relay Service] Failure to create an invoice. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
+        return 'false'

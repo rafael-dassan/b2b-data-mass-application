@@ -1460,31 +1460,6 @@ def print_recommendation_type_menu():
     return recommendation_type
 
 
-def check_if_order_exists(abi_id, zone, environment, order_id):
-    # Get header request
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
-
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + '/order-service/v1?orderIds=' + order_id + '&accountId=' + abi_id
-
-    # Place request
-    response = place_request('GET', request_url, '', request_headers)
-
-    json_data = loads(response.text)
-    if response.status_code == 200 and len(json_data) != 0:
-        return json_data
-    elif response.status_code == 200 and len(json_data) == 0:
-        if order_id == '':
-            print(text.Red + '\n- [Order Service] The account ' + abi_id + ' does not have orders')
-        else:
-            print(text.Red + '\n- [Order Service] The order ' + order_id + ' does not exist')
-        return 'false'
-    else:
-        print(text.Red + '\n- [Order Service] Failure to retrieve order information. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
-        return 'false'
-
-
 # Validate account sub-menus
 def validate_accounts(option):
     if option == '1' or option == '2':
@@ -1562,7 +1537,7 @@ def validate_invoice_status(option):
         return 'false'
 
 
-def invoice_status_menu():
+def print_invoice_status_menu():
     status = input(
         text.default_text_color + 'Do you want to create the invoice with which status: 1. CLOSED or 2. OPEN: ')
     while validate_invoice_status(status) == 'false':
@@ -1601,3 +1576,12 @@ def print_option_sku(zone):
             option = input(text.default_text_color + '\nDo you want to input this type of deal to a specific SKU? '
                                                      '(1. Yes / 2. No): ')
         return option
+
+
+def print_allow_cancellable_order_menu():
+    option = input(text.default_text_color + 'Do you want to make this order cancellable? y/N: ')
+    while validate_yes_no_option(option.upper()) == 'false':
+        print(text.Red + '\n- Invalid option')
+        option = input(text.default_text_color + '\nDo you want to make this order cancellable? y/N: ')
+
+    return option.upper()
