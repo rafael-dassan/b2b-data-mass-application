@@ -4,152 +4,144 @@ from common import *
 import json
 
 
-# Configure prefix and order number size
-def configure_order_params(zone, environment, position):
+def configure_order_params(zone, environment, number_size, prefix):
+    """
+    Configure the fields prefix and order number size in the database sequence via Order Service
+    Args:
+        zone: e.g., AR, BR, CO, DO, MX, ZA
+        environment: e.g., DEV, SIT, UAT
+        number_size: order number size
+        prefix: order prefix
+    Returns: `success` or error message in case of failure
+    """
+
+    # Create file path
+    abs_path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(abs_path, 'data/configure_order_prefix_payload.json')
+
+    # Load JSON file
+    with open(file_path) as file:
+        json_data = json.load(file)
+
+    dict_values = {
+        'orderNumberSize': number_size,
+        'prefix': prefix
+    }
+
+    # Update the deal's values in runtime
+    for key in dict_values.keys():
+        json_object = update_value_to_json(json_data, key, dict_values[key])
+
+    # Create body
+    request_body = convert_json_to_string(json_object)
+
     # Define headers
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
 
     # Define url request 
     request_url = get_microservice_base_url(environment) + '/order-service/configure'
 
-    if position == 1:
-        dict_values = {
-            'orderNumberSize': 5,
-            'prefix': 'DM-ORDER-'
-        }
-    elif position == 2:
-        dict_values = {
-            'orderNumberSize': 9,
-            'prefix': '00'
-        }
-
-    # Create body
-    request_body = convert_json_to_string(dict_values)
-
     # Send request
     response = place_request('POST', request_url, request_body, request_headers)
     
     if response.status_code == 204:
-        return 'true'
+        return 'success'
     else:
+        print(text.Red + '\n- [Order Service] Failure to configure order prefix and number size. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
         return 'false'
 
 
-# Create order in microservice
-def create_order_account(account_id, zone, environment, delivery_center_id, order_option):
+def create_order_account(account_id, zone, environment, order_status, sku_list, allow_order_cancel):
+    """
+    Create an order via the Order Service
+    Args:
+        account_id: POC unique identifier
+        zone: e.g., AR, BR, CO, DO, MX, ZA
+        environment: e.g., DEV, SIT, UAT
+        order_status: e.g., PLACED, CANCELLED, etc
+        sku_list: list of SKUs
+        allow_order_cancel: `Y` or `N`
+    Returns: new json_data if success or error message in case of failure
+    """
+
     # Define headers
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
 
     # Define url request 
     request_url = get_microservice_base_url(environment) + '/order-service'
 
-    # Retrieve all SKUs of the specified Account and DeliveryCenter IDs
-    product_offers = request_get_offers_microservice(account_id, zone, environment, delivery_center_id, True)
+    # Get body
+    request_body = create_order_payload(account_id, sku_list, allow_order_cancel, order_status)
 
-    enabled_skus = list()
-    aux_index = 0
+    # Send request
+    response = place_request('POST', request_url, request_body, request_headers)
 
-    enabled_counter = 0
-    
-    while (aux_index < len(product_offers)) and (enabled_counter < 2):
-        sku_offer = product_offers[aux_index]['sku']
-        
-        # Check if the SKU is enabled on Items MS
-        sku_enable = check_item_enabled(sku_offer, zone, environment)
-
-        if sku_enable:
-            enabled_skus.append(sku_offer)
-            enabled_counter += 1
-            aux_index += 1
-        else:
-            aux_index += 1
-
-    # Check if the account has at least 2 enabled SKUs added to it
-    if enabled_counter >= 2:
-
-        # Check if the request is for an active order or for a cancelled one
-        if order_option == 'ACTIVE':
-            allow_order_cancel = input(text.default_text_color + '\nDo you want to make this order cancellable? y/N: ')
-            allow_order_cancel = allow_order_cancel.upper()
-
-            while allow_order_cancel != 'Y' and allow_order_cancel != 'N':
-                print(text.Red + '\n[Order] Invalid option.')
-                allow_order_cancel = input(text.default_text_color + '\nDo you want to make this order cancellable? y/N: ')
-                allow_order_cancel = allow_order_cancel.upper()
-        else:
-            allow_order_cancel = 'N'
-
-        print(text.default_text_color + '\nCreating Order...')
-
-        # Get body request for Order
-        request_body_order = set_file_request_order(request_url, request_headers, account_id, zone, delivery_center_id, enabled_skus,
-                                                    allow_order_cancel, order_option)
-
-        # Extracts the order number created from the request's response
-        order_id_created = request_body_order.text
-        order_id_created = order_id_created[16:30]
-
-        if request_body_order.status_code == 200:
-            print(text.Green + '\n- [Order Creation] The Order ' + order_id_created + ' has been created successfully')
-            return 'true'
-        else:
-            return 'false'
+    json_data = loads(response.text)
+    if response.status_code == 200 and len(json_data) != 0:
+        return json_data
     else:
-        return 'error_len'
+        print(text.Red + '\n- [Order Service] Failure to create an order. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
+        return 'false'
 
 
-# Define JSON to submmit Order creation
-def set_file_request_order(url, headers, abi_id, zone, delivery_center_id, enabled_skus, allow_order_cancel, order_option):
+def create_order_payload(abi_id, sku_list, allow_order_cancel, order_status):
+    """
+    Create payload for order creation
+    Args:
+        abi_id: POC unique identifier
+        sku_list: list of SKUs
+        allow_order_cancel: `Y` or `N`
+        order_status: e.g., PLACED, CANCELLED, etc
+    Returns: order payload
+    """
 
     # Sets the format of the placement date of the order (current date and time)
-    placement_date = datetime.now()
-    placement_date = placement_date.strftime('%Y-%m-%dT%H:%M:%S')
-    placement_date = placement_date + '+00:00'
+    placement_date = datetime.now().strftime('%Y-%m-%dT%H:%M:%S') + '+00:00'
 
     # Sets the format of the delivery date of the order (current date and time more one day)
-    delivery_date = datetime.now() + timedelta(days=1)
-    delivery_date = delivery_date.strftime('%Y-%m-%d')
+    delivery_date = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
 
     # Sets the format of the cancellable date of the order (current date and time more ten days)
-    cancellable_date = datetime.now() + timedelta(days=10)
-    cancellable_date = cancellable_date.strftime('%Y-%m-%dT%H:%M:%S')
-    cancellable_date = cancellable_date + '+00:00'
+    cancellable_date = (datetime.now() + timedelta(days=10)).strftime('%Y-%m-%dT%H:%M:%S') + '+00:00'
 
     # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_order_payload.json')
+    abs_path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(abs_path, 'data/create_order_payload.json')
 
     # Load JSON file
     with open(file_path) as file:
         json_data = json.load(file)
 
-    dict_values  = {
+    dict_values = {
         'accountId': str(abi_id),
         'delivery.date': delivery_date,
-        'items[0].sku': enabled_skus[0],
-        'items[1].sku': enabled_skus[1],
+        'items[0].sku': sku_list[0],
+        'items[1].sku': sku_list[1],
         'placementDate': placement_date
     }
 
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
-    if order_option == 'ACTIVE':
+    if order_status == 'ACTIVE':
         if allow_order_cancel == 'Y':   
             json_object = set_to_dictionary(json_object, 'status', 'PLACED')
             json_object = set_to_dictionary(json_object, 'cancellableUntil', cancellable_date)
         else:
             json_object = set_to_dictionary(json_object, 'status', 'PLACED')
-    elif order_option == 'CANCELLED':
+    elif order_status == 'CANCELLED':
         json_object = set_to_dictionary(json_object, 'status', 'CANCELLED')
         json_object = set_to_dictionary(json_object, 'cancellationReason', 'ORDER CANCELLED FOR TESTING PURPOSES')
-    elif order_option == 'DELIVERED':
+    elif order_status == 'DELIVERED':
         # Sets the format of the delivery date of the order (current date and time more one day)
-        delivery_date_old = datetime.now() - timedelta(days=1)
-        delivery_date_old = delivery_date_old.strftime('%Y-%m-%d')
+        delivery_date_old = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+
         dict_values = {
-            'delivery.date': delivery_date_old,
+            'delivery.date': delivery_date_old
         }
+
         for key in dict_values.keys():
             json_object = update_value_to_json(json_data, key, dict_values[key])
 
@@ -158,109 +150,98 @@ def set_file_request_order(url, headers, abi_id, zone, delivery_center_id, enabl
     # Create body
     request_body = convert_json_to_string(json_object)
 
+    return request_body
+
+
+def change_order(zone, environment, order_data):
+    """
+    Change/Update order information via the Order Relay Service
+    Args:
+        zone: e.g., AR, BR, CO, DO, MX, ZA
+        environment: e.g., DEV, SIT, UAT
+        order_data: order information
+    Returns `success` or error message in case of failure
+    """
+
+    # Define headers
+    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+
+    # Define url request
+    request_url = get_microservice_base_url(environment) + '/order-relay/'
+
+    # Get body
+    request_body = create_changed_order_payload(order_data)
+
     # Send request
-    response = place_request('POST', url, request_body, headers)
+    response = place_request('POST', request_url, request_body, request_headers)
 
-    return response
-
-
-def change_order(account_id, zone, environment, order_option, order_id):
-    order_data = check_if_order_exists(account_id, zone, environment, order_id)
-
-    if order_data == 'false':
-        return 'error_ms'
+    if response.status_code == 202:
+        return 'success'
     else:
-        order_info = order_data[0]
+        print(text.Red + '\n- [Order Relay Service] Failure to change an order. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
+        return 'false'
 
-    status = order_info['status']
 
-    if status == 'DENIED' or status == 'CANCELLED' or status == 'DELIVERED' or status == 'PARTIAL_DELIVERY' \
-            or status == 'PENDING_CANCELLATION':
-        print(text.Red + '\n- [Order Service] Its not possible change this order because the order status is ' +
-              order_info['status'])
-    else:
-        items = order_info['items']
-        if len(items) == 1:
-            if items[0]['quantity'] == 1:
-                print(
-                    text.Red + '\n- [Order Service] Its not possible change this order because the order has only one '
-                               'product with quantity equal 1')
-            else:
+def create_changed_order_payload(order_data):
+    """
+    Create payload for order update
+    Args:
+        order_data: order information
+    Returns: updated order payload
+    """
+
+    items = order_data[0]['items']
+
+    if len(items) == 1:
+        if items[0]['quantity'] > 1:
+            item_subtotal = items[0]['price']
+            item_total = items[0]['price']
+            dif_item_total = round(items[0]['total'] - item_total, 2)
+            dif_item_subtotal = round(items[0]['subtotal'] - item_subtotal, 2)
+
+            order_total = round(order_data['total'] - dif_item_total, 2)
+            order_subtotal = round(order_data['subtotal'] - dif_item_subtotal, 2)
+
+            update_value_to_json(order_data, 'items[0].quantity', 1)
+            update_value_to_json(order_data, 'items[0].subtotal', item_subtotal)
+            update_value_to_json(order_data, 'items[0].total', item_total)
+            update_value_to_json(order_data, 'subtotal', order_subtotal)
+            update_value_to_json(order_data, 'total', order_total)
+
+            # Create body
+            request_body = convert_json_to_string(order_data)
+
+    elif len(items) > 1:
+        for i in range(len(items)):
+            if items[i]['quantity'] > 1:
                 item_qtd = 1
-                item_subtotal = items[0]['price']
-                item_total = items[0]['price']
-                dif_item_total = round(items[0]['total'] - item_total, 2)
-                dif_item_subtotal = round(items[0]['subtotal'] - item_subtotal, 2)
+                item_subtotal = items[i]['price']
+                item_total = items[i]['price']
 
-                order_total = round(order_info['total'] - dif_item_total, 2)
-                order_subtotal = round(order_info['subtotal'] - dif_item_subtotal, 2)
+                dict_values = {
+                    'items['+str(i)+'].quantity': item_qtd,
+                    'items['+str(i)+'].subtotal': item_subtotal,
+                    'items['+str(i)+'].total': item_total
+                }
 
-                update_value_to_json(order_info, 'items[0].quantity', item_qtd)
-                update_value_to_json(order_info, 'items[0].subtotal', item_subtotal)
-                update_value_to_json(order_info, 'items[0].total', item_total)
-                update_value_to_json(order_info, 'subtotal', order_subtotal)
-                update_value_to_json(order_info, 'total', order_total)
-
-                # Create body
-                request_body = convert_json_to_string(order_info)
-                request_body = '[' + request_body + ']'
-
-                # Define headers
-                request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
-
-                # Define url request
-                request_url = get_microservice_base_url(environment) + '/order-relay/'
-
-                # Send request
-                response = place_request('POST', request_url, request_body, request_headers)
-
-                if response.status_code == 202:
-                    print(text.Green + 'Order: ' + order_id + ' was change')
-                    return response
-                else:
-                    return 'false'
-        else:
-            for i in range(len(items)):
-                if items[i]['quantity'] > 1:
-                    item_qtd = 1
-                    item_subtotal = items[i]['price']
-                    item_total = items[i]['price']
-
-                    dict_values = {
-                        'items['+str(i)+'].quantity': item_qtd,
-                        'items['+str(i)+'].subtotal': item_subtotal,
-                        'items['+str(i)+'].total': item_total
-                    }
-
-            for key in dict_values.keys():
-                json_object = update_value_to_json(order_info, key, dict_values[key])
+        for key in dict_values.keys():
+            json_object = update_value_to_json(order_data, key, dict_values[key])
 
             # Create body
             request_body = convert_json_to_string(json_object)
-            request_body = '[' + request_body + ']'
 
-            # Define headers
-            request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
-
-            # Define url request
-            request_url = get_microservice_base_url(environment) + '/order-relay/'
-
-            # Send request
-            response = place_request('POST', request_url, request_body, request_headers)
-
-            if response.status_code == 202:
-                print(text.Green + 'Order: ' + order_id + ' was change')
-                return response
-            else:
-                return 'false'
+    return request_body
 
 
 def display_specific_order_information(orders):
-    """Display order information
-    Arguments:
-        - orders: order data by account and order ID
-    Print a table containing the available order information
     """
+    Display order information
+    Args:
+        orders: order data by account and order ID
+    Returns: a table containing the available order information
+    """
+
     items = orders[0]['items']
     item_information = list()
     if len(items) == 0:
@@ -318,11 +299,13 @@ def display_specific_order_information(orders):
 
 
 def display_all_order_information(orders):
-    """Display all order information by POC
-    Arguments:
-        - orders: order data by account
-    Print a table containing the available order information
     """
+    Display all order information by POC
+    Args:
+        orders: order data by account
+    Returns: a table containing the available order information
+    """
+
     order_information = list()
 
     for i in range(len(orders)):
@@ -334,6 +317,13 @@ def display_all_order_information(orders):
 
 
 def validate_order_parameters(order):
+    """
+    Validate order parameters
+    Args:
+        order: order information
+    Returns: validated order values
+    """
+
     if 'subtotal' not in order:
         subtotal = 'null'
     else:
@@ -371,6 +361,14 @@ def validate_order_parameters(order):
 
 
 def find_values(key, json_str):
+    """
+    Find values in a dictionary
+    Args:
+        key: dict key
+        json_str: json object
+    Returns: None if the key does not exist or the key's value in case of success
+    """
+
     results = list()
 
     def _decode_dict(a_dict):
@@ -387,3 +385,40 @@ def find_values(key, json_str):
     else:
         return results[0]
 
+
+def check_if_order_exists(abi_id, zone, environment, order_id):
+    """
+    Check if an order exists via Order Service
+    Args:
+        abi_id: POC unique identifier
+        zone: e.g., AR, BR, CO, DO, MX, ZA
+        environment: e.g., DEV, SIT, UAT
+        order_id: order unique identifier
+    Returns:
+        empty: if an account does not have any order
+        not_found: if the order_id does not exist
+        false: if an error comes from back-end
+    """
+
+    # Get header request
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+
+    # Get base URL
+    request_url = get_microservice_base_url(environment) + '/order-service/v1?orderIds=' + order_id + '&accountId=' \
+                  + abi_id
+
+    # Place request
+    response = place_request('GET', request_url, '', request_headers)
+
+    json_data = loads(response.text)
+    if response.status_code == 200 and len(json_data) != 0:
+        return json_data
+    elif response.status_code == 200 and len(json_data) == 0:
+        if order_id == '':
+            return 'empty'
+        else:
+            return 'not_found'
+    else:
+        print(text.Red + '\n- [Order Service] Failure to retrieve order information. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
+        return 'false'

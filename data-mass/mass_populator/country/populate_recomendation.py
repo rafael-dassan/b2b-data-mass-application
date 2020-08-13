@@ -28,7 +28,7 @@ def populate_recommendation(country, environment, account_id):
     """
     # Retrieve all SKUs of the specified Account and DeliveryCenter IDs
     product_offers = request_get_offers_microservice(
-        account_id, country, environment, account_id, True)
+        account_id, country, environment)
     if not isinstance(product_offers, list) or not len(product_offers):
         logger.warning("Not found SKUs on account: {account_id}".format(
             account_id=account_id))
