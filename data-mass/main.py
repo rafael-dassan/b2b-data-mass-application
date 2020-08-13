@@ -162,7 +162,7 @@ def account_information_menu():
         for i in range(len(account)):
             account_id = account[i]['accountId']
             product = request_get_offers_microservice(account_id, zone, environment)
-            if len(product) != 0:
+            if product != 'false' or product != 'not_found':
                 account_info = {
                     'Account ID': account_id,
                     'Tax ID': account[i]['taxId'],
