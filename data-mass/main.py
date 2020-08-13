@@ -101,31 +101,39 @@ def product_information_menu():
     if products_type == 'PRODUCT':
         zone = print_zone_menu_for_ms()
         abi_id = print_account_id_menu(zone)
-        account = check_account_exists_microservice(abi_id, zone, environment)
 
+        account = check_account_exists_microservice(abi_id, zone, environment)
         if account == 'false':
             printFinishApplicationMenu()
 
         product_offers = request_get_products_by_account_microservice(abi_id, zone, environment)
-        if len(product_offers) == 0:
-            print(text.Red + '\n- [Product Offers] The account ' + abi_id + ' does not have products')
+        if product_offers == 'false':
             printFinishApplicationMenu()
-        else:
-            display_product_information(product_offers)
+        elif product_offers == 'not_found':
+            print(text.Red + '\n- [Catalog Service] There is no product associated with the account ' + abi_id)
+            printFinishApplicationMenu()
+
+        display_product_information(product_offers)
+
     elif products_type == 'INVENTORY':
         zone = print_zone_menu_for_inventory()
         abi_id = print_account_id_menu(zone)
         
         account = check_account_exists_microservice(abi_id, zone, environment)
-
         if account == 'false':
             printFinishApplicationMenu()
 
         delivery_center_id = account[0]['deliveryCenterId']
         display_inventory_by_account(zone, environment, abi_id, delivery_center_id)
+
     else:
         zone = print_zone_menu_for_ms()
-        display_items_information_zone(zone, environment)
+
+        products = request_get_products_microservice(zone, environment)
+        if products == 'false':
+            printFinishApplicationMenu()
+
+        display_items_information_zone(zone, environment, products)
 
 
 def account_information_menu():
@@ -477,19 +485,20 @@ def input_inventory_to_product():
     product_assortment = request_get_account_product_assortment(abi_id, zone, environment,
                                                                 account[0]['deliveryCenterId'])
 
-    if len(product_assortment) > 0:
-        # Call function to display the SKUs on the screen
-        inventory = display_available_products_account(abi_id, zone, environment, account[0]['deliveryCenterId'])
+    if product_assortment == 'false':
+        printFinishApplicationMenu()
+    elif product_assortment == 'not_found':
+        print(text.Red + '\n- [Product Assortment Service] There is no product associated with the account ' + abi_id)
+        printFinishApplicationMenu()
 
-        if inventory == 'true':
-            print(text.Green + '\n- The inventory has been added successfully for the account ' + abi_id)
-        elif inventory == 'error_len':
-            print(text.Red + '\n- There are no products available for the account ' + abi_id)
-            printFinishApplicationMenu()
-        else:
-            printFinishApplicationMenu()
+    # Call function to display the SKUs on the screen
+    inventory = display_available_products_account(abi_id, zone, environment, account[0]['deliveryCenterId'])
+    if inventory == 'true':
+        print(text.Green + '\n- The inventory has been added successfully for the account ' + abi_id)
+    elif inventory == 'error_len':
+        print(text.Red + '\n- There are no products available for the account ' + abi_id)
+        printFinishApplicationMenu()
     else:
-        print(text.Red + '\n- There is no product associated with the account ' + abi_id)
         printFinishApplicationMenu()
 
 
@@ -502,7 +511,6 @@ def input_recommendation_to_account_menu():
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone, environment)
-
     if account == 'false':
         printFinishApplicationMenu()
 
@@ -741,18 +749,28 @@ def input_products_to_account_menu():
         printFinishApplicationMenu()
 
     if proceed == 'Y':
+        all_products_zone = request_get_products_microservice(zone, environment)
+        if all_products_zone == 'false':
+            printFinishApplicationMenu()
+
         # Call add products to account function
-        add_products = add_products_to_account_microservice(abi_id, zone, environment, delivery_center_id)
+        add_products = add_products_to_account_microservice(abi_id, zone, environment, delivery_center_id,
+                                                            all_products_zone)
         if add_products != 'success':
             print(text.Red + '\n- [Products] Something went wrong, please try again')
             printFinishApplicationMenu()
 
         if zone != 'BR' and zone != 'CL':
             products = request_get_account_product_assortment(abi_id, zone, environment, delivery_center_id)
+            if products == 'false':
+                printFinishApplicationMenu()
+            elif products == 'not_found':
+                print(text.Red + '\n- [Product Assortment Service] There is no product associated with the account '
+                      + abi_id)
+                printFinishApplicationMenu()
 
             skus_id = list()
             aux_index = 0
-
             while aux_index <= (len(products) - 1):
                 skus_id.append(products[aux_index])
                 aux_index = aux_index + 1
@@ -826,15 +844,24 @@ def create_account_menu():
 
     delivery_center_id = account[0]['deliveryCenterId']
 
-    # Call add products to account function
-    products = add_products_to_account_microservice(abi_id, zone, environment, delivery_center_id)
+    all_products_zone = request_get_products_microservice(zone, environment)
+    if all_products_zone == 'false':
+        printFinishApplicationMenu()
 
+    # Call add products to account function
+    products = add_products_to_account_microservice(abi_id, zone, environment, delivery_center_id, all_products_zone)
     if products != 'success':
         print(text.Red + '\n\n- [Products] Something went wrong, please try again')
         printFinishApplicationMenu()
 
     if zone != 'BR' and zone != 'CL':
         products = request_get_account_product_assortment(abi_id, zone, environment, delivery_center_id)
+        if products == 'false':
+            printFinishApplicationMenu()
+        elif products == 'not_found':
+            print(text.Red + '\n- [Product Assortment Service] There is no product associated with the account '
+                  + abi_id)
+            printFinishApplicationMenu()
 
         skus_id = list()
         aux_index = 0
