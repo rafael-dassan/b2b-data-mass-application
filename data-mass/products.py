@@ -262,7 +262,7 @@ def request_get_offers_microservice(abi_id, zone, environment, delivery_center_i
               + str(response.status_code) + '. Response message ' + response.text)
 
 
-def check_item_enabled(sku, zone, environment, return_item_data=False):
+def check_item_enabled(sku, zone, environment):
     # Get base URL
     request_url = get_microservice_base_url(environment, 'false') + '/items/' + sku + '?includeDisabled=false'
 
@@ -413,7 +413,7 @@ def create_item(zone, environment, item_data):
 
     if response.status_code == 202:
         update_item_response = set_item_enabled(zone, environment, item_data)
-        get_item_response = check_item_enabled(item_data.get('sku'), zone, environment, False)
+        get_item_response = check_item_enabled(item_data.get('sku'), zone, environment)
         if update_item_response == True and get_item_response == True:
             return item_data
     else:

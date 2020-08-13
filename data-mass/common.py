@@ -182,11 +182,20 @@ def validate_zone_for_deals(zone):
     return value
 
 
-def validate_zone_for_combos(zone):
-    switcher = {
-        'BR': 'true',
-        'DO': 'true'
-    }
+def validate_zone_for_combos(zone, combo_type=''):
+    if combo_type == 'DT':
+        switcher = {
+            'BR': 'true',
+            'DO': 'true',
+            'AR': 'true',
+            'CO': 'true',
+            'ZA': 'true'
+        }
+    else:
+        switcher = {
+            'BR': 'true',
+            'DO': 'true'
+        }
 
     value = switcher.get(zone, 'false')
     return value
@@ -928,21 +937,17 @@ def print_zone_menu_for_deals():
 
 
 # Print zone menu for combos
-def print_zone_menu_for_combos():
-    zone = input(text.default_text_color + 'Zone (BR, DO): ')
-    while validate_zone_for_combos(zone.upper()) == 'false':
-        print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (BR, DO): ')
-
-    return zone.upper()
-
-
-# Print zone menu for DT combos
-def print_zone_menu_for_combos_dt():
-    zone = input(text.default_text_color + 'Zone (BR, DO, AR, CO, ZA): ')
-    while validate_zone_for_combos_dt(zone.upper()) == 'false':
-        print(text.Red + '\n- Invalid option\n')
+def print_zone_menu_for_combos(combo_type=''):
+    if combo_type == 'DT':
         zone = input(text.default_text_color + 'Zone (BR, DO, AR, CO, ZA): ')
+        while validate_zone_for_combos(zone.upper(), combo_type) == 'false':
+            print(text.Red + '\n- Invalid option\n')
+            zone = input(text.default_text_color + 'Zone (BR, DO, AR, CO, ZA): ')
+    else:
+        zone = input(text.default_text_color + 'Zone (BR, DO): ')
+        while validate_zone_for_combos(zone.upper(), combo_type) == 'false':
+            print(text.Red + '\n- Invalid option\n')
+            zone = input(text.default_text_color + 'Zone (BR, DO): ')
 
     return zone.upper()
 

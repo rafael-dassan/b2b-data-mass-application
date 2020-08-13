@@ -100,10 +100,10 @@ def create_new_program(zone, environment):
             response = place_request('PUT', request_url, request_body, request_headers)
 
             if response.status_code == 200:
-                print(text.Green + '\n- [Rewards] The new program has been successfully created. ID: ' + reward_id + ' - Initial balance = ' + str(initial_balance))
-                return 'true'
+                return reward_id
             else:
-                return 'false'
+                print(text.Red + '\n- [Rewards Service] Failure when creating a new program. Response Status: '
+                                + str(response.status_code) + '. Response message ' + response.text)
         else:
             return 'error_len_sku'
     else:
@@ -152,22 +152,14 @@ def enroll_poc_to_program(account_id, zone, environment):
 
             # Send request
             response = place_request('POST', request_url, request_body, request_headers)
-
-            if response.status_code == 201:
-                enroll_response = loads(response.text)
-                print(text.Green + '\n- [Rewards] The account has been successfully enrolled to the program "' + enroll_response['programId'] + '"')
-                return 'true'
-            elif response.status_code == 406:
-                print(text.Red + '\nThere are no Reward programs available for this account')
-                return 'true'
-            elif response.status_code == 409:
-                print(text.Red + '\n- [Rewards] This account already have a Reward program enrolled to it')
-                return 'true'
+            
+            if response.status_code == 406 or response.status_code == 409 or response.status_code == 201:
+                return response.status_code
             else:
-                return 'false'
+                print(text.Red + '\n- [Rewards Service] Failure when enrolling an account to program. Response Status: '
+                                + str(response.status_code) + '. Response message ' + response.text)
     else:
-        print(text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "Create new program" to create it')
-        return 'true'
+        return 'pgm_not_found'
 
 
 # Add Redeem products to account
@@ -345,10 +337,11 @@ def update_program_balance(zone, environment):
             response = place_request('PUT', request_url, request_body, request_headers)
 
             if response.status_code == 200:
-                print(text.Green + '\n- [Rewards] The program ' + program_found + ' has been successfully updated. Initial balance = ' + str(new_balance))
-                return 'true'
+                return program_found
             else:
-                return 'false'
+                print(text.Red + '\n- [Rewards Service] Failure when enrolling an account to program. Response Status: '
+                                + str(response.status_code) + '. Response message ' + response.text)
+                return 'error'
         else:
             return 'no_confirm'
     else:
