@@ -151,6 +151,8 @@ def account_information_menu():
         display_account_information(account)
     elif account_type == 'ALL_ACCOUNT':
         account = check_account_exists_microservice('', zone, environment)
+        if account == 'false':
+            printFinishApplicationMenu()
         display_all_account_info(account)
     else:
         print(text.default_text_color + '\nThis process can take some time... ')
