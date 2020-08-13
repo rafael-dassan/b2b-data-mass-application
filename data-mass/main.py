@@ -71,6 +71,8 @@ def deals_information_menu():
     zone = print_zone_menu_data_searching_deals()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     account = check_account_exists_microservice(abi_id, zone, environment)
     if account == 'false':
@@ -101,6 +103,8 @@ def product_information_menu():
     if products_type == 'PRODUCT':
         zone = print_zone_menu_for_ms()
         abi_id = print_account_id_menu(zone)
+        if abi_id == 'false':
+            printFinishApplicationMenu()
         account = check_account_exists_microservice(abi_id, zone, environment)
 
         if account == 'false':
@@ -115,6 +119,8 @@ def product_information_menu():
     elif products_type == 'INVENTORY':
         zone = print_zone_menu_for_inventory()
         abi_id = print_account_id_menu(zone)
+        if abi_id == 'false':
+            printFinishApplicationMenu()
         
         account = check_account_exists_microservice(abi_id, zone, environment)
 
@@ -142,6 +148,8 @@ def account_information_menu():
 
     if account_type == 'ONE_ACCOUNT':
         abi_id = print_account_id_menu(zone)
+        if abi_id == 'false':
+            printFinishApplicationMenu()
         account = check_account_exists_microservice(abi_id, zone, environment)
 
         if account == 'false':
@@ -243,6 +251,8 @@ def input_orders_to_account():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     switcher = {
         '1': 'ACTIVE',
@@ -338,6 +348,8 @@ def check_simulation_service_account_microservice_menu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone, environment)
@@ -428,6 +440,8 @@ def check_simulation_service_mdw_menu():
     zone = print_zone_simulation_menu("true")
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone, environment)
@@ -466,6 +480,8 @@ def input_inventory_to_product():
     zone = print_zone_menu_for_inventory()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     # Check if the account exists
     account = check_account_exists_microservice(abi_id, zone, environment)
@@ -499,6 +515,8 @@ def input_recommendation_to_account_menu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone, environment)
@@ -557,6 +575,9 @@ def input_deals_menu():
     zone = print_zone_menu_for_deals()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
+
     option_sku = print_option_sku(zone)
 
     switcher = {
@@ -633,6 +654,8 @@ def input_combos_menu():
     zone = print_zone_menu_for_combos()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone, environment)
@@ -690,6 +713,8 @@ def input_credit_menu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     # Check if account exists
     account = check_account_exists_microservice(abi_id, zone, environment)
@@ -713,6 +738,8 @@ def input_products_to_account_menu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone, environment)
@@ -767,6 +794,8 @@ def input_delivery_window_menu():
     zone = print_zone_menu_for_delivery_window()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone, environment)
@@ -799,6 +828,8 @@ def create_account_menu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
     name = printNameMenu()
     payment_method = printPaymentMethodMenu(zone)
     state = validate_state(zone)
@@ -1030,6 +1061,8 @@ def create_invoice_menu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     account = check_account_exists_microservice(abi_id, zone, environment)
     if account == 'false':
@@ -1143,6 +1176,8 @@ def order_information_menu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     account = check_account_exists_microservice(abi_id, zone, environment)
     if account == 'false':
@@ -1176,6 +1211,8 @@ def recommender_information_menu():
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
 
     display_recommendations_by_account(zone, environment, abi_id)
 

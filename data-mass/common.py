@@ -51,7 +51,7 @@ def validate_option_request_selection_for_structure_3(option):
 
 
 # Validate lenght of Account ID
-def validateAccount(account_id, zone):
+def validate_account(account_id, zone):
     size_account_id = len(account_id)
 
     if size_account_id == 0:
@@ -811,19 +811,27 @@ def print_quantity_menu():
 #       Therefore, for simulation, this parameter was created to allow using accounts that do not 
 #       follow this pattern of more than 10 characters
 def print_account_id_menu(zone):
-    abi_id = input(text.default_text_color + 'Account ID: ')
-
-    while validateAccount(str(abi_id), zone) != 'true':
-        if validateAccount(str(abi_id), zone) == 'error_0':
+    abi_id = str(input(text.default_text_color + 'Account ID: '))
+    attempt = 0
+    while validate_account(abi_id, zone) != 'true' and attempt <= 2:
+        if validate_account(abi_id, zone) == 'error_0':
             print(text.Red + '\n- Account ID should not be empty')
-            abi_id = input(text.default_text_color + 'Account ID: ')
-        if validateAccount(str(abi_id), zone) == 'error_10':
+            if attempt < 2:
+                abi_id = str(input(text.default_text_color + 'Account ID: '))
+        if validate_account(abi_id, zone) == 'error_10':
             print(text.Red + '\n- Account ID must contain at least 10 characters')
-            abi_id = input(text.default_text_color + 'Account ID: ')
-        elif validateAccount(str(abi_id), zone) == 'not_number':
+            if attempt < 2:
+                abi_id = str(input(text.default_text_color + 'Account ID: '))
+        elif validate_account(abi_id, zone) == 'not_number':
             print(text.Red + '\n- The account ID must be Numeric')
-            abi_id = input(text.default_text_color + 'Account ID: ')
-    return str(abi_id)
+            if attempt < 2:
+                abi_id = str(input(text.default_text_color + 'Account ID: '))
+        attempt = attempt + 1
+    if attempt == 3:
+        print(text.Yellow + '\n- You have reached maximum attempts')
+        return 'false'
+    else:
+        return abi_id
 
 
 # Print account name menu
