@@ -228,7 +228,7 @@ def create_rewards_to_account():
             printFinishApplicationMenu()
         elif update_balance == 'no_confirm':
             printFinishApplicationMenu()
-        elif update_program_balance == 'no_program':
+        elif update_balance == 'no_program':
             print(text.Red + '\n- [Rewards] There is no rewards program available for this zone')
             printFinishApplicationMenu()
         else:
@@ -241,16 +241,8 @@ def create_rewards_to_account():
         # Call check account exists function
         account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
 
-        if account == 'false':
-            print(text.Red + '\n- [Account] Something went wrong, please try again')
-            printFinishApplicationMenu()
-        elif len(account) == 0:
-            print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
-            printFinishApplicationMenu()
-        
-        input_redeem_products(abi_id, zone.upper(), environment.upper())
-
-        printFinishApplicationMenu() 
+        if account != 'false':
+            input_redeem_products(abi_id, zone.upper(), environment.upper())
 
 
 # Input Orders to account (active and cancelled ones)
@@ -658,6 +650,17 @@ def input_combos_menu():
         else:
             response = input_combo_free_good_only(abi_id, zone, environment, sku)
 
+        if response == 'success':
+            print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to import your combo, so '
+                                'it can be used in the front-end applications')
+            
+            if zone == 'DO' or zone == 'CO':
+                print(text.Yellow + '\n- Also on Magento Admin, turn the new combos `enable` through the menu `Catalog -> Products`')
+        else:
+            print(text.Red + '\n- [Combo Relay Service] Failure when creating a new combo. Response Status: '
+                            + str(response.status_code) + '. Response message ' + response.text)      
+        
+        
         printFinishApplicationMenu()
 
     # Combo type digital trade
@@ -670,16 +673,6 @@ def input_combos_menu():
         account = check_account_exists_microservice(abi_id, zone.upper(), environment.upper())
 
         if account == 'false':
-            print(text.Red + '\n- [Account] Something went wrong, please try again')
-            printFinishApplicationMenu()
-        elif len(account) == 0:
-            print(text.Red + '\n- [Account] The account ' + abi_id + ' does not exist')
-            printFinishApplicationMenu()
-
-        product_offers = request_get_offers_microservice(abi_id, zone, environment, account[0]['deliveryCenterId'], True)
-
-        if len(product_offers) == 0:
-            print(text.Red + '\n- [Products] The account ' + str(abi_id) + ' has no products available for purchase')
             printFinishApplicationMenu()
 
         qtd_combos = input(text.Yellow + '\nInform the quantity of DT combos you want to create: ')
@@ -693,55 +686,15 @@ def input_combos_menu():
 
         print(text.default_text_color + '\nCreating DT combos, please wait...')
 
-        i = 0
-        combos_success = 0
-        combos_failed = 0
-        while i < int(qtd_combos):
-            index_offers = randint(0, (len(product_offers) - 1))
-            sku = product_offers[index_offers]['sku']
+        response = input_combo_type_digital_trade(abi_id, zone, environment, qtd_combos)
 
-            # Check if the SKU is enabled on Items MS
-            combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
-            while not combo_item:
-                index_offers = randint(0, (len(product_offers) - 1))
-                sku = product_offers[index_offers]['sku']
-                combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
-
-            combo_dt = list()
-            aux_index = 0
-            while aux_index < 3:
-                index_offers = randint(0, (len(product_offers) - 1))
-                sku = product_offers[index_offers]['sku']
-
-                # Check if the SKU is enabled on Items MS
-                combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
-                while not combo_item:
-                    index_offers = randint(0, (len(product_offers) - 1))
-                    sku = product_offers[index_offers]['sku']
-                    combo_item = check_item_enabled(sku, zone.upper(), environment.upper(), True)
-
-                combo_dt.append(combo_item)
-                aux_index = aux_index + 1
-
-            response = input_combo_type_digital_trade(abi_id, zone, environment, combo_item, combo_dt)
-
-            if response == 'success':
-                combos_success += 1
-
-            i += 1
-
-        combos_failed = int(qtd_combos) - combos_success
-
-        if combos_success > 0:
-            print(text.default_text_color + '\n- Combos created: ' + str(combos_success) + ' / failed: ' + str(combos_failed))
-            print(text.Yellow + '\n- Please, run the cron job `abinbev_combos_service_importer` to import your combos, so '
-                                'they can be used in the front-end applications')
-
+        if response == 'success':
+            print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to import your combo, so '
+                                'it can be used in the front-end applications')
+            
             if zone == 'DO' or zone == 'CO':
                 print(text.Yellow + '\n- Also on Magento Admin, turn the new combos `enable` through the menu `Catalog -> Products`')
-        else:
-            print(text.Red + '\n- Combos failed: ' + str(combos_failed)) 
-
+  
         printFinishApplicationMenu()  
 
     # Reset combo consumption to zero
@@ -766,7 +719,7 @@ def input_combos_menu():
 
         if combo != 'false' and update_combo != 'false':
             print(text.Green + '\n- Combo consumption for ' + combo_id + ' was successfully updated')
-            print(text.Yellow + '\n- Please, run the cron job `abinbev_combos_service_importer` to update the available '
+            print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to update the available '
                                 'quantity in your combo, so it can be used in the front-end applications')
         else:
             printFinishApplicationMenu()

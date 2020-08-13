@@ -275,10 +275,7 @@ def check_item_enabled(sku, zone, environment, return_item_data=False):
     json_data = loads(response.text)
 
     if response.status_code == 200 and len(json_data) != 0:
-        if return_item_data:
-            return json_data['sku']
-        else:
-            return True
+        return json_data['sku']
     elif response.status_code == 404:
         print(text.Red + '\n- [Item Service] SKU ' + sku + ' not found for country ' + zone)
         return False

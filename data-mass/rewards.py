@@ -753,7 +753,6 @@ def locate_program_for_zone(zone, environment, header_request):
 def generate_combos_information(deals_list):
     combos = deals_list['combos']
     combos_id = list()
-    dic_combos = {}
 
     for i in range(len(combos)):
         points = i + 1
