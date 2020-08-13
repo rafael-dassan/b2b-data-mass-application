@@ -193,7 +193,8 @@ def create_rewards_to_account():
         '1': 'NEW_PROGRAM',
         '2': 'UPDATE_BALANCE',
         '3': 'ENROLL_POC',
-        '4': 'ADD_CHALLENGE'
+        '4': 'ADD_CHALLENGE',
+        '5': 'ADD_REDEEM'
     }
 
     reward_option = switcher.get(selection_structure, 'false')
@@ -209,13 +210,12 @@ def create_rewards_to_account():
         elif create_pgm == 'error_len_combo':
             print(text.Red + '\n- [Rewards] The zone must have combos available to proceed')
             printFinishApplicationMenu()
-        elif create_pgm == 'false':
-            print(text.Red + '\n- [Rewards] Something went wrong, please try again.')
-            printFinishApplicationMenu()
         elif create_pgm == 'error_found':
             printFinishApplicationMenu()
         else:
+            print(text.Green + '\n- [Rewards] The new program has been successfully created. ID: ' + create_pgm)
             printFinishApplicationMenu()
+
     # Option to enroll POC to a program
     elif reward_option == 'ENROLL_POC':   
         
@@ -229,10 +229,17 @@ def create_rewards_to_account():
         
         enroll_poc = enroll_poc_to_program(abi_id, zone, environment)
 
-        if enroll_poc == 'false':
-            print(text.Red + '\n- [Rewards] Something went wrong, please try again')
+        if enroll_poc == 'pgm_not_found':
+            print(text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "Create new program" to create it')
+        elif enroll_poc == 406:
+            print(text.Red + '\n- [Rewards] There are no Reward programs available for this account')
+        elif enroll_poc == 409:
+            print(text.Red + '\n- [Rewards] This account already have a Reward program enrolled to it')
+        elif enroll_poc == 201:
+            print(text.Green + '\n- [Rewards] The account has been successfully enrolled to a rewards program')
 
         printFinishApplicationMenu()
+
     # Option to input challenges to a specific zone
     elif reward_option == 'ADD_CHALLENGE':
            
@@ -250,19 +257,31 @@ def create_rewards_to_account():
             print(text.Red + '\n- [Rewards] Something went wrong, please try again')
 
         printFinishApplicationMenu()
+
     # Option to update initial balance of a program
     elif reward_option == 'UPDATE_BALANCE':
 
         update_balance = update_program_balance(zone, environment)
 
-        if update_balance == 'false':
-            print(text.Red + '\n- [Rewards] Something went wrong, please try again')
+        if update_balance == 'no_confirm' or update_balance == 'error':
             printFinishApplicationMenu()
-        elif update_balance == 'no_confirm':
-            printFinishApplicationMenu()
-        elif update_program_balance == 'no_program':
+        elif update_balance == 'no_program':
             print(text.Red + '\n- [Rewards] There is no rewards program available for this zone')
-            printFinishApplicationMenu()
+        else:
+            print(text.Green + '\n- [Rewards] The program ' + update_balance + ' has been successfully updated.')
+
+        printFinishApplicationMenu()
+
+    # Option to input redeem products to an account       
+    elif reward_option == 'ADD_REDEEM': 
+
+        abi_id = print_account_id_menu(zone)
+
+        # Call check account exists function
+        account = check_account_exists_microservice(abi_id, zone, environment)
+
+        if account != 'false':
+            input_redeem_products(abi_id, zone, environment)
         else:
             printFinishApplicationMenu()
 
@@ -673,7 +692,12 @@ def input_deals_menu():
 # Input combos to an account
 def input_combos_menu():
     selection_structure = print_combos_menu()
-    zone = print_zone_menu_for_combos()
+
+    if selection_structure == '3':
+        zone = print_zone_menu_for_combos('DT')
+    else:
+        zone = print_zone_menu_for_combos()   
+        
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
     if abi_id == 'false':
@@ -694,29 +718,31 @@ def input_combos_menu():
 
     index_offers = randint(0, (len(product_offers) - 1))
     sku = product_offers[index_offers]['sku']
+        
+    # Combo type discount
+    if selection_structure == '1':
+        while True:
+            try:
+                discount_value = int(input(text.default_text_color + 'Discount percentage (%): '))
+                break
+            except ValueError:
+                print(text.Red + '\n- Invalid value')
 
-    if selection_structure != '4':
-        if selection_structure == '1':
-            while True:
-                try:
-                    discount_value = int(input(text.default_text_color + 'Discount percentage (%): '))
-                    break
-                except ValueError:
-                    print(text.Red + '\n- Invalid value')
+        response = input_combo_type_discount(abi_id, zone, environment, sku, discount_value)
+    
+    # Combo type free good
+    elif selection_structure == '2':
+        response = input_combo_type_free_good(abi_id, zone, environment, sku)
 
-            response = input_combo_type_discount(abi_id, zone, environment, sku, discount_value)
-        elif selection_structure == '2':
-            response = input_combo_type_free_good(abi_id, zone, environment, sku)
-        else:
-            response = input_combo_free_good_only(abi_id, zone, environment, sku)
+    # Combo type digital trade
+    elif selection_structure == '3':
+        response = input_combo_type_digital_trade(abi_id, zone, environment)
+    
+    # Combo type only free goods
+    elif selection_structure == '4':
+        response = input_combo_free_good_only(abi_id, zone, environment, sku)
 
-        if response == 'success':
-            print(text.Green + '\n- Combo successfully registered')
-            print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to import your combo,'
-                                ' so it can be used in the front-end applications')
-        else:
-            printFinishApplicationMenu()
-
+    # Reset combo consumption to zero
     else:
         combo_id = print_combo_id_menu()
         combo = check_combo_exists_microservice(abi_id, zone, environment, combo_id)
@@ -724,10 +750,18 @@ def input_combos_menu():
 
         if combo != 'false' and update_combo != 'false':
             print(text.Green + '\n- Combo consumption for ' + combo_id + ' was successfully updated')
-            print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to update the available '
-                                'quantity in your combo, so it can be used in the front-end applications')
-        else:
-            printFinishApplicationMenu()
+            print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to import your combo, so '
+                    'it can be used in the front-end applications')
+
+    if  selection_structure != '5' and response != 'false':
+            print(text.Green + '\n- Combo ' + response + ' successfully registered')
+            print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to import your combo, so '
+                                'it can be used in the front-end applications')
+    
+    if (zone == 'DO' or zone == 'CO') and selection_structure != '5' and response != 'false':
+        print(text.Yellow + '\n- Also on Magento Admin, turn the new combos `enable` through the menu `Catalog -> Products`')
+        
+    printFinishApplicationMenu()
 
 
 # Input credit to account

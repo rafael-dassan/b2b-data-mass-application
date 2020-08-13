@@ -64,7 +64,7 @@ def create_new_program(zone, environment):
 
             # Create file path
             path = os.path.abspath(os.path.dirname(__file__))
-            file_path = os.path.join(path, 'data/create_rewards_program.json')
+            file_path = os.path.join(path, 'data/create_rewards_program_payload.json')
 
             # Load JSON file
             with open(file_path) as file:
@@ -74,18 +74,18 @@ def create_new_program(zone, environment):
                 'name' : reward_id,
                 'rules[0].moneySpentSkuRule.skus' : sku_rules_premium,
                 'rules[1].moneySpentSkuRule.skus' : sku_rules_core,
-                'combos[0].comboId' : generated_combos[0],
-                'combos[1].comboId' : generated_combos[1],
-                'combos[2].comboId' : generated_combos[2],
-                'combos[3].comboId' : generated_combos[3],
-                'combos[4].comboId' : generated_combos[4],
+                'combos' : generated_combos,
                 'initialBalance' : initial_balance,
-                'categories[0].description' : categories[0],
-                'categories[0].buttonLabel' : categories[1],
-                'categories[0].image' : categories[2],
-                'categories[1].description' : categories[3],
-                'categories[1].buttonLabel' : categories[4],
-                'categories[1].image' : categories[5],
+                'categories[0].categoryId' : categories[0],
+                'categories[0].categoryIdWeb' : categories[1],
+                'categories[0].description' : categories[2],
+                'categories[0].buttonLabel' : categories[3],
+                'categories[0].image' : categories[4],
+                'categories[1].categoryId' : categories[5],
+                'categories[1].categoryIdWeb' : categories[6],
+                'categories[1].description' : categories[7],
+                'categories[1].buttonLabel' : categories[8],
+                'categories[1].image' : categories[9],
                 'termsAndConditions[0].documentURL' : terms[0],
                 'termsAndConditions[0].changeLog' : terms[1]
             }
@@ -100,9 +100,10 @@ def create_new_program(zone, environment):
             response = place_request('PUT', request_url, request_body, request_headers)
 
             if response.status_code == 200:
-                print(text.Green + '\n- [Rewards] The new program has been successfully created. ID: ' + reward_id + ' - Initial balance = ' + str(initial_balance))
-                return 'true'
+                return reward_id
             else:
+                print(text.Red + '\n- [Rewards Service] Failure when creating a new program. Response Status: '
+                                + str(response.status_code) + '. Response message ' + response.text)
                 return 'false'
         else:
             return 'error_len_sku'
@@ -152,22 +153,142 @@ def enroll_poc_to_program(account_id, zone, environment):
 
             # Send request
             response = place_request('POST', request_url, request_body, request_headers)
-
-            if response.status_code == 201:
-                enroll_response = loads(response.text)
-                print(text.Green + '\n- [Rewards] The account has been successfully enrolled to the program "' + enroll_response['programId'] + '"')
-                return 'true'
-            elif response.status_code == 406:
-                print(text.Red + '\nThere are no Reward programs available for this account')
-                return 'true'
-            elif response.status_code == 409:
-                print(text.Red + '\n- [Rewards] This account already have a Reward program enrolled to it')
-                return 'true'
+            
+            if response.status_code == 406 or response.status_code == 409 or response.status_code == 201:
+                return response.status_code
             else:
+                print(text.Red + '\n- [Rewards Service] Failure when enrolling an account to program. Response Status: '
+                                + str(response.status_code) + '. Response message ' + response.text)
                 return 'false'
     else:
-        print(text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "Create new" to create it')
-        return 'true'
+        return 'pgm_not_found'
+
+
+# Add Redeem products to account
+def input_redeem_products(abi_id, zone, environment):
+
+    # Define headers
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+
+    # Check if the zone already have a reward program created
+    program_found = locate_program_for_zone(zone, environment, request_headers)
+
+    if program_found != 'false':
+
+        print(text.default_text_color + '\nAdding redeem products, please wait...')
+
+        # Define url request to read the Rewards program of the zone
+        request_url = get_microservice_base_url(environment) + '/rewards-service/programs/' + program_found
+
+        # Send request
+        response = place_request('GET', request_url, '', request_headers)
+        json_program = loads(response.text)
+
+        combos_dt_program = json_program['combos']
+        len_combos_program = len(combos_dt_program)
+
+        # Get all the combo IDs that are added to the reward program
+        i = 0
+        combos_id_program = list()
+        while i < len_combos_program:
+            combos_id_program.append(combos_dt_program[i]['comboId'])
+            i += 1
+
+        # Define url request to get all the combos of the specified zone
+        request_url = get_microservice_base_url(environment) + '/combos/?types=DT&comboIds=&includeDeleted=false&includeDisabled=false'
+
+        # Send request
+        response = place_request('GET', request_url, '', request_headers)
+        json_combos = loads(response.text)
+        
+        combos_dt_zone = json_combos['combos']
+        len_combos_zone = len(combos_dt_zone)
+
+        # Get all the combos that exists on the specified zone
+        i = 0
+        combos_zone = list()
+        while i < len_combos_zone:
+            combos_zone.append(combos_dt_zone[i])
+            i += 1
+
+        # Verify which combos of the zone matchs with the ones added to the rewards program
+        x = 0
+        y = 0
+        combos_match = list()
+        while x < len(combos_id_program):
+            y = 0
+            while y < len(combos_zone):
+                if combos_zone[y]['id'] == combos_id_program[x]:
+                    combos_match.append(combos_zone[y])
+                    break
+                y += 1
+            x += 1
+
+        len_combos_match = len(combos_match)
+
+        # Define headers to post the association
+        request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+
+        # Define url request to post the association
+        request_url = get_microservice_base_url(environment) + '/combo-relay/accounts'
+
+        # Define the list of Limits for the main payload 
+        dict_values_limit  = {
+            'daily': 200,
+            'monthly': 200,
+        }
+
+        # Define the entire list of Combos for the main payload
+        i = 0
+        combos_list = list()
+        while i < len_combos_match:
+            
+            if zone == 'BR':
+                description = combos_match[i]['title']
+            else:
+                description = combos_match[i]['description']
+
+            dict_values_combos  = {
+                'id': combos_match[i]['id'],
+                'externalId': combos_match[i]['id'],
+                'title': combos_match[i]['title'],
+                'description': description,
+                'startDate': combos_match[i]['startDate'],
+                'endDate': combos_match[i]['endDate'],
+                'updatedAt': combos_match[i]['updatedAt'],
+                'type': 'DT',
+                'image': 'https://test-conv-micerveceria.abi-sandbox.net/media/catalog/product/c/o/combo-icon_11.png',
+                'limit': dict_values_limit,
+                'originalPrice': 0,
+                'price': 0,
+                'score': 0,
+            }
+
+            combos_list.append(dict_values_combos)
+            i += 1
+
+        # Creates the main payload based on the lists created above
+        dict_values_account  = {
+            'accounts': create_list(abi_id),
+            'combos': combos_list
+        }
+
+        #Create body to associate the combos to account
+        request_body = convert_json_to_string(dict_values_account)
+ 
+        # Send request to associate the combos to account
+        response = place_request('POST', request_url, request_body, request_headers)
+
+        if response.status_code == 201:
+            print(text.Green + '\n- [Rewards] Total of ' + str(i) + ' combos added successfully')
+        else:
+            print(text.Red + '\n- [Combo Relay Service] Failure when associating combos to the account. Response Status: '
+                                    + str(response.status_code) + '. Response message: ' + response.text)
+
+    else:
+        print(text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "Create new program" to create it')
+
+    return
 
 
 # Updates the program's initial balance
@@ -218,16 +339,15 @@ def update_program_balance(zone, environment):
             response = place_request('PUT', request_url, request_body, request_headers)
 
             if response.status_code == 200:
-                print(text.Green + '\n- [Rewards] The program ' + program_found + ' has been successfully updated. Initial balance = ' + str(new_balance))
-                return 'true'
+                return program_found
             else:
+                print(text.Red + '\n- [Rewards Service] Failure when enrolling an account to program. Response Status: '
+                                + str(response.status_code) + '. Response message ' + response.text)
                 return 'false'
         else:
             return 'no_confirm'
     else:
         return 'no_program'
-
-    return 'false'
 
 
 # Add Reward challenges to a zone
@@ -268,7 +388,7 @@ def input_challenge_to_zone(abi_id, zone, environment):
 
         # Create file path
         path = os.path.abspath(os.path.dirname(__file__))
-        file_path = os.path.join(path, 'data/create_rewards_challenges.json')
+        file_path = os.path.join(path, 'data/create_rewards_challenges_payload.json')
 
         # Load JSON file
         with open(file_path) as file:
@@ -630,7 +750,15 @@ def generate_combos_information(deals_list):
     combos_id = list()
 
     for i in range(len(combos)):
-        combos_id.append(combos[i]['id'])
+        points = i + 1
+
+        dic_combos  = {
+            'comboId' : combos[i]['id'],
+            'points' : points * 500,
+            'redeemLimit' : 1
+        }
+
+        combos_id.append(dic_combos)
 
     return combos_id
 
@@ -659,8 +787,8 @@ def generate_categories_information(zone):
         category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/core/img_punto_1.png')
         
         # Core category
-        category_info.append('0')
-        category_info.append('0')
+        category_info.append('95')
+        category_info.append('93')
         category_info.append('Gana 50 puntos por cada RD $1000 pesos de compra en estos productos')
         category_info.append('COMPRA AHORA')
         category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/core/img_punto_1.png')
@@ -694,15 +822,15 @@ def generate_categories_information(zone):
         category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/core/img_punto_1.png')
     elif zone == 'BR':
         # Premium category
-        category_info.append('272')
-        category_info.append('236')
+        category_info.append('262')
+        category_info.append('226')
         category_info.append('Ganhe 100 pontos para cada R$1000,00 gastos em compras e troque por produtos gratis.')
         category_info.append('COMPRAR AGORA')
         category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/br/premium/img-premium-br-rules-2.png')
 
         # Core category
-        category_info.append('262')
-        category_info.append('226')
+        category_info.append('272')
+        category_info.append('236')
         category_info.append('Ganhe 50 pontos para cada R$1000,00 gastos em compras e troque por produtos gratis.')
         category_info.append('COMPRAR AGORA')
         category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/br/premium/img-premium-br-rules-2.png')

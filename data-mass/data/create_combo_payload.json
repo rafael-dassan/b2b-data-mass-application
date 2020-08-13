@@ -4,18 +4,20 @@
   ],
   "combos": [
     {
-      "description": "string",
-      "discountPercentOff": 0,
-      "endDate": "2045-02-28T00:00:00Z",
+      "id": "string",
       "externalId": "string",
+      "title": "string",
+      "description": "string",
+      "startDate": "2020-01-01T00:00:00Z",
+      "endDate": "2045-02-28T00:00:00Z",
+      "type": "string",
+      "image": "https://test-conv-micerveceria.abi-sandbox.net/media/catalog/product/c/o/combo-icon_11.png",
       "freeGoods": {
         "quantity": 1,
         "skus": [
           "string"
         ]
       },
-      "id": "string",
-      "image": "http://www.ab-inbev.com/b2b/files/combo-icon.png",
       "items": [
         {
           "sku": "string",
@@ -26,12 +28,10 @@
         "daily": 200,
         "monthly": 200
       },
+      "discountPercentOff": 0,
       "originalPrice": 0,
       "price": 0,
-      "score": 1,
-      "startDate": "2020-01-01T00:00:00Z",
-      "title": "string",
-      "type": "string"
+      "score": 1
     }
   ]
 }
