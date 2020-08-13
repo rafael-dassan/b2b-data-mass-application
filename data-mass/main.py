@@ -159,11 +159,9 @@ def account_information_menu():
         if account == 'false':
             printFinishApplicationMenu()
         account_info_list = list()
-        print(len(account))
         for i in range(len(account)):
             account_id = account[i]['accountId']
-            product = request_get_offers_microservice(account_id, zone, environment, account[i]['deliveryCenterId'],
-                                                      True)
+            product = request_get_offers_microservice(account_id, zone, environment)
             if len(product) != 0:
                 account_info = {
                     'Account ID': account_id,
