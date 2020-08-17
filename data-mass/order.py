@@ -200,14 +200,14 @@ def create_changed_order_payload(order_data):
             dif_item_total = round(items[0]['total'] - item_total, 2)
             dif_item_subtotal = round(items[0]['subtotal'] - item_subtotal, 2)
 
-            order_total = round(order_data['total'] - dif_item_total, 2)
-            order_subtotal = round(order_data['subtotal'] - dif_item_subtotal, 2)
+            order_total = round(order_data[0]['total'] - dif_item_total, 2)
+            order_subtotal = round(order_data[0]['subtotal'] - dif_item_subtotal, 2)
 
-            update_value_to_json(order_data, 'items[0].quantity', 1)
-            update_value_to_json(order_data, 'items[0].subtotal', item_subtotal)
-            update_value_to_json(order_data, 'items[0].total', item_total)
-            update_value_to_json(order_data, 'subtotal', order_subtotal)
-            update_value_to_json(order_data, 'total', order_total)
+            update_value_to_json(order_data[0], 'items[0].quantity', 1)
+            update_value_to_json(order_data[0], 'items[0].subtotal', item_subtotal)
+            update_value_to_json(order_data[0], 'items[0].total', item_total)
+            update_value_to_json(order_data[0], 'subtotal', order_subtotal)
+            update_value_to_json(order_data[0], 'total', order_total)
 
             # Create body
             request_body = convert_json_to_string(order_data)
