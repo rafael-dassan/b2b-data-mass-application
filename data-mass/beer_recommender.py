@@ -336,18 +336,20 @@ def delete_recommendation_by_id(environment, recommendation_data):
 def display_recommendations_by_account(zone, environment, abi_id):
     case_id = 'QUICK_ORDER&useCase=FORGOTTEN_ITEMS&useCase=CROSS_SELL_UP_SELL'
     data = get_recommendation_by_account(abi_id, zone, environment, case_id)
-    recommendations = data['content']
     recommender_list = list()
-    items_list = list()
-    combo_list = list()
-    if len(recommendations) == 0:
+    if data == 'false' or data == 'not_found':
         dict_value = {
             'Quick Order': 'None',
             'Forgotten Items': 'None',
             'Up Sell Contextual Model': 'None'
         }
         recommender_list.append(dict_value)
+        print(text.default_text_color + '\nRecommendations Information By Account')
+        print(tabulate(recommender_list, headers='keys', tablefmt='grid'))
     else:
+        recommendations = data['content']
+        items_list = list()
+        combo_list = list()
         for i in range(len(recommendations)):
             dict_value = {
                 'Name': recommendations[i]['recommendationId'],
@@ -358,30 +360,31 @@ def display_recommendations_by_account(zone, environment, abi_id):
             recommender_list.append(dict_value)
             items = recommendations[i]['items']
             combos = recommendations[i]['combos']
-            for x in range(len(items)):
-                if len(items) == 0:
+            if len(items) == 0:
+                items_value = {
+                    'Recommendation': recommendations[i]['useCase'],
+                    'Items': 'None'
+                }
+                items_list.append(items_value)
+            else:
+                for x in range(len(items)):
                     items_value = {
-                        'Items': 'None'
-                    }
-                    items_list.append(items_value)
-                else:
-                    items_value = {
-                        'Recommendation': recommendations[i]['recommendationId'],
+                        'Recommendation': recommendations[i]['useCase'],
                         'SKU': items[x]['sku'],
                         'Quantity': items[x]['quantity'],
-                        'Score': items[x]['score'],
-                        'Discount': items[x]['discount']
+                        'Score': items[x]['score']
                     }
                     items_list.append(items_value)
-            for z in range(len(combos)):
-                if len(combos) == 0:
+            if len(combos) == 0:
+                combos_value = {
+                    'Recommendation': recommendations[i]['useCase'],
+                    'Combos': 'None'
+                }
+                combo_list.append(combos_value)
+            else:
+                for z in range(len(combos)):
                     combos_value = {
-                        'Combos': 'None'
-                    }
-                    combo_list.append(combos_value)
-                else:
-                    combos_value = {
-                        'Recommendation': recommendations[i]['recommendationId'],
+                        'Recommendation': recommendations[i]['useCase'],
                         'ID Combo': combos[z]['id'],
                         'Quantity': combos[z]['quantity'],
                         'Score': combos[z]['score'],
@@ -389,11 +392,11 @@ def display_recommendations_by_account(zone, environment, abi_id):
                     }
                     combo_list.append(combos_value)
 
-    print(text.default_text_color + '\nRecommendations Information By Account')
-    print(tabulate(recommender_list, headers='keys', tablefmt='grid'))
+        print(text.default_text_color + '\nRecommendations Information By Account')
+        print(tabulate(recommender_list, headers='keys', tablefmt='grid'))
 
-    print(text.default_text_color + '\nItems Recommendations Information By Account')
-    print(tabulate(items_list, headers='keys', tablefmt='grid'))
+        print(text.default_text_color + '\nItems Recommendations Information By Account')
+        print(tabulate(items_list, headers='keys', tablefmt='grid'))
 
-    print(text.default_text_color + '\nCombos Recommendations Information By Account')
-    print(tabulate(combo_list, headers='keys', tablefmt='grid'))
+        print(text.default_text_color + '\nCombos Recommendations Information By Account')
+        print(tabulate(combo_list, headers='keys', tablefmt='grid'))
