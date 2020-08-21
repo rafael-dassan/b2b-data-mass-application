@@ -143,7 +143,7 @@ def product_information_menu():
 
 def account_information_menu():
     selection_structure = print_get_account_menu()
-    zone = print_zone_menu_for_ms()
+    zone = print_zone_menu_for_searching()
     environment = printEnvironmentMenu()
 
     switcher = {
@@ -1252,7 +1252,7 @@ def create_categories_menu():
 
 def order_information_menu():
     selection_structure = print_get_order_menu()
-    zone = print_zone_menu_for_ms()
+    zone = print_zone_menu_for_searching()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
     if abi_id == 'false':

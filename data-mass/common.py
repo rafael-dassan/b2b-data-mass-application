@@ -1643,3 +1643,27 @@ def print_product_quantity_menu(all_products_zone):
             print(text.Red + '\n- The product quantity must be Numeric\n')
 
     return qtd
+
+
+def validate_zone_for_searching(zone):
+    switcher = {
+        'BR': 'true',
+        'DO': 'true',
+        'ZA': 'true',
+        'CO': 'true',
+        'MX': 'true',
+        'AR': 'true',
+        'CL': 'true',
+    }
+
+    value = switcher.get(zone, 'false')
+    return value
+
+
+def print_zone_menu_for_searching():
+    zone = input(text.default_text_color + 'Zone (AR, BR, CL, DO, ZA, CO, MX): ')
+    while validate_zone_for_searching(zone.upper()) == 'false':
+        print(text.Red + '\n- Invalid option\n')
+        zone = input(text.default_text_color + 'Zone (AR, BR, CL, DO, ZA, CO, MX): ')
+
+    return zone.upper()
