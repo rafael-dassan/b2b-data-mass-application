@@ -21,7 +21,7 @@ def create_all_recommendations(zone, environment, abi_id, products):
 
 
 # Define JSON to submmit QUICK ORDER recommendation type
-def create_quick_order_payload(abi_id, zone, product_list):
+def create_quick_order_payload(abi_id, zone, environment, product_list, include_combos):
     if zone == 'DO' or zone == 'CL' or zone == 'AR' or zone == 'CO':
         language = 'es'
         text = 'Pedido Facil'
@@ -41,6 +41,11 @@ def create_quick_order_payload(abi_id, zone, product_list):
     while aux_index <= 9:
         sku.append(product_list[aux_index])
         aux_index = aux_index + 1
+
+    if include_combos == 'Y':
+        combos_discount = get_combos_quickorder(abi_id, zone, environment)
+    else:
+        combos_discount = None
     
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
@@ -66,7 +71,8 @@ def create_quick_order_payload(abi_id, zone, product_list):
         'items[9].sku': sku[9],
         'descriptions[0].language': language,
         'descriptions[0].text': text,
-        'descriptions[0].description': text_description
+        'descriptions[0].description': text_description,
+        'combos': combos_discount
     }
 
     for key in dict_values.keys():
@@ -198,8 +204,20 @@ def request_quick_order(zone, environment, abi_id, products):
     # Define url request 
     request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
 
+    if zone == 'DO':
+        include_combos = input(text.Yellow + '\nDo you want to include combos on Quick Order? y/N: ')
+        include_combos = include_combos.upper()
+
+        while include_combos != 'Y' and include_combos != 'N':
+            print(text.Red + '\n- Invalid option\n')
+            include_combos = input(text.Yellow + '\nDo you want to include combos on Quick Order? y/N: ')
+            include_combos = include_combos.upper()
+
+    else:
+        include_combos = 'N'
+
     # Get body
-    request_body = create_quick_order_payload(abi_id, zone, products)
+    request_body = create_quick_order_payload(abi_id, zone, environment, products, include_combos)
 
     # Send request
     response = place_request('POST', request_url, request_body, request_headers)
@@ -370,7 +388,6 @@ def display_recommendations_by_account(zone, environment, abi_id):
                         'SKU': items[x]['sku'],
                         'Quantity': items[x]['quantity'],
                         'Score': items[x]['score'],
-                        'Discount': items[x]['discount']
                     }
                     items_list.append(items_value)
             for z in range(len(combos)):
@@ -397,3 +414,36 @@ def display_recommendations_by_account(zone, environment, abi_id):
 
     print(text.default_text_color + '\nCombos Recommendations Information By Account')
     print(tabulate(combo_list, headers='keys', tablefmt='grid'))
+
+
+def get_combos_quickorder(abi_id, zone, environment):
+
+    headers = get_header_request(zone, 'true')
+
+    request_url = get_microservice_base_url(environment, 'true') + '/combos/?accountID=' + abi_id + '&types=D&includeDeleted=false&includeDisabled=false'
+
+    response = place_request('GET', request_url, '', headers)
+
+    if response.status_code == 200:
+        combos_data = loads(response.text)
+        combos_discount = combos_data['combos']
+        combos_id = list()
+
+        i = 0
+        while i < len(combos_discount):
+            
+            dict_combos = {
+                'id' : combos_discount[i]['id'],
+                'quantity' : 1,
+                'score' : 100,
+                'type' : 'HISTORICAL'
+            }
+
+            combos_id.append(dict_combos)
+            i += 1
+
+        return combos_id
+    else:
+        print(text.Red + '\n- [Combos Service] Failure to retrieve a recommendation. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
+        return 'false'

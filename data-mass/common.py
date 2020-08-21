@@ -1473,7 +1473,7 @@ def print_order_id_menu():
 
 
 def print_recommendation_type_menu():
-    print(text.default_text_color + '\nWhich recommendation use case do you want to add?')
+    print(text.default_text_color + '\nWhich recommendation type do you want to add?')
     print(text.default_text_color + str(1), text.Yellow + 'Quick order')
     print(text.default_text_color + str(2), text.Yellow + 'Up sell')
     print(text.default_text_color + str(3), text.Yellow + 'Forgotten items')
@@ -1481,7 +1481,7 @@ def print_recommendation_type_menu():
     option = input(text.default_text_color + '\nPlease select: ')
     while validate_recommendation_type(option) == 'false':
         print(text.Red + '\n- Invalid option')
-        print(text.default_text_color + '\nWhich recommendation use case do you want to add?')
+        print(text.default_text_color + '\nWhich recommendation type do you want to add?')
         print(text.default_text_color + str(1), text.Yellow + 'Quick order')
         print(text.default_text_color + str(2), text.Yellow + 'Up sell')
         print(text.default_text_color + str(3), text.Yellow + 'Forgotten items')
@@ -1492,7 +1492,8 @@ def print_recommendation_type_menu():
         '1': 'QUICK_ORDER',
         '2': 'CROSS_SELL_UP_SELL',
         '3': 'FORGOTTEN_ITEMS',
-        '4': 'ALL'
+        '4': 'ALL',
+        '5': 'COMBOS_QUICKORDER'
     }
 
     recommendation_type = switcher.get(option, 'false')
