@@ -41,12 +41,12 @@ def create_quick_order_payload(abi_id, zone, environment, product_list, include_
     while aux_index <= 9:
         sku.append(product_list[aux_index])
         aux_index = aux_index + 1
-
+    
     if include_combos == 'Y':
         combos_discount = get_combos_quickorder(abi_id, zone, environment)
     else:
         combos_discount = None
-    
+
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
     file_path = os.path.join(path, 'data/create_beer_recommender_payload.json')
