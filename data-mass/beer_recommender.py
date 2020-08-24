@@ -92,8 +92,7 @@ def create_quick_order_payload(abi_id, zone, environment, product_list, include_
         'items[9].sku': sku[9],
         'descriptions[0].language': language,
         'descriptions[0].text': text,
-        'descriptions[0].description': text_description,
-        'combos': None
+        'descriptions[0].description': text_description
     }
 
     for key in dict_values.keys():
@@ -136,7 +135,27 @@ def create_forgotten_items_payload(abi_id, zone, product_list):
     with open(file_path) as file:
         json_data = json.load(file)
 
-    dict_values  = {
+    # dict_values  = {
+    #     'recommendationId': 'DM-' + str(randint(1, 100000)),
+    #     'useCase': 'FORGOTTEN_ITEMS',
+    #     'useCaseId': abi_id,
+    #     'items[0].sku': sku[0],
+    #     'items[1].sku': sku[1],
+    #     'items[2].sku': sku[2],
+    #     'items[3].sku': sku[3],
+    #     'items[4].sku': sku[4],
+    #     'items[5].sku': sku[5],
+    #     'items[6].sku': sku[6],
+    #     'items[7].sku': sku[7],
+    #     'items[8].sku': sku[8],
+    #     'items[9].sku': sku[9],
+    #     'descriptions[0].language': language,
+    #     'descriptions[0].text': text,
+    #     'descriptions[0].description': text_description,
+    #     'combos': None
+    # }
+
+        dict_values  = {
         'recommendationId': 'DM-' + str(randint(1, 100000)),
         'useCase': 'FORGOTTEN_ITEMS',
         'useCaseId': abi_id,
@@ -152,8 +171,7 @@ def create_forgotten_items_payload(abi_id, zone, product_list):
         'items[9].sku': sku[9],
         'descriptions[0].language': language,
         'descriptions[0].text': text,
-        'descriptions[0].description': text_description,
-        'combos': None
+        'descriptions[0].description': text_description
     }
 
     for key in dict_values.keys():
