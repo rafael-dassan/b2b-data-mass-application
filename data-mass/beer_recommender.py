@@ -13,8 +13,7 @@ def create_all_recommendations(zone, environment, abi_id, products):
         return 'success'
     else:
         responses_list = [quick_order_response, sell_up_response, forgotten_items_response]
-        print("RESPONSE LIST")
-        print(responses_list)
+        
         for x in range(len(responses_list)):
             if responses_list[x].status_code != 202:
                 print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendations. Response Status: '
