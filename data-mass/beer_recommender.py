@@ -13,6 +13,8 @@ def create_all_recommendations(zone, environment, abi_id, products):
         return 'success'
     else:
         responses_list = [quick_order_response, sell_up_response, forgotten_items_response]
+        print("RESPONSE LIST")
+        print(responses_list)
         for x in range(len(responses_list)):
             if responses_list[x].status_code != 202:
                 print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendations. Response Status: '
@@ -131,7 +133,8 @@ def create_forgotten_items_payload(abi_id, zone, product_list):
         'items[9].sku': sku[9],
         'descriptions[0].language': language,
         'descriptions[0].text': text,
-        'descriptions[0].description': text_description
+        'descriptions[0].description': text_description,
+        'combos': None
     }
 
     for key in dict_values.keys():
