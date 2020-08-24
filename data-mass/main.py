@@ -316,7 +316,7 @@ def input_orders_to_account():
     if account == 'false':
         printFinishApplicationMenu()
 
-    if selection_structure == '1' or selection_structure == '2' or selection_structure == '4':
+    if selection_structure == '2' or selection_structure == '4':
         # Call function to check if the account has products inside
         product_offers = request_get_offers_microservice(abi_id, zone, environment)
         if product_offers == 'false':
@@ -325,10 +325,7 @@ def input_orders_to_account():
             print(text.Red + '\n- [Catalog Service] There is no product associated with the account ' + abi_id)
             printFinishApplicationMenu()
 
-        if order_status == 'ACTIVE':
-            allow_order_cancel = print_allow_cancellable_order_menu()
-        else:
-            allow_order_cancel = 'N'
+        allow_order_cancel = 'N'
 
         # Call function to configure prefix and order number size in the database sequence
         if 'false' == configure_order_params(zone, environment, 5, 'DM-ORDER-'):
@@ -342,7 +339,7 @@ def input_orders_to_account():
             aux_index += 1
 
         # Call function to create the Order according to the 'order_option' parameter (active or cancelled)
-        response = create_order_account(abi_id, zone, environment, order_status, sku_list, allow_order_cancel)
+        response = create_order_account(abi_id, zone, environment, order_status, sku_list, allow_order_cancel, 'N')
         if response != 'false':
             print(text.Green + '\n- Order ' + response.get('orderNumber') + ' created successfully')
             # Call function to re-configure prefix and order number size to the previous format
@@ -350,6 +347,71 @@ def input_orders_to_account():
                 printFinishApplicationMenu()
         else:
             printFinishApplicationMenu()
+    elif selection_structure == '1':
+        allow_order_cancel = print_allow_cancellable_order_menu()
+        order_items = list()
+
+        # Call function to configure prefix and order number size in the database sequence
+        if 'false' == configure_order_params(zone, environment, 5, 'DM-ORDER-'):
+            printFinishApplicationMenu()
+
+        input_order_item = input(text.default_text_color + 'Would you like to include a new sku for this order? y/N: ')
+        while input_order_item.upper() != 'Y' and input_order_item.upper() != 'N':
+            print(text.Red + '\n- Invalid option\n')
+            input_order_item = input(
+                text.default_text_color + 'Would you like to include a new sku for this order? y/N: ')
+
+        if input_order_item.upper() == 'Y':
+            more_sku = 'Y'
+            while more_sku.upper() == 'Y':
+                sku = input(text.default_text_color + 'Inform sku for this order: ')
+                quantity = input(text.default_text_color + 'Inform sku quantity for  this order: ')
+                while is_number(quantity) == 'false':
+                    print(text.Red + '\n- Invalid quantity\n')
+                    quantity = input(text.default_text_color + 'Inform sku quantity for  this order: ')
+
+                temp_product_data = {'sku': sku, 'quantity': quantity}
+                order_items.append(temp_product_data)
+                more_sku = input(text.default_text_color + 'Would you like to include a new sku for this order? y/N: ')
+
+            response = create_order_account(abi_id, zone, environment, order_status, order_items, allow_order_cancel, more_sku)
+            if response != 'false':
+                print(text.Green + '\n- Order ' + response.get('orderNumber') + ' created successfully')
+                # Call function to re-configure prefix and order number size to the previous format
+                if 'false' == configure_order_params(zone, environment, 9, '00'):
+                    printFinishApplicationMenu()
+            else:
+                printFinishApplicationMenu()
+        else:
+            more_sku = 'N'
+            # Call function to check if the account has products inside
+            product_offers = request_get_offers_microservice(abi_id, zone, environment)
+            if product_offers == 'false':
+                printFinishApplicationMenu()
+            elif product_offers == 'not_found':
+                print(text.Red + '\n- [Catalog Service] There is no product associated with the account ' + abi_id)
+                printFinishApplicationMenu()
+
+            # Call function to configure prefix and order number size in the database sequence
+            if 'false' == configure_order_params(zone, environment, 5, 'DM-ORDER-'):
+                printFinishApplicationMenu()
+
+            sku_list = list()
+            aux_index = 0
+            while len(sku_list) < 2:
+                sku = product_offers[aux_index]['sku']
+                sku_list.append(sku)
+                aux_index += 1
+
+            # Call function to create the Order according to the 'order_option' parameter (active or cancelled)
+            response = create_order_account(abi_id, zone, environment, order_status, sku_list, allow_order_cancel, more_sku)
+            if response != 'false':
+                print(text.Green + '\n- Order ' + response.get('orderNumber') + ' created successfully')
+                # Call function to re-configure prefix and order number size to the previous format
+                if 'false' == configure_order_params(zone, environment, 9, '00'):
+                    printFinishApplicationMenu()
+            else:
+                printFinishApplicationMenu()
     else:
         order_id = print_order_id_menu()
         order_data = check_if_order_exists(abi_id, zone, environment, order_id)
