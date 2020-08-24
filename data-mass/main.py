@@ -289,6 +289,7 @@ def create_rewards_to_account():
 
         if account != 'false':
             input_redeem_products(abi_id, zone, environment)
+            printFinishApplicationMenu()
         else:
             printFinishApplicationMenu()
 

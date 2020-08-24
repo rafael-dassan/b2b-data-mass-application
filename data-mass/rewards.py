@@ -226,6 +226,17 @@ def input_redeem_products(abi_id, zone, environment):
 
         len_combos_match = len(combos_match)
 
+        # Get a SKU to be used on FreeGood's list below
+        product_offers = request_get_offers_microservice(abi_id, zone, environment)
+        if product_offers == 'false':
+            return 'false'
+        elif product_offers == 'not_found':
+            print(text.Red + '\n- [Catalog Service] There is no product associated with the account ' + abi_id)
+            return 'false'
+
+        index_offers = randint(0, (len(product_offers) - 1))
+        sku = product_offers[index_offers]['sku']
+
         # Define headers to post the association
         request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
 
@@ -236,6 +247,12 @@ def input_redeem_products(abi_id, zone, environment):
         dict_values_limit  = {
             'daily': 200,
             'monthly': 200,
+        }
+
+        # Define the list of FreeGoods for the main payload 
+        dict_values_freegoods  = {
+            'quantity': 1,
+            'skus': create_list(sku),
         }
 
         # Define the entire list of Combos for the main payload
@@ -258,6 +275,7 @@ def input_redeem_products(abi_id, zone, environment):
                 'updatedAt': combos_match[i]['updatedAt'],
                 'type': 'DT',
                 'image': 'https://test-conv-micerveceria.abi-sandbox.net/media/catalog/product/c/o/combo-icon_11.png',
+                'freeGoods': dict_values_freegoods,
                 'limit': dict_values_limit,
                 'originalPrice': 0,
                 'price': 0,
