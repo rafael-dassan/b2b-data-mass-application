@@ -1,5 +1,6 @@
 from account import *
 from credit import add_credit_to_account_microservice
+from credit_statement import create_credit_statement
 from delivery_window import create_delivery_window_microservice, validate_alternative_delivery_date
 from beer_recommender import *
 from inventory import *
@@ -33,7 +34,8 @@ def showMenu():
             '9': input_combos_menu,
             '10': create_item_menu,
             '11': create_invoice_menu,
-            '12': create_rewards_to_account
+            '12': create_rewards_to_account,
+            '13': create_credit_statement_menu
         }
     elif selection_structure == '2':
         switcher = {
@@ -1294,6 +1296,21 @@ def recommender_information_menu():
         printFinishApplicationMenu()
 
     display_recommendations_by_account(zone, environment, abi_id)
+
+
+def create_credit_statement_menu():
+    zone = print_zone_credit_statement()
+    environment = printEnvironmentMenu()
+    abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
+
+    month = print_month_credit_statement()
+    year = print_year_credit_statement()
+
+    doc = create_credit_statement(zone, abi_id, environment, month, year)
+    if doc == 'false':
+        printFinishApplicationMenu()
 
 
 # Init
