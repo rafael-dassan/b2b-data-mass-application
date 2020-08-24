@@ -43,10 +43,10 @@ def create_quick_order_payload(abi_id, zone, environment, product_list, include_
         sku.append(product_list[aux_index])
         aux_index = aux_index + 1
     
-    if include_combos == 'Y':
-        combos_discount = get_combos_quickorder(abi_id, zone, environment)
-    else:
-        combos_discount = None
+    # if include_combos == 'Y':
+    #     combos_discount = get_combos_quickorder(abi_id, zone, environment)
+    # else:
+    #     combos_discount = None
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
@@ -55,6 +55,26 @@ def create_quick_order_payload(abi_id, zone, environment, product_list, include_
     # Load JSON file
     with open(file_path) as file:
         json_data = json.load(file)
+
+    # dict_values  = {
+    #     'recommendationId': 'DM-' + str(randint(1, 100000)),
+    #     'useCase': 'QUICK_ORDER',
+    #     'useCaseId': abi_id,
+    #     'items[0].sku': sku[0],
+    #     'items[1].sku': sku[1],
+    #     'items[2].sku': sku[2],
+    #     'items[3].sku': sku[3],
+    #     'items[4].sku': sku[4],
+    #     'items[5].sku': sku[5],
+    #     'items[6].sku': sku[6],
+    #     'items[7].sku': sku[7],
+    #     'items[8].sku': sku[8],
+    #     'items[9].sku': sku[9],
+    #     'descriptions[0].language': language,
+    #     'descriptions[0].text': text,
+    #     'descriptions[0].description': text_description,
+    #     'combos': combos_discount
+    # }
 
     dict_values  = {
         'recommendationId': 'DM-' + str(randint(1, 100000)),
@@ -73,7 +93,7 @@ def create_quick_order_payload(abi_id, zone, environment, product_list, include_
         'descriptions[0].language': language,
         'descriptions[0].text': text,
         'descriptions[0].description': text_description,
-        'combos': combos_discount
+        'combos': None
     }
 
     for key in dict_values.keys():
