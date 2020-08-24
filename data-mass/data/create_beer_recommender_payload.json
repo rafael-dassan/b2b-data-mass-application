@@ -81,5 +81,6 @@
             "type": "clustering",
             "discount": 0
             }
-    ]
+    ],
+    "combos": "string"
 }
