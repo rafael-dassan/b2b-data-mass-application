@@ -30,7 +30,8 @@ def validate_option_request_selection(selection):
         '9': 'true',
         '10': 'true',
         '11': 'true',
-        '12': 'true'
+        '12': 'true',
+        '13': 'true'
     }
 
     value = switcher.get(selection, 'false')
@@ -537,7 +538,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(10), text.Yellow + 'Create item')
         print(text.default_text_color + str(11), text.Yellow + 'Create invoice')
         print(text.default_text_color + str(12), text.Yellow + 'Create rewards')
-
+        print(text.default_text_color + str(13), text.Yellow + 'Create credit statement')
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_option_request_selection(selection) == 'false':
             print(text.Red + '\n- Invalid option\n')
@@ -554,7 +555,7 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(10), text.Yellow + 'Create item')
             print(text.default_text_color + str(11), text.Yellow + 'Create invoice')
             print(text.default_text_color + str(12), text.Yellow + 'Create rewards')
-
+            print(text.default_text_color + str(13), text.Yellow + 'Create credit statement')
             selection = input(text.default_text_color + '\nPlease select: ')
 
     elif selection_structure == '2':
@@ -1667,3 +1668,82 @@ def print_zone_menu_for_searching():
         zone = input(text.default_text_color + 'Zone (AR, BR, CL, DO, ZA, CO, MX): ')
 
     return zone.upper()
+
+
+def validate_zone_for_credit_statement(zone):
+    if zone.upper() != 'ZA':
+        return 'false'
+    else:
+        return 'true'
+
+
+# Print zone menu for credit statement
+def print_zone_credit_statement():
+    zone = input(text.default_text_color + 'Zone (ZA): ')
+    while validate_zone_for_credit_statement(zone) == 'false':
+        print(text.Red + '\n- Invalid option\n')
+        zone = input(text.default_text_color + 'Zone (ZA): ')
+
+    return zone.upper()
+
+
+def validate_month(month):
+    switcher = {
+        '01': 'true',
+        '02': 'true',
+        '03': 'true',
+        '04': 'true',
+        '05': 'true',
+        '06': 'true',
+        '07': 'true',
+        '08': 'true',
+        '09': 'true',
+        '10': 'true',
+        '11': 'true',
+        '12': 'true'
+    }
+
+    value = switcher.get(month, 'false')
+    return value
+
+
+def print_month_credit_statement():
+    month = input(text.default_text_color + 'Witch month do you want to create the document? (please put the number '
+                                            'referent the month): ')
+    if int(month) < 10:
+        month = '0' + month
+
+    while validate_month(month) == 'false':
+        print(text.Red + '\n- Invalid option\n')
+        month = input(text.default_text_color + 'Witch month do you want to create the document? (please put the number'
+                                                'referent the month): ')
+
+    return month
+
+
+def validate_years_credit_statement(year):
+    if len(year) == 0:
+        return 'error_0'
+    elif (len(year) > 0) and (is_number(year) == 'false'):
+        return 'not_number'
+    elif len(year) < 4:
+        return 'error_4'
+    elif is_number(year) == 'true':
+        return 'true'
+
+
+def print_year_credit_statement():
+    year = input(text.default_text_color + 'Witch year do you want to create the document?: ')
+
+    while validate_years_credit_statement(year) != 'true':
+        if validate_years_credit_statement(year) == 'error_0':
+            print(text.Red + '\n- Year should not be empty')
+            year = input(text.default_text_color + 'Witch year do you want to create the document?: ')
+        if validate_years_credit_statement(year) == 'error_4':
+            print(text.Red + '\n- Year must contain at least 4 characters')
+            year = input(text.default_text_color + 'Witch year do you want to create the document?: ')
+        elif validate_years_credit_statement(year) == 'not_number':
+            print(text.Red + '\n- The year must be Numeric')
+            year = input(text.default_text_color + 'Witch year do you want to create the document?: ')
+
+    return year
