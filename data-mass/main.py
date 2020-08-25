@@ -561,8 +561,8 @@ def input_inventory_to_product():
 
 # Input beer recommender by account on Microservice
 def input_recommendation_to_account_menu():
-    recommendation_type = print_recommendation_type_menu()
-    zone = print_zone_menu_for_ms()
+    recommender_type = print_recommender_type_menu()
+    zone = print_zone_menu_recommender(recommender_type)
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
     if abi_id == 'false':
@@ -591,13 +591,13 @@ def input_recommendation_to_account_menu():
         print(text.Red + '\n- The account must have at least 25 enabled products to proceed')
         printFinishApplicationMenu()
 
-    if recommendation_type == 'QUICK_ORDER':
+    if recommender_type == 'QUICK_ORDER':
         quick_order_response = request_quick_order(zone, environment, abi_id, enabled_skus)
         if quick_order_response == 'success':
             print(text.Green + '\n- Quick order items added successfully')
         else:
             printFinishApplicationMenu()
-    elif recommendation_type == 'CROSS_SELL_UP_SELL':
+    elif recommender_type == 'CROSS_SELL_UP_SELL':
         sell_up_response = request_sell_up(zone, environment, abi_id, enabled_skus)
         if sell_up_response == 'success':
             print(text.Green + '\n- Up sell items added successfully')
@@ -605,10 +605,16 @@ def input_recommendation_to_account_menu():
                                 'inside')
         else:
             printFinishApplicationMenu()
-    elif recommendation_type == 'FORGOTTEN_ITEMS':
+    elif recommender_type == 'FORGOTTEN_ITEMS':
         forgotten_items_response = request_forgotten_items(zone, environment, abi_id, enabled_skus)
         if forgotten_items_response == 'success':
             print(text.Green + '\n- Forgotten items added successfully')
+        else:
+            printFinishApplicationMenu()
+    elif recommender_type == 'COMBOS_QUICKORDER':
+        combos_quickorder_response = input_combos_quickorder(zone, environment, abi_id)
+        if combos_quickorder_response == 'success':
+            print(text.Green + '\n- Combos for quick order added successfully')
         else:
             printFinishApplicationMenu()
     else:

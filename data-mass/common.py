@@ -229,6 +229,23 @@ def validate_zone_for_delivery_window(zone):
     value = switcher.get(zone, 'false')
     return value
 
+def validate_zone_for_recommender(zone, recommender_type):
+    if recommender_type != 'COMBOS_QUICKORDER':
+        switcher = {
+            'BR': 'true',
+            'DO': 'true',
+            'ZA': 'true',
+            'CO': 'true',
+            'MX': 'true',
+            'AR': 'true'
+        }
+    else:
+        switcher = {
+            'DO': 'true'
+        }
+    
+    value = switcher.get(zone, 'false')
+    return value
 
 def validate_zone_for_ms(zone):
     switcher = {
@@ -269,7 +286,7 @@ def validate_orders(option):
 
 
 def validate_recommendation_type(option):
-    if option == '1' or option == '2' or option == '3' or option == '4':
+    if option == '1' or option == '2' or option == '3' or option == '4' or option == '5':
         return 'true'
     else:
         return 'false'
@@ -869,6 +886,19 @@ def printNameMenu():
 
     return name
 
+# Print zone menu for Recommenders
+def print_zone_menu_recommender(recommender_type):
+    if recommender_type != 'COMBOS_QUICKORDER':
+        zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX): ')
+        while validate_zone_for_recommender(zone.upper(), recommender_type) == 'false':
+            print(text.Red + '\n- Invalid option\n')
+            zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX): ')
+    else:
+        zone = input(text.default_text_color + 'Zone (DO): ')
+        while validate_zone_for_recommender(zone.upper(), recommender_type) == 'false':
+            print(text.Red + '\n- Invalid option\n')
+            zone = input(text.default_text_color + 'Zone (DO): ')
+    return zone.upper()
 
 # Print zone menu
 def printZoneMenu(isMiddleware="true"):
@@ -1472,12 +1502,13 @@ def print_order_id_menu():
     return order_id
 
 
-def print_recommendation_type_menu():
+def print_recommender_type_menu():
     print(text.default_text_color + '\nWhich recommendation type do you want to add?')
     print(text.default_text_color + str(1), text.Yellow + 'Quick order')
     print(text.default_text_color + str(2), text.Yellow + 'Up sell')
     print(text.default_text_color + str(3), text.Yellow + 'Forgotten items')
     print(text.default_text_color + str(4), text.Yellow + 'Standard recommendations (all use cases)')
+    print(text.default_text_color + str(5), text.Yellow + 'Input combos for Quick order')
     option = input(text.default_text_color + '\nPlease select: ')
     while validate_recommendation_type(option) == 'false':
         print(text.Red + '\n- Invalid option')
@@ -1486,6 +1517,7 @@ def print_recommendation_type_menu():
         print(text.default_text_color + str(2), text.Yellow + 'Up sell')
         print(text.default_text_color + str(3), text.Yellow + 'Forgotten items')
         print(text.default_text_color + str(4), text.Yellow + 'Standard recommendations (all use cases)')
+        print(text.default_text_color + str(5), text.Yellow + 'Input combos for Quick order')
         option = input(text.default_text_color + '\nPlease select: ')
 
     switcher = {
@@ -1496,9 +1528,9 @@ def print_recommendation_type_menu():
         '5': 'COMBOS_QUICKORDER'
     }
 
-    recommendation_type = switcher.get(option, 'false')
+    recommender_type = switcher.get(option, 'false')
 
-    return recommendation_type
+    return recommender_type
 
 
 # Validate account sub-menus
