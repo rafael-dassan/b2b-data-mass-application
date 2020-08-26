@@ -183,20 +183,15 @@ def validate_zone_for_deals(zone):
     return value
 
 
-def validate_zone_for_combos(zone, combo_type=''):
-    if combo_type == 'DT':
-        switcher = {
-            'BR': 'true',
-            'DO': 'true',
-            'AR': 'true',
-            'CO': 'true',
-            'ZA': 'true'
-        }
-    else:
-        switcher = {
-            'BR': 'true',
-            'DO': 'true'
-        }
+def validate_zone_for_combos(zone):
+
+    switcher = {
+        'BR': 'true',
+        'DO': 'true',
+        'AR': 'true',
+        'CO': 'true',
+        'ZA': 'true'
+    }
 
     value = switcher.get(zone, 'false')
     return value
@@ -229,21 +224,18 @@ def validate_zone_for_delivery_window(zone):
     value = switcher.get(zone, 'false')
     return value
 
-def validate_zone_for_recommender(zone, recommender_type):
-    if recommender_type != 'COMBOS_QUICKORDER':
-        switcher = {
-            'BR': 'true',
-            'DO': 'true',
-            'ZA': 'true',
-            'CO': 'true',
-            'MX': 'true',
-            'AR': 'true'
-        }
-    else:
-        switcher = {
-            'DO': 'true'
-        }
-    
+def validate_zone_for_recommender(zone):
+
+    switcher = {
+        'BR': 'true',
+        'DO': 'true',
+        'ZA': 'true',
+        'CO': 'true',
+        'MX': 'true',
+        'AR': 'true'
+    }
+
+
     value = switcher.get(zone, 'false')
     return value
 
@@ -890,12 +882,12 @@ def printNameMenu():
 def print_zone_menu_recommender(recommender_type):
     if recommender_type != 'COMBOS_QUICKORDER':
         zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX): ')
-        while validate_zone_for_recommender(zone.upper(), recommender_type) == 'false':
+        while validate_zone_for_recommender(zone.upper()) == 'false':
             print(text.Red + '\n- Invalid option\n')
             zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX): ')
     else:
         zone = input(text.default_text_color + 'Zone (DO): ')
-        while validate_zone_for_recommender(zone.upper(), recommender_type) == 'false':
+        while validate_zone_for_recommender(zone.upper()) == 'false':
             print(text.Red + '\n- Invalid option\n')
             zone = input(text.default_text_color + 'Zone (DO): ')
     return zone.upper()
@@ -979,12 +971,12 @@ def print_zone_menu_for_deals():
 def print_zone_menu_for_combos(combo_type=''):
     if combo_type == 'DT':
         zone = input(text.default_text_color + 'Zone (BR, DO, AR, CO, ZA): ')
-        while validate_zone_for_combos(zone.upper(), combo_type) == 'false':
+        while validate_zone_for_combos(zone.upper()) == 'false':
             print(text.Red + '\n- Invalid option\n')
             zone = input(text.default_text_color + 'Zone (BR, DO, AR, CO, ZA): ')
     else:
         zone = input(text.default_text_color + 'Zone (BR, DO): ')
-        while validate_zone_for_combos(zone.upper(), combo_type) == 'false':
+        while validate_zone_for_combos(zone.upper()) == 'false':
             print(text.Red + '\n- Invalid option\n')
             zone = input(text.default_text_color + 'Zone (BR, DO): ')
 
