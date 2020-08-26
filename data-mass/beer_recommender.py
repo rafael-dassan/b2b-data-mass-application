@@ -13,6 +13,7 @@ def create_all_recommendations(zone, environment, abi_id, products):
         return 'success'
     else:
         responses_list = [quick_order_response, sell_up_response, forgotten_items_response]
+
         for x in range(len(responses_list)):
             if responses_list[x].status_code != 202:
                 print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendations. Response Status: '
@@ -21,7 +22,7 @@ def create_all_recommendations(zone, environment, abi_id, products):
 
 
 # Define JSON to submmit QUICK ORDER recommendation type
-def create_quick_order_payload(abi_id, zone, product_list):
+def create_quick_order_payload(abi_id, zone, environment, product_list):
     if zone == 'DO' or zone == 'CL' or zone == 'AR' or zone == 'CO':
         language = 'es'
         text = 'Pedido Facil'
@@ -41,7 +42,7 @@ def create_quick_order_payload(abi_id, zone, product_list):
     while aux_index <= 9:
         sku.append(product_list[aux_index])
         aux_index = aux_index + 1
-    
+
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
     file_path = os.path.join(path, 'data/create_beer_recommender_payload.json')
@@ -66,7 +67,8 @@ def create_quick_order_payload(abi_id, zone, product_list):
         'items[9].sku': sku[9],
         'descriptions[0].language': language,
         'descriptions[0].text': text,
-        'descriptions[0].description': text_description
+        'descriptions[0].description': text_description,
+        'combos': None
     }
 
     for key in dict_values.keys():
@@ -125,7 +127,8 @@ def create_forgotten_items_payload(abi_id, zone, product_list):
         'items[9].sku': sku[9],
         'descriptions[0].language': language,
         'descriptions[0].text': text,
-        'descriptions[0].description': text_description
+        'descriptions[0].description': text_description,
+        'combos': None
     }
 
     for key in dict_values.keys():
@@ -199,7 +202,7 @@ def request_quick_order(zone, environment, abi_id, products):
     request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
 
     # Get body
-    request_body = create_quick_order_payload(abi_id, zone, products)
+    request_body = create_quick_order_payload(abi_id, zone, environment, products)
 
     # Send request
     response = place_request('POST', request_url, request_body, request_headers)
@@ -400,3 +403,61 @@ def display_recommendations_by_account(zone, environment, abi_id):
 
         print(text.default_text_color + '\nCombos Recommendations Information By Account')
         print(tabulate(combo_list, headers='keys', tablefmt='grid'))
+
+
+def input_combos_quickorder(zone, environment, abi_id):
+
+    # Retrieve quick order recommendation of the account
+    account_recommendation = get_recommendation_by_account(abi_id, zone, environment, 'QUICK_ORDER')
+    
+    if account_recommendation == 'not_found' or account_recommendation == 'false':
+        return 'false'
+    else: 
+        # Retrieve combos type Discount of the account
+        request_headers = get_header_request(zone, 'true')
+
+        request_url = get_microservice_base_url(environment, 'true') + '/combos/?accountID=' + abi_id + '&types=D&includeDeleted=false&includeDisabled=false'
+
+        response = place_request('GET', request_url, '', request_headers)
+
+        if response.status_code == 200:
+            combos_data = loads(response.text)
+            combos_discount = combos_data['combos']
+            combos_id = list()
+
+            i = 0
+            for i in range(len(combos_discount)):
+                
+                dict_combos = {
+                    'id' : combos_discount[i]['id'],
+                    'quantity' : 1,
+                    'score' : 100,
+                    'type' : 'HISTORICAL'
+                }
+
+                combos_id.append(dict_combos)
+        else:
+            print(text.Red + '\n- [Combos Service] Failure to retrieve combos. Response Status: '
+                + str(response.status_code) + '. Response message ' + response.text)
+            return 'false'
+
+        updated_recommendation = update_value_to_json(account_recommendation, 'content[0].combos', combos_id)
+
+        updated_recommendation = convert_json_to_string(updated_recommendation['content'])
+
+        # Define headers
+        request_headers = get_header_request_recommender(zone, environment)
+
+        # Define url request 
+        request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
+
+        # Send request to update Quick Order recommendation with Combos
+        response = place_request('POST', request_url, updated_recommendation, request_headers)
+
+        if response.status_code == 202:
+            return 'success'
+        else:
+            print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: '
+                + str(response.status_code) + '. Response message ' + response.text)
+            return 'false'
+

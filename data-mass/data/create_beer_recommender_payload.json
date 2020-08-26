@@ -3,6 +3,13 @@
     "useCase": "string",
     "useCaseId": "string",
     "useCaseType":"ACCOUNT", 
+    "descriptions": [
+        {
+            "language": "string",
+            "text": "string",
+            "description": "string"
+        }
+    ],
     "items": [
             {
             "sku": "string",
@@ -75,11 +82,5 @@
             "discount": 0
             }
     ],
-    "descriptions": [
-        {
-            "language": "string",
-            "text": "string",
-            "description": "string"
-        }
-    ]
+    "combos": "string"
 }
