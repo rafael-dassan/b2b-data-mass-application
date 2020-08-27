@@ -1,18 +1,19 @@
-from json import loads
-from requests import request
-from uuid import uuid1
-from time import time
-import os
-import sys
 import json
-from classes.text import text
+import logging
+import os
+import subprocess
+import sys
 from datetime import date, datetime
+from os import path
+from time import time
+from unicodedata import numeric
+from uuid import uuid1
+
 from jsonpath_rw import Index, Fields
 from jsonpath_rw_ext import parse
-import logging
-import subprocess
-from unicodedata import numeric
-from os import path
+from requests import request
+
+from classes.text import text
 
 
 # Validate option menu selection

@@ -1,7 +1,5 @@
-from json import dumps
 from random import randint
 from common import *
-from classes.text import text
 
 
 def input_combo_type_discount(abi_id, zone, environment, sku, discount_value):

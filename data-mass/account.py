@@ -1,3 +1,5 @@
+from json import loads
+
 from common import *
 from tabulate import tabulate
 

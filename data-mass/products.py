@@ -1,5 +1,5 @@
 from random import randint, uniform
-from json import dumps
+from json import dumps, loads
 import concurrent.futures
 from common import *
 from tabulate import tabulate
