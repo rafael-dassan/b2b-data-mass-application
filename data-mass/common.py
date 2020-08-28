@@ -60,8 +60,12 @@ def validate_account(account_id, zone):
         return 'error_0'
     elif (size_account_id > 0) and (is_number(account_id) == 'false'):
         return 'not_number'
-    elif (zone == 'DO' or zone == 'BR') and (is_number(account_id) == 'true') and (size_account_id < 10):
+    elif (zone == 'DO') and (is_number(account_id) == 'true') and (size_account_id < 10):
         return 'error_10'
+    elif (zone == 'BR') and ((size_account_id == 11) or (size_account_id == 14)):
+        return 'true'
+    elif (zone == 'BR') and ((size_account_id != 11) or (size_account_id != 14)):
+        return 'error_cnpj_cpf'
     elif is_number(account_id) == 'true':
         return 'true'
 
@@ -861,6 +865,10 @@ def print_account_id_menu(zone):
                 abi_id = str(input(text.default_text_color + 'Account ID: '))
         elif validate_account(abi_id, zone) == 'not_number':
             print(text.Red + '\n- The account ID must be Numeric')
+            if attempt < 2:
+                abi_id = str(input(text.default_text_color + 'Account ID: '))
+        elif validate_account(abi_id, zone) == 'error_cnpj_cpf':
+            print(text.Red + '\n- Account ID must contain at least 11 or 14 characters')
             if attempt < 2:
                 abi_id = str(input(text.default_text_color + 'Account ID: '))
         attempt = attempt + 1
