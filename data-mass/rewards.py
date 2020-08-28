@@ -6,6 +6,7 @@ from deals import *
 from account import create_account_ms, check_account_exists_microservice, display_account_information
 from random import *
 
+
 # Create Rewards Program
 def create_new_program(zone, environment):
 

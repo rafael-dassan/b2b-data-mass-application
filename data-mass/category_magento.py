@@ -1,5 +1,5 @@
-import sys
-from json import dumps, loads
+from json import loads
+
 from common import *
 
 
