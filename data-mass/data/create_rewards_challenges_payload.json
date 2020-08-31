@@ -18,5 +18,6 @@
   "executionMethod": "string",
   "goodPhotoSample": "string",
   "badPhotoSample": "string",
-  "skus": []
+  "skus": [],
+  "mode": "PUBLISHED"
 }
