@@ -252,7 +252,7 @@ def input_redeem_products(abi_id, zone, environment):
 
         # Define the list of FreeGoods for the main payload 
         dict_values_freegoods  = {
-            'quantity': 1,
+            'quantity': 5,
             'skus': create_list(sku),
         }
 
@@ -774,7 +774,7 @@ def generate_combos_information(deals_list):
         dic_combos  = {
             'comboId' : combos[i]['id'],
             'points' : points * 500,
-            'redeemLimit' : 1
+            'redeemLimit' : 5
         }
 
         combos_id.append(dic_combos)
