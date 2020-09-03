@@ -103,7 +103,7 @@ def authorize_iam(params):
 
     csrf = re.search('\"csrf\":"([^"]+)', response_text).group(1)
     api = re.search('\"api\":"([^"]+)', response_text).group(1)
-    trans_id = re.search('\"transId\":"([^"]+)', response_text).group(1).split("=", 1)[1]
+    trans_id = re.search('\"transId\":"([^"]+)', response_text).group(1)
 
     logging.debug("  Logon :: authorize() :: CSRF....................: {csrf}".format(csrf=csrf))
     logging.debug("  Logon :: authorize() :: API.....................: {api}".format(api=api))
@@ -249,7 +249,7 @@ def create_user(environment, country, email, password, account_id, tax_id):
     if confirmed_password_response == "fail":
         return "fail"
 
-    authorize_account_response = authorize_account_request(params)
+    authorize_account_response = authorize_account_request(params, confirmed_password_response)
     if authorize_account_response == "fail":
         return "fail"
 
@@ -258,7 +258,7 @@ def create_user(environment, country, email, password, account_id, tax_id):
     if self_asserted_account_response == "fail":
         return "fail"
 
-    confirmed_account_request(params, authorize_account_response)
+    confirmed_account_request(params, self_asserted_account_response)
 
     # Verifying the created account
     authenticate_user_iam_response = authenticate_user_iam(environment, country, email, password)
@@ -289,6 +289,19 @@ def get_cookies_header(cookies):
     for key in cookies.keys():
         cookies_header.append("{0}={1}".format(key, cookies[key]))
     return "; ".join(cookies_header)
+
+
+def self_assert_response_error(self_assert_response):
+    if self_assert_response.status_code != 200:
+        return False
+
+    response_text = self_assert_response.text
+    try:
+        status = re.search('\"status\":"([^"]+)', response_text).group(1)
+        return int(status) != 200
+    except AttributeError:
+        print("- Fail on user creation v3 [self_assert_response_body]. Invalid response.")
+        return False
 
 
 def authorize_load_request(params):
@@ -358,9 +371,9 @@ def self_asserted_email_request(email, params, authorize_load_response):
         data,
         headers)
 
-    if self_asserted_email_response.status_code != 200:
-        print("- Fail on user creation v3 [self_asserted_email_request]: status_code {0}.".format(
-            self_asserted_email_response.status_code))
+    if self_assert_response_error(self_asserted_email_response):
+        print("- Fail on user creation v3 [self_asserted_email_request]: status_code {0}. Body {1}.".format(
+            self_asserted_email_response.status_code, self_asserted_email_response.text))
         return "fail"
     else:
         return {
@@ -524,9 +537,9 @@ def self_asserted_name_request(email, params, confirmed_otp_response):
         data,
         headers)
 
-    if self_asserted_name_response.status_code != 200:
-        print("- Fail on user creation v3 [self_asserted_name_request]: status_code {0}.".format(
-            self_asserted_name_response.status_code))
+    if self_assert_response_error(self_asserted_name_response):
+        print("- Fail on user creation v3 [self_asserted_name_request]: status_code {0}. Body {1}.".format(
+            self_asserted_name_response.status_code, self_asserted_name_response.text))
         return "fail"
     else:
         return {
@@ -575,9 +588,9 @@ def self_asserted_password_request(password, params, confirmed_name_response):
         data,
         headers)
 
-    if self_asserted_password_response.status_code != 200:
-        print("- Fail on user creation v3 [self_asserted_password_request]: status_code {0}.".format(
-            self_asserted_password_response.status_code))
+    if self_assert_response_error(self_asserted_password_response):
+        print("- Fail on user creation v3 [self_asserted_password_request]: status_code {0}. Body {1}.".format(
+            self_asserted_password_response.status_code, self_asserted_password_response.text))
         return "fail"
     else:
         return {
@@ -605,7 +618,7 @@ def confirmed_password_request(params, last_response):
         return confirmed_password_response
 
 
-def authorize_account_request(params):
+def authorize_account_request(params, last_response):
     logging.debug("Calling authorize_account_request...")
     data = {
         "response_mode": "form_post",
@@ -618,7 +631,11 @@ def authorize_account_request(params):
         "scope": "openid"
     }
 
-    authorize_account_response = place_request("GET", params["BASE_ONBOARDING_URL"] + "/oauth2/authorize", data, None)
+    headers = {
+        "Cookie": get_cookies_header(last_response["COOKIES"])
+    }
+
+    authorize_account_response = place_request("GET", params["BASE_ONBOARDING_URL"] + "/oauth2/authorize", data, headers)
 
     if authorize_account_response.status_code != 200:
         print("- Fail on user creation v3 [authorize_account_request]: status_code {0}.".format(
@@ -628,7 +645,7 @@ def authorize_account_request(params):
     response_text = authorize_account_response.text
     csrf = re.search('\"csrf\":"([^"]+)', response_text).group(1)
     api = re.search('\"api\":"([^"]+)', response_text).group(1)
-    trans_id = re.search('\"transId\":"([^"]+)', response_text).group(1).split("=", 1)[1]
+    trans_id = re.search('\"transId\":"([^"]+)', response_text).group(1)
 
     if len(csrf) == 0 | len(api) == 0 | len(trans_id) == 0:
         return "fail"
@@ -663,9 +680,9 @@ def self_asserted_account_request(account_id, tax_id, params, authorize_account_
         data,
         headers)
 
-    if self_asserted_account_response.status_code != 200:
-        print("- Fail on user creation v3 [self_asserted_account_request]: status_code {0}.".format(
-            self_asserted_account_response.status_code))
+    if self_assert_response_error(self_asserted_account_response):
+        print("- Fail on user creation v3 [self_asserted_account_request]: status_code {0}. Body {1}.".format(
+            self_asserted_account_response.status_code, self_asserted_account_response.text))
         return "fail"
     else:
         return {
