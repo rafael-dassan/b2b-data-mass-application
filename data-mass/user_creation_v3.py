@@ -291,6 +291,19 @@ def get_cookies_header(cookies):
     return "; ".join(cookies_header)
 
 
+def self_assert_response_error(self_assert_response):
+    if self_assert_response.status_code != 200:
+        return False
+
+    response_text = self_assert_response.text
+    try:
+        status = re.search('\"status\":"([^"]+)', response_text).group(1)
+        return int(status) != 200
+    except AttributeError:
+        print("- Fail on user creation v3 [self_assert_response_body]. Invalid response.")
+        return False
+
+
 def authorize_load_request(params):
     logging.debug("Calling authorize_load_request...")
 
@@ -358,9 +371,9 @@ def self_asserted_email_request(email, params, authorize_load_response):
         data,
         headers)
 
-    if self_asserted_email_response.status_code != 200:
-        print("- Fail on user creation v3 [self_asserted_email_request]: status_code {0}.".format(
-            self_asserted_email_response.status_code))
+    if self_assert_response_error(self_asserted_email_response):
+        print("- Fail on user creation v3 [self_asserted_email_request]: status_code {0}. Body {1}.".format(
+            self_asserted_email_response.status_code, self_asserted_email_response.text))
         return "fail"
     else:
         return {
@@ -524,9 +537,9 @@ def self_asserted_name_request(email, params, confirmed_otp_response):
         data,
         headers)
 
-    if self_asserted_name_response.status_code != 200:
-        print("- Fail on user creation v3 [self_asserted_name_request]: status_code {0}.".format(
-            self_asserted_name_response.status_code))
+    if self_assert_response_error(self_asserted_name_response):
+        print("- Fail on user creation v3 [self_asserted_name_request]: status_code {0}. Body {1}.".format(
+            self_asserted_name_response.status_code, self_asserted_name_response.text))
         return "fail"
     else:
         return {
@@ -575,9 +588,9 @@ def self_asserted_password_request(password, params, confirmed_name_response):
         data,
         headers)
 
-    if self_asserted_password_response.status_code != 200:
-        print("- Fail on user creation v3 [self_asserted_password_request]: status_code {0}.".format(
-            self_asserted_password_response.status_code))
+    if self_assert_response_error(self_asserted_password_response):
+        print("- Fail on user creation v3 [self_asserted_password_request]: status_code {0}. Body {1}.".format(
+            self_asserted_password_response.status_code, self_asserted_password_response.text))
         return "fail"
     else:
         return {
@@ -667,9 +680,9 @@ def self_asserted_account_request(account_id, tax_id, params, authorize_account_
         data,
         headers)
 
-    if self_asserted_account_response.status_code != 200:
-        print("- Fail on user creation v3 [self_asserted_account_request]: status_code {0}.".format(
-            self_asserted_account_response.status_code))
+    if self_assert_response_error(self_asserted_account_response):
+        print("- Fail on user creation v3 [self_asserted_account_request]: status_code {0}. Body {1}.".format(
+            self_asserted_account_response.status_code, self_asserted_account_response.text))
         return "fail"
     else:
         return {

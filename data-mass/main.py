@@ -1199,7 +1199,7 @@ def registration_user_iam():
             print(text.Red + "\n- The account isn't ACTIVE.")
             printFinishApplicationMenu()
 
-    status_response = user_v3.create_user(environment, country, email, password, account_result[0], tax_id)
+    status_response = user_v3.create_user(environment, country, email, password, account_id, tax_id)
     if status_response == "success":
         print(text.Green + "\n- User IAM created successfully")
     else:
