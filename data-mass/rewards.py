@@ -229,6 +229,7 @@ def input_redeem_products(abi_id, zone, environment):
 
         # Get a SKU to be used on FreeGood's list below
         product_offers = request_get_offers_microservice(abi_id, zone, environment)
+        
         if product_offers == 'false':
             return 'false'
         elif product_offers == 'not_found':
@@ -260,17 +261,12 @@ def input_redeem_products(abi_id, zone, environment):
         i = 0
         combos_list = list()
         while i < len_combos_match:
-            
-            if zone == 'BR':
-                description = combos_match[i]['title']
-            else:
-                description = combos_match[i]['description']
 
             dict_values_combos  = {
                 'id': combos_match[i]['id'],
                 'externalId': combos_match[i]['id'],
                 'title': combos_match[i]['title'],
-                'description': description,
+                'description': combos_match[i]['id'],
                 'startDate': combos_match[i]['startDate'],
                 'endDate': combos_match[i]['endDate'],
                 'updatedAt': combos_match[i]['updatedAt'],
