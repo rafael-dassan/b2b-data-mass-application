@@ -27,12 +27,8 @@ def get_microservice_payload_post_delivery_date(account_data, is_alternative_del
     # Update the delivery window values in runtime
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
-
-    # Create body
-    list_dict_values = create_list(json_object)
-    request_body = convert_json_to_string(list_dict_values)
-
-    return request_body
+    
+    return json_object
 
 
 # Create delivery date in microservice
@@ -47,19 +43,19 @@ def create_delivery_window_microservice(zone, environment, account_data, is_alte
     dates_list = return_dates_payload()
 
     index = 0
+    request_body = list()
+    temporary_body = None
     while index <= (len(dates_list) - 1):
         # Get body request
-        request_body = get_microservice_payload_post_delivery_date(account_data, is_alternative_delivery_date,
-                                                                   dates_list[index], index)
-
-        # Place request
-        response = place_request('POST', request_url, request_body, request_headers)
-        if response.status_code != 202:
-            print(text.Red + '\n- [Account Relay Service] Failure to add delivery window to account. Response Status: '
-                  + str(response.status_code) + '. Response message ' + response.text)
-            return 'false'
-        
+        temporary_body = get_microservice_payload_post_delivery_date(account_data, is_alternative_delivery_date, dates_list[index], index)
+        request_body.append(temporary_body)
         index = index + 1
+    
+    # Place request
+    response = place_request('POST', request_url, json.dumps(request_body), request_headers)
+    if response.status_code != 202:
+        print(text.Red + '\n- [Account Relay Service] Failure to add delivery window to account. Response Status: ' + str(response.status_code) + '. Response message ' + response.text)
+        return 'false'
 
     return 'success'
 
@@ -78,6 +74,11 @@ def return_dates_payload():
     initial_date = datetime.now()
     initial_month = initial_date.strftime('%m')
     last_day_month = calendar.monthrange(int(initial_date.strftime('%Y')), int(initial_date.strftime('%m')))[1]
+    if (int(initial_date.strftime('%d')) == last_day_month):
+        initial_date = initial_date + timedelta(days=1)
+        initial_month = initial_date.strftime('%m')
+        last_day_month = calendar.monthrange(int(initial_date.strftime('%Y')), int(initial_date.strftime('%m')))[1]
+        
     while (int(initial_date.strftime('%d')) < last_day_month) and (int(initial_date.strftime('%m')) <= int(initial_month)):
         clone_initial_date = initial_date
         clone_initial_date = clone_initial_date + timedelta(days=1)
