@@ -1103,24 +1103,27 @@ def printDeliveryDateMenu():
 
 
 def printMinimumOrderMenu():
-    option_type = input(text.default_text_color + 'Minimum order type (1. Poduct quantity / 2. Order volume / 3. Order total): ')
+    option_type = input(text.default_text_color + 'Minimum order type (1. Product quantity / 2. Order volume / 3. Order total / 4. Sku Defined ): ')
     while option_type == '' or (int(option_type) != 1 and int(option_type) != 2 and int(option_type) != 3):
         print(text.Red + '\n- Invalid option\n')
-        option_type = input(
-            text.default_text_color + 'Minimum order type (1. Poduct quantity / 2. Order volume / 3. Order total): ')
+        option_type = input(text.default_text_color + 'Minimum order type (1. Product quantity / 2. Order volume / 3. Order total / 4. Sku Defined ): ')
 
     switcher = {
         '1': 'PRODUCT_QUANTITY',
         '2': 'ORDER_VOLUME',
-        '3': 'ORDER_TOTAL'
+        '3': 'ORDER_TOTAL',
+        '4': 'SKU_DEFINED'
     }
 
     minimum_order_type = switcher.get(option_type, 'false')
 
-    option_value = input(text.default_text_color + 'Minimum order value: ')
-    while option_value == '' or int(option_value) <= 0:
-        print(text.Red + '\n- SKU quantity must be greater than 0\n')
+    if int(option_type) != 4:
         option_value = input(text.default_text_color + 'Minimum order value: ')
+        while option_value == '' or int(option_value) <= 0:
+            print(text.Red + '\n- SKU quantity must be greater than 0\n')
+            option_value = input(text.default_text_color + 'Minimum order value: ')
+    else:
+        option_value = None
 
     minimum_order_values = list()
     minimum_order_values.append(minimum_order_type)
@@ -1781,3 +1784,33 @@ def print_year_credit_statement():
             year = input(text.default_text_color + 'Witch year do you want to create the document?: ')
 
     return year
+
+def print_account_status_menu():
+    option = input(text.default_text_color + 'With which status do you want to create your account? (1. ACTIVE / 2. BLOCKED): ')
+    while option == '' and option != '1' and option != '2':
+        print(text.Red + '\n- Invalid option')
+        option = input(text.default_text_color + '\nWith which status do you want to create your account? (1. ACTIVE / 2. BLOCKED): ')
+    
+    switcher = {
+        '1': 'ACTIVE',
+        '2': 'BLOCKED'
+    }
+
+    status = switcher.get(option, 'false')
+
+    return status
+
+def print_account_enable_empties_loan_menu():
+    option = input(text.default_text_color + 'Would you like to enable the loan of empties for this account? (1. Yes / 2. No): ')
+    while option == '' and option != '1' and option != '2':
+        print(text.Red + '\n- Invalid option')
+        option = input(text.default_text_color + 'Would you like to enable the loan of empties for this account? (1. Yes / 2. No): ')
+    
+    switcher = {
+        '1': True,
+        '2': False
+    }
+
+    enable_empties_loan = switcher.get(option, 'false')
+
+    return enable_empties_loan

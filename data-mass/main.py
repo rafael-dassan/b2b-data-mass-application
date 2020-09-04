@@ -974,6 +974,7 @@ def create_account_menu():
     name = printNameMenu()
     payment_method = printPaymentMethodMenu(zone)
     state = validate_state(zone)
+    account_status = print_account_status_menu()
 
     option_include = input(text.default_text_color + 'Do you want to include the minimum order parameter? y/N: ')
     while option_include == '' or validate_yes_no_option(option_include.upper()) == 'false':
@@ -984,9 +985,17 @@ def create_account_menu():
         minimum_order = printMinimumOrderMenu()
     else:
         minimum_order = None
+    
+    if zone.upper() == 'MX':
+        enable_empties_loan = print_account_enable_empties_loan_menu()
+    else:
+        enable_empties_loan = False
+    
+    # Need improve to understand, the operation of this parameter, initially will be defined as false
+    has_overprice = False
 
     # Call create account function
-    create_account_response = create_account_ms(abi_id, name, payment_method, minimum_order, zone, environment, state)
+    create_account_response = create_account_ms(abi_id, name, payment_method, minimum_order, zone, environment, state, account_status, enable_empties_loan, has_overprice)
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone, environment)

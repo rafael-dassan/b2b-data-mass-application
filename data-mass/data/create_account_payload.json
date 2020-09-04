@@ -45,10 +45,12 @@
       "name": "TEST SALES REP NAME",
       "phone": 11000000000
   },
+  "hasEmptiesLoan": "string",
+  "hasOverprice": "string",
   "salesRoute": null,
   "potential": "DM-POTENT",
   "segment": "DM-SEG",
   "subSegment": "DM-SUBSEG",
-  "status": "ACTIVE",
+  "status": "string",
   "taxId": "string"
 }
