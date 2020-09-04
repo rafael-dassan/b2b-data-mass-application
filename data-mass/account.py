@@ -26,7 +26,7 @@ def check_account_exists_microservice(abi_id, zone, environment):
         return 'false'
 
 
-def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environment, state):
+def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environment, state, account_status='ACTIVE', enable_empties_loan=False, has_overprice=False):
     payment_term = None
     if zone.upper() == 'BR' and 'BANK_SLIP' in payment_method:
         payment_term = return_payment_term_bank_slip()
@@ -45,6 +45,9 @@ def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environ
             'paymentMethods': payment_method,
             'deliveryAddress.state': state,
             'paymentTerms': payment_term,
+            'status': account_status,
+            'hasEmptiesLoan': enable_empties_loan,
+            'hasOverprice': has_overprice,
         }
     else:
         dict_values = {
@@ -59,6 +62,9 @@ def create_account_ms(abi_id, name, payment_method, minimum_order, zone, environ
             'paymentMethods': payment_method,
             'deliveryAddress.state': state,
             'paymentTerms': payment_term,
+            'status': account_status,
+            'hasEmptiesLoan': enable_empties_loan,
+            'hasOverprice': has_overprice,
         }
 
     # Get header request
