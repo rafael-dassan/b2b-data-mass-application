@@ -1319,7 +1319,9 @@ def print_input_text(input_text):
 
 def validate_country_menu_in_user_create_iam(zone):
     switcher = {
-        'CO': 'true'
+        'BR': 'true',
+        'CO': 'true',
+        'DO': 'true'
     }
     return switcher.get(zone, 'false')
 
@@ -1335,12 +1337,14 @@ def validate_environment_menu_in_user_create_iam(environment):
 def print_country_menu_in_user_create_iam():
     """Print Country Menu to Create User IAM
     Requirements:
+        - BR
         - CO
+        - DO
     """
-    zone = input(text.default_text_color + 'Zone (CO): ')
+    zone = input(text.default_text_color + 'Zone (BR, CO, DO): ')
     while validate_country_menu_in_user_create_iam(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (CO): ')
+        zone = input(text.default_text_color + 'Zone (BR, CO, DO): ')
     return zone.upper()
 
 

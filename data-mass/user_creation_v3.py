@@ -6,19 +6,20 @@ from common import *
 import uuid
 
 
-def get_iam_b2c_params(environment):
+def get_iam_b2c_params(environment, country):
+    country_policy = country.upper()
     if environment == 'UAT':
-        return get_iam_b2c_params_uat()
+        return get_iam_b2c_params_uat(country_policy)
     else:
-        return get_iam_b2c_params_sit()
+        return get_iam_b2c_params_sit(country_policy)
 
 
-def get_iam_b2c_params_uat():
+def get_iam_b2c_params_uat(country):
     b2b_server_name = 'b2biamgbusuat1.b2clogin.com'
     b2b_path = 'b2biamgbusuat1.onmicrosoft.com'
-    b2b_signin_policy = 'B2C_1A_SigninMobile_CO'
-    b2b_signup_policy = 'B2C_1A_SignUp_CO'
-    b2b_onboarding_policy = 'B2C_1A_Onboarding_CO'
+    b2b_signin_policy = 'B2C_1A_SigninMobile_{0}'.format(country)
+    b2b_signup_policy = 'B2C_1A_SignUp_{0}'.format(country)
+    b2b_onboarding_policy = 'B2C_1A_Onboarding_{0}'.format(country)
     params = {
         'B2B_SERVER_NAME': b2b_server_name,
         'B2B_PATH': b2b_path,
@@ -35,12 +36,12 @@ def get_iam_b2c_params_uat():
     return params
 
 
-def get_iam_b2c_params_sit():
+def get_iam_b2c_params_sit(country):
     b2b_server_name = 'b2biamgbussit1.b2clogin.com'
     b2b_path = 'b2biamgbussit1.onmicrosoft.com'
-    b2b_signin_policy = 'B2C_1A_SigninMobile_CO'
-    b2b_signup_policy = 'B2C_1A_SignUp_CO'
-    b2b_onboarding_policy = 'B2C_1A_Onboarding_CO'
+    b2b_signin_policy = 'B2C_1A_SigninMobile_{0}'.format(country)
+    b2b_signup_policy = 'B2C_1A_SignUp_{0}'.format(country)
+    b2b_onboarding_policy = 'B2C_1A_Onboarding_{0}'.format(country)
     params = {
         'B2B_SERVER_NAME': b2b_server_name,
         'B2B_PATH': b2b_path,
@@ -58,7 +59,7 @@ def get_iam_b2c_params_sit():
 
 
 def authenticate_user_iam(environment, country, user_name, password):
-    params = get_iam_b2c_params(environment)
+    params = get_iam_b2c_params(environment, country)
 
     logging.debug("Calling logon_authorize_request...")
     authorize_iam_response = authorize_iam(params)
@@ -211,7 +212,7 @@ def confirmed_logon_request(params, self_asserted_response):
 
 
 def create_user(environment, country, email, password, account_id, tax_id):
-    params = get_iam_b2c_params(environment)
+    params = get_iam_b2c_params(environment, country)
 
     authorize_load_response = authorize_load_request(params)
     if authorize_load_response == "fail":
