@@ -1,0 +1,10 @@
+{
+    "description": "string",
+    "endDate": "2050-03-31T23:59:59.999Z",
+    "id": "string",
+    "image": null,
+    "promotionId": "string",
+    "startDate": "2020-01-01T00:00:00.000Z",
+    "title": "string",
+    "type": "string"
+  }
