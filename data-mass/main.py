@@ -1,7 +1,7 @@
 from account import *
 from credit import add_credit_to_account_microservice
 from credit_statement import create_credit_statement
-from delivery_window import create_delivery_window_microservice, validate_alternative_delivery_date
+from delivery_window import create_delivery_window_microservice, validate_alternative_delivery_date, create_delivery_fee_microservice
 from beer_recommender import *
 from inventory import *
 from invoice import *
@@ -944,7 +944,7 @@ def input_delivery_window_menu():
     if account == 'false':
         printFinishApplicationMenu()
 
-    if zone == 'BR' or zone == 'ZA':
+    if zone == 'BR' or zone == 'ZA' or zone == 'MX':
         # Validate if is alternative delivery window
         is_alternative_delivery_date = print_alternative_delivery_date_menu()
 
@@ -960,6 +960,20 @@ def input_delivery_window_menu():
 
     if delivery_window == 'success':
         print(text.Green + '\n- Delivery window added successfully')
+
+        # Check if include delivery cost (interest)
+        if zone == 'BR' or zone == 'MX':
+            include_delivery_cost = print_include_delivery_cost_menu()
+
+            if include_delivery_cost['input'].upper() == 'Y':
+                # Call add delivery cost (interest) function
+                delivery_cost = create_delivery_fee_microservice(zone, environment, account[0], include_delivery_cost)
+           
+            if delivery_cost == 'success':
+                print(text.Green + '\n- Delivery cost (interest) added successfully')
+            else:
+                printFinishApplicationMenu()
+
     else:
         printFinishApplicationMenu()
 
@@ -1038,7 +1052,7 @@ def create_account_menu():
         if update_sku != 'true':
             printFinishApplicationMenu()
 
-    if zone == 'BR' or zone == 'ZA':
+    if zone == 'BR' or zone == 'ZA' or zone == 'MX':
         # Validate if is alternative delivery window
         is_alternative_delivery_date = print_alternative_delivery_date_menu()
 
@@ -1054,6 +1068,20 @@ def create_account_menu():
 
     if delivery_window == 'success':
         print(text.Green + '\n- Delivery window added successfully')
+
+        # Check if include delivery cost (interest)
+        if zone == 'BR' or zone == 'MX':
+            include_delivery_cost = print_include_delivery_cost_menu()
+
+            if include_delivery_cost['input'].upper() == 'Y':
+                # Call add delivery cost (interest) function
+                delivery_cost = create_delivery_fee_microservice(zone, environment, account[0], include_delivery_cost)
+           
+            if delivery_cost == 'success':
+                print(text.Green + '\n- Delivery cost (interest) added successfully')
+            else:
+                printFinishApplicationMenu()
+
     else:
         printFinishApplicationMenu()
 
@@ -1159,6 +1187,29 @@ def print_alternative_delivery_date_menu():
 
     return is_alternative_delivery_date
 
+
+# Print delivery cost (interest) menu application
+def print_include_delivery_cost_menu():
+    is_alternative_delivery_date = input(text.default_text_color + 'Do you want add delivery fee (interest)? y/N: ')
+
+    while validate_alternative_delivery_date(is_alternative_delivery_date.upper()) == 'false':
+        print(text.Red + '\n- Invalid option')
+        is_alternative_delivery_date = input(text.default_text_color + '\nDo you want add delivery fee (interest)? y/N: ')
+
+    min_value = 0;
+    tax_value = 0;
+    if is_alternative_delivery_date.upper() == 'Y':
+        min_value = input(text.default_text_color + 'Define the minimum order value to do not pay any delivery fee: ')
+
+        tax_value = input(text.default_text_color + 'Define the delivery fee value: ')
+
+    response = {
+        'input': is_alternative_delivery_date,
+        'min_order_value': min_value,
+        'fee_value': tax_value
+    }
+
+    return response;
 
 # Validate if chosen sku is valid
 def validateSkuChosen(sku, listSkuOffers):

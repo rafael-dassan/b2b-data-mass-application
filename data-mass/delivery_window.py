@@ -30,6 +30,40 @@ def get_microservice_payload_post_delivery_date(account_data, is_alternative_del
     
     return json_object
 
+# Create payload for delivery fee
+def get_microservice_payload_post_delivery_fee(account_data, include_delivery_cost):
+
+    dict_values = {
+        'accounts[0]': account_data['accountId'],
+        'interest[0].interestId': 'ID00001',
+        'interest[0].externalId': 'NON_REGULAR_DELIVERY_DATE_FEE',
+        'interest[0].scope': 'order',
+        'interest[0].conditions': {
+            'alternativeDeliveryDate': 'true',
+            'orderTotal': {
+                'maximumValue': include_delivery_cost['min_order_value']
+            }
+        },
+        'interest[0].output': {
+            'totalOutput': {
+                'additionalAmount': include_delivery_cost['fee_value']
+            }
+        }
+    }
+
+    # Create file path
+    path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(path, 'data/create_delivery_fee_interest_payload.json')
+
+    # Load JSON file
+    with open(file_path) as file:
+        json_data = json.load(file)
+
+    # Update the delivery window values in runtime
+    for key in dict_values.keys():
+        json_object = update_value_to_json(json_data, key, dict_values[key])
+    
+    return json_object
 
 # Create delivery date in microservice
 def create_delivery_window_microservice(zone, environment, account_data, is_alternative_delivery_date):
@@ -46,8 +80,18 @@ def create_delivery_window_microservice(zone, environment, account_data, is_alte
     request_body = list()
     temporary_body = None
     while index <= (len(dates_list) - 1):
+
+        # force mixed values if is is_alternative_delivery_date
+        if (is_alternative_delivery_date  == 'true'):
+            if (index % 2) == 0:
+                option_is_alternative_delivery_date = 'true'
+            else:
+                option_is_alternative_delivery_date = 'false'
+        else:
+            option_is_alternative_delivery_date = is_alternative_delivery_date
+
         # Get body request
-        temporary_body = get_microservice_payload_post_delivery_date(account_data, is_alternative_delivery_date, dates_list[index], index)
+        temporary_body = get_microservice_payload_post_delivery_date(account_data, option_is_alternative_delivery_date, dates_list[index], index)
         request_body.append(temporary_body)
         index = index + 1
     
@@ -90,3 +134,23 @@ def return_dates_payload():
         initial_date = initial_date + timedelta(days=2)
     
     return list_delivery_dates
+
+# Create delivery fee (interest) in microservice
+def create_delivery_fee_microservice(zone, environment, account_data, include_delivery_cost):
+
+     # Get headers
+    request_headers = get_header_request(zone, 'false', 'false', 'false', 'false')
+
+    # Get base URL
+    request_url = get_microservice_base_url(environment) + '/cart-calculation-relay/v2/interest'
+
+    # Get body request
+    request_body = get_microservice_payload_post_delivery_fee(account_data, include_delivery_cost)
+    
+    # Place request
+    response = place_request('PUT', request_url, json.dumps(request_body), request_headers)
+    if response.status_code != 202:
+        print(text.Red + '\n- [cart-calculation-relay] Failure to add delivery cost. Response Status: ' + str(response.status_code) + '. Response message ' + response.text)
+        return 'false'
+
+    return 'success'
