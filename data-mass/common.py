@@ -32,7 +32,8 @@ def validate_option_request_selection(selection):
         '10': 'true',
         '11': 'true',
         '12': 'true',
-        '13': 'true'
+        '13': 'true',
+        '14': 'true'
     }
 
     value = switcher.get(selection, 'false')
@@ -46,6 +47,15 @@ def validate_option_request_selection_for_structure_3(option):
         '1': 'true',
         '2': 'true',
         '3': 'true'
+    }
+
+    value = switcher.get(option, 'false')
+    return value
+
+def validate_option_update_invoice(option):
+    switcher = {
+        '0': 'true',
+        '1': 'true'
     }
 
     value = switcher.get(option, 'false')
@@ -553,6 +563,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(11), text.Yellow + 'Create invoice')
         print(text.default_text_color + str(12), text.Yellow + 'Create rewards')
         print(text.default_text_color + str(13), text.Yellow + 'Create credit statement')
+        print(text.default_text_color + str(14), text.Yellow + 'Update invoice status')
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_option_request_selection(selection) == 'false':
             print(text.Red + '\n- Invalid option\n')
@@ -570,6 +581,8 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(11), text.Yellow + 'Create invoice')
             print(text.default_text_color + str(12), text.Yellow + 'Create rewards')
             print(text.default_text_color + str(13), text.Yellow + 'Create credit statement')
+            print(text.default_text_color + str(14), text.Yellow + 'Update invoice status')
+
             selection = input(text.default_text_color + '\nPlease select: ')
 
     elif selection_structure == '2':
