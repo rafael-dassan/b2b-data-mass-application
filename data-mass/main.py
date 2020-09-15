@@ -1,4 +1,5 @@
 from account import *
+from common import *
 from credit import add_credit_to_account_microservice
 from credit_statement import create_credit_statement
 from delivery_window import create_delivery_window_microservice, validate_alternative_delivery_date, create_delivery_fee_microservice
@@ -35,7 +36,8 @@ def showMenu():
             '10': create_item_menu,
             '11': create_invoice_menu,
             '12': create_rewards_to_account,
-            '13': create_credit_statement_menu
+            '13': create_credit_statement_menu,
+            '14': update_invoice_status
         }
     elif selection_structure == '2':
         switcher = {
@@ -1441,6 +1443,35 @@ def create_credit_statement_menu():
     if doc == 'false':
         printFinishApplicationMenu()
 
+def update_invoice_status():
+    zone = print_zone_menu_for_ms()
+    environment = printEnvironmentMenu()
+    
+    print(text.Green + '\n- Digite o número da invoice')
+    invoice_id = input(text.default_text_color + '\nPlease select: ')
+
+    print(text.Green + '\n- Digite o tipo de pagamento (0- CASH,1- CREDIT)')
+    selection = input(text.default_text_color + '\nPlease select: ')
+    while validate_option_update_invoice(selection) == 'false':
+            print(text.Red + '\n- Invalid option\n')
+            print(text.default_text_color + str(0), text.Yellow + 'CASH')
+            print(text.default_text_color + str(1), text.Yellow + 'CREDIT')
+            selection = input(text.default_text_color + '\nPlease select: ')
+
+    print(text.Green + '\n- Digite o Status da invoice')
+    status = input(text.default_text_color + '\nPlease select: ')
+    if selection == 0:
+        payment_type = 'CASH'
+    else:
+        payment_type = 'CREDIT'
+
+    invoice_response = update_invoice_request(zone, environment, invoice_id, payment_type, status)
+
+    if invoice_response != 'false':
+        print(text.Green + '\n- Invoice ' + invoice_response + '  successfully')
+
+    else:
+        printFinishApplicationMenu()
 
 # Init
 try:
