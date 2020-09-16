@@ -1,19 +1,15 @@
 import json
-import logging
 import os
-import subprocess
 import sys
 from datetime import date, datetime
-from os import path
 from time import time
 from unicodedata import numeric
 from uuid import uuid1
-
 from jsonpath_rw import Index, Fields
 from jsonpath_rw_ext import parse
 from requests import request
-
 from classes.text import text
+from logs.log import log_to_file
 
 
 # Validate option menu selection
@@ -325,47 +321,16 @@ def validateEnvironmentInUserCreation(environment):
 
 
 # Place generic request
-def place_request(request_type, request_url, request_body, request_headers):
+def place_request(request_method, request_url, request_body, request_headers):
     # Send request
     response = request(
-        request_type,
+        request_method,
         request_url,
         data=request_body,
         headers=request_headers
     )
 
-    # Create dir and file paths
-    dir_project = os.path.abspath(os.path.dirname(__file__))
-    dir_logs = os.path.join(dir_project, "logs")
-    file_debug = os.path.join(dir_logs, "debug.log")
-
-    # If the logs directory does not exist, create it
-    if path.exists(dir_logs) == False:
-        if os.name == 'nt':
-            os.makedirs(dir_logs)
-        else:
-            subprocess.call(["mkdir", "-p", dir_logs])
-
-    # If the debug.log file does not exist, create it
-    if path.exists(file_debug) == False:
-        if os.name == 'nt':
-            f = open(file_debug, "w+")
-            f.close()
-        else:
-            subprocess.call(["touch", file_debug])
-
-    # Log request data to debug.log file
-    logging.basicConfig(filename=file_debug, level=logging.DEBUG, format='%(asctime)s :: %(levelname)s :: %(message)s')
-    logging.getLogger("urllib3").setLevel(logging.WARNING)
-    logging.getLogger('chardet.charsetprober').setLevel(logging.WARNING)
-    logging.debug("Initializing rerquest...")
-    logging.debug("Request method: " + request_type)
-    logging.debug("Request headers: " + json.dumps(request_headers))
-    logging.debug("Request URL: " + request_url)
-    logging.debug("Request body: " + str(request_body))
-    logging.debug("Response code: " + str(response.status_code))
-    logging.debug("Response body: " + response.text)
-    logging.debug("Request finished!\n")
+    log_to_file(request_method, request_url, request_body, request_headers, response.status_code, response.text)
 
     return response
 
