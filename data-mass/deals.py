@@ -412,7 +412,7 @@ def input_free_good_to_account(abi_id, sku, sku_list, deal_type, zone, environme
         quantity = print_quantity_menu()
     else:
         minimum_quantity = 1
-        quantity = 1
+        quantity = print_quantity_menu()
 
     promotion_response = input_deal_to_account(abi_id, sku, deal_type, zone, environment)
 
@@ -520,18 +520,14 @@ def input_free_good_to_cart_calculation_v2(abi_id, deal_id, zone, environment, s
             'deals[0].dealId': deal_id,
             'deals[0].externalId': deal_id,
             'deals[0].accumulationType': accumulation_type,
+            'deals[0].quantityLimit': quantity,
             'deals[0].conditions.simulationDateTime[0].startDate': dates_payload['startDate'],
             'deals[0].conditions.simulationDateTime[0].endDate': dates_payload['endDate'],
             'deals[0].output.freeGoods.proportion': 1,
             'deals[0].output.freeGoods.partial': boolean_partial_free_good,
             'deals[0].output.freeGoods.freeGoods[0].skus[0].sku': sku_list[0]['sku'],
             'deals[0].output.freeGoods.freeGoods[0].skus[0].price': sku_list[0]['price'],
-            'deals[0].output.freeGoods.freeGoods[0].quantity': quantity,
-            'deals[0].output.freeGoods.freeGoods[1].skus[0].sku': sku_list[1]['sku'],
-            'deals[0].output.freeGoods.freeGoods[1].skus[0].price': sku_list[1]['price'],
-            'deals[0].output.freeGoods.freeGoods[1].skus[1].sku': sku_list[2]['sku'],
-            'deals[0].output.freeGoods.freeGoods[1].skus[1].price': sku_list[2]['price'],
-            'deals[0].output.freeGoods.freeGoods[1].quantity': quantity
+            'deals[0].output.freeGoods.freeGoods[0].quantity': quantity
         }
 
     # Create file path

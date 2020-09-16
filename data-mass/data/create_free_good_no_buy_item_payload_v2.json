@@ -7,7 +7,7 @@
             "accumulationType": null,
             "priority": 1,
             "budget": null,
-            "quantityLimit": null,
+            "quantityLimit": 0,
             "availability": null,
             "conditions": {
                 "simulationDateTime": [
@@ -27,21 +27,6 @@
                     "freeGoods": [
                         {
                             "skus": [
-                                {
-                                    "sku": "string",
-                                    "measureUnit": "UNIT",
-                                    "price": "string"
-                                }
-                            ],
-                            "quantity": 0
-                        },
-                        {
-                            "skus": [
-                                {
-                                    "sku": "string",
-                                    "measureUnit": "UNIT",
-                                    "price": "string"
-                                },
                                 {
                                     "sku": "string",
                                     "measureUnit": "UNIT",
