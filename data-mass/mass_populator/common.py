@@ -27,9 +27,10 @@ def populate_accounts(country, environment):
 def populate_users_magento(country, environment):    
     logger.info("populate_users_magento for %s/%s", country, environment)
 
-    # Colombia uses the registration v3 (IAM B2C)
+    # Colombia and Mexico use the registration v3 (IAM B2C)
     # The other countries are still using registration v2
-    if country == 'CO':
+    iam_allowed_countries = ['CO', 'MX']
+    if country in iam_allowed_countries:
         populate_users_iam_b2c(country, environment, search_data_by(country, 'user'))
     else:
         populate_users(country, environment, search_data_by(country, 'user'))
@@ -39,9 +40,9 @@ def populate_recommendations(country, environment):
     logger.info("populate_recommendations for %s/%s", country, environment)
     
     not_allowed_countries = ["CL"]
-    if (country in not_allowed_countries):
+    if country in not_allowed_countries:
         logger.info(
-            "Skipping populate recomendations, because the country is not supported!")
+            "Skipping populate recommendations, because the country is not supported!")
         return False
     
     populate_recommendations_base(country, environment, search_data_by(country, 'recommendation'))

@@ -1,5 +1,3 @@
-import sys
-from json import dumps, loads
 from common import *
 
 
@@ -26,8 +24,8 @@ def request_enable_product(country, environment, product_sku):
     
     # Get base URL
     access_token = get_magento_datamass_access_token(environment, country)
-	
-	# Get header request
+
+    # Get header request
     headers = {
         "Content-Type": "application/json",
         "x-access-token": access_token
@@ -35,10 +33,10 @@ def request_enable_product(country, environment, product_sku):
     
     data = {
         "product": {
-			"sku": product_sku,
-			"status": 1
-    	}
-	}
+            "sku": product_sku,
+            "status": 1
+        }
+    }
 
     # Send request
     return place_request("PUT", url, convert_json_to_string(data), headers)
