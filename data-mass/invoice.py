@@ -1,3 +1,4 @@
+from json import loads
 from random import randint
 from common import *
 
@@ -100,9 +101,8 @@ def create_invoice_request(zone, environment, order_id, status, order_data):
               + str(response.status_code) + '. Response message ' + response.text)
         return 'false'
 
-def update_invoice_request(zone, environment, invoice_id, payment_type, status):
-    
 
+def update_invoice_request(zone, environment, invoice_id, payment_type, status):
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
     file_path = os.path.join(path, 'data/update_invoice_status.json')
@@ -119,7 +119,6 @@ def update_invoice_request(zone, environment, invoice_id, payment_type, status):
 
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
-
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/invoices-service'
@@ -139,3 +138,28 @@ def update_invoice_request(zone, environment, invoice_id, payment_type, status):
         print(text.Red + '\n- [Invoice Relay Service] Failure to UPDATE an invoice. Response Status: '
               + str(response.status_code) + '. Response message ' + response.text)
         return 'false'
+
+
+def check_if_invoice_exist(abi_id, invoice_id, zone, environment):
+    # Get header request
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+
+    # Get base URL
+    request_url = get_microservice_base_url(
+        environment) + '/invoices-service/?accountId=' + abi_id + '&invoiceId=' + invoice_id
+
+    # Place request
+    response = place_request('GET', request_url, '', request_headers)
+
+    json_data = loads(response.text)
+    if response.status_code == 200 and len(json_data['data']) != 0:
+        return json_data
+    elif response.status_code == 200 and len(json_data['data']) == 0:
+        print(text.Red + '\n- [Invoice] The invoice ' + invoice_id + ' does not exist')
+        return 'false'
+    else:
+        print(text.Red + '\n- [Invoice Service] Failure to retrieve the account ' + invoice_id + '. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
+        return 'false'
+
+
