@@ -31,18 +31,18 @@ def input_deal_to_account(abi_id, sku, deal_type, zone, environment):
         free_good = create_free_good_group(sku, zone, environment)
         free_good_group_id.append(free_good)
 
-    if zone != 'DO':
-        # Get body
-        request_body = get_deals_payload_v1(deal_id, deal_type, account_group_id, sku_group_id, free_good_group_id)
-
-        # Get base URL
-        request_url = get_microservice_base_url(environment) + '/promotion-relay/'
-    else:
+    if zone == 'DO' or zone == 'BR' or zone == 'MX':
         # Get body
         request_body = get_deals_payload_v2(deal_id, deal_type)
 
         # Get base URL
         request_url = get_microservice_base_url(environment) + '/promotion-relay/v2'
+    else:
+        # Get body
+        request_body = get_deals_payload_v1(deal_id, deal_type, account_group_id, sku_group_id, free_good_group_id)
+
+        # Get base URL
+        request_url = get_microservice_base_url(environment) + '/promotion-relay/'
 
     # Get headers
     request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
