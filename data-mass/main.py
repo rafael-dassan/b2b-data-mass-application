@@ -969,15 +969,15 @@ def input_delivery_window_menu():
         print(text.Green + '\n- Delivery window added successfully')
 
         # Check if include delivery cost (interest)
-        if zone == 'BR' or zone == 'MX':
+        if is_alternative_delivery_date == 'true' and (zone == 'BR' or zone == 'MX'):
             include_delivery_cost = print_include_delivery_cost_menu()
 
             if include_delivery_cost['input'].upper() == 'Y':
                 # Call add delivery cost (interest) function
                 delivery_cost = create_delivery_fee_microservice(zone, environment, account[0], include_delivery_cost)
-
-            if delivery_cost == 'success':
-                print(text.Green + '\n- Delivery cost (interest) added successfully')
+           
+                if delivery_cost == 'success':
+                    print(text.Green + '\n- Delivery cost (interest) added successfully')
             else:
                 printFinishApplicationMenu()
 
@@ -1078,15 +1078,15 @@ def create_account_menu():
         print(text.Green + '\n- Delivery window added successfully')
 
         # Check if include delivery cost (interest)
-        if zone == 'BR' or zone == 'MX':
+        if is_alternative_delivery_date == 'true' and (zone == 'BR' or zone == 'MX'):
             include_delivery_cost = print_include_delivery_cost_menu()
 
             if include_delivery_cost['input'].upper() == 'Y':
                 # Call add delivery cost (interest) function
                 delivery_cost = create_delivery_fee_microservice(zone, environment, account[0], include_delivery_cost)
-
-            if delivery_cost == 'success':
-                print(text.Green + '\n- Delivery cost (interest) added successfully')
+           
+                if delivery_cost == 'success':
+                    print(text.Green + '\n- Delivery cost (interest) added successfully')
             else:
                 printFinishApplicationMenu()
 
