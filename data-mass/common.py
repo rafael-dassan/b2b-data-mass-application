@@ -1608,7 +1608,7 @@ def print_get_order_menu():
 
 
 def validate_invoice_status(option):
-    if option == '1' or option == '2':
+    if option == '1' or option == '2' or option == '3':
         return 'true'
     else:
         return 'false'
@@ -1616,11 +1616,11 @@ def validate_invoice_status(option):
 
 def print_invoice_status_menu():
     status = input(
-        text.default_text_color + 'Do you want to create the invoice with which status: 1. CLOSED or 2. OPEN: ')
+        text.default_text_color + 'Do you want to create the invoice with which status: 1. CLOSED, 2. OPEN or 3.DELIVERED: ')
     while validate_invoice_status(status) == 'false':
         print(text.Red + '\n- Invalid option')
         status = input(
-            text.default_text_color + 'Do you want to create the invoice with which status: 1. CLOSED or 2. OPEN: ')
+            text.default_text_color + 'Do you want to create the invoice with which status: 1. CLOSED, 2. OPEN or 3.DELIVERED: ')
     if status == '1':
         return 'CLOSED'
     else:
@@ -1870,25 +1870,4 @@ def print_payment_method():
     else:
         return 'CREDIT'
 
-
-def validate_update_invoice_status(option):
-    if option == '1' or option == '2' or option == '3':
-        return 'true'
-    else:
-        return 'false'
-
-
-def print_update_status_invoice():
-    status = input(
-        text.default_text_color + 'Do you want to create the invoice with which status: 1. CLOSED, 2. OPEN or 3.DELIVERED: ')
-    while validate_update_invoice_status(status) == 'false':
-        print(text.Red + '\n- Invalid option')
-        status = input(
-            text.default_text_color + 'Do you want to create the invoice with which status: 1. CLOSED, 2. OPEN or 3.DELIVERED: ')
-    if status == '1':
-        return 'CLOSED'
-    elif status == '2':
-        return 'OPEN'
-    else:
-        return 'DELIVERED'
 

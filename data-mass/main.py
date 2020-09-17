@@ -1322,7 +1322,7 @@ def create_invoice_menu():
         invoice = check_if_invoice_exist(abi_id, invoice_id, zone, environment)
         if invoice != 'false':
             payment_type = print_payment_method()
-            status = print_update_status_invoice()
+            status = print_invoice_status_menu()
             invoice_response = update_invoice_request(zone, environment, invoice_id, payment_type, status)
 
             if invoice_response != 'false':
