@@ -147,7 +147,8 @@ def validate_zone_data_searching_deals(zone):
         'CO': 'true',
         'AR': 'true',
         'CL': 'true',
-        'ZA': 'true'
+        'ZA': 'true',
+        'MX': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -197,9 +198,7 @@ def validate_zone_for_combos(zone):
     switcher = {
         'BR': 'true',
         'DO': 'true',
-        'AR': 'true',
-        'CO': 'true',
-        'ZA': 'true'
+        'MX': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -212,7 +211,8 @@ def validate_zone_for_combos_dt(zone):
         'DO': 'true',
         'AR': 'true',
         'CO': 'true',
-        'ZA': 'true'
+        'ZA': 'true',
+        'MX': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -901,10 +901,10 @@ def printZoneMenu(isMiddleware="true"):
 
 
 def print_zone_menu_data_searching_deals():
-    zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO, ZA): ')
+    zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO, ZA, MX): ')
     while validate_zone_data_searching_deals(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO, ZA): ')
+        zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO, ZA, MX): ')
 
     return zone.upper()
 
@@ -962,15 +962,15 @@ def print_zone_menu_for_deals():
 # Print zone menu for combos
 def print_zone_menu_for_combos(combo_type=''):
     if combo_type == 'DT':
-        zone = input(text.default_text_color + 'Zone (BR, DO, AR, CO, ZA): ')
-        while validate_zone_for_combos(zone.upper()) == 'false':
+        zone = input(text.default_text_color + 'Zone (BR, DO, AR, CO, ZA, MX): ')
+        while validate_zone_for_combos_dt(zone.upper()) == 'false':
             print(text.Red + '\n- Invalid option\n')
-            zone = input(text.default_text_color + 'Zone (BR, DO, AR, CO, ZA): ')
+            zone = input(text.default_text_color + 'Zone (BR, DO, AR, CO, ZA, MX): ')
     else:
-        zone = input(text.default_text_color + 'Zone (BR, DO): ')
+        zone = input(text.default_text_color + 'Zone (BR, DO, MX): ')
         while validate_zone_for_combos(zone.upper()) == 'false':
             print(text.Red + '\n- Invalid option\n')
-            zone = input(text.default_text_color + 'Zone (BR, DO): ')
+            zone = input(text.default_text_color + 'Zone (BR, DO, MX): ')
 
     return zone.upper()
 
