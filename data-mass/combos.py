@@ -1,3 +1,4 @@
+from json import loads
 from random import randint
 from common import *
 
