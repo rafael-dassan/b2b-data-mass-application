@@ -1,9 +1,15 @@
-from json import loads, dumps
-from common import *
-import sys
+# Standard library imports
 import json
-from classes.text import text
+import os
+
+# Third party imports
 from tabulate import tabulate
+
+# Local application imports
+from common import get_header_request, get_middleware_base_url, update_value_to_json, convert_json_to_string, \
+    place_request, get_microservice_base_url
+from classes.text import text
+
 
 # Order simulation by Middleware
 def process_simulation_middleware(zone, environment, abi_id, account, order_items, payment_method):

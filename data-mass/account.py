@@ -1,7 +1,15 @@
+# Standard library imports
+import json
 from json import loads
+import os
 
-from common import *
+# Third party imports
 from tabulate import tabulate
+
+# Local application imports
+from common import get_header_request, get_microservice_base_url, place_request, return_payment_term_bank_slip, \
+    update_value_to_json, create_list, convert_json_to_string, set_to_dictionary
+from classes.text import text
 
 
 def check_account_exists_microservice(abi_id, zone, environment):

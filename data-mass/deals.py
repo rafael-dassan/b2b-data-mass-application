@@ -1,7 +1,18 @@
+# Standard library imports
+import json
 from json import loads
+import os
 from random import randint
-from common import *
+
+# Third party imports
 from tabulate import tabulate
+
+# Local application imports
+from common import get_microservice_base_url, get_header_request, place_request, update_value_to_json, create_list, \
+    convert_json_to_string, print_minimum_quantity_menu, print_discount_type_menu, print_discount_value_menu, \
+    print_index_range_menu, print_discount_range_menu, print_quantity_menu, print_quantity_range_menu, \
+    return_first_and_last_date_year_payload
+from classes.text import text
 
 
 def input_deal_to_account(abi_id, sku, deal_type, zone, environment):
@@ -31,7 +42,8 @@ def input_deal_to_account(abi_id, sku, deal_type, zone, environment):
         free_good = create_free_good_group(sku, zone, environment)
         free_good_group_id.append(free_good)
 
-    if zone == 'DO' or zone == 'BR' or zone == 'MX':
+    deals_v2_zones = ['BR', 'DO', 'EC', 'MX', 'PE']
+    if zone in deals_v2_zones:
         # Get body
         request_body = get_deals_payload_v2(deal_id, deal_type)
 

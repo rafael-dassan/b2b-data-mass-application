@@ -1,7 +1,12 @@
+# Standard library imports
+import os
+import json
 import calendar
-from datetime import timedelta
+from datetime import timedelta, datetime
 
-from common import *
+# Local application imports
+from common import update_value_to_json, get_header_request, get_microservice_base_url, place_request
+from classes.text import text
 
 
 # Create payload for delivery date

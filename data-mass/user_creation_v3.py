@@ -1,10 +1,15 @@
+# Standard library imports
 import re
 import urllib.parse
-import pyotp
-import base64
-from common import *
 import uuid
 import logging
+import base64
+
+# Third party imports
+import pyotp
+
+# Local application imports
+from common import place_request
 
 
 def get_iam_b2c_params(environment, country):

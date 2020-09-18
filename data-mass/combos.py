@@ -1,6 +1,13 @@
+# Standard library imports
+import json
 from json import loads
+import os
 from random import randint
-from common import *
+
+# Local application imports
+from common import get_microservice_base_url, get_sku_price, update_value_to_json, convert_json_to_string, \
+    get_header_request, place_request, create_list
+from classes.text import text
 
 
 def input_combo_type_discount(abi_id, zone, environment, sku, discount_value):
