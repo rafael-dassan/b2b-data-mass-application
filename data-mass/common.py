@@ -407,21 +407,23 @@ def get_microservice_base_url(environment, is_v1='true'):
 # Return base URL for Magento
 def get_magento_base_url(environment, country):
     magento_url = {
-        "UAT": {
-            "BR": "https://test-br.abi-sandbox.net",
-            "DO": "https://test-conv-micerveceria.abi-sandbox.net",
-            "AR": "https://migration-test-conv-quilmes.abi-sandbox.net",
-            "CL": "https://test-conv-cl-mitienda.abi-sandbox.net",
-            "ZA": "https://test-conv-sabconnect.abi-sandbox.net",
-            "CO": "https://test-copec-co.abi-sandbox.net"
+        'UAT': {
+            'BR': 'https://test-br.abi-sandbox.net',
+            'DO': 'https://test-conv-micerveceria.abi-sandbox.net',
+            'AR': 'https://migration-test-conv-quilmes.abi-sandbox.net',
+            'CL': 'https://test-conv-cl-mitienda.abi-sandbox.net',
+            'ZA': 'https://test-conv-sabconnect.abi-sandbox.net',
+            'CO': 'https://test-copec-co.abi-sandbox.net',
+            'MX': 'https://test-mx.abi-sandbox.net'
         },
-        "SIT": {
-            "BR": "https://sit-br.abi-sandbox.net",
-            "DO": "https://sit-dr.abi-sandbox.net",
-            "AR": "https://sit-las-ar.abi-sandbox.net",
-            "CL": "https://sit-las-ch.abi-sandbox.net",
-            "ZA": "https://sit-za.abi-sandbox.net",
-            "CO": "https://sit-copec-co.abi-sandbox.net"
+        'SIT': {
+            'BR': 'https://sit-br.abi-sandbox.net',
+            'DO': 'https://sit-dr.abi-sandbox.net',
+            'AR': 'https://sit-las-ar.abi-sandbox.net',
+            'CL': 'https://sit-las-ch.abi-sandbox.net',
+            'ZA': 'https://sit-za.abi-sandbox.net',
+            'CO': 'https://sit-copec-co.abi-sandbox.net',
+            'MX': 'https://sit-mx.abi-sandbox.net'
         }
     }
 
@@ -481,21 +483,23 @@ def get_magento_user_registration_access_token(environment, country):
 # Returns Magento Datamass Application Access Token
 def get_magento_datamass_access_token(environment, country):
     access_token = {
-        "UAT": {
-            "BR": "8z2z3y523hoqkcqci8q58afuoue81bns",
-            "DO": "js4gd8y9wkqogf7eo2s4uy6oys15lfkf",
-            "AR": "a34o213zgisn67efeg0zbq04sqg667qk",
-            "CL": "a34o213zgisn67efeg0zbq04sqg667qk",
-            "ZA": "0seca4btewbr3e1opma4je2x8ftj57wx",
-            "CO": "meqei3q5ztreebdpb5vyej378mt2o8qy"
+        'UAT': {
+            'BR': '8z2z3y523hoqkcqci8q58afuoue81bns',
+            'DO': 'js4gd8y9wkqogf7eo2s4uy6oys15lfkf',
+            'AR': 'a34o213zgisn67efeg0zbq04sqg667qk',
+            'CL': 'a34o213zgisn67efeg0zbq04sqg667qk',
+            'ZA': '0seca4btewbr3e1opma4je2x8ftj57wx',
+            'CO': 'meqei3q5ztreebdpb5vyej378mt2o8qy',
+            'MX': 'bqzqcmx3opvntxtwijh98s4kmb21pi8j'
         },
-        "SIT": {
-            "BR": "q6yti2dxmhp0e2xjgyvtt72nziss6ptp",
-            "DO": "tgqnjlqpfupf0i4zxcs2doqx409k1hyq",
-            "AR": "hzp6hw65oqiyeyv8ozfzunex0nc1rff8",
-            "CL": "hzp6hw65oqiyeyv8ozfzunex0nc1rff8",
-            "ZA": "fde80w10jbbaed1mrz6yg0pwy1vzfo48",
-            "CO": "bl9cnb3ngb7almxml6rmvma3lyl8b1st"
+        'SIT': {
+            'BR': 'q6yti2dxmhp0e2xjgyvtt72nziss6ptp',
+            'DO': 'tgqnjlqpfupf0i4zxcs2doqx409k1hyq',
+            'AR': 'hzp6hw65oqiyeyv8ozfzunex0nc1rff8',
+            'CL': 'hzp6hw65oqiyeyv8ozfzunex0nc1rff8',
+            'ZA': 'fde80w10jbbaed1mrz6yg0pwy1vzfo48',
+            'CO': 'new189lnml9xmcr3m9gc0j6oji6w2izr',
+            'MX': '86pg36lug4ivrx3xh5b5qnemzy1gw6v8'
         }
     }
 

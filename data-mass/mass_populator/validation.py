@@ -5,10 +5,12 @@ def valid_country(country):
         "CL": True,
         "DO": True,
         "ZA": True,
-        "CO": True
+        "CO": True,
+        "MX": True
     }
 
     return switcher.get(country, False)
+
 
 def valid_environment(environment):
     switcher = {
@@ -19,11 +21,13 @@ def valid_environment(environment):
 
     return switcher.get(environment, False)
 
+
 def valid_parameters(parameters):
     if len(parameters) != 4:
         return False
 
     return True
+
 
 def valid_execution_type(execution_type):
     switcher = {
