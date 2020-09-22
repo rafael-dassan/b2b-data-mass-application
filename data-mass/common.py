@@ -1168,7 +1168,7 @@ def print_input_phone():
 # Validate State in registration flow
 def validate_state(zone):
     if zone == 'BR':
-        state = '00'
+        state = 'RS'
 
     elif zone == 'DO':
         state = 'STO DGO'
