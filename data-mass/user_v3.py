@@ -57,6 +57,10 @@ def get_iam_b2c_country_params_uat(country):
         "DO": {
             "REDIRECT_URL": "com.abi.socio-cerveceria://oauth/redirect",
             "CLIENT_ID": "2fb9932f-5ac2-4f9d-91d7-35ea363cde34"
+        },
+        "MX": {
+            "REDIRECT_URL": "com.abi.bees.mexico://oauth/redirect",
+            "CLIENT_ID": "1841724c-1311-47e9-8894-a5a0e8a44197"
         }
     }
     return params[country]
@@ -75,6 +79,10 @@ def get_iam_b2c_country_params_sit(country):
         "DO": {
             "REDIRECT_URL": "com.abi.socio-cerveceria://oauth/redirect",
             "CLIENT_ID": "a416b8f5-4061-4984-a2f7-a6dca86e68ae"
+        },
+        "MX": {
+            "REDIRECT_URL": "com.abi.bees.mexico://oauth/redirect",
+            "CLIENT_ID": "32a701c0-fbd0-481b-9028-809a0a1468f5"
         }
     }
     return params[country]

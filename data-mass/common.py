@@ -1330,7 +1330,8 @@ def validate_country_menu_in_user_create_iam(zone):
     switcher = {
         'BR': 'true',
         'CO': 'true',
-        'DO': 'true'
+        'DO': 'true',
+        'MX': 'true'
     }
     return switcher.get(zone, 'false')
 
@@ -1349,11 +1350,12 @@ def print_country_menu_in_user_create_iam():
         - BR
         - CO
         - DO
+        - MX
     """
-    zone = input(text.default_text_color + 'Zone (BR, CO, DO): ')
+    zone = input(text.default_text_color + 'Zone (BR, CO, DO, MX): ')
     while validate_country_menu_in_user_create_iam(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (BR, CO, DO): ')
+        zone = input(text.default_text_color + 'Zone (BR, CO, DO, MX): ')
     return zone.upper()
 
 

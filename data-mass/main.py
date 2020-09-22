@@ -1288,7 +1288,7 @@ def registration_user_iam():
 
 
 def delete_user_iam():
-    """Flow to register user IAM
+    """Flow to delete user IAM
     Input Arguments:
         - Country
         - Environment
