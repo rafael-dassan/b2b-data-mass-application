@@ -1,0 +1,23 @@
+{
+  "accounts": [
+    "string"
+  ],
+  "interest": [
+    {
+      "interestId": "string",
+      "externalId": "string",
+      "scope": "string",
+      "conditions": {
+        "alternativeDeliveryDate": true,
+        "orderTotal": {
+          "maximumValue": 0
+        }
+      },
+      "output": {
+        "totalOutput": {
+          "additionalAmount": 0
+        }
+      }
+    }
+  ]
+}

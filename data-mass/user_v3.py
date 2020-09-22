@@ -1,9 +1,6 @@
-# import re
-# import urllib.parse
-# import pyotp
-# import base64
-# from common import *
-# import uuid
+import re
+import logging
+from common import *
 
 
 def get_iam_b2c_environment_uat(environment):

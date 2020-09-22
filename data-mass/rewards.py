@@ -863,6 +863,20 @@ def generate_categories_information(zone):
         category_info.append('Earn 10 points for each R100 spent on bonus products.')
         category_info.append('BUY NOW')
         category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/za/bonus-brands.png')
+    elif zone == 'MX':
+        # Premium category
+        category_info.append('9')
+        category_info.append('1')
+        category_info.append('Gana 1 punto por cada $10 de compra en estos productos')
+        category_info.append('COMPRA AHORA')
+        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/mx/core-brands.png')
+
+        # Core category
+        category_info.append('12')
+        category_info.append('2')
+        category_info.append('Gana 3 puntos por cada $10 de compra en estos productos')
+        category_info.append('COMPRA AHORA')
+        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/mx/premium-brands.png')
 
     return category_info
 
@@ -871,7 +885,7 @@ def generate_categories_information(zone):
 def generate_terms_information(zone):
     terms_info = list()
     
-    if zone == 'DO' or zone == 'CO' or zone == 'AR':
+    if zone == 'DO' or zone == 'CO' or zone == 'AR' or zone == 'MX':
         terms_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/terms/terms-co.html')
         terms_info.append('Términos iniciales introducidos al programa')
     elif zone == 'BR':

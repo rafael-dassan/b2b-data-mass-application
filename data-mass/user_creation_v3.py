@@ -1,8 +1,6 @@
-import re
 import urllib.parse
 import pyotp
 import base64
-from common import *
 import uuid
 from user_v3 import *
 
@@ -117,7 +115,7 @@ def self_asserted_logon_request(user_name, password, params, authorize_response)
 
     if status == "400":
         if "@registration_link" in response_text:
-            print("Alert: The user doesn't exist.")
+            logging.debug("Alert: The user doesn't exist.")
         if "@reset_password_link" in response_text:
             print(
                 "Alert: Fail on user logon v3 [logon_selfasserted_request]: The user exists - the password is wrong.")

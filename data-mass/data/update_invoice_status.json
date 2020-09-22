@@ -1,0 +1,5 @@
+{
+    "invoiceId": "string",
+    "paymentType": "CASH",
+    "status": "DELIVERED"
+  }

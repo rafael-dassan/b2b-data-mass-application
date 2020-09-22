@@ -23,7 +23,7 @@ def create_all_recommendations(zone, environment, abi_id, products):
 
 # Define JSON to submmit QUICK ORDER recommendation type
 def create_quick_order_payload(abi_id, zone, environment, product_list):
-    if zone == 'DO' or zone == 'CL' or zone == 'AR' or zone == 'CO':
+    if zone == 'DO' or zone == 'CL' or zone == 'AR' or zone == 'CO' or zone == 'MX':
         language = 'es'
         text = 'Pedido Facil'
         text_description = 'Productos que ordenaste anteriormente <link>Anadir todo al camion</link>'
@@ -83,7 +83,7 @@ def create_quick_order_payload(abi_id, zone, environment, product_list):
 
 # Define JSON to submmit FORGOTTEN ITEMS recommendation type
 def create_forgotten_items_payload(abi_id, zone, product_list):
-    if zone == 'DO' or zone == 'CL' or zone == 'AR' or zone == 'CO':
+    if zone == 'DO' or zone == 'CL' or zone == 'AR' or zone == 'CO' or zone == 'MX':
         language = 'es'
         text = 'Productos Populares para Negocios como el tuyo'
         text_description = ''
@@ -143,7 +143,7 @@ def create_forgotten_items_payload(abi_id, zone, product_list):
 
 # Define JSON to submmit UP SELL recommendation type
 def create_upsell_payload(abi_id, zone, product_list):
-    if zone == 'DO' or zone == 'CL' or zone == 'AR' or zone == 'CO':
+    if zone == 'DO' or zone == 'CL' or zone == 'AR' or zone == 'CO' or zone == 'MX':
         language = 'es'
         text = 'Productos Populares para Negocios como el tuyo'
         text_description = 'Los Productos mas Vendidos en tu Zona'

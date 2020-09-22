@@ -1,7 +1,9 @@
 from account import *
+from common import *
 from credit import add_credit_to_account_microservice
 from credit_statement import create_credit_statement
-from delivery_window import create_delivery_window_microservice, validate_alternative_delivery_date
+from delivery_window import create_delivery_window_microservice, validate_alternative_delivery_date, \
+    create_delivery_fee_microservice
 from beer_recommender import *
 from inventory import *
 from invoice import *
@@ -131,7 +133,7 @@ def product_information_menu():
         abi_id = print_account_id_menu(zone)
         if abi_id == 'false':
             printFinishApplicationMenu()
-        
+
         account = check_account_exists_microservice(abi_id, zone, environment)
         if account == 'false':
             printFinishApplicationMenu()
@@ -232,8 +234,8 @@ def create_rewards_to_account():
             printFinishApplicationMenu()
 
     # Option to enroll POC to a program
-    elif reward_option == 'ENROLL_POC':   
-        
+    elif reward_option == 'ENROLL_POC':
+
         abi_id = print_account_id_menu(zone)
 
         # Call check account exists function
@@ -241,11 +243,12 @@ def create_rewards_to_account():
 
         if account == 'false':
             printFinishApplicationMenu()
-        
+
         enroll_poc = enroll_poc_to_program(abi_id, zone, environment)
 
         if enroll_poc == 'pgm_not_found':
-            print(text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "Create new program" to create it')
+            print(
+                text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "Create new program" to create it')
         elif enroll_poc == 406:
             print(text.Red + '\n- [Rewards] There are no Reward programs available for this account')
         elif enroll_poc == 409:
@@ -257,7 +260,7 @@ def create_rewards_to_account():
 
     # Option to input challenges to a specific zone
     elif reward_option == 'ADD_CHALLENGE':
-           
+
         abi_id = print_account_id_menu(zone)
 
         # Call check account exists function
@@ -265,7 +268,7 @@ def create_rewards_to_account():
 
         if account == 'false':
             printFinishApplicationMenu()
-    
+
         add_challenge = input_challenge_to_zone(abi_id, zone, environment)
 
         if add_challenge == 'false':
@@ -287,8 +290,8 @@ def create_rewards_to_account():
 
         printFinishApplicationMenu()
 
-    # Option to input redeem products to an account       
-    elif reward_option == 'ADD_REDEEM': 
+    # Option to input redeem products to an account
+    elif reward_option == 'ADD_REDEEM':
 
         abi_id = print_account_id_menu(zone)
 
@@ -383,7 +386,8 @@ def input_orders_to_account():
                 order_items.append(temp_product_data)
                 more_sku = input(text.default_text_color + 'Would you like to include a new sku for this order? y/N: ')
 
-            response = create_order_account(abi_id, zone, environment, order_status, order_items, allow_order_cancel, more_sku)
+            response = create_order_account(abi_id, zone, environment, order_status, order_items, allow_order_cancel,
+                                            more_sku)
             if response != 'false':
                 print(text.Green + '\n- Order ' + response.get('orderNumber') + ' created successfully')
                 # Call function to re-configure prefix and order number size to the previous format
@@ -413,7 +417,8 @@ def input_orders_to_account():
                 aux_index += 1
 
             # Call function to create the Order according to the 'order_option' parameter (active or cancelled)
-            response = create_order_account(abi_id, zone, environment, order_status, sku_list, allow_order_cancel, more_sku)
+            response = create_order_account(abi_id, zone, environment, order_status, sku_list, allow_order_cancel,
+                                            more_sku)
             if response != 'false':
                 print(text.Green + '\n- Order ' + response.get('orderNumber') + ' created successfully')
                 # Call function to re-configure prefix and order number size to the previous format
@@ -520,7 +525,8 @@ def check_simulation_service_account_microservice_menu():
             more_combo = input(text.default_text_color + "Would you like to include more skus for simulation? (y/N) ")
 
     # input combo sku in simulation
-    input_order_empties = input(text.default_text_color + "Would you like to include a new empties sku for simulation? (y/n) ")
+    input_order_empties = input(
+        text.default_text_color + "Would you like to include a new empties sku for simulation? (y/n) ")
     while input_order_empties.upper() != "Y" and input_order_empties.upper() != "N":
         print(text.Red + "\n- Invalid option\n")
         input_order_empties = input(
@@ -780,8 +786,8 @@ def input_combos_menu():
     if selection_structure == '3':
         zone = print_zone_menu_for_combos('DT')
     else:
-        zone = print_zone_menu_for_combos()   
-        
+        zone = print_zone_menu_for_combos()
+
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
     if abi_id == 'false':
@@ -802,7 +808,7 @@ def input_combos_menu():
 
     index_offers = randint(0, (len(product_offers) - 1))
     sku = product_offers[index_offers]['sku']
-        
+
     # Combo type discount
     if selection_structure == '1':
         while True:
@@ -813,7 +819,7 @@ def input_combos_menu():
                 print(text.Red + '\n- Invalid value')
 
         response = input_combo_type_discount(abi_id, zone, environment, sku, discount_value)
-    
+
     # Combo type free good
     elif selection_structure == '2':
         response = input_combo_type_free_good(abi_id, zone, environment, sku)
@@ -821,7 +827,7 @@ def input_combos_menu():
     # Combo type digital trade
     elif selection_structure == '3':
         response = input_combo_type_digital_trade(abi_id, zone, environment)
-    
+
     # Combo type only free goods
     elif selection_structure == '4':
         response = input_combo_free_good_only(abi_id, zone, environment, sku)
@@ -835,16 +841,17 @@ def input_combos_menu():
         if combo != 'false' and update_combo != 'false':
             print(text.Green + '\n- Combo consumption for ' + combo_id + ' was successfully updated')
             print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to import your combo, so '
-                    'it can be used in the front-end applications')
-
-    if  selection_structure != '5' and response != 'false':
-            print(text.Green + '\n- Combo ' + response + ' successfully registered')
-            print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to import your combo, so '
                                 'it can be used in the front-end applications')
-    
+
+    if selection_structure != '5' and response != 'false':
+        print(text.Green + '\n- Combo ' + response + ' successfully registered')
+        print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to import your combo, so '
+                            'it can be used in the front-end applications')
+
     if (zone == 'DO' or zone == 'CO') and selection_structure != '5' and response != 'false':
-        print(text.Yellow + '\n- Also on Magento Admin, turn the new combos `enable` through the menu `Catalog -> Products`')
-        
+        print(
+            text.Yellow + '\n- Also on Magento Admin, turn the new combos `enable` through the menu `Catalog -> Products`')
+
     printFinishApplicationMenu()
 
 
@@ -950,7 +957,7 @@ def input_delivery_window_menu():
     if account == 'false':
         printFinishApplicationMenu()
 
-    if zone == 'BR' or zone == 'ZA':
+    if zone == 'BR' or zone == 'ZA' or zone == 'MX':
         # Validate if is alternative delivery window
         is_alternative_delivery_date = print_alternative_delivery_date_menu()
 
@@ -966,6 +973,20 @@ def input_delivery_window_menu():
 
     if delivery_window == 'success':
         print(text.Green + '\n- Delivery window added successfully')
+
+        # Check if include delivery cost (interest)
+        if is_alternative_delivery_date == 'true' and (zone == 'BR' or zone == 'MX'):
+            include_delivery_cost = print_include_delivery_cost_menu()
+
+            if include_delivery_cost['input'].upper() == 'Y':
+                # Call add delivery cost (interest) function
+                delivery_cost = create_delivery_fee_microservice(zone, environment, account[0], include_delivery_cost)
+           
+                if delivery_cost == 'success':
+                    print(text.Green + '\n- Delivery cost (interest) added successfully')
+            else:
+                printFinishApplicationMenu()
+
     else:
         printFinishApplicationMenu()
 
@@ -991,17 +1012,18 @@ def create_account_menu():
         minimum_order = printMinimumOrderMenu()
     else:
         minimum_order = None
-    
+
     if zone.upper() == 'MX':
         enable_empties_loan = print_account_enable_empties_loan_menu()
     else:
         enable_empties_loan = False
-    
+
     # Need improve to understand, the operation of this parameter, initially will be defined as false
     has_overprice = False
 
     # Call create account function
-    create_account_response = create_account_ms(abi_id, name, payment_method, minimum_order, zone, environment, state, account_status, enable_empties_loan, has_overprice)
+    create_account_response = create_account_ms(abi_id, name, payment_method, minimum_order, zone, environment, state,
+                                                account_status, enable_empties_loan, has_overprice)
 
     # Call check account exists function
     account = check_account_exists_microservice(abi_id, zone, environment)
@@ -1044,7 +1066,7 @@ def create_account_menu():
         if update_sku != 'true':
             printFinishApplicationMenu()
 
-    if zone == 'BR' or zone == 'ZA':
+    if zone == 'BR' or zone == 'ZA' or zone == 'MX':
         # Validate if is alternative delivery window
         is_alternative_delivery_date = print_alternative_delivery_date_menu()
 
@@ -1060,6 +1082,20 @@ def create_account_menu():
 
     if delivery_window == 'success':
         print(text.Green + '\n- Delivery window added successfully')
+
+        # Check if include delivery cost (interest)
+        if is_alternative_delivery_date == 'true' and (zone == 'BR' or zone == 'MX'):
+            include_delivery_cost = print_include_delivery_cost_menu()
+
+            if include_delivery_cost['input'].upper() == 'Y':
+                # Call add delivery cost (interest) function
+                delivery_cost = create_delivery_fee_microservice(zone, environment, account[0], include_delivery_cost)
+           
+                if delivery_cost == 'success':
+                    print(text.Green + '\n- Delivery cost (interest) added successfully')
+            else:
+                printFinishApplicationMenu()
+
     else:
         printFinishApplicationMenu()
 
@@ -1166,6 +1202,31 @@ def print_alternative_delivery_date_menu():
     return is_alternative_delivery_date
 
 
+# Print delivery cost (interest) menu application
+def print_include_delivery_cost_menu():
+    is_alternative_delivery_date = input(text.default_text_color + 'Do you want add delivery fee (interest)? y/N: ')
+
+    while validate_alternative_delivery_date(is_alternative_delivery_date.upper()) == 'false':
+        print(text.Red + '\n- Invalid option')
+        is_alternative_delivery_date = input(
+            text.default_text_color + '\nDo you want add delivery fee (interest)? y/N: ')
+
+    min_value = 0;
+    tax_value = 0;
+    if is_alternative_delivery_date.upper() == 'Y':
+        min_value = input(text.default_text_color + 'Define the minimum order value to do not pay any delivery fee: ')
+
+        tax_value = input(text.default_text_color + 'Define the delivery fee value: ')
+
+    response = {
+        'input': is_alternative_delivery_date,
+        'min_order_value': min_value,
+        'fee_value': tax_value
+    }
+
+    return response;
+
+
 # Validate if chosen sku is valid
 def validateSkuChosen(sku, listSkuOffers):
     countItems = 0
@@ -1247,6 +1308,14 @@ def delete_user_iam():
         printFinishApplicationMenu()
 
 def create_invoice_menu():
+    selection_structure = print_invoice_menu()
+    switcher = {
+        '1': 'NEW_INVOICE',
+        '2': 'UPDATE_INVOICE'
+    }
+
+    invoice_option = switcher.get(selection_structure, 'false')
+
     zone = print_zone_menu_for_ms()
     environment = printEnvironmentMenu()
     abi_id = print_account_id_menu(zone)
@@ -1257,26 +1326,41 @@ def create_invoice_menu():
     if account == 'false':
         printFinishApplicationMenu()
 
-    order_id = print_order_id_menu()
+    if invoice_option == 'NEW_INVOICE':
+        order_id = print_order_id_menu()
 
-    response = check_if_order_exists(abi_id, zone, environment, order_id)
-    if response == 'false':
-        printFinishApplicationMenu()
-    elif response == 'empty':
-        print(text.Red + '\n- [Order Service] The account ' + abi_id + ' does not have orders')
-        printFinishApplicationMenu()
-    elif response == 'not_found':
-        print(text.Red + '\n- [Order Service] The order ' + order_id + ' does not exist')
-        printFinishApplicationMenu()
+        response = check_if_order_exists(abi_id, zone, environment, order_id)
+        if response == 'false':
+            printFinishApplicationMenu()
+        elif response == 'empty':
+            print(text.Red + '\n- [Order Service] The account ' + abi_id + ' does not have orders')
+            printFinishApplicationMenu()
+        elif response == 'not_found':
+            print(text.Red + '\n- [Order Service] The order ' + order_id + ' does not exist')
+            printFinishApplicationMenu()
 
-    status = print_invoice_status_menu()
-    invoice_response = create_invoice_request(zone, environment, order_id, status, response[0])
-    if invoice_response != 'false':
-        print(text.Green + '\n- Invoice ' + invoice_response + ' created successfully')
-        print(text.Yellow + '- Please, run the cron job `webjump_invoicelistabi_import_invoices` to import your '
-                            'invoice, so it can be used in the front-end applications')
-    else:
-        printFinishApplicationMenu()
+        status = print_invoice_status_menu()
+        invoice_response = create_invoice_request(zone, environment, order_id, status, response[0])
+        if invoice_response != 'false':
+            print(text.Green + '\n- Invoice ' + invoice_response + ' created successfully')
+            print(text.Yellow + '- Please, run the cron job `webjump_invoicelistabi_import_invoices` to import your '
+                                'invoice, so it can be used in the front-end applications')
+        else:
+            printFinishApplicationMenu()
+    elif invoice_option == 'UPDATE_INVOICE':
+        invoice_id = print_invoice_id_menu()
+        invoice = check_if_invoice_exist(abi_id, invoice_id, zone, environment)
+        if invoice != 'false':
+            payment_type = print_payment_method()
+            status = print_invoice_status_menu()
+            invoice_response = update_invoice_request(zone, environment, invoice_id, payment_type, status)
+
+            if invoice_response != 'false':
+                print(text.Green + '\n- Invoice ' + invoice_id + ' ' + invoice_response + '  successfully')
+            else:
+                printFinishApplicationMenu()
+        else:
+            printFinishApplicationMenu()
 
 
 def get_categories_menu():
@@ -1289,13 +1373,13 @@ def get_categories_menu():
     country = printCountryMenuInUserCreation()
     environment = printEnvironmentMenuInUserCreation()
     parent_id = print_input_number_with_default('Parent id')
-    
-    # Get categories 
+
+    # Get categories
     categories = get_categories(country, environment, parent_id)
     if categories:
         print("Categories: [id, name]")
         for category in categories:
-            print("- {id}, {name}".format(id=category['id'],name=category['name']))
+            print("- {id}, {name}".format(id=category['id'], name=category['name']))
     else:
         print("{text_red}{not_found}".format(text_red=text.Red, not_found="Categories not found"))
         printFinishApplicationMenu()
@@ -1321,12 +1405,14 @@ def associate_product_to_category_menu():
         printFinishApplicationMenu()
     else:
         # Associate product to category
-        response_associate_product_to_category = associate_product_to_category(country, environment, product_sku, category_id)
+        response_associate_product_to_category = associate_product_to_category(country, environment, product_sku,
+                                                                               category_id)
         if response_associate_product_to_category == 'false':
             print("{text_red}{fail}".format(text_red=text.Red, fail="Fail to associate product to category"))
             printFinishApplicationMenu()
-    
-    print("{text_green}{success}".format(text_green=text.Green, success="Success to enable and to associate product to category"))
+
+    print("{text_green}{success}".format(text_green=text.Green,
+                                         success="Success to enable and to associate product to category"))
 
 
 def create_categories_menu():
@@ -1357,7 +1443,7 @@ def create_categories_menu():
         else:
             print("{text_green}{success}".format(text_green=text.Green, success="Success to create category"))
 
-    print("- {id}, {name}".format(id=category['id'],name=category['name']))
+    print("- {id}, {name}".format(id=category['id'], name=category['name']))
 
 
 def order_information_menu():
@@ -1421,6 +1507,37 @@ def create_credit_statement_menu():
         printFinishApplicationMenu()
 
 
+def update_invoice_status():
+    zone = print_zone_menu_for_ms()
+    environment = printEnvironmentMenu()
+
+    print(text.Green + '\n- Digite o número da invoice')
+    invoice_id = input(text.default_text_color + '\nPlease select: ')
+
+    print(text.Green + '\n- Digite o tipo de pagamento (0- CASH,1- CREDIT)')
+    selection = input(text.default_text_color + '\nPlease select: ')
+    while validate_option_update_invoice(selection) == 'false':
+        print(text.Red + '\n- Invalid option\n')
+        print(text.default_text_color + str(0), text.Yellow + 'CASH')
+        print(text.default_text_color + str(1), text.Yellow + 'CREDIT')
+        selection = input(text.default_text_color + '\nPlease select: ')
+
+    print(text.Green + '\n- Digite o Status da invoice')
+    status = input(text.default_text_color + '\nPlease select: ')
+    if selection == 0:
+        payment_type = 'CASH'
+    else:
+        payment_type = 'CREDIT'
+
+    invoice_response = update_invoice_request(zone, environment, invoice_id, payment_type, status)
+
+    if invoice_response != 'false':
+        print(text.Green + '\n- Invoice ' + invoice_response + '  successfully')
+
+    else:
+        printFinishApplicationMenu()
+
+
 # Init
 try:
     if __name__ == '__main__':
@@ -1428,3 +1545,4 @@ try:
 
 except KeyboardInterrupt:
     sys.exit(0)
+

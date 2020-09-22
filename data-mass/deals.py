@@ -31,9 +31,48 @@ def input_deal_to_account(abi_id, sku, deal_type, zone, environment):
         free_good = create_free_good_group(sku, zone, environment)
         free_good_group_id.append(free_good)
 
+    if zone == 'DO' or zone == 'BR' or zone == 'MX':
+        # Get body
+        request_body = get_deals_payload_v2(deal_id, deal_type)
+
+        # Get base URL
+        request_url = get_microservice_base_url(environment) + '/promotion-relay/v2'
+    else:
+        # Get body
+        request_body = get_deals_payload_v1(deal_id, deal_type, account_group_id, sku_group_id, free_good_group_id)
+
+        # Get base URL
+        request_url = get_microservice_base_url(environment) + '/promotion-relay/'
+
+    # Get headers
+    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+
+    # Send request
+    response = place_request('POST', request_url, request_body, request_headers)
+
+    if response.status_code == 202 or response.status_code == 200:
+        return deal_id
+    else:
+        print(text.Red + '\n- [Promotion Relay Service] Failure create deal. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
+        return 'false'
+
+
+def get_deals_payload_v1(deal_id, deal_type, account_group_id, sku_group_id, free_good_group_id):
+    """
+    Create a payload to associate a promotion to a POC (Promotion Relay Service v1)
+    Args:
+        deal_id: deal unique identifier
+        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
+        account_group_id: account group unique identifier
+        sku_group_id: sku group unique identifier
+        free_good_group_id: free good group unique identifier
+    Returns: new promotion payload
+    """
+
     # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_promotion_payload.json')
+    abs_path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(abs_path, 'data/create_promotion_payload_v1.json')
 
     # Load JSON file
     with open(file_path) as file:
@@ -57,21 +96,43 @@ def input_deal_to_account(abi_id, sku, deal_type, zone, environment):
     list_dict_values = create_list(json_object)
     request_body = convert_json_to_string(list_dict_values)
 
-    # Get headers
-    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+    return request_body
 
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + '/promotion-relay/'
 
-    # Send request
-    response = place_request('POST', request_url, request_body, request_headers)
+def get_deals_payload_v2(deal_id, deal_type):
+    """
+    Create a payload to associate a promotion to a POC (Promotion Relay Service v2)
+    Args:
+        deal_id: deal unique identifier
+        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
+    Returns: new promotion payload
+    """
 
-    if response.status_code == 202:
-        return deal_id
-    else:
-        print(text.Red + '\n- [Promotion Relay Service] Failure create deal. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
-        return 'false'
+    # Create file path
+    abs_path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(abs_path, 'data/create_promotion_payload_v2.json')
+
+    # Load JSON file
+    with open(file_path) as file:
+        json_data = json.load(file)
+
+    # Create dictionary with deal's values
+    dict_values = {
+        'description': 'This is a description for a deal type ' + deal_type + ' / ' + deal_id,
+        'id': deal_id,
+        'promotionId': deal_id,
+        'title': deal_type + ' / ' + deal_id,
+        'type': deal_type
+    }
+
+    for key in dict_values.keys():
+        json_object = update_value_to_json(json_data, key, dict_values[key])
+
+    # Create body
+    list_dict_values = create_list(json_object)
+    request_body = convert_json_to_string(list_dict_values)
+
+    return request_body
 
 
 def create_account_group(abi_id, zone, environment):
@@ -351,7 +412,7 @@ def input_free_good_to_account(abi_id, sku, sku_list, deal_type, zone, environme
         quantity = print_quantity_menu()
     else:
         minimum_quantity = 1
-        quantity = 1
+        quantity = print_quantity_menu()
 
     promotion_response = input_deal_to_account(abi_id, sku, deal_type, zone, environment)
 
@@ -459,18 +520,14 @@ def input_free_good_to_cart_calculation_v2(abi_id, deal_id, zone, environment, s
             'deals[0].dealId': deal_id,
             'deals[0].externalId': deal_id,
             'deals[0].accumulationType': accumulation_type,
+            'deals[0].quantityLimit': quantity,
             'deals[0].conditions.simulationDateTime[0].startDate': dates_payload['startDate'],
             'deals[0].conditions.simulationDateTime[0].endDate': dates_payload['endDate'],
             'deals[0].output.freeGoods.proportion': 1,
             'deals[0].output.freeGoods.partial': boolean_partial_free_good,
             'deals[0].output.freeGoods.freeGoods[0].skus[0].sku': sku_list[0]['sku'],
             'deals[0].output.freeGoods.freeGoods[0].skus[0].price': sku_list[0]['price'],
-            'deals[0].output.freeGoods.freeGoods[0].quantity': quantity,
-            'deals[0].output.freeGoods.freeGoods[1].skus[0].sku': sku_list[1]['sku'],
-            'deals[0].output.freeGoods.freeGoods[1].skus[0].price': sku_list[1]['price'],
-            'deals[0].output.freeGoods.freeGoods[1].skus[1].sku': sku_list[2]['sku'],
-            'deals[0].output.freeGoods.freeGoods[1].skus[1].price': sku_list[2]['price'],
-            'deals[0].output.freeGoods.freeGoods[1].quantity': quantity
+            'deals[0].output.freeGoods.freeGoods[0].quantity': quantity
         }
 
     # Create file path
