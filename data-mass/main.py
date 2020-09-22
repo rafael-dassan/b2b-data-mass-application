@@ -12,6 +12,7 @@ from category_magento import *
 from products_magento import *
 import user_creation_magento as user_magento
 import user_creation_v3 as user_v3
+import user_delete_v3 as user_delete_v3
 from simulation import process_simulation_microservice, process_simulation_middleware
 
 
@@ -52,11 +53,16 @@ def showMenu():
         switcher = {
             '0': finishApplication,
             '1': create_user_magento_menu,
-            '2': registration_user_iam,
-            '3': associateUserToAccount,
-            '4': get_categories_menu,
-            '5': associate_product_to_category_menu,
-            '6': create_categories_menu
+            '2': associateUserToAccount,
+            '3': get_categories_menu,
+            '4': associate_product_to_category_menu,
+            '5': create_categories_menu
+        }
+    elif selection_structure == '4':
+        switcher = {
+            '0': finishApplication,
+            '1': registration_user_iam,
+            '2': delete_user_iam
         }
     else:
         finishApplication()
@@ -1198,7 +1204,11 @@ def registration_user_iam():
         printFinishApplicationMenu()
 
     account_id = print_account_id_menu(country)
-    tax_id = print_input_tax_id()
+
+    if country == "BR":
+        tax_id = account_id
+    else:
+        tax_id = print_input_tax_id()
 
     account_result = check_account_exists_microservice(account_id, country, environment)
     if account_result == "false":
@@ -1215,6 +1225,26 @@ def registration_user_iam():
         print(text.Red + "\n- [User] Something went wrong, please try again")
         printFinishApplicationMenu()
 
+
+def delete_user_iam():
+    """Flow to register user IAM
+    Input Arguments:
+        - Country
+        - Environment
+        - Email
+    """
+    country = print_country_menu_in_user_create_iam()
+    environment = print_environment_menu_in_user_create_iam()
+    email = print_input_email()
+
+    status_response = user_delete_v3.delete_user_v3(environment, country, email)
+    if status_response == "success":
+        print(text.Green + "\n- User IAM deleted successfully")
+    elif status_response == "partial":
+        print(text.Magenta + "\n- User IAM deleted partially")
+    else:
+        print(text.Red + "\n- [Delete] Something went wrong, please try again")
+        printFinishApplicationMenu()
 
 def create_invoice_menu():
     zone = print_zone_menu_for_ms()
