@@ -1,3 +1,4 @@
+# Standard library imports
 import json
 import os
 import sys
@@ -5,9 +6,13 @@ from datetime import date, datetime
 from time import time
 from unicodedata import numeric
 from uuid import uuid1
+
+# Third party imports
 from jsonpath_rw import Index, Fields
 from jsonpath_rw_ext import parse
 from requests import request
+
+# Local application imports
 from classes.text import text
 from logs.log import log_to_file
 
@@ -148,7 +153,9 @@ def validate_zone_data_searching_deals(zone):
         'AR': 'true',
         'CL': 'true',
         'ZA': 'true',
-        'MX': 'true'
+        'MX': 'true',
+        'PE': 'true',
+        'EC': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -162,7 +169,9 @@ def validate_zone_for_rewards(zone):
         'CO': 'true',
         'AR': 'true',
         'ZA': 'true',
-        'MX': 'true'
+        'MX': 'true',
+        'PE': 'true',
+        'EC': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -174,7 +183,9 @@ def validate_zone_for_inventory(zone):
         'ZA': 'true',
         'CO': 'true',
         'MX': 'true',
-        'AR': 'true'
+        'AR': 'true',
+        'PE': 'true',
+        'EC': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -188,7 +199,9 @@ def validate_zone_for_deals(zone):
         'CO': 'true',
         'MX': 'true',
         'AR': 'true',
-        'ZA': 'true'
+        'ZA': 'true',
+        'PE': 'true',
+        'EC': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -213,7 +226,9 @@ def validate_zone_for_combos_dt(zone):
         'AR': 'true',
         'CO': 'true',
         'ZA': 'true',
-        'MX': 'true'
+        'MX': 'true',
+        'PE': 'true',
+        'EC': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -228,7 +243,9 @@ def validate_zone_for_delivery_window(zone):
         'CO': 'true',
         'MX': 'true',
         'AR': 'true',
-        'CL': 'true'
+        'CL': 'true',
+        'PE': 'true',
+        'EC': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -242,7 +259,9 @@ def validate_zone_for_recommender(zone):
         'ZA': 'true',
         'CO': 'true',
         'MX': 'true',
-        'AR': 'true'
+        'AR': 'true',
+        'PE': 'true',
+        'EC': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -256,7 +275,9 @@ def validate_zone_for_ms(zone):
         'ZA': 'true',
         'CO': 'true',
         'MX': 'true',
-        'AR': 'true'
+        'AR': 'true',
+        'PE': 'true',
+        'EC': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -877,10 +898,10 @@ def printNameMenu():
 # Print zone menu for Recommenders
 def print_zone_menu_recommender(recommender_type):
     if recommender_type != 'COMBOS_QUICKORDER':
-        zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX): ')
+        zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX, PE, EC): ')
         while validate_zone_for_recommender(zone.upper()) == 'false':
             print(text.Red + '\n- Invalid option\n')
-            zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX): ')
+            zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX, PE, EC): ')
     else:
         zone = input(text.default_text_color + 'Zone (DO): ')
         while validate_zone_for_recommender(zone.upper()) == 'false':
@@ -906,60 +927,60 @@ def printZoneMenu(isMiddleware="true"):
 
 
 def print_zone_menu_data_searching_deals():
-    zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO, ZA, MX): ')
+    zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO, ZA, MX, PE, EC): ')
     while validate_zone_data_searching_deals(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO, ZA, MX): ')
+        zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO, ZA, MX, PE, EC): ')
 
     return zone.upper()
 
 
 # Print zone menu for Delivery Window
 def print_zone_menu_for_delivery_window():
-    zone = input(text.default_text_color + 'Zone (AR, CL, BR, DO, ZA, CO, MX): ')
+    zone = input(text.default_text_color + 'Zone (AR, CL, BR, DO, ZA, CO, MX, PE, EC): ')
     while validate_zone_for_delivery_window(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (AR, CL, BR, DO, ZA, CO, MX): ')
+        zone = input(text.default_text_color + 'Zone (AR, CL, BR, DO, ZA, CO, MX, PE, EC): ')
 
     return zone.upper()
 
 
 # Print zone menu for Microservice
 def print_zone_menu_for_ms():
-    zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX): ')
+    zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX, PE, EC): ')
     while validate_zone_for_ms(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX): ')
+        zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX, PE, EC): ')
 
     return zone.upper()
 
 
 # Print zone menu for rewards
 def print_zone_menu_for_rewards():
-    zone = input(text.default_text_color + 'Zone (BR, DO, CO, AR, ZA, MX): ')
+    zone = input(text.default_text_color + 'Zone (BR, DO, CO, AR, ZA, MX, PE, EC): ')
     while validate_zone_for_rewards(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (BR, DO, CO, AR, ZA, MX): ')
+        zone = input(text.default_text_color + 'Zone (BR, DO, CO, AR, ZA, MX, PE, EC): ')
 
     return zone.upper()
 
 
 # Print zone menu for inventory
 def print_zone_menu_for_inventory():
-    zone = input(text.default_text_color + 'Zone (AR, ZA, CO, MX): ')
+    zone = input(text.default_text_color + 'Zone (AR, ZA, CO, MX, PE, EC): ')
     while validate_zone_for_inventory(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (AR, ZA, CO, MX): ')
+        zone = input(text.default_text_color + 'Zone (AR, ZA, CO, MX, PE, EC): ')
 
     return zone.upper()
 
 
 # Print zone menu for deals
 def print_zone_menu_for_deals():
-    zone = input(text.default_text_color + 'Zone (AR, BR, CO, DO, MX, ZA): ')
+    zone = input(text.default_text_color + 'Zone (AR, BR, CO, DO, MX, ZA, PE, EC): ')
     while validate_zone_for_deals(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (AR, BR, CO, DO, MX, ZA): ')
+        zone = input(text.default_text_color + 'Zone (AR, BR, CO, DO, MX, ZA, PE, EC): ')
 
     return zone.upper()
 
@@ -967,10 +988,10 @@ def print_zone_menu_for_deals():
 # Print zone menu for combos
 def print_zone_menu_for_combos(combo_type=''):
     if combo_type == 'DT':
-        zone = input(text.default_text_color + 'Zone (BR, DO, AR, CO, ZA, MX): ')
+        zone = input(text.default_text_color + 'Zone (BR, DO, AR, CO, ZA, MX, PE, EC): ')
         while validate_zone_for_combos_dt(zone.upper()) == 'false':
             print(text.Red + '\n- Invalid option\n')
-            zone = input(text.default_text_color + 'Zone (BR, DO, AR, CO, ZA, MX): ')
+            zone = input(text.default_text_color + 'Zone (BR, DO, AR, CO, ZA, MX, PE, EC): ')
     else:
         zone = input(text.default_text_color + 'Zone (BR, DO, MX): ')
         while validate_zone_for_combos(zone.upper()) == 'false':
@@ -1174,6 +1195,12 @@ def validate_state(zone):
     elif zone == 'CL':
         state = 'Los Lagos'
 
+    elif zone == 'PE':
+        state = 'Santa Cruz'
+
+    elif zone == 'EC':
+        state = 'Guayas'
+
     return state
 
 
@@ -1316,7 +1343,8 @@ def validate_country_menu_in_user_create_iam(zone):
     switcher = {
         'BR': 'true',
         'CO': 'true',
-        'DO': 'true'
+        'DO': 'true',
+        'MX': 'true'
     }
     return switcher.get(zone, 'false')
 
@@ -1336,10 +1364,10 @@ def print_country_menu_in_user_create_iam():
         - CO
         - DO
     """
-    zone = input(text.default_text_color + 'Zone (BR, CO, DO): ')
+    zone = input(text.default_text_color + 'Zone (BR, CO, DO, MX): ')
     while validate_country_menu_in_user_create_iam(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (BR, CO, DO): ')
+        zone = input(text.default_text_color + 'Zone (BR, CO, DO, MX): ')
     return zone.upper()
 
 
@@ -1694,6 +1722,8 @@ def validate_zone_for_searching(zone):
         'MX': 'true',
         'AR': 'true',
         'CL': 'true',
+        'PE': 'true',
+        'EC': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -1701,10 +1731,10 @@ def validate_zone_for_searching(zone):
 
 
 def print_zone_menu_for_searching():
-    zone = input(text.default_text_color + 'Zone (AR, BR, CL, DO, ZA, CO, MX): ')
+    zone = input(text.default_text_color + 'Zone (AR, BR, CL, DO, ZA, CO, MX, PE, EC): ')
     while validate_zone_for_searching(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (AR, BR, CL, DO, ZA, CO, MX): ')
+        zone = input(text.default_text_color + 'Zone (AR, BR, CL, DO, ZA, CO, MX, PE, EC): ')
 
     return zone.upper()
 

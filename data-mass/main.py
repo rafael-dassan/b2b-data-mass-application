@@ -2,13 +2,14 @@ from account import *
 from common import *
 from credit import add_credit_to_account_microservice
 from credit_statement import create_credit_statement
-from delivery_window import create_delivery_window_microservice, validate_alternative_delivery_date, \
-    create_delivery_fee_microservice
+from deals import *
+from delivery_window import *
 from beer_recommender import *
 from inventory import *
 from invoice import *
 from order import *
 from combos import *
+from products import *
 from rewards import *
 from category_magento import *
 from products_magento import *
@@ -221,7 +222,7 @@ def create_rewards_to_account():
         elif create_pgm == 'error_len_combo':
             print(text.Red + '\n- [Rewards] The zone must have combos available to proceed')
             printFinishApplicationMenu()
-        elif create_pgm == 'error_found':
+        elif create_pgm == 'error_found' or create_pgm == 'false':
             printFinishApplicationMenu()
         else:
             print(text.Green + '\n- [Rewards] The new program has been successfully created. ID: ' + create_pgm)
@@ -1340,7 +1341,7 @@ def get_categories_menu():
         - Environment (UAT, SIT)
         - Parent id (default: 0)
     """
-    country = printCountryMenuInUserCreation()
+    country = print_zone_menu_for_ms()
     environment = printEnvironmentMenuInUserCreation()
     parent_id = print_input_number_with_default('Parent id')
 
@@ -1363,7 +1364,7 @@ def associate_product_to_category_menu():
         - Product SKU
         - Category ID
     """
-    country = printCountryMenuInUserCreation()
+    country = print_zone_menu_for_ms()
     environment = printEnvironmentMenuInUserCreation()
     product_sku = print_input_text('Product SKU')
     category_id = print_input_number('Category ID')
@@ -1393,7 +1394,7 @@ def create_categories_menu():
         - Category name
         - Parent id (default: 0)
     """
-    country = printCountryMenuInUserCreation()
+    country = print_zone_menu_for_ms()
     environment = printEnvironmentMenuInUserCreation()
     category_name = print_input_text('Category name')
     parent_id = print_input_number_with_default('Parent id')

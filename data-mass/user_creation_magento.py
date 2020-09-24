@@ -1,5 +1,9 @@
+# Standard library imports
 from json import loads
-from common import *
+
+# Local application imports
+from common import get_magento_base_url, place_request, convert_json_to_string, \
+    get_magento_user_registration_access_token, get_region_id
 
 
 # Try authenticate user

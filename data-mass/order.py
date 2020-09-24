@@ -1,7 +1,18 @@
-from datetime import timedelta
-from products import *
-from common import *
+# Standard library imports
 import json
+from json import loads
+import os
+from datetime import timedelta, datetime
+from random import uniform
+
+# Third party imports
+from tabulate import tabulate
+
+# Local application imports
+from common import update_value_to_json, convert_json_to_string, get_header_request, get_microservice_base_url, \
+    place_request, set_to_dictionary
+from products import check_item_enabled
+from classes.text import text
 
 
 def configure_order_params(zone, environment, number_size, prefix):

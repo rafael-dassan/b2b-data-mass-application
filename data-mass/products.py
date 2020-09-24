@@ -1,8 +1,18 @@
-from random import randint, uniform
+# Standard library imports
+import json
 from json import dumps, loads
+import os
 import concurrent.futures
-from common import *
+from random import randint, uniform
+from datetime import datetime
+
+# Third party imports
 from tabulate import tabulate
+
+# Local application imports
+from common import get_microservice_base_url, get_header_request, place_request, update_value_to_json, \
+    convert_json_to_string, print_product_quantity_menu, create_list, validate_yes_no_option
+from classes.text import text
 
 
 def generate_random_price_ids(qtd):
@@ -42,7 +52,7 @@ def request_post_price_microservice(abi_id, zone, environment, sku_product, prod
     """
 
     # Zones that are using the Pricing Engine Relay Service v2
-    cart_v2_zones = ['CO', 'MX', 'AR', 'ZA']
+    cart_v2_zones = ['CO', 'MX', 'AR', 'ZA', 'EC', 'PE']
     if zone in cart_v2_zones:
         # Get base URL
         request_url = get_microservice_base_url(environment, 'false') + '/cart-calculation-relay/v2/prices'

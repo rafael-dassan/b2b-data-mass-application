@@ -1,6 +1,18 @@
-import time
-from products import *
+# Standard library imports
+import json
 from json import loads
+import os
+from time import time
+from random import randint
+from uuid import uuid1
+
+# Third party imports
+from tabulate import tabulate
+
+# Local application imports
+from common import update_value_to_json, create_list, convert_json_to_string, get_microservice_base_url, \
+    place_request, get_header_request
+from classes.text import text
 
 
 def create_all_recommendations(zone, environment, abi_id, products):

@@ -1,10 +1,15 @@
+# Standard library imports
 from json import loads
-from tabulate import tabulate
-from products import request_get_account_product_assortment, check_item_enabled, get_sku_name
-from classes.text import text
-from common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request
 from multiprocessing import Pool
 from itertools import repeat
+
+# Third party imports
+from tabulate import tabulate
+
+# Local application imports
+from common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request
+from products import request_get_account_product_assortment, check_item_enabled, get_sku_name
+from classes.text import text
 
 
 # Show all available SKUs of the account in the screen
