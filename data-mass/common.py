@@ -1064,7 +1064,7 @@ def printPaymentMethodMenu(zone):
         value = switcher.get(payment_method, 'false')
         return value
 
-    elif zone == 'DO' or zone == 'CO':
+    elif zone == 'DO' or zone == 'CO' or zone == 'EC' or zone == 'PE':
         payment_method = input(
             text.default_text_color + 'Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ')
         while validate_payments_method(payment_method, zone) != 'true':
@@ -1453,7 +1453,7 @@ def print_payment_method_simulation_menu(zone):
         else:
             payment_method = 'BANK_SLIP'
 
-    elif zone == 'DO' and zone == 'CO':
+    elif zone == 'DO' and zone == 'CO' or zone == 'EC' or zone == 'PE':
         payment_choice = input(text.default_text_color + 'Select payment method for simulation: 1 - CASH, 2 - CREDIT ')
         while payment_choice != '1' and payment_choice != '2':
             print(text.Red + '\n- Invalid option\n')
