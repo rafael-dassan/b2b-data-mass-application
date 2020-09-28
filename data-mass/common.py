@@ -1906,3 +1906,6 @@ def print_payment_method():
         return 'CREDIT'
 
 
+def block_print():
+    # Overwrite standard output (stdout)
+    sys.stdout = open(os.devnull, 'w')

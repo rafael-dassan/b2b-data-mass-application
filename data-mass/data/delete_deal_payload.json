@@ -1,0 +1,8 @@
+{
+  "accounts": [
+    "string"
+  ],
+  "promotions": [
+    "string"
+  ]
+}
