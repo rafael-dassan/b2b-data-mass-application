@@ -29,10 +29,18 @@ def execute_test(country, environment):
     delete_available_deals(account_params.get('id'), country, environment)
 
     # Start creating data mass
+    logger.info("populate_products for %s/%s", country, environment)
+    populate_product(country, environment, product_params.get('sku'),
+                     product_params.get('name'), product_params.get('brand_name'), product_params.get('sub_brand_name'),
+                     product_params.get('package_id'), product_params.get('container_name'),
+                     product_params.get('container_size'), product_params.get('container_returnable'),
+                     product_params.get('container_unit_measurement'), product_params.get('sales_ranking'))
+
     logger.info("populate_accounts for %s/%s", country, environment)
     populate_poc(country, environment, account_params.get('id'), account_params.get('name'),
                  account_params.get('payment_method'), account_params.get('credit'), account_params.get('balance'),
-                 account_params.get('amount_of_products'), account_params.get('has_delivery_window'))
+                 account_params.get('amount_of_products'), account_params.get('has_delivery_window'),
+                 [product_params.get('sku')])
 
     if country in iam_b2c_countries:
         logger.info("populate_users_iam_b2c for %s/%s", country, environment)
@@ -45,13 +53,6 @@ def execute_test(country, environment):
 
     logger.info("populate_recommendations for %s/%s", country, environment)
     populate_recommendation(country, environment, account_params.get('id'))
-
-    logger.info("populate_products for %s/%s", country, environment)
-    populate_product(country, environment, product_params.get('sku'),
-                     product_params.get('name'), product_params.get('brand_name'), product_params.get('sub_brand_name'),
-                     product_params.get('package_id'), product_params.get('container_name'),
-                     product_params.get('container_size'), product_params.get('container_returnable'),
-                     product_params.get('container_unit_measurement'), product_params.get('sales_ranking'))
 
     logger.info("enable_products_magento %s/%s", country, environment)
     enable_product_magento(country, environment, category_params.get('sku'))
