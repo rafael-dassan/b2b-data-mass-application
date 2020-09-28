@@ -112,8 +112,6 @@ def add_products_to_account(account, country, environment, amount_of_products):
         account['accountId'], country, environment)
     logger.debug("Products found on account {account_id}: {products} items".format(account_id=account['accountId'],
                                                                                    products=str(len(products_by_account))))
-    if not isinstance(products_by_account, list):
-        return 'failed'
 
     remaining_products = amount_of_products - len(products_by_account)
     logger.debug("Remaining products should be filled on account: {remaining_products} items".format(

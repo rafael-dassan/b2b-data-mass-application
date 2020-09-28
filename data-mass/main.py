@@ -85,12 +85,16 @@ def deals_information_menu():
 
     if zone == 'CL' or zone == 'ZA':
         deals = request_get_deals_promotion_service(abi_id, zone, environment)
-        if deals != 'false':
-            display_deals_information_promotion(abi_id, deals)
+        if deals == 'false' or deals == 'not_found':
+            printFinishApplicationMenu()
+        else:
+            display_deals_information_promotion(deals)
     else:
         deals = request_get_deals_promo_fusion_service(zone, environment, abi_id)
         if deals != 'false':
             display_deals_information_promo_fusion(abi_id, deals)
+        else:
+            printFinishApplicationMenu()
 
 
 def product_information_menu():
