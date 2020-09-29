@@ -1,5 +1,5 @@
 import pandas as pd
-from products import create_item
+from products import create_item, request_get_offers_microservice
 from products_magento import enable_product
 from mass_populator.log import *
 
@@ -90,3 +90,36 @@ def enable_product_magento(country, environment, product_sku):
     response = enable_product(country, environment, product_sku)
     if response == 'false':
         logger.error(log(Message.PRODUCT_ENABLE_ERROR,{"sku": product_sku}))
+
+
+def check_product_associated_to_account(account_id, country, environment, products):
+    """
+    Check if SKU is associated with a specific POC
+    Args:
+        account_id: POC unique identifier
+        country: e.g., AR, BR, CO, DO, MX, ZA
+        environment: e.g., SIT, UAT
+        products: product array
+    Returns: array of SKUs not associated to a specific POC
+    """
+    product_offers = request_get_offers_microservice(account_id, country, environment)
+    if product_offers == 'not_found':
+        logger.info("[Catalog Service] Products not found for account "
+                    "{account_id}. Skipping...".format(account_id=account_id))
+    elif product_offers == 'false':
+        logger.error(log(Message.RETRIEVE_PRODUCT_ERROR, {'account_id': account_id}))
+    else:
+        available_skus = list()
+        not_associated_skus = list()
+        for i in range(len(product_offers)):
+            available_skus.append(product_offers[i]['sku'])
+
+        for i in range(len(products)):
+            if products[i] in available_skus:
+                logger.info("[Catalog Service] Product {product} is already associated to the account {account_id}."
+                            " Skipping...".format(product=products[i], account_id=account_id))
+            else:
+                not_associated_skus.append(products[i])
+                logger.info("[Catalog Service] Product {product} is not associated to the account {account_id} and"
+                            " needs to be added.".format(product=products[i], account_id=account_id))
+                return not_associated_skus

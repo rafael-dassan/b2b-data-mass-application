@@ -355,40 +355,46 @@ def place_request(request_method, request_url, request_body, request_headers):
 
 
 # Return JWT header request
-def get_header_request(header_country, useJwtAuthorization="false", useRootAuthentication="false",
-                       useInclusionAuthentication="false", sku_product="false"):
+def get_header_request(header_country, use_jwt_auth='false', use_root_auth='false', use_inclusion_auth='false',
+                       sku_product='false'):
+
     switcher = {
-        "ZA": "UTC",
-        "AR": "America/Buenos_Aires",
-        "DO": "America/Santo_Domingo",
-        "BR": "America/Sao_Paulo",
-        "CO": "America/Bogota",
-        "PE": "America/Lima",
-        "CL": "America/Santiago",
-        "MX": "UTC"
+        'ZA': 'UTC',
+        'AR': 'America/Buenos_Aires',
+        'DO': 'America/Santo_Domingo',
+        'BR': 'America/Sao_Paulo',
+        'CO': 'America/Bogota',
+        'PE': 'America/Lima',
+        'EC': 'America/Guayaquil',
+        'CL': 'America/Santiago',
+        'MX': 'UTC'
     }
-    timezone = switcher.get(header_country.upper(), "false")
+    timezone = switcher.get(header_country.upper(), 'false')
 
     header = {
-        "Content-Type": "application/json",
-        "country": header_country.upper(),
-        "requestTraceId": str(uuid1()),
-        "x-timestamp": str(int(round(time() * 1000))),
-        "cache-control": "no-cache",
-        "timezone": timezone
+        'Content-Type': 'application/json',
+        'country': header_country.upper(),
+        'requestTraceId': str(uuid1()),
+        'x-timestamp': str(int(round(time() * 1000))),
+        'cache-control': 'no-cache',
+        'timezone': timezone
     }
 
-    if useJwtAuthorization == "true":
+    if use_jwt_auth == 'true':
         header[
-            'Authorization'] = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYi1pbmJldiIsImF1ZCI6ImFiaS1taWNyb3NlcnZpY2VzIiwiZXhwIjoxNjA2Njk0NDAwLCJpYXQiOjE1MzY5NjMyNTcsInVwZGF0ZWRfYXQiOjE1MzY5NjMyNTcsIm5hbWUiOiJmaWxpcGVyaWJlaXJvKzFAY2lhbmR0LmNvbSIsImFjY291bnRJRCI6IjU1MDE1MCIsInVzZXJJRCI6IjExIiwicm9sZXMiOlsiUk9MRV9DVVNUT01FUiJdfQ.q1kb8Kb6OO9ewNo82WQdNwmrfgZtI_0dB9jq3j0XOUk"
-    elif useRootAuthentication == "true":
-        header['Authorization'] = "Basic cm9vdDpyb290"
-    elif useInclusionAuthentication == "true":
-        header['Authorization'] = "Basic cmVsYXk6TVVRd3JENVplSEtB"
+            'Authorization'] = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYi1pbmJldiIsImF1ZCI6ImFiaS1t' \
+                               'aWNyb3NlcnZpY2VzIiwiZXhwIjoxNjA2Njk0NDAwLCJpYXQiOjE1MzY5NjMyNTcsInVwZGF0ZWRfYXQiOjE1M' \
+                               'zY5NjMyNTcsIm5hbWUiOiJmaWxpcGVyaWJlaXJvKzFAY2lhbmR0LmNvbSIsImFjY291bnRJRCI6IjU1MDE1MC' \
+                               'IsInVzZXJJRCI6IjExIiwicm9sZXMiOlsiUk9MRV9DVVNUT01FUiJdfQ.q1kb8Kb6OO9ewNo82WQdNwmrfgZt' \
+                               'I_0dB9jq3j0XOUk'
+    elif use_root_auth == 'true':
+        header['Authorization'] = 'Basic cm9vdDpyb290'
+    elif use_inclusion_auth == 'true':
+        header['Authorization'] = 'Basic cmVsYXk6TVVRd3JENVplSEtB'
     else:
-        header['Authorization'] = "Basic cmVsYXk6cmVsYXk="
+        header['Authorization'] = 'Basic cmVsYXk6cmVsYXk='
 
-    if sku_product != "false":
+    if sku_product != 'false':
         header['skuId'] = sku_product
 
     return header

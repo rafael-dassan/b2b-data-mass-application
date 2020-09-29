@@ -2,6 +2,7 @@ import pandas as pd
 from account import create_account_ms
 from delivery_window import create_delivery_window_microservice
 from credit import add_credit_to_account_microservice
+from mass_populator.country.populate_product import check_product_associated_to_account
 from products import request_get_products_by_account_microservice
 from products import request_get_products_microservice
 from products import generate_random_price_ids
@@ -34,15 +35,8 @@ def apply_populate_poc(row, country, environment):
 
 
 # Populate the POC
-def populate_poc(country, environment, 
-        account_id, 
-        account_name, 
-        payment_method, 
-        credit, 
-        balance, 
-        amount_of_products,
-        has_delivery_window, 
-        products=None):
+def populate_poc(country, environment, account_id, account_name, payment_method, credit, balance, amount_of_products,
+                 has_delivery_window, products=None):
     
     populate_account(country, environment, account_id,account_name, payment_method)
     if has_delivery_window:
@@ -50,7 +44,9 @@ def populate_poc(country, environment,
     populate_credit(country, environment, account_id, credit, balance)
     populate_product(account_id, country, environment, amount_of_products)
     if products:
-        associate_products_to_account(country, environment, account_id, products)
+        not_associated_products = check_product_associated_to_account(account_id, country, environment, products)
+        if not_associated_products:
+            associate_products_to_account(country, environment, account_id, not_associated_products)
 
 
 # Populate an account
