@@ -210,7 +210,8 @@ def create_rewards_to_account():
         '2': 'UPDATE_BALANCE',
         '3': 'ENROLL_POC',
         '4': 'ADD_CHALLENGE',
-        '5': 'ADD_REDEEM'
+        '5': 'ADD_REDEEM',
+        '6': 'DELETE_ENROLL_POC'
     }
 
     reward_option = switcher.get(selection_structure, 'false')
@@ -303,7 +304,26 @@ def create_rewards_to_account():
         else:
             printFinishApplicationMenu()
 
+    # Option to delete a POC enrollment
+    elif reward_option == 'DELETE_ENROLL_POC':
 
+        abi_id = print_account_id_menu(zone)
+
+         # Call check account exists function
+        account = check_account_exists_microservice(abi_id, zone, environment)
+
+        if account == 'false':
+            printFinishApplicationMenu()
+       
+        delete_enroll_poc = delete_enroll_poc_to_program(abi_id, zone, environment)
+       
+        if delete_enroll_poc == 'pgm_not_found':
+            print(text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "Create new program" to create it')
+        elif delete_enroll_poc == 204:
+            print(text.Green + '\n- [Rewards] The enrollment has been deleted for this account from the rewards program')
+
+        printFinishApplicationMenu()
+        
 # Input orders to account
 def input_orders_to_account():
     selection_structure = print_orders_menu()
