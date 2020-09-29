@@ -35,3 +35,4 @@ class Message(Enum):
     RETRIEVE_ACCOUNT_ERROR = "Failure to retrieve the account {account_id}."
     RETRIEVE_PROMOTION_ERROR = "Failure to retrieve promotions for account {account_id}."
     DELETE_PROMOTION_ERROR = "Fail on delete deals for account {account_id}."
+    RETRIEVE_PRODUCT_ERROR = "Failure to retrieve products for account {account_id}."
