@@ -174,6 +174,30 @@ def enroll_poc_to_program(account_id, zone, environment):
         return 'pgm_not_found'
 
 
+# Desenroll a POC from the rewards program
+def delete_enroll_poc_to_program(account_id, zone, environment):
+
+    # Define headers
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+
+    # Check if the zone already have a reward program created
+    program_found = locate_program_for_zone(zone, environment, request_headers)
+
+    if program_found != 'false':
+        # Define url request
+        request_url = get_microservice_base_url(environment) + '/rewards-service/rewards/' + account_id
+
+        response = place_request('DELETE', request_url, '', request_headers)
+
+        if response.status_code != 204:
+             print(text.Red + '\n- [Rewards Service] Failure when desenroll an account to program. Response Status: '
+                            + str(response.status_code) + '. Response message ' + response.text)
+           
+        return response.status_code
+    else:
+        return 'pgm_not_found'
+
+
 # Add Redeem products to account
 def input_redeem_products(abi_id, zone, environment):
 

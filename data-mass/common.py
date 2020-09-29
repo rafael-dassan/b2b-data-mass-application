@@ -294,7 +294,7 @@ def validateStructure(option):
 
 # Validate rewards
 def validate_rewards(option):
-    if option == '1' or option == '2' or option == '3' or option == '4' or option == '5':
+    if option == '1' or option == '2' or option == '3' or option == '4' or option == '5' or option == '6':
         return 'true'
     else:
         return 'false'
@@ -668,6 +668,7 @@ def print_rewards_menu():
     print(text.default_text_color + str(3), text.Yellow + 'Enroll POC to a program')
     print(text.default_text_color + str(4), text.Yellow + 'Input Challenges to zone')
     print(text.default_text_color + str(5), text.Yellow + 'Input Redeem Products to account')
+    print(text.default_text_color + str(6), text.Yellow + 'Desenroll a POC to a program')
     structure = input(text.default_text_color + '\nPlease select: ')
     while validate_rewards(structure) == 'false':
         print(text.Red + '\n- Invalid option')
@@ -676,6 +677,7 @@ def print_rewards_menu():
         print(text.default_text_color + str(3), text.Yellow + 'Enroll POC to a program')
         print(text.default_text_color + str(4), text.Yellow + 'Input Challenges to zone')
         print(text.default_text_color + str(5), text.Yellow + 'Input Redeem Products to account')
+        print(text.default_text_color + str(6), text.Yellow + 'Desenroll a POC to a program')
         structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure
