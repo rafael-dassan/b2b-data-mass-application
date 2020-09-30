@@ -734,7 +734,7 @@ def input_deals_menu():
     if abi_id == 'false':
         printFinishApplicationMenu()
 
-    option_sku = print_option_sku(zone)
+    option_sku = print_option_sku()
 
     switcher = {
         '1': 'DISCOUNT',

@@ -1,0 +1,7 @@
+sku,name,brand_name,sub_brand_name,package_id,container_name,container_size,container_returnable,container_unitOfMeasurement,sales_ranking
+"0101WEB","QMWEB01","Journey","Journey","0101WEB","Botella",1000,False,"ML",1
+"0101ANDROID","QMANDROID01","Journey","Journey","0101ANDROID","Botella",1000,False,"ML",1
+"0101IOS","QMIOS01","Journey","Journey","0101IOS","Botella",1000,False,"ML",1
+"0102WEB","QMWEB02","Journey","Journey","0102WEB","Botella",1000,False,"ML",2
+"0102ANDROID","QMANDROID02","Journey","Journey","0102ANDROID","Botella",1000,False,"ML",2
+"0102IOS","QMIOS02","Journey","Journey","0102IOS","Botella",1000,False,"ML",2

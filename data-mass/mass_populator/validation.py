@@ -6,7 +6,8 @@ def valid_country(country):
         "DO": True,
         "ZA": True,
         "CO": True,
-        "MX": True
+        "MX": True,
+        "EC": True
     }
 
     return switcher.get(country, False)
