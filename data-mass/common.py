@@ -1,3 +1,4 @@
+# Standard library imports
 import json
 import os
 import sys
@@ -5,9 +6,13 @@ from datetime import date, datetime
 from time import time
 from unicodedata import numeric
 from uuid import uuid1
+
+# Third party imports
 from jsonpath_rw import Index, Fields
 from jsonpath_rw_ext import parse
 from requests import request
+
+# Local application imports
 from classes.text import text
 from logs.log import log_to_file
 
@@ -160,7 +165,9 @@ def validate_zone_data_searching_deals(zone):
         'AR': 'true',
         'CL': 'true',
         'ZA': 'true',
-        'MX': 'true'
+        'MX': 'true',
+        'PE': 'true',
+        'EC': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -174,7 +181,9 @@ def validate_zone_for_rewards(zone):
         'CO': 'true',
         'AR': 'true',
         'ZA': 'true',
-        'MX': 'true'
+        'MX': 'true',
+        'PE': 'true',
+        'EC': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -186,7 +195,9 @@ def validate_zone_for_inventory(zone):
         'ZA': 'true',
         'CO': 'true',
         'MX': 'true',
-        'AR': 'true'
+        'AR': 'true',
+        'PE': 'true',
+        'EC': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -200,7 +211,9 @@ def validate_zone_for_deals(zone):
         'CO': 'true',
         'MX': 'true',
         'AR': 'true',
-        'ZA': 'true'
+        'ZA': 'true',
+        'PE': 'true',
+        'EC': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -225,7 +238,9 @@ def validate_zone_for_combos_dt(zone):
         'AR': 'true',
         'CO': 'true',
         'ZA': 'true',
-        'MX': 'true'
+        'MX': 'true',
+        'PE': 'true',
+        'EC': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -240,7 +255,9 @@ def validate_zone_for_delivery_window(zone):
         'CO': 'true',
         'MX': 'true',
         'AR': 'true',
-        'CL': 'true'
+        'CL': 'true',
+        'PE': 'true',
+        'EC': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -254,7 +271,9 @@ def validate_zone_for_recommender(zone):
         'ZA': 'true',
         'CO': 'true',
         'MX': 'true',
-        'AR': 'true'
+        'AR': 'true',
+        'PE': 'true',
+        'EC': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -268,7 +287,9 @@ def validate_zone_for_ms(zone):
         'ZA': 'true',
         'CO': 'true',
         'MX': 'true',
-        'AR': 'true'
+        'AR': 'true',
+        'PE': 'true',
+        'EC': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -285,7 +306,7 @@ def validateStructure(option):
 
 # Validate rewards
 def validate_rewards(option):
-    if option == '1' or option == '2' or option == '3' or option == '4' or option == '5':
+    if option == '1' or option == '2' or option == '3' or option == '4' or option == '5' or option == '6':
         return 'true'
     else:
         return 'false'
@@ -346,40 +367,46 @@ def place_request(request_method, request_url, request_body, request_headers):
 
 
 # Return JWT header request
-def get_header_request(header_country, useJwtAuthorization="false", useRootAuthentication="false",
-                       useInclusionAuthentication="false", sku_product="false"):
+def get_header_request(header_country, use_jwt_auth='false', use_root_auth='false', use_inclusion_auth='false',
+                       sku_product='false'):
+
     switcher = {
-        "ZA": "UTC",
-        "AR": "America/Buenos_Aires",
-        "DO": "America/Santo_Domingo",
-        "BR": "America/Sao_Paulo",
-        "CO": "America/Bogota",
-        "PE": "America/Lima",
-        "CL": "America/Santiago",
-        "MX": "UTC"
+        'ZA': 'UTC',
+        'AR': 'America/Buenos_Aires',
+        'DO': 'America/Santo_Domingo',
+        'BR': 'America/Sao_Paulo',
+        'CO': 'America/Bogota',
+        'PE': 'America/Lima',
+        'EC': 'America/Guayaquil',
+        'CL': 'America/Santiago',
+        'MX': 'UTC'
     }
-    timezone = switcher.get(header_country.upper(), "false")
+    timezone = switcher.get(header_country.upper(), 'false')
 
     header = {
-        "Content-Type": "application/json",
-        "country": header_country.upper(),
-        "requestTraceId": str(uuid1()),
-        "x-timestamp": str(int(round(time() * 1000))),
-        "cache-control": "no-cache",
-        "timezone": timezone
+        'Content-Type': 'application/json',
+        'country': header_country.upper(),
+        'requestTraceId': str(uuid1()),
+        'x-timestamp': str(int(round(time() * 1000))),
+        'cache-control': 'no-cache',
+        'timezone': timezone
     }
 
-    if useJwtAuthorization == "true":
+    if use_jwt_auth == 'true':
         header[
-            'Authorization'] = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYi1pbmJldiIsImF1ZCI6ImFiaS1taWNyb3NlcnZpY2VzIiwiZXhwIjoxNjA2Njk0NDAwLCJpYXQiOjE1MzY5NjMyNTcsInVwZGF0ZWRfYXQiOjE1MzY5NjMyNTcsIm5hbWUiOiJmaWxpcGVyaWJlaXJvKzFAY2lhbmR0LmNvbSIsImFjY291bnRJRCI6IjU1MDE1MCIsInVzZXJJRCI6IjExIiwicm9sZXMiOlsiUk9MRV9DVVNUT01FUiJdfQ.q1kb8Kb6OO9ewNo82WQdNwmrfgZtI_0dB9jq3j0XOUk"
-    elif useRootAuthentication == "true":
-        header['Authorization'] = "Basic cm9vdDpyb290"
-    elif useInclusionAuthentication == "true":
-        header['Authorization'] = "Basic cmVsYXk6TVVRd3JENVplSEtB"
+            'Authorization'] = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYi1pbmJldiIsImF1ZCI6ImFiaS1t' \
+                               'aWNyb3NlcnZpY2VzIiwiZXhwIjoxNjA2Njk0NDAwLCJpYXQiOjE1MzY5NjMyNTcsInVwZGF0ZWRfYXQiOjE1M' \
+                               'zY5NjMyNTcsIm5hbWUiOiJmaWxpcGVyaWJlaXJvKzFAY2lhbmR0LmNvbSIsImFjY291bnRJRCI6IjU1MDE1MC' \
+                               'IsInVzZXJJRCI6IjExIiwicm9sZXMiOlsiUk9MRV9DVVNUT01FUiJdfQ.q1kb8Kb6OO9ewNo82WQdNwmrfgZt' \
+                               'I_0dB9jq3j0XOUk'
+    elif use_root_auth == 'true':
+        header['Authorization'] = 'Basic cm9vdDpyb290'
+    elif use_inclusion_auth == 'true':
+        header['Authorization'] = 'Basic cmVsYXk6TVVRd3JENVplSEtB'
     else:
-        header['Authorization'] = "Basic cmVsYXk6cmVsYXk="
+        header['Authorization'] = 'Basic cmVsYXk6cmVsYXk='
 
-    if sku_product != "false":
+    if sku_product != 'false':
         header['skuId'] = sku_product
 
     return header
@@ -655,6 +682,7 @@ def print_rewards_menu():
     print(text.default_text_color + str(3), text.Yellow + 'Enroll POC to a program')
     print(text.default_text_color + str(4), text.Yellow + 'Input Challenges to zone')
     print(text.default_text_color + str(5), text.Yellow + 'Input Redeem Products to account')
+    print(text.default_text_color + str(6), text.Yellow + 'Desenroll a POC to a program')
     structure = input(text.default_text_color + '\nPlease select: ')
     while validate_rewards(structure) == 'false':
         print(text.Red + '\n- Invalid option')
@@ -663,6 +691,7 @@ def print_rewards_menu():
         print(text.default_text_color + str(3), text.Yellow + 'Enroll POC to a program')
         print(text.default_text_color + str(4), text.Yellow + 'Input Challenges to zone')
         print(text.default_text_color + str(5), text.Yellow + 'Input Redeem Products to account')
+        print(text.default_text_color + str(6), text.Yellow + 'Desenroll a POC to a program')
         structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure
@@ -891,10 +920,10 @@ def printNameMenu():
 # Print zone menu for Recommenders
 def print_zone_menu_recommender(recommender_type):
     if recommender_type != 'COMBOS_QUICKORDER':
-        zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX): ')
+        zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX, PE, EC): ')
         while validate_zone_for_recommender(zone.upper()) == 'false':
             print(text.Red + '\n- Invalid option\n')
-            zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX): ')
+            zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX, PE, EC): ')
     else:
         zone = input(text.default_text_color + 'Zone (DO): ')
         while validate_zone_for_recommender(zone.upper()) == 'false':
@@ -920,60 +949,60 @@ def printZoneMenu(isMiddleware="true"):
 
 
 def print_zone_menu_data_searching_deals():
-    zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO, ZA, MX): ')
+    zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO, ZA, MX, PE, EC): ')
     while validate_zone_data_searching_deals(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO, ZA, MX): ')
+        zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO, ZA, MX, PE, EC): ')
 
     return zone.upper()
 
 
 # Print zone menu for Delivery Window
 def print_zone_menu_for_delivery_window():
-    zone = input(text.default_text_color + 'Zone (AR, CL, BR, DO, ZA, CO, MX): ')
+    zone = input(text.default_text_color + 'Zone (AR, CL, BR, DO, ZA, CO, MX, PE, EC): ')
     while validate_zone_for_delivery_window(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (AR, CL, BR, DO, ZA, CO, MX): ')
+        zone = input(text.default_text_color + 'Zone (AR, CL, BR, DO, ZA, CO, MX, PE, EC): ')
 
     return zone.upper()
 
 
 # Print zone menu for Microservice
 def print_zone_menu_for_ms():
-    zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX): ')
+    zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX, PE, EC): ')
     while validate_zone_for_ms(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX): ')
+        zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX, PE, EC): ')
 
     return zone.upper()
 
 
 # Print zone menu for rewards
 def print_zone_menu_for_rewards():
-    zone = input(text.default_text_color + 'Zone (BR, DO, CO, AR, ZA, MX): ')
+    zone = input(text.default_text_color + 'Zone (BR, DO, CO, AR, ZA, MX, PE, EC): ')
     while validate_zone_for_rewards(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (BR, DO, CO, AR, ZA, MX): ')
+        zone = input(text.default_text_color + 'Zone (BR, DO, CO, AR, ZA, MX, PE, EC): ')
 
     return zone.upper()
 
 
 # Print zone menu for inventory
 def print_zone_menu_for_inventory():
-    zone = input(text.default_text_color + 'Zone (AR, ZA, CO, MX): ')
+    zone = input(text.default_text_color + 'Zone (AR, ZA, CO, MX, PE, EC): ')
     while validate_zone_for_inventory(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (AR, ZA, CO, MX): ')
+        zone = input(text.default_text_color + 'Zone (AR, ZA, CO, MX, PE, EC): ')
 
     return zone.upper()
 
 
 # Print zone menu for deals
 def print_zone_menu_for_deals():
-    zone = input(text.default_text_color + 'Zone (AR, BR, CO, DO, MX, ZA): ')
+    zone = input(text.default_text_color + 'Zone (AR, BR, CO, DO, MX, ZA, PE, EC): ')
     while validate_zone_for_deals(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (AR, BR, CO, DO, MX, ZA): ')
+        zone = input(text.default_text_color + 'Zone (AR, BR, CO, DO, MX, ZA, PE, EC): ')
 
     return zone.upper()
 
@@ -981,10 +1010,10 @@ def print_zone_menu_for_deals():
 # Print zone menu for combos
 def print_zone_menu_for_combos(combo_type=''):
     if combo_type == 'DT':
-        zone = input(text.default_text_color + 'Zone (BR, DO, AR, CO, ZA, MX): ')
+        zone = input(text.default_text_color + 'Zone (BR, DO, AR, CO, ZA, MX, PE, EC): ')
         while validate_zone_for_combos_dt(zone.upper()) == 'false':
             print(text.Red + '\n- Invalid option\n')
-            zone = input(text.default_text_color + 'Zone (BR, DO, AR, CO, ZA, MX): ')
+            zone = input(text.default_text_color + 'Zone (BR, DO, AR, CO, ZA, MX, PE, EC): ')
     else:
         zone = input(text.default_text_color + 'Zone (BR, DO, MX): ')
         while validate_zone_for_combos(zone.upper()) == 'false':
@@ -1057,7 +1086,7 @@ def printPaymentMethodMenu(zone):
         value = switcher.get(payment_method, 'false')
         return value
 
-    elif zone == 'DO' or zone == 'CO':
+    elif zone == 'DO' or zone == 'CO' or zone == 'EC' or zone == 'PE':
         payment_method = input(
             text.default_text_color + 'Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ')
         while validate_payments_method(payment_method, zone) != 'true':
@@ -1187,6 +1216,12 @@ def validate_state(zone):
 
     elif zone == 'CL':
         state = 'Los Lagos'
+
+    elif zone == 'PE':
+        state = 'Santa Cruz'
+
+    elif zone == 'EC':
+        state = 'Guayas'
 
     return state
 
@@ -1441,7 +1476,7 @@ def print_payment_method_simulation_menu(zone):
         else:
             payment_method = 'BANK_SLIP'
 
-    elif zone == 'DO' and zone == 'CO':
+    elif zone == 'DO' and zone == 'CO' or zone == 'EC' or zone == 'PE':
         payment_choice = input(text.default_text_color + 'Select payment method for simulation: 1 - CASH, 2 - CREDIT ')
         while payment_choice != '1' and payment_choice != '2':
             print(text.Red + '\n- Invalid option\n')
@@ -1710,6 +1745,8 @@ def validate_zone_for_searching(zone):
         'MX': 'true',
         'AR': 'true',
         'CL': 'true',
+        'PE': 'true',
+        'EC': 'true'
     }
 
     value = switcher.get(zone, 'false')
@@ -1717,10 +1754,10 @@ def validate_zone_for_searching(zone):
 
 
 def print_zone_menu_for_searching():
-    zone = input(text.default_text_color + 'Zone (AR, BR, CL, DO, ZA, CO, MX): ')
+    zone = input(text.default_text_color + 'Zone (AR, BR, CL, DO, ZA, CO, MX, PE, EC): ')
     while validate_zone_for_searching(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (AR, BR, CL, DO, ZA, CO, MX): ')
+        zone = input(text.default_text_color + 'Zone (AR, BR, CL, DO, ZA, CO, MX, PE, EC): ')
 
     return zone.upper()
 
@@ -1892,3 +1929,6 @@ def print_payment_method():
         return 'CREDIT'
 
 
+def block_print():
+    # Overwrite standard output (stdout)
+    sys.stdout = open(os.devnull, 'w')

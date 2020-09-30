@@ -2,13 +2,14 @@ from account import *
 from common import *
 from credit import add_credit_to_account_microservice
 from credit_statement import create_credit_statement
-from delivery_window import create_delivery_window_microservice, validate_alternative_delivery_date, \
-    create_delivery_fee_microservice
+from deals import *
+from delivery_window import *
 from beer_recommender import *
 from inventory import *
 from invoice import *
 from order import *
 from combos import *
+from products import *
 from rewards import *
 from category_magento import *
 from products_magento import *
@@ -90,12 +91,16 @@ def deals_information_menu():
 
     if zone == 'CL' or zone == 'ZA':
         deals = request_get_deals_promotion_service(abi_id, zone, environment)
-        if deals != 'false':
-            display_deals_information_promotion(abi_id, deals)
+        if deals == 'false' or deals == 'not_found':
+            printFinishApplicationMenu()
+        else:
+            display_deals_information_promotion(deals)
     else:
         deals = request_get_deals_promo_fusion_service(zone, environment, abi_id)
         if deals != 'false':
             display_deals_information_promo_fusion(abi_id, deals)
+        else:
+            printFinishApplicationMenu()
 
 
 def product_information_menu():
@@ -211,7 +216,8 @@ def create_rewards_to_account():
         '2': 'UPDATE_BALANCE',
         '3': 'ENROLL_POC',
         '4': 'ADD_CHALLENGE',
-        '5': 'ADD_REDEEM'
+        '5': 'ADD_REDEEM',
+        '6': 'DELETE_ENROLL_POC'
     }
 
     reward_option = switcher.get(selection_structure, 'false')
@@ -227,7 +233,7 @@ def create_rewards_to_account():
         elif create_pgm == 'error_len_combo':
             print(text.Red + '\n- [Rewards] The zone must have combos available to proceed')
             printFinishApplicationMenu()
-        elif create_pgm == 'error_found':
+        elif create_pgm == 'error_found' or create_pgm == 'false':
             printFinishApplicationMenu()
         else:
             print(text.Green + '\n- [Rewards] The new program has been successfully created. ID: ' + create_pgm)
@@ -304,7 +310,26 @@ def create_rewards_to_account():
         else:
             printFinishApplicationMenu()
 
+    # Option to delete a POC enrollment
+    elif reward_option == 'DELETE_ENROLL_POC':
 
+        abi_id = print_account_id_menu(zone)
+
+         # Call check account exists function
+        account = check_account_exists_microservice(abi_id, zone, environment)
+
+        if account == 'false':
+            printFinishApplicationMenu()
+       
+        delete_enroll_poc = delete_enroll_poc_to_program(abi_id, zone, environment)
+       
+        if delete_enroll_poc == 'pgm_not_found':
+            print(text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "Create new program" to create it')
+        elif delete_enroll_poc == 204:
+            print(text.Green + '\n- [Rewards] The enrollment has been deleted for this account from the rewards program')
+
+        printFinishApplicationMenu()
+        
 # Input orders to account
 def input_orders_to_account():
     selection_structure = print_orders_menu()
@@ -1370,7 +1395,7 @@ def get_categories_menu():
         - Environment (UAT, SIT)
         - Parent id (default: 0)
     """
-    country = printCountryMenuInUserCreation()
+    country = print_zone_menu_for_ms()
     environment = printEnvironmentMenuInUserCreation()
     parent_id = print_input_number_with_default('Parent id')
 
@@ -1393,7 +1418,7 @@ def associate_product_to_category_menu():
         - Product SKU
         - Category ID
     """
-    country = printCountryMenuInUserCreation()
+    country = print_zone_menu_for_ms()
     environment = printEnvironmentMenuInUserCreation()
     product_sku = print_input_text('Product SKU')
     category_id = print_input_number('Category ID')
@@ -1423,7 +1448,7 @@ def create_categories_menu():
         - Category name
         - Parent id (default: 0)
     """
-    country = printCountryMenuInUserCreation()
+    country = print_zone_menu_for_ms()
     environment = printEnvironmentMenuInUserCreation()
     category_name = print_input_text('Category name')
     parent_id = print_input_number_with_default('Parent id')

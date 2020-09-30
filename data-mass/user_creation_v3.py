@@ -1,8 +1,16 @@
+# Standard library imports
+import re
 import urllib.parse
-import pyotp
-import base64
 import uuid
-from user_v3 import *
+import base64
+import logging
+
+# Third party imports
+import pyotp
+
+# Local application imports
+from common import place_request
+from user_v3 import get_iam_b2c_params
 
 
 def authenticate_user_iam(environment, country, user_name, password):

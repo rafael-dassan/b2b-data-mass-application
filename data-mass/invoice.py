@@ -1,6 +1,13 @@
+# Standard library imports
+import json
 from json import loads
+import os
 from random import randint
-from common import *
+
+# Local application imports
+from common import update_value_to_json, set_to_dictionary, get_microservice_base_url, get_header_request, \
+    create_list, convert_json_to_string, place_request
+from classes.text import text
 
 
 def get_order_items(order_data):

@@ -1,10 +1,17 @@
-from json import dumps
-import time
-from datetime import date, datetime, timedelta
-from products import *
-from deals import *
-from account import create_account_ms, check_account_exists_microservice, display_account_information
-from random import *
+# Standard library imports
+import json
+from json import loads
+import os
+from random import randint
+from datetime import timedelta, datetime
+
+# Local application imports
+from common import get_header_request, get_microservice_base_url, update_value_to_json, convert_json_to_string, \
+    place_request, create_list, is_number
+from products import request_get_offers_microservice, request_get_products_by_account_microservice, \
+    request_get_products_microservice
+from account import check_account_exists_microservice
+from classes.text import text
 
 
 # Create Rewards Program
@@ -34,7 +41,9 @@ def create_new_program(zone, environment):
     # Define url request
     request_url = get_microservice_base_url(environment) + '/rewards-service/programs/' + reward_id
 
-    deals = request_get_dt_combos(zone, environment, request_headers)
+    deals = request_get_dt_combos(environment, request_headers)
+    if deals == 'false':
+        return 'false'
 
     # Verify if the zone has combos available
     if len(deals) > 0:
@@ -161,6 +170,30 @@ def enroll_poc_to_program(account_id, zone, environment):
                 print(text.Red + '\n- [Rewards Service] Failure when enrolling an account to program. Response Status: '
                                 + str(response.status_code) + '. Response message ' + response.text)
                 return 'false'
+    else:
+        return 'pgm_not_found'
+
+
+# Desenroll a POC from the rewards program
+def delete_enroll_poc_to_program(account_id, zone, environment):
+
+    # Define headers
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+
+    # Check if the zone already have a reward program created
+    program_found = locate_program_for_zone(zone, environment, request_headers)
+
+    if program_found != 'false':
+        # Define url request
+        request_url = get_microservice_base_url(environment) + '/rewards-service/rewards/' + account_id
+
+        response = place_request('DELETE', request_url, '', request_headers)
+
+        if response.status_code != 204:
+             print(text.Red + '\n- [Rewards Service] Failure when desenroll an account to program. Response Status: '
+                            + str(response.status_code) + '. Response message ' + response.text)
+           
+        return response.status_code
     else:
         return 'pgm_not_found'
 
@@ -722,17 +755,22 @@ def make_account_eligible(abi_id, zone, environment, header_request):
 
 
 # Retrieve Digital Trade combos (DT Combos) for the specified zone
-def request_get_dt_combos(zone, environment, header_request):
-
+def request_get_dt_combos(environment, header_request):
     # Define url request
     request_url = get_microservice_base_url(environment) + '/combos/?types=DT&includeDeleted=false&includeDisabled=false'
     
     # Send request
     response = place_request('GET', request_url, '', header_request)
-    
-    dt_combos_list = loads(response.text)
-
-    return dt_combos_list
+    if response.status_code == 200:
+        return loads(response.text)
+    elif response.status_code == 404:
+        print(text.Red + '\n- [Combo Service] There is no combo type digital trade registered. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
+        return 'false'
+    else:
+        print(text.Red + '\n- [Combo Service] Failure to retrieve combo type digital trade. Response Status: '
+              + str(response.status_code) + '. Response message ' + response.text)
+        return 'false'
 
 
 # Locate Rewards program previously created in the zone

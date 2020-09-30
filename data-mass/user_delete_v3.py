@@ -1,4 +1,11 @@
-from user_v3 import *
+# Standard library imports
+import re
+import logging
+
+# Local application imports
+from common import place_request, get_magento_base_url, get_magento_user_registration_access_token, \
+    convert_json_to_string
+from user_v3 import get_iam_b2c_params
 
 
 def delete_user_v3(environment, country, user_name):
@@ -153,7 +160,7 @@ def get_token_azure(environment, iam_b2c_params):
     response_text = response.text
 
     logging.debug("  Get token Azure :: Response Text...........: {0}"
-                  .format(text))
+                  .format(response_text))
 
     azure_response = response.json()
     token = azure_response["access_token"]

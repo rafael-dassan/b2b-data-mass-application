@@ -1,6 +1,6 @@
+# Standard library imports
 import re
 import logging
-from common import *
 
 
 def get_iam_b2c_environment_uat(environment):

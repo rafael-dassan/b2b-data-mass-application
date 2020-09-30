@@ -1,7 +1,18 @@
+# Standard library imports
+import json
 from json import loads
+import os
 from random import randint
-from common import *
+
+# Third party imports
 from tabulate import tabulate
+
+# Local application imports
+from common import get_microservice_base_url, get_header_request, place_request, update_value_to_json, create_list, \
+    convert_json_to_string, print_minimum_quantity_menu, print_discount_type_menu, print_discount_value_menu, \
+    print_index_range_menu, print_discount_range_menu, print_quantity_menu, print_quantity_range_menu, \
+    return_first_and_last_date_year_payload
+from classes.text import text
 
 
 def input_deal_to_account(abi_id, sku, deal_type, zone, environment):
@@ -31,7 +42,8 @@ def input_deal_to_account(abi_id, sku, deal_type, zone, environment):
         free_good = create_free_good_group(sku, zone, environment)
         free_good_group_id.append(free_good)
 
-    if zone == 'DO' or zone == 'BR' or zone == 'MX':
+    deals_v2_zones = ['BR', 'DO', 'CO', 'EC', 'MX', 'PE']
+    if zone in deals_v2_zones:
         # Get body
         request_body = get_deals_payload_v2(deal_id, deal_type)
 
@@ -931,40 +943,44 @@ def request_get_deals_promotion_service(abi_id, zone, environment):
 
     json_data = loads(response.text)
 
-    if response.status_code == 200 and len(json_data) != 0:
-        return json_data
+    if response.status_code == 200:
+        deals = json_data['promotions']
+        if len(deals) != 0:
+            return deals
+        else:
+            print(text.Yellow + '\n- [Promotion Service] The account ' + abi_id
+                  + ' does not have deals associated')
+            return 'not_found'
+    elif response.status_code == 404:
+        print(text.Yellow + '\n- [Promotion Service] The account ' + abi_id
+              + ' does not have deals associated')
+        return 'not_found'
     else:
         print(text.Red + '\n- [Promotion Service] Failure to retrieve deals. Response Status: '
               + str(response.status_code) + '. Response message ' + response.text)
         return 'false'
 
 
-def display_deals_information_promotion(abi_id, deals):
+def display_deals_information_promotion(deals):
     """
     Display deals information from the Promotion Service
     Args:
-        abi_id: POC unique identifier
         deals: deals object
     Returns: a table containing the available deals information
     """
-
-    promotions = deals['promotions']
-
     promotion_information = list()
-    if len(promotions) == 0:
-        print(text.Yellow + '\n- There is no promotion available for ' + abi_id)
-    else:
-        for i in range(len(promotions)):
-            promotion_values = {
-                'ID': promotions[i]['id'],
-                'Type': promotions[i]['type'],
-                'Title': promotions[i]['title'],
-                'End Date': promotions[i]['endDate']
-            }
-            promotion_information.append(promotion_values)
 
-        print(text.default_text_color + '\nPromotion Information')
-        print(tabulate(promotion_information, headers='keys', tablefmt='grid'))
+    for i in range(len(deals)):
+        promotion_values = {
+            'ID': deals[i]['id'],
+            'Type': deals[i]['type'],
+            'Title': deals[i]['title'],
+            'End Date': deals[i]['endDate']
+        }
+        promotion_information.append(promotion_values)
+
+    print(text.default_text_color + '\nPromotion Information')
+    print(tabulate(promotion_information, headers='keys', tablefmt='grid'))
 
 
 def display_deals_information_promo_fusion(abi_id, deals):
@@ -1013,3 +1029,112 @@ def display_deals_information_promo_fusion(abi_id, deals):
 
         print(text.default_text_color + '\nPromotion Information')
         print(tabulate(promotion_information, headers='keys', tablefmt='grid'))
+
+
+def delete_deal_by_id(abi_id, zone, environment, data):
+    """
+    Delete deal by ID via Promotion Relay Service v2
+    Args:
+        abi_id: POC unique identifier
+        zone: e.g., AR, BR, CO, DO, MX, ZA
+        environment: e.g., SIT, UAT
+        data: deals response payload
+    """
+    # Create file path
+    path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(path, 'data/delete_deal_payload.json')
+
+    # Load JSON file
+    with open(file_path) as file:
+        json_data = json.load(file)
+
+    # Get headers
+    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+
+    for i in range(len(data)):
+        deal_id = data[i]['promotionId']
+
+        dict_values = {
+            'accounts': [abi_id],
+            'promotions': [deal_id]
+        }
+
+        # Update the deal's values in runtime
+        for key in dict_values.keys():
+            json_object = update_value_to_json(json_data, key, dict_values[key])
+
+        # Create body
+        request_body = convert_json_to_string(json_object)
+        print(request_body)
+
+        # Get base URL
+        request_url = get_microservice_base_url(environment) + '/promotion-relay/v2'
+
+        # Send request
+        response = place_request('DELETE', request_url, request_body, request_headers)
+        if response.status_code != 202:
+            print(text.Red + '\n- [Promotion Relay Service] Failure to delete the deal {deal_id}. Response Status: '
+                             '{status_code}. Response message: {response_message}'
+                  .format(deal_id=deal_id, status_code=response.status_code, response_message=response.text))
+            return 'false'
+
+
+def request_get_deals_pricing_service(abi_id, zone, environment):
+    """
+    Retrieve deals from Pricing Conditions Service
+    Args:
+        abi_id: POC unique identifier
+        zone: e.g., AR, BR, CO, DO, MX, ZA
+        environment: e.g., SIT, UAT
+    Returns: new json_object
+    """
+    # Get headers
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+
+    # Get base URL
+    request_url = get_microservice_base_url(environment) + '/cart-calculator/v2/accounts/' + abi_id + '/deals?' \
+                                                                                                      'projection=PLAIN'
+
+    # Send request
+    response = place_request('GET', request_url, '', request_headers)
+
+    json_data = loads(response.text)
+    if response.status_code == 200:
+        return json_data['deals']
+    elif response.status_code == 404:
+        print(text.Yellow + '\n- [Pricing Conditions Service] The account {abi_id} does not have deals associated'
+              .format(abi_id=abi_id))
+        return 'not_found'
+    else:
+        print(text.Red + '\n- [Pricing Conditions Service] Failure to retrieve deals for account {abi_id}. Response '
+                         'Status: {status_code}. Response message: {response_message}'
+              .format(abi_id=abi_id, status_code=response.status_code, response_message=response.text))
+        return 'false'
+
+
+def delete_deals_pricing_service(abi_id, zone, environment, data):
+    """
+    Delete deal by ID form Pricing Conditions Service database
+    Args:
+        abi_id: POC unique identifier
+        zone: e.g., AR, BR, CO, DO, MX, ZA
+        environment: e.g., SIT, UAT
+        data: deals response payload
+    """
+    # Get headers
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+
+    for i in range(len(data)):
+        deal_id = data[i]['dealId']
+
+        # Get base URL
+        request_url = get_microservice_base_url(environment) + f'/cart-calculator/v1/account/' + abi_id + '/deals/' \
+                      + deal_id
+
+        # Send request
+        response = place_request('DELETE', request_url, '', request_headers)
+        if response.status_code != 200:
+            print(text.Red + '\n- [Pricing Conditions Service] Failure to delete the deal {deal_id}. Response Status: '
+                             '{status_code}. Response message: {response_message}'
+                  .format(deal_id=deal_id, status_code=response.status_code, response_message=response.text))
+            return 'false'

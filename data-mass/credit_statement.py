@@ -1,5 +1,11 @@
-from common import *
+# Standard library imports
 import json
+import os
+
+# Local application imports
+from common import get_header_request, get_microservice_base_url, place_request, update_value_to_json, \
+    convert_json_to_string
+from classes.text import text
 
 
 def create_credit_statement(zone, abi_id, environment, month, year):

@@ -1,6 +1,18 @@
-import time
-from products import *
+# Standard library imports
+import json
 from json import loads
+import os
+from time import time
+from random import randint
+from uuid import uuid1
+
+# Third party imports
+from tabulate import tabulate
+
+# Local application imports
+from common import update_value_to_json, create_list, convert_json_to_string, get_microservice_base_url, \
+    place_request, get_header_request
+from classes.text import text
 
 
 def create_all_recommendations(zone, environment, abi_id, products):
@@ -23,7 +35,9 @@ def create_all_recommendations(zone, environment, abi_id, products):
 
 # Define JSON to submmit QUICK ORDER recommendation type
 def create_quick_order_payload(abi_id, zone, environment, product_list):
-    if zone == 'DO' or zone == 'CL' or zone == 'AR' or zone == 'CO' or zone == 'MX':
+    countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PE']
+
+    if zone in countries_es:
         language = 'es'
         text = 'Pedido Facil'
         text_description = 'Productos que ordenaste anteriormente <link>Anadir todo al camion</link>'
@@ -83,7 +97,9 @@ def create_quick_order_payload(abi_id, zone, environment, product_list):
 
 # Define JSON to submmit FORGOTTEN ITEMS recommendation type
 def create_forgotten_items_payload(abi_id, zone, product_list):
-    if zone == 'DO' or zone == 'CL' or zone == 'AR' or zone == 'CO' or zone == 'MX':
+    countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PE']
+
+    if zone in countries_es:
         language = 'es'
         text = 'Productos Populares para Negocios como el tuyo'
         text_description = ''
@@ -143,7 +159,9 @@ def create_forgotten_items_payload(abi_id, zone, product_list):
 
 # Define JSON to submmit UP SELL recommendation type
 def create_upsell_payload(abi_id, zone, product_list):
-    if zone == 'DO' or zone == 'CL' or zone == 'AR' or zone == 'CO' or zone == 'MX':
+    countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PE']
+
+    if zone in countries_es:
         language = 'es'
         text = 'Productos Populares para Negocios como el tuyo'
         text_description = 'Los Productos mas Vendidos en tu Zona'
@@ -270,6 +288,7 @@ def get_header_request_recommender(zone, environment):
             'BR': 'America/Sao_Paulo',
             'CO': 'America/Bogota',
             'PE': 'America/Lima',
+            'EC': 'America/Guayaquil',
             'CL': 'America/Santiago',
             'MX': 'UTC'
         }
