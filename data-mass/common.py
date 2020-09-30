@@ -42,6 +42,18 @@ def validate_option_request_selection(selection):
 
 
 # Validate option menu selection
+def validate_option_request_selection_for_structure_2(option):
+    switcher = {
+        '0': 'true',
+        '1': 'true',
+        '2': 'true'
+    }
+
+    value = switcher.get(option, 'false')
+    return value
+
+
+# Validate option menu selection
 def validate_option_request_selection_for_structure_3(option):
     switcher = {
         '0': 'true',
@@ -286,7 +298,7 @@ def validate_zone_for_ms(zone):
 
 # Validate account structure
 def validateStructure(option):
-    if option == "1" or option == "2" or option == "3" or option == "4":
+    if option == "1" or option == "2" or option == "3" or option == "4" or option == "5":
         return "true"
     else:
         return "false"
@@ -469,20 +481,6 @@ def get_region_id(country):
     return region_id.get(country)
 
 
-# Return base URL for Azure IAM
-def get_azure_iam_base_url(environment, country):
-    iam_url = {
-        "UAT": {
-            "DO": "https://b2biamgbusuat1.b2clogin.com/b2biamgbusuat1.onmicrosoft.com"
-        },
-        "DEV": {
-            "DO": "https://b2biamgbusdev.b2clogin.com/b2biamgbusdev.onmicrosoft.com"
-        }
-    }
-
-    return iam_url.get(environment).get(country)
-
-
 # Returns Magento User Registration Integration Access Token
 def get_magento_user_registration_access_token(environment, country):
     access_token = {
@@ -607,11 +605,10 @@ def print_available_options(selection_structure):
     elif selection_structure == '3':
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
         print(text.default_text_color + str(1), text.Yellow + 'Create User')
-        print(text.default_text_color + str(2), text.Yellow + 'Create User IAM')
-        print(text.default_text_color + str(3), text.Yellow + 'Associate Account to user')
-        print(text.default_text_color + str(4), text.Yellow + 'List Categories')
-        print(text.default_text_color + str(5), text.Yellow + 'Associate Product to category')
-        print(text.default_text_color + str(6), text.Yellow + 'Create Category')
+        print(text.default_text_color + str(2), text.Yellow + 'Associate Account to user')
+        print(text.default_text_color + str(3), text.Yellow + 'List Categories')
+        print(text.default_text_color + str(4), text.Yellow + 'Associate Product to category')
+        print(text.default_text_color + str(5), text.Yellow + 'Create Category')
 
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_option_request_selection(selection) == 'false':
@@ -625,6 +622,21 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(6), text.Yellow + 'Create Category')
 
             selection = input(text.default_text_color + '\nPlease select: ')
+
+    elif selection_structure == '4':
+        print(text.default_text_color + str(0), text.Yellow + 'Close application')
+        print(text.default_text_color + str(1), text.Yellow + 'Create User')
+        print(text.default_text_color + str(2), text.Yellow + 'Delete User')
+
+        selection = input(text.default_text_color + '\nPlease select: ')
+        while validate_option_request_selection_for_structure_2(selection) == 'false':
+            print(text.Red + '\n- Invalid option\n')
+            print(text.default_text_color + str(0), text.Yellow + 'Close application')
+            print(text.default_text_color + str(1), text.Yellow + 'Create User')
+            print(text.default_text_color + str(2), text.Yellow + 'Delete User')
+
+            selection = input(text.default_text_color + '\nPlease select: ')
+
     else:
         finishApplication()
 
@@ -647,7 +659,8 @@ def print_structure_menu():
     print(text.default_text_color + str(1), text.Yellow + 'Data creation - Microservice')
     print(text.default_text_color + str(2), text.Yellow + 'Data searching - Microservice/MDW')
     print(text.default_text_color + str(3), text.Yellow + 'Data creation - Magento')
-    print(text.default_text_color + str(4), text.Yellow + 'Close application')
+    print(text.default_text_color + str(4), text.Yellow + 'Data creation - IAM')
+    print(text.default_text_color + str(5), text.Yellow + 'Close application')
 
     structure = input(text.default_text_color + '\nChoose which backend you want to run a service for: ')
     while validateStructure(structure) == 'false':
@@ -655,7 +668,8 @@ def print_structure_menu():
         print(text.default_text_color + str(1), text.Yellow + 'Data creation - Microservice')
         print(text.default_text_color + str(2), text.Yellow + 'Data searching - Microservice/MDW')
         print(text.default_text_color + str(3), text.Yellow + 'Data creation - Magento')
-        print(text.default_text_color + str(4), text.Yellow + 'Close application')
+        print(text.default_text_color + str(4), text.Yellow + 'Data creation - IAM')
+        print(text.default_text_color + str(5), text.Yellow + 'Close application')
         structure = input(text.default_text_color + '\nChoose which backend you want to run a service for: ')
 
     return structure
@@ -1371,6 +1385,7 @@ def print_country_menu_in_user_create_iam():
         - BR
         - CO
         - DO
+        - MX
     """
     zone = input(text.default_text_color + 'Zone (BR, CO, DO, MX): ')
     while validate_country_menu_in_user_create_iam(zone.upper()) == 'false':
