@@ -461,7 +461,7 @@ def get_magento_base_url(environment, country):
             'AR': 'https://sit-las-ar.abi-sandbox.net',
             'CL': 'https://sit-las-ch.abi-sandbox.net',
             'ZA': 'https://sit-za.abi-sandbox.net',
-            'CO': 'https://sit-copec-co.abi-sandbox.net',
+            'CO': 'https://qa-dt-copec-co.abi-sandbox.net',
             'MX': 'https://sit-mx.abi-sandbox.net'
         }
     }
@@ -498,7 +498,7 @@ def get_magento_user_registration_access_token(environment, country):
             "AR": "30lqki06nbdegugcmdb0ttm9yppnmoec",
             "CL": "30lqki06nbdegugcmdb0ttm9yppnmoec",
             "ZA": "nmvvuk58lc425a7p5l55orrkgh0jprr2",
-            "CO": "walt5dp3keiq2du0f30kir21v13f3u0v"
+            "CO": "2z0re32n00z159oui0az2j2dr42bx8m5"
         }
     }
 
