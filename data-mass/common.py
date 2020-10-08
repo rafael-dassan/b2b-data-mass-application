@@ -384,6 +384,7 @@ def get_header_request(header_country, use_jwt_auth='false', use_root_auth='fals
     timezone = switcher.get(header_country.upper(), 'false')
 
     header = {
+        'User-Agent': 'BEES - Data Mass App',
         'Content-Type': 'application/json',
         'country': header_country.upper(),
         'requestTraceId': str(uuid1()),
@@ -447,22 +448,24 @@ def get_microservice_base_url(environment, is_v1='true'):
 def get_magento_base_url(environment, country):
     magento_url = {
         'UAT': {
-            'BR': 'https://test-br.abi-sandbox.net',
-            'DO': 'https://test-conv-micerveceria.abi-sandbox.net',
-            'AR': 'https://migration-test-conv-quilmes.abi-sandbox.net',
-            'CL': 'https://test-conv-cl-mitienda.abi-sandbox.net',
-            'ZA': 'https://test-conv-sabconnect.abi-sandbox.net',
-            'CO': 'https://test-copec-co.abi-sandbox.net',
-            'MX': 'https://test-mx.abi-sandbox.net'
+            'BR': 'https://br.uat.bees-platform.dev',
+            'DO': 'https://do.uat.bees-platform.dev',
+            'AR': 'https://ar.uat.bees-platform.dev',
+            'CL': 'https://cl.uat.bees-platform.dev',
+            'ZA': 'https://za.uat.bees-platform.dev',
+            'CO': 'https://co.uat.bees-platform.dev',
+            'MX': 'https://mx.uat.bees-platform.dev',
+            'EC': 'https://ec.uat.bees-platform.dev'
         },
         'SIT': {
-            'BR': 'https://sit-br.abi-sandbox.net',
-            'DO': 'https://sit-dr.abi-sandbox.net',
-            'AR': 'https://sit-las-ar.abi-sandbox.net',
-            'CL': 'https://sit-las-ch.abi-sandbox.net',
-            'ZA': 'https://sit-za.abi-sandbox.net',
-            'CO': 'https://sit-copec-co.abi-sandbox.net',
-            'MX': 'https://sit-mx.abi-sandbox.net'
+            'BR': 'https://br.sit.bees-platform.dev',
+            'DO': 'https://do.sit.bees-platform.dev',
+            'AR': 'https://ar.sit.bees-platform.dev',
+            'CL': 'https://cl.sit.bees-platform.dev',
+            'ZA': 'https://za.sit.bees-platform.dev',
+            'CO': 'https://co.sit.bees-platform.dev',
+            'MX': 'https://mx.sit.bees-platform.dev',
+            'EC': 'https://ec.sit.bees-platform.dev'
         }
     }
 
@@ -515,7 +518,8 @@ def get_magento_datamass_access_token(environment, country):
             'CL': 'a34o213zgisn67efeg0zbq04sqg667qk',
             'ZA': '0seca4btewbr3e1opma4je2x8ftj57wx',
             'CO': 'meqei3q5ztreebdpb5vyej378mt2o8qy',
-            'MX': 'bqzqcmx3opvntxtwijh98s4kmb21pi8j'
+            'MX': 'bqzqcmx3opvntxtwijh98s4kmb21pi8j',
+            'EC': 'w9pphbvskd35206otky7cv1dobn0p1yb'
         },
         'SIT': {
             'BR': 'q6yti2dxmhp0e2xjgyvtt72nziss6ptp',
@@ -524,7 +528,8 @@ def get_magento_datamass_access_token(environment, country):
             'CL': 'hzp6hw65oqiyeyv8ozfzunex0nc1rff8',
             'ZA': 'fde80w10jbbaed1mrz6yg0pwy1vzfo48',
             'CO': 'new189lnml9xmcr3m9gc0j6oji6w2izr',
-            'MX': '86pg36lug4ivrx3xh5b5qnemzy1gw6v8'
+            'MX': '86pg36lug4ivrx3xh5b5qnemzy1gw6v8',
+            'EC': 'ybyiars1mhm5e4jyaq94s5csj1e77knp'
         }
     }
 
@@ -1366,7 +1371,8 @@ def validate_country_menu_in_user_create_iam(zone):
         'BR': 'true',
         'CO': 'true',
         'DO': 'true',
-        'MX': 'true'
+        'MX': 'true',
+        'EC': 'true'
     }
     return switcher.get(zone, 'false')
 
@@ -1386,11 +1392,12 @@ def print_country_menu_in_user_create_iam():
         - CO
         - DO
         - MX
+        - EC
     """
-    zone = input(text.default_text_color + 'Zone (BR, CO, DO, MX): ')
+    zone = input(text.default_text_color + 'Zone (BR, CO, DO, EC, MX): ')
     while validate_country_menu_in_user_create_iam(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (BR, CO, DO, MX): ')
+        zone = input(text.default_text_color + 'Zone (BR, CO, DO, EC, MX): ')
     return zone.upper()
 
 
@@ -1699,16 +1706,15 @@ def validate_option_sku(option):
         return 'false'
 
 
-def print_option_sku(zone):
-    if zone == 'DO':
-        option = input(text.default_text_color + 'Do you want to input this type of deal to a specific SKU? (1. Yes / '
-                                                 '2. No): ')
+def print_option_sku():
+    option = input(text.default_text_color + 'Do you want to input this type of deal to a specific SKU? (1. Yes / 2. '
+                                             'No): ')
 
-        while validate_option_sku(option) != 'true':
-            print(text.Red + '\n- Invalid option')
-            option = input(text.default_text_color + '\nDo you want to input this type of deal to a specific SKU? '
-                                                     '(1. Yes / 2. No): ')
-        return option
+    while validate_option_sku(option) != 'true':
+        print(text.Red + '\n- Invalid option')
+        option = input(text.default_text_color + '\nDo you want to input this type of deal to a specific SKU? (1. Yes '
+                                                 '/ 2. No): ')
+    return option
 
 
 def print_allow_cancellable_order_menu():

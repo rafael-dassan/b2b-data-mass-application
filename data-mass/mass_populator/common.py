@@ -32,7 +32,7 @@ def populate_users_magento(country, environment):
 
     # Colombia, Mexico and Brazil use the registration v3 (IAM B2C)
     # The other countries are still using registration v2
-    iam_allowed_countries = ['CO', 'MX', 'BR']
+    iam_allowed_countries = ['CO', 'MX', 'BR', 'EC']
     if country in iam_allowed_countries:
         populate_users_iam_b2c(country, environment, search_data_by(country, 'user'))
     else:
