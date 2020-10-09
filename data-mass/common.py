@@ -455,7 +455,8 @@ def get_magento_base_url(environment, country):
             'ZA': 'https://za.uat.bees-platform.dev',
             'CO': 'https://co.uat.bees-platform.dev',
             'MX': 'https://mx.uat.bees-platform.dev',
-            'EC': 'https://ec.uat.bees-platform.dev'
+            'EC': 'https://ec.uat.bees-platform.dev',
+            'PE': 'https://pe.uat.bees-platform.dev'
         },
         'SIT': {
             'BR': 'https://br.sit.bees-platform.dev',
@@ -465,7 +466,8 @@ def get_magento_base_url(environment, country):
             'ZA': 'https://za.sit.bees-platform.dev',
             'CO': 'https://co.sit.bees-platform.dev',
             'MX': 'https://mx.sit.bees-platform.dev',
-            'EC': 'https://ec.sit.bees-platform.dev'
+            'EC': 'https://ec.sit.bees-platform.dev',
+            'PE': 'https://pe.sit.bees-platform.dev'
         }
     }
 
@@ -493,7 +495,10 @@ def get_magento_user_registration_access_token(environment, country):
             "AR": "30lqki06nbdegugcmdb0ttm9yppnmoec",
             "CL": "30lqki06nbdegugcmdb0ttm9yppnmoec",
             "ZA": "31pdb0yht5kn3eld7gum021f6k984jh9",
-            "CO": "8mh6b9b6ft6m1cr5k7zm2jh4aljq4slx"
+            "CO": "8mh6b9b6ft6m1cr5k7zm2jh4aljq4slx",
+            'PE': '4z0crqq6yb6t5mip43i63tgntdll09vc',
+            'EC': 'awtm7d9as0n9k1o5zi9fi90rtukxdmqh',
+            'MX': 'kcsn7y80vvo2by9fluw2vq4r2a6pucfs'
         },
         "SIT": {
             "BR": "qq8t0w0tvz7nbn4gxo5jh9u62gohvjrw",
@@ -501,7 +506,10 @@ def get_magento_user_registration_access_token(environment, country):
             "AR": "30lqki06nbdegugcmdb0ttm9yppnmoec",
             "CL": "30lqki06nbdegugcmdb0ttm9yppnmoec",
             "ZA": "nmvvuk58lc425a7p5l55orrkgh0jprr2",
-            "CO": "walt5dp3keiq2du0f30kir21v13f3u0v"
+            "CO": "walt5dp3keiq2du0f30kir21v13f3u0v",
+            'PE': 'hwv67q9d3zyy2u500n2x0r5g7mr2j5is',
+            'EC': 'kyhzpszn0bswbf17mlb409ldg14j58uv',
+            'MX': 'w0mi88cajh0jbq0zrive3ht4eywc8xlm'
         }
     }
 
@@ -519,7 +527,8 @@ def get_magento_datamass_access_token(environment, country):
             'ZA': '0seca4btewbr3e1opma4je2x8ftj57wx',
             'CO': 'meqei3q5ztreebdpb5vyej378mt2o8qy',
             'MX': 'bqzqcmx3opvntxtwijh98s4kmb21pi8j',
-            'EC': 'w9pphbvskd35206otky7cv1dobn0p1yb'
+            'EC': 'w9pphbvskd35206otky7cv1dobn0p1yb',
+            'PE': 'xcgb5m0rl5pto116q4gxe1msd3zselq6'
         },
         'SIT': {
             'BR': 'q6yti2dxmhp0e2xjgyvtt72nziss6ptp',
@@ -529,7 +538,8 @@ def get_magento_datamass_access_token(environment, country):
             'ZA': 'fde80w10jbbaed1mrz6yg0pwy1vzfo48',
             'CO': 'new189lnml9xmcr3m9gc0j6oji6w2izr',
             'MX': '86pg36lug4ivrx3xh5b5qnemzy1gw6v8',
-            'EC': 'ybyiars1mhm5e4jyaq94s5csj1e77knp'
+            'EC': 'ybyiars1mhm5e4jyaq94s5csj1e77knp',
+            'PE': 'lda0mjri507oqrm8xfofk6weifajn8cm'
         }
     }
 
@@ -1372,7 +1382,8 @@ def validate_country_menu_in_user_create_iam(zone):
         'CO': 'true',
         'DO': 'true',
         'MX': 'true',
-        'EC': 'true'
+        'EC': 'true',
+        'PE': 'true'
     }
     return switcher.get(zone, 'false')
 
@@ -1393,11 +1404,12 @@ def print_country_menu_in_user_create_iam():
         - DO
         - MX
         - EC
+        - PE
     """
-    zone = input(text.default_text_color + 'Zone (BR, CO, DO, EC, MX): ')
+    zone = input(text.default_text_color + 'Zone (BR, CO, DO, EC, MX, PE): ')
     while validate_country_menu_in_user_create_iam(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (BR, CO, DO, EC, MX): ')
+        zone = input(text.default_text_color + 'Zone (BR, CO, DO, EC, MX, PE): ')
     return zone.upper()
 
 
