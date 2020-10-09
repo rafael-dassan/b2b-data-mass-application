@@ -1,6 +1,6 @@
 from rewards import *
 
-def desenroll_pocs(country, environment, dataframe_products):
+def unenroll_pocs(country, environment, dataframe_products):
     if dataframe_products is not None:
         dataframe_products.apply(exec_unenroll_poc, 
         args=(country, environment), axis=1)
