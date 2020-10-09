@@ -65,6 +65,10 @@ def get_iam_b2c_country_params_uat(country):
         "EC": {
             "REDIRECT_URL": "com.abi.bees.ecuador://oauth/redirect",
             "CLIENT_ID": "e0f49717-83f3-4777-8bb7-510541203312"
+        },
+        "PE": {
+            "REDIRECT_URL": "com.abi.bees.peru://oauth/redirect",
+            "CLIENT_ID": "d8cfa150-0ad2-43f1-a85e-2d4e634f5f72"
         }
     }
     return params[country]
@@ -91,6 +95,10 @@ def get_iam_b2c_country_params_sit(country):
         "EC": {
             "REDIRECT_URL": "com.abi.bees.ecuador://oauth/redirect",
             "CLIENT_ID": "1d11cc25-779f-458e-a64b-8f4e42b0c8fd"
+        },
+        "PE": {
+            "REDIRECT_URL": "com.abi.bees.peru://oauth/redirect",
+            "CLIENT_ID": "be042e86-59a4-410e-baf4-77bfaca00774"
         }
     }
     return params[country]
