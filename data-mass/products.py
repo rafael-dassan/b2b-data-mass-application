@@ -52,7 +52,7 @@ def request_post_price_microservice(abi_id, zone, environment, sku_product, prod
     """
 
     # Zones that are using the Pricing Engine Relay Service v2
-    cart_v2_zones = ['CO', 'MX', 'AR', 'ZA', 'EC', 'PE']
+    cart_v2_zones = ['CO', 'MX', 'AR', 'ZA', 'EC', 'PE', 'DO']
     if zone in cart_v2_zones:
         # Get base URL
         request_url = get_microservice_base_url(environment, 'false') + '/cart-calculation-relay/v2/prices'

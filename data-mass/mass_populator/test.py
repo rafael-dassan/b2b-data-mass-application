@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def execute_test(country, environment):
-    iam_b2c_countries = ['BR', 'CO', 'DO', 'EC', 'MX']
+    iam_b2c_countries = ['BR', 'CO', 'DO', 'EC', 'MX', 'PE']
     account_params = get_account_params(country)
     user_params = get_user_params(country)
     product_params = get_product_params()
@@ -69,7 +69,9 @@ def get_email_param(country):
         'CL': 'test-populator-cl@mailinator.com',
         'CO': 'test-populator-co@mailinator.com',
         'DO': 'test-populator-do@mailinator.com',
+        'EC': 'test-populator-ec@mailinator.com',
         'MX': 'test-populator-mx@mailinator.com',
+        'PE': 'test-populator-pe@mailinator.com',
         'ZA': 'test-populator-za@mailinator.com'
     }
 
