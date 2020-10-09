@@ -112,6 +112,11 @@ Example:
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
  ┃ ┗ 📜user.csv
+ ┣ 📂ec
+ ┃ ┣ 📜account.csv
+ ┃ ┣ 📜product.csv
+ ┃ ┣ 📜recommendation.csv
+ ┃ ┗ 📜user.csv
  ┣ 📂mx
  ┃ ┣ 📜account.csv
  ┃ ┣ 📜product.csv
