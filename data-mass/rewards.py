@@ -952,7 +952,7 @@ def generate_categories_information(zone):
 def generate_terms_information(zone):
     terms_info = list()
     
-    if zone == 'DO' or zone == 'CO' or zone == 'AR' or zone == 'EC' or zone == 'PE':
+    if zone == 'DO' or zone == 'CO' or zone == 'AR' or zone == 'MX' or zone == 'EC' or zone == 'PE':
         terms_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/terms/terms-co.html')
         terms_info.append('Términos iniciales introducidos al programa')
     elif zone == 'BR':
