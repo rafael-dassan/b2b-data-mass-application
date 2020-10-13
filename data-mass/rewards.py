@@ -915,6 +915,35 @@ def generate_categories_information(zone):
         category_info.append('Gana 3 puntos por cada $10 de compra en estos productos')
         category_info.append('COMPRA AHORA')
         category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/mx/premium-brands.png')
+    elif zone == 'EC':
+        # Premium category
+        category_info.append('129')
+        category_info.append('115')
+        category_info.append('Gana 4 puntos por cada $1 de compra en estos productos')
+        category_info.append('COMPRA AHORA')
+        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/sit/images/ec/premium-brands.png')
+
+        # Core category
+        category_info.append('127')
+        category_info.append('113')
+        category_info.append('Gana 1 punto por cada $1 de compra en estos productos')
+        category_info.append('COMPRA AHORA')
+        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/ec/core-brands.png')
+    elif zone == 'PE':
+        # Premium category
+        category_info.append('premium')
+        category_info.append('premium')
+        category_info.append('Gana 2 puntos por cada S/ 1.00 de compra en estos productos')
+        category_info.append('COMPRA AHORA')
+        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/pe/premium-brands.png')
+
+        # Core category
+        category_info.append('core')
+        category_info.append('core')
+        category_info.append('Gana 1 punto por cada S/ 1.00 de compra en estos productos')
+        category_info.append('COMPRA AHORA')
+        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/pe/core-brands.png')
+
 
     return category_info
 
@@ -923,7 +952,7 @@ def generate_categories_information(zone):
 def generate_terms_information(zone):
     terms_info = list()
     
-    if zone == 'DO' or zone == 'CO' or zone == 'AR' or zone == 'MX':
+    if zone == 'DO' or zone == 'CO' or zone == 'AR' or zone == 'EC' or zone == 'PE':
         terms_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/terms/terms-co.html')
         terms_info.append('Términos iniciales introducidos al programa')
     elif zone == 'BR':
