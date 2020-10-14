@@ -89,7 +89,7 @@ def deals_information_menu():
     if account == 'false':
         printFinishApplicationMenu()
 
-    if zone == 'CL' or zone == 'ZA':
+    if zone == 'CL':
         deals = request_get_deals_promotion_service(abi_id, zone, environment)
         if deals == 'false' or deals == 'not_found':
             printFinishApplicationMenu()
