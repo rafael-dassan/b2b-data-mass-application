@@ -1818,14 +1818,14 @@ def validate_month(month):
 
 
 def print_month_credit_statement():
-    month = input(text.default_text_color + 'Witch month do you want to create the document? (please put the number '
+    month = input(text.default_text_color + 'Which month do you want to create the document? (please put the number '
                                             'referent the month): ')
     if int(month) < 10:
         month = '0' + month
 
     while validate_month(month) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        month = input(text.default_text_color + 'Witch month do you want to create the document? (please put the number'
+        month = input(text.default_text_color + 'Which month do you want to create the document? (please put the number'
                                                 'referent the month): ')
 
     return month
@@ -1843,18 +1843,18 @@ def validate_years_credit_statement(year):
 
 
 def print_year_credit_statement():
-    year = input(text.default_text_color + 'Witch year do you want to create the document?: ')
+    year = input(text.default_text_color + 'Which year do you want to create the document?: ')
 
     while validate_years_credit_statement(year) != 'true':
         if validate_years_credit_statement(year) == 'error_0':
             print(text.Red + '\n- Year should not be empty')
-            year = input(text.default_text_color + 'Witch year do you want to create the document?: ')
+            year = input(text.default_text_color + 'Which year do you want to create the document?: ')
         if validate_years_credit_statement(year) == 'error_4':
             print(text.Red + '\n- Year must contain at least 4 characters')
-            year = input(text.default_text_color + 'Witch year do you want to create the document?: ')
+            year = input(text.default_text_color + 'Which year do you want to create the document?: ')
         elif validate_years_credit_statement(year) == 'not_number':
             print(text.Red + '\n- The year must be Numeric')
-            year = input(text.default_text_color + 'Witch year do you want to create the document?: ')
+            year = input(text.default_text_color + 'Which year do you want to create the document?: ')
 
     return year
 
