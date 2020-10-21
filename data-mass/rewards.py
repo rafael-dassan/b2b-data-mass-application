@@ -220,6 +220,8 @@ def input_redeem_products(abi_id, zone, environment):
 
         combos_dt_program = json_program['combos']
         len_combos_program = len(combos_dt_program)
+        if len_combos_program > 50:
+            len_combos_program = 50
 
         # Get all the combo IDs that are added to the reward program
         i = 0
