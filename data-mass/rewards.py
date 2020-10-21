@@ -6,6 +6,8 @@ from random import randint
 from datetime import timedelta, datetime
 
 # Local application imports
+from pip._internal.commands.list import tabulate
+
 from common import get_header_request, get_microservice_base_url, update_value_to_json, convert_json_to_string, \
     place_request, create_list
 from validations import is_number
@@ -966,3 +968,26 @@ def generate_terms_information(zone):
         terms_info.append('Initial terms added to the program')
 
     return terms_info
+
+# Displays the SKU's for rewards shopping
+def display_sku_rewards(zone, environment, abi_id):
+    header_request=get_header_request(zone, 'true', 'false', 'false', 'false')
+    program_id=get_id_rewards(abi_id, header_request, environment)
+    sku_id = get_sku_rewards(program_id, header_request, environment)
+    print(sku_id)
+
+def get_id_rewards(abi_id, header_request, environment):
+    request_url = get_microservice_base_url(environment) + '/rewards/' + str(abi_id)
+    response = place_request('GET', request_url, '', header_request)
+    program_enrollment = loads(response.text)
+    program_id = program_enrollment.get("programId")
+
+    return program_id
+
+def get_sku_rewards(program_id, header_request, environment):
+    request_url = get_microservice_base_url(environment) + '/rewards/' + str(program_id)
+    response = place_request('GET', request_url, '', header_request)
+    program_info = loads(response.text)
+    sku_id = program_info.get("skus")
+
+    return sku_id
