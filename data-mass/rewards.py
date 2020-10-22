@@ -970,23 +970,28 @@ def generate_terms_information(zone):
 
 # Displays the SKU's for rewards shopping
 def display_sku_rewards(zone, environment, abi_id):
-    header_request=get_header_request(zone, 'true', 'false', 'false', 'false')
-    program_id=get_id_rewards(abi_id, header_request, environment)
-    sku_id = get_sku_rewards(program_id, header_request, environment)
-    print(sku_id)
+    header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
+    program_id = get_id_rewards(abi_id, header_request, environment)
+    print(program_id)
+    program_data = get_sku_rewards(program_id, header_request, environment)
+    #data = program_data['rules'][1]['moneySpentSkuRule'][1]['skus']
+    #print(data)
+    for i in program_data['rules'][1]['moneySpentSkuRule']['skus']:
+        print("SKU ID:", [i])
 
 def get_id_rewards(abi_id, header_request, environment):
-    request_url = get_microservice_base_url(environment) + '/rewards/' + str(abi_id)
+    request_url = get_microservice_base_url(environment,'true') + '/rewards-service/rewards/' + abi_id
     response = place_request('GET', request_url, '', header_request)
     program_enrollment = loads(response.text)
-    program_id = program_enrollment.get("programId")
+    program_id = str(program_enrollment.get("programId"))
 
     return program_id
 
 def get_sku_rewards(program_id, header_request, environment):
-    request_url = get_microservice_base_url(environment) + '/rewards/' + str(program_id)
+    request_url = get_microservice_base_url(environment,'true') + '/rewards-service/programs/' + program_id
     response = place_request('GET', request_url, '', header_request)
     program_info = loads(response.text)
-    sku_id = program_info.get("skus")
+    #print(program_info)
+   # sku_id = program_info.get("skus")
 
-    return sku_id
+    return program_info
