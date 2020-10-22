@@ -11,7 +11,7 @@ from pip._internal.commands.list import tabulate
 from common import get_header_request, get_microservice_base_url, update_value_to_json, convert_json_to_string, \
     place_request, create_list, is_number
 from products import request_get_offers_microservice, request_get_products_by_account_microservice, \
-    request_get_products_microservice
+    request_get_products_microservice, get_sku_name
 from account import check_account_exists_microservice
 from classes.text import text
 
@@ -972,12 +972,15 @@ def generate_terms_information(zone):
 def display_sku_rewards(zone, environment, abi_id):
     header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
     program_id = get_id_rewards(abi_id, header_request, environment)
-    print(program_id)
+    print("Program ID: ", program_id)
     program_data = get_sku_rewards(program_id, header_request, environment)
-    #data = program_data['rules'][1]['moneySpentSkuRule'][1]['skus']
-    #print(data)
-    for i in program_data['rules'][1]['moneySpentSkuRule']['skus']:
-        print("SKU ID:", [i])
+    for i in range(2):
+        print(text.Yellow + "Program name: ", program_data['rules'][i-1]['moneySpentSkuRule']['name'])
+        print("Gain " + str(program_data['rules'][i-1]['moneySpentSkuRule']['points']) + " points per " +
+              str(program_data['rules'][i-1]['moneySpentSkuRule']['amountSpent']) + " spent")
+        for skus in program_data['rules'][i-1]['moneySpentSkuRule']['skus']:
+            sku_name = get_sku_name(zone, environment, skus)
+            print(text.default_text_color + "SKU name: " + sku_name + "  SKU ID: ", skus)
 
 def get_id_rewards(abi_id, header_request, environment):
     request_url = get_microservice_base_url(environment,'true') + '/rewards-service/rewards/' + abi_id
@@ -991,7 +994,5 @@ def get_sku_rewards(program_id, header_request, environment):
     request_url = get_microservice_base_url(environment,'true') + '/rewards-service/programs/' + program_id
     response = place_request('GET', request_url, '', header_request)
     program_info = loads(response.text)
-    #print(program_info)
-   # sku_id = program_info.get("skus")
 
     return program_info
