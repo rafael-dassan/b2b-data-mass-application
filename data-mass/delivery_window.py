@@ -104,19 +104,12 @@ def create_delivery_window_microservice(zone, environment, account_data, is_alte
     # Place request
     response = place_request('POST', request_url, json.dumps(request_body), request_headers)
     if response.status_code != 202:
-        print(text.Red + '\n- [Account Relay Service] Failure to add delivery window to account. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
+        print(text.Red + '\n- [Account Relay Service] Failure to create delivery window. Response Status: '
+                         '{response_status}. Response message: {response_message}'
+              .format(response_status=str(response.status_code), response_message=response.text))
         return 'false'
 
     return 'success'
-
-
-# Validate alternative delivery date option
-def validate_alternative_delivery_date(option):
-    if option == '' or (option != 'Y' and option != 'N'):
-        return 'false'
-    else:
-        return 'true'
 
 
 # Return payload next date for delivery date
@@ -160,7 +153,8 @@ def create_delivery_fee_microservice(zone, environment, account_data, include_de
     response = place_request('PUT', request_url, json.dumps(request_body), request_headers)
     if response.status_code != 202:
         print(text.Red + '\n- [Pricing Engine Relay Service] Failure to add delivery cost. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
+                         '{response_status}. Response message: {response_message}'
+              .format(response_status=str(response.status_code), response_message=response.text))
         return 'false'
 
     return 'success'

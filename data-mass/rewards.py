@@ -7,7 +7,8 @@ from datetime import timedelta, datetime
 
 # Local application imports
 from common import get_header_request, get_microservice_base_url, update_value_to_json, convert_json_to_string, \
-    place_request, create_list, is_number
+    place_request, create_list
+from validations import is_number
 from products import request_get_offers_microservice, request_get_products_by_account_microservice, \
     request_get_products_microservice
 from account import check_account_exists_microservice

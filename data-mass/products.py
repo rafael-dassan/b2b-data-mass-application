@@ -11,7 +11,8 @@ from tabulate import tabulate
 
 # Local application imports
 from common import get_microservice_base_url, get_header_request, place_request, update_value_to_json, \
-    convert_json_to_string, print_product_quantity_menu, create_list, validate_yes_no_option
+    convert_json_to_string, print_product_quantity_menu, create_list
+from validations import validate_yes_no_option
 from classes.text import text
 
 
@@ -519,7 +520,7 @@ def get_item_input_data():
 
     # Validate returnable input data
     is_returnable = input(text.default_text_color + 'Is it returnable? y/N: ').upper()
-    while validate_yes_no_option(is_returnable) == "false":
+    while validate_yes_no_option(is_returnable) is False:
         print(text.Red + "\n- Invalid option\n")
         is_returnable = input(text.default_text_color + 'Is it returnable? y/N: ').upper()
     if is_returnable == 'Y':
