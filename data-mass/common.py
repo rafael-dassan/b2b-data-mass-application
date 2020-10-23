@@ -1914,6 +1914,26 @@ def print_invoice_menu():
     return structure
 
 
+def print_invoice_retriever_menu():
+    print(text.default_text_color + str(1), text.Yellow + 'All invoices by country')
+    print(text.default_text_color + str(2), text.Yellow + 'Invoices by accountId')
+    structure = input(text.default_text_color + '\nPlease select: ')
+    while validate_invoice_menu(structure) == 'false':
+        print(text.Red + '\n- Invalid option')
+        print(text.default_text_color + str(1), text.Yellow + 'All invoices by country')
+        print(text.default_text_color + str(2), text.Yellow + 'Invoices by accountId')
+
+        structure = input(text.default_text_color + '\nPlease select: ')
+
+    return structure
+
+
+def print_invoices(invoice_id):
+
+
+
+
+
 def validate_invoice_id(invoice_id):
     size_invoice_id = len(invoice_id)
 

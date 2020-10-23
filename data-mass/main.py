@@ -50,7 +50,8 @@ def showMenu():
             '4': product_information_menu,
             '5': deals_information_menu,
             '6': order_information_menu,
-            '7': recommender_information_menu
+            '7': recommender_information_menu,
+            '8': retrieve_avaliable_invoices_menu
         }
     elif selection_structure == '3':
         switcher = {
@@ -1515,6 +1516,29 @@ def recommender_information_menu():
         printFinishApplicationMenu()
 
     display_recommendations_by_account(zone, environment, abi_id)
+
+def retrieve_avaliable_invoices_menu():
+    selection_structure = print_invoice_retriever_menu()
+    switcher = {
+        '1': 'ALL_INVOICES_BY_COUNTRY',
+        '2': 'INVOICES_BY_ACCOUNT'
+    }
+
+    invoice_option = switcher.get(selection_structure, 'false')
+
+    zone = print_zone_menu_for_ms()
+    environment = printEnvironmentMenu()
+    abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
+
+    account = check_account_exists_microservice(abi_id, zone, environment)
+    if account == 'false':
+        printFinishApplicationMenu()
+
+    header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
+    invoice_id = get_invoices(header_request, zone, abi_id, environment, invoice_option)
+    print_invoices(invoice_id)
 
 
 def create_credit_statement_menu():
