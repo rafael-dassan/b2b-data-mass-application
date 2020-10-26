@@ -14,7 +14,7 @@ from requests import request
 # Local application imports
 from classes.text import text
 from logs.log import log_to_file
-from validations import validate_yes_no_option, is_number
+from validations import validate_yes_no_option, is_number, validate_zone_for_ms, validate_environment
 
 
 # Validate option menu selection
@@ -218,22 +218,6 @@ def validate_zone_for_recommender(zone):
     return value
 
 
-def validate_zone_for_ms(zone):
-    switcher = {
-        'BR': 'true',
-        'DO': 'true',
-        'ZA': 'true',
-        'CO': 'true',
-        'MX': 'true',
-        'AR': 'true',
-        'PE': 'true',
-        'EC': 'true'
-    }
-
-    value = switcher.get(zone, 'false')
-    return value
-
-
 # Validate account structure
 def validateStructure(option):
     if option == "1" or option == "2" or option == "3" or option == "4" or option == "5":
@@ -260,22 +244,6 @@ def validate_orders(option):
 
 def validate_recommendation_type(option):
     if option == '1' or option == '2' or option == '3' or option == '4' or option == '5':
-        return 'true'
-    else:
-        return 'false'
-
-
-# Validate deals
-def validate_deals(option):
-    if option == "1" or option == "2" or option == "3" or option == "4" or option == "5":
-        return "true"
-    else:
-        return "false"
-
-
-# Validate environment
-def validateEnvironment(environment):
-    if environment == 'DEV' or environment == 'SIT' or environment == 'UAT':
         return 'true'
     else:
         return 'false'
@@ -498,12 +466,12 @@ def finish_application():
 def print_available_options(selection_structure):
     if selection_structure == '1':
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
-        print(text.default_text_color + str(1), text.Yellow + 'Create account')
+        print(text.default_text_color + str(1), text.Yellow + 'Account')
         print(text.default_text_color + str(2), text.Yellow + 'Input products')
         print(text.default_text_color + str(3), text.Yellow + 'Input recommended products')
         print(text.default_text_color + str(4), text.Yellow + 'Input inventory to product')
         print(text.default_text_color + str(5), text.Yellow + 'Input orders to account')
-        print(text.default_text_color + str(6), text.Yellow + 'Input deals')
+        print(text.default_text_color + str(6), text.Yellow + 'Deals')
         print(text.default_text_color + str(7), text.Yellow + 'Input combos')
         print(text.default_text_color + str(8), text.Yellow + 'Create item')
         print(text.default_text_color + str(9), text.Yellow + 'Create invoice')
@@ -611,7 +579,7 @@ def print_structure_menu():
     print(text.default_text_color + str(4), text.Yellow + 'Data creation - IAM')
     print(text.default_text_color + str(5), text.Yellow + 'Close application')
 
-    structure = input(text.default_text_color + '\nChoose which backend you want to run a service for: ')
+    structure = input(text.default_text_color + '\nPlease choose an option: ')
     while validateStructure(structure) == 'false':
         print(text.Red + '\n- Invalid option\n')
         print(text.default_text_color + str(1), text.Yellow + 'Data creation - Microservice')
@@ -619,7 +587,7 @@ def print_structure_menu():
         print(text.default_text_color + str(3), text.Yellow + 'Data creation - Magento')
         print(text.default_text_color + str(4), text.Yellow + 'Data creation - IAM')
         print(text.default_text_color + str(5), text.Yellow + 'Close application')
-        structure = input(text.default_text_color + '\nChoose which backend you want to run a service for: ')
+        structure = input(text.default_text_color + '\nPlease choose an option: ')
 
     return structure
 
@@ -666,28 +634,6 @@ def print_orders_menu():
     return structure
 
 
-# Print deals menu
-def print_deals_menu():
-    print(text.default_text_color + "\nWhich type of deal do you want to create?")
-    print(text.default_text_color + str(1), text.Yellow + "Input deal type discount")
-    print(text.default_text_color + str(2), text.Yellow + "Input deal type stepped discount")
-    print(text.default_text_color + str(3), text.Yellow + "Input deal type free good")
-    print(text.default_text_color + str(4), text.Yellow + "Input deal type stepped free good")
-    print(text.default_text_color + str(5), text.Yellow + "Input deal type stepped discount with quantity")
-    structure = input(text.default_text_color + "\nPlease select: ")
-    while validate_deals(structure) == 'false':
-        print(text.Red + "\n- Invalid option")
-        print(text.default_text_color + "\nWhich type of deal do you want to create?")
-        print(text.default_text_color + str(1), text.Yellow + "Input deal type discount")
-        print(text.default_text_color + str(2), text.Yellow + "Input deal type stepped discount")
-        print(text.default_text_color + str(3), text.Yellow + "Input deal type free good")
-        print(text.default_text_color + str(4), text.Yellow + "Input deal type stepped free good")
-        print(text.default_text_color + str(5), text.Yellow + "Input deal type stepped discount with quantity")
-        structure = input(text.default_text_color + "\nPlease select: ")
-
-    return structure
-
-
 # Print combos menu
 def print_combos_menu():
     print(text.default_text_color + '\nWhich type of combo do you want to create?')
@@ -716,111 +662,6 @@ def validate_combo_structure(option):
         return 'true'
     else:
         return 'false'
-
-
-# Print Discount type menu
-def print_discount_type_menu():
-    discount_type = input(
-        text.default_text_color + "What type of discount do you want to apply (1. Percentage / 2. Fixed amount): ")
-    while discount_type != "1" and discount_type != "2":
-        print(text.Red + "\n- Invalid option")
-        discount_type = input(
-            text.default_text_color + "What type of discount do you want to apply (1. Percentage / 2. Fixed amount): ")
-
-    switcher = {
-        "1": "percentOff",
-        "2": "amountOff"
-    }
-
-    value = switcher.get(discount_type, "true")
-
-    return value
-
-
-# Print Discount value menu
-def print_discount_value_menu(discount_type):
-    if discount_type == 'percentOff':
-        while True:
-            try:
-                discount_value = float(input(text.default_text_color + 'Discount percentage (%): '))
-                break
-            except ValueError:
-                print(text.Red + '\n- Invalid value')
-    else:
-        while True:
-            try:
-                discount_value = float(input(text.default_text_color + 'Discount amount: '))
-                break
-            except ValueError:
-                print(text.Red + '\n- Invalid value')
-
-    return discount_value
-
-
-# Print range index menu
-def print_index_range_menu(indexs=4):
-    index_list = list()
-
-    for x in range(indexs):
-        range_index = input(text.default_text_color + "Range index #" + str(x) + ": ")
-        while range_index == "" or int(range_index) <= 0:
-            print(text.Red + "\n- Range index must be greater than 0")
-            range_index = input(text.default_text_color + "\nRange index #" + str(x) + ": ")
-
-        index_list.append(range_index)
-
-    return index_list
-
-
-# Print discount range menu
-def print_discount_range_menu(indexs=2):
-    index_list = list()
-
-    for x in range(indexs):
-        discount_value = input(text.default_text_color + "Discount value for index #" + str(x) + ": ")
-        while discount_value == "" or float(discount_value) <= 0:
-            print(text.Red + "\n- Discount value must be greater than 0")
-            discount_value = input(text.default_text_color + "\nDiscount value for index #" + str(x) + ": ")
-
-        index_list.append(discount_value)
-
-    return index_list
-
-
-# Print quantity range menu
-def print_quantity_range_menu():
-    index_list = list()
-
-    for x in range(2):
-        quantity_value = input(text.default_text_color + 'SKU quantity for index #' + str(x) + ': ')
-        while quantity_value == '' or int(quantity_value) <= 0:
-            print(text.Red + '\n- SKU quantity must be greater than 0')
-            quantity_value = input(text.default_text_color + '\nSKU quantity for index #' + str(x) + ': ')
-
-        index_list.append(quantity_value)
-
-    return index_list
-
-
-# Print minimum quantity menu
-def print_minimum_quantity_menu():
-    minimum_quantity = input(text.default_text_color + 'Desired quantity needed to buy to get a discount/free good: ')
-    while minimum_quantity == '' or int(minimum_quantity) <= 0:
-        print(text.Red + '\n- Minimum quantity must be greater than 0')
-        minimum_quantity = input(text.default_text_color + 'Desired quantity needed to buy to get a discount/free '
-                                                           'good: ')
-
-    return minimum_quantity
-
-
-# Print quantity menu
-def print_quantity_menu():
-    quantity = input(text.default_text_color + 'Desired quantity of free goods to offer: ')
-    while quantity == '' or int(quantity) <= 0:
-        print(text.Red + '\n- SKU quantity must be greater than 0')
-        quantity = input(text.default_text_color + 'Desired quantity of free goods to offer: ')
-
-    return quantity
 
 
 # Print zone menu for Recommenders
@@ -916,7 +757,7 @@ def printCountryMenuInUserCreation():
 # Print environment menu
 def print_environment_menu():
     environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
-    while validateEnvironment(environment.upper()) == 'false':
+    while validate_environment(environment.upper()) is False:
         print(text.Red + '\n- Invalid option')
         environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
 
@@ -1349,24 +1190,6 @@ def print_combo_id_menu():
         print(text.Red + '\n- Combo ID should not be empty')
         combo_id = input(text.default_text_color + 'Combo ID: ')
     return combo_id
-
-
-def validate_option_sku(option):
-    if option == '1' or option == '2':
-        return 'true'
-    else:
-        return 'false'
-
-
-def print_option_sku():
-    option = input(text.default_text_color + 'Do you want to input this type of deal to a specific SKU? (1. Yes / 2. '
-                                             'No): ')
-
-    while validate_option_sku(option) != 'true':
-        print(text.Red + '\n- Invalid option')
-        option = input(text.default_text_color + '\nDo you want to input this type of deal to a specific SKU? (1. Yes '
-                                                 '/ 2. No): ')
-    return option
 
 
 def print_allow_cancellable_order_menu():

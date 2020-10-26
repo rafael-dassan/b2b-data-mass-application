@@ -50,17 +50,17 @@ def validate_payments_method(payments_method):
 def is_number(s):
     try:
         float(s)
-        return "true"
+        return 'true'
     except ValueError:
         pass
 
     try:
         numeric(s)
-        return "true"
+        return 'true'
     except (TypeError, ValueError):
         pass
 
-    return "false"
+    return 'false'
 
 
 # Validate length of Account ID
@@ -87,3 +87,42 @@ def validate_accounts(option):
         return 'true'
     else:
         return 'false'
+
+
+# Validate deals options
+def validate_deals_options(option):
+    valid_options = ['1', '2', '3', '4', '5']
+    if option in valid_options:
+        return True
+    else:
+        return False
+
+
+def validate_option_sku(option):
+    if option == '1' or option == '2':
+        return 'true'
+    else:
+        return 'false'
+
+
+def validate_zone_for_ms(zone):
+    switcher = {
+        'BR': 'true',
+        'DO': 'true',
+        'ZA': 'true',
+        'CO': 'true',
+        'MX': 'true',
+        'AR': 'true',
+        'PE': 'true',
+        'EC': 'true'
+    }
+
+    value = switcher.get(zone, 'false')
+    return value
+
+
+def validate_environment(environment):
+    if environment == 'DEV' or environment == 'SIT' or environment == 'UAT':
+        return True
+    else:
+        return False

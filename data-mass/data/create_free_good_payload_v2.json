@@ -27,27 +27,12 @@
             },
             "output": {
                 "freeGoods": {
-                    "partial": "string",
+                    "partial": false,
                     "fixed": false,
-                    "proportion": "string",
+                    "proportion": 0,
                     "freeGoods": [
                         {
                             "skus": [
-                                {
-                                    "sku": "string",
-                                    "measureUnit": "UNIT",
-                                    "price": "string"
-                                }
-                            ],
-                            "quantity": 0
-                        },
-                        {
-                            "skus": [
-                                {
-                                    "sku": "string",
-                                    "measureUnit": "UNIT",
-                                    "price": "string"
-                                },
                                 {
                                     "sku": "string",
                                     "measureUnit": "UNIT",
