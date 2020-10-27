@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def execute_test(country, environment):
-    iam_b2c_countries = ['BR', 'CO', 'DO', 'EC', 'MX', 'PE']
+    iam_b2c_countries = ['BR', 'CO', 'DO', 'EC', 'MX', 'PE', 'ZA']
     account_params = get_account_params(country)
     user_params = get_user_params(country)
     product_params = get_product_params()
