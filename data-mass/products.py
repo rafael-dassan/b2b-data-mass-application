@@ -52,18 +52,11 @@ def request_post_price_microservice(abi_id, zone, environment, sku_product, prod
     Returns: `success` in case of successful response or `false` in case of failure
     """
 
-    # Zones that are using the Pricing Engine Relay Service v2
-    cart_v2_zones = ['CO', 'MX', 'AR', 'ZA', 'EC', 'PE', 'DO']
-    if zone in cart_v2_zones:
-        # Get base URL
-        request_url = get_microservice_base_url(environment, 'false') + '/cart-calculation-relay/v2/prices'
-        # Get request body
-        request_body = get_body_price_microservice_request_v2(abi_id, sku_product, product_price_id, price_values)
-    else:
-        # Get base URL
-        request_url = get_microservice_base_url(environment, 'false') + '/cart-calculation-relay/prices'
-        # Get request body
-        request_body = get_body_price_microservice_request(abi_id, sku_product, product_price_id, price_values)
+    # Get base URL
+    request_url = get_microservice_base_url(environment, 'false') + '/cart-calculation-relay/v2/prices'
+
+    # Get request body
+    request_body = get_body_price_microservice_request_v2(abi_id, sku_product, product_price_id, price_values)
 
     # Get headers
     request_headers = get_header_request(zone)
@@ -76,46 +69,6 @@ def request_post_price_microservice(abi_id, zone, environment, sku_product, prod
         print(text.Red + '\n- [Pricing Engine Relay Service] Failure to define price for the SKU ' + sku_product
               + '. Response Status: ' + str(response.status_code) + '. Response message ' + response.text)
         return 'false'
-
-
-def get_body_price_microservice_request(abi_id, sku_product, product_price_id, price_values):
-    """
-    Create body for posting new product price rules (API version 1) to the Pricing Engine Relay Service
-    Args:
-        abi_id: POC unique identifier
-        sku_product: SKU unique identifier
-        product_price_id: price record unique identifier
-        price_values: price values dict, including tax, base price and deposit
-    Returns: new price body
-    """
-
-    # Create dictionary with price values
-    dict_values = {
-        'accounts': [abi_id],
-        'prices[0].sku': sku_product,
-        'prices[0].basePrice': price_values.get('basePrice'),
-        'prices[0].deposit': price_values.get('deposit'),
-        'prices[0].quantityPerPallet': price_values.get('quantityPerPallet'),
-        'prices[0].taxes[0].taxId': product_price_id,
-        'prices[0].taxes[0].value': str(price_values.get('tax'))
-    }
-
-    # Create file path
-    abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, 'data/create_sku_price_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
-
-    # Update the price values in runtime
-    for key in dict_values.keys():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
-
-    # Create body
-    request_body = convert_json_to_string(json_object)
-
-    return request_body
 
 
 def generate_price_values(zone, product):
