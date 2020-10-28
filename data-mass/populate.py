@@ -5,6 +5,7 @@ from mass_populator.all import execute_all
 from mass_populator.common import execute_common
 from mass_populator.test import execute_test
 from mass_populator.product import execute_product
+from mass_populator.rewards import execute_rewards
 from mass_populator.validation import *
 
 logger = logging.getLogger(__name__)
@@ -25,6 +26,10 @@ def product(country, environment):
     logger.debug("PRODUCT method executed with Country/Environment: {a}/{b}".format(a=country, b=environment))
     execute_product(country, environment)
 
+def rewards(country, environment):
+    logger.debug("REWARDS method executed with Country/Environment: {a}/{b}".format(a=country, b=environment))
+    execute_rewards(country, environment)
+
 def execute(country, environment, execution_type):
     logger.info("Country: %s", country)
     logger.info("Environment: %s", environment)
@@ -35,7 +40,8 @@ def execute(country, environment, execution_type):
             "all": all,
             "common": common,
             "test": test,
-            "product": product
+            "product": product,
+            "rewards": rewards
         }
 
     # get the function to call
@@ -48,7 +54,7 @@ def execute(country, environment, execution_type):
 if __name__ == '__main__':
     try:
         if not valid_parameters(sys.argv):
-            raise ValueError("Invalid parameters. Three parameters were expected: [ [ COUNTRY ] [ ENVIRONMENT ] [ all | common ] ]", sys.argv)
+            raise ValueError("Invalid parameters. Three parameters were expected: [ [ COUNTRY ] [ ENVIRONMENT ] [ all | common | test | product | rewards ] ]", sys.argv)
 
         country = sys.argv[1].upper()
         environment = sys.argv[2].upper()

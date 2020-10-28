@@ -36,7 +36,8 @@ def valid_execution_type(execution_type):
         "all": True,
         "common": True,
         "test": True,
-        "product": True
+        "product": True,
+        "rewards": True
     }
 
     return switcher.get(execution_type, False)
