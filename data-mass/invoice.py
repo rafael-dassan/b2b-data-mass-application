@@ -186,7 +186,7 @@ def get_invoices(header_request, zone, abi_id, environment, invoice_option):
         return invoice_id
     elif invoice_option == 'INVOICES_BY_ACCOUNT':
         # Get url base
-        request_url = get_microservice_base_url(environment, 'false') + '/invoices-service/' + zone + abi_id
+        request_url = get_microservice_base_url(environment, 'false') + '/invoices-service/' + abi_id + '/' + zone
 
         # Place request
         response = place_request('GET', request_url, '', header_request)
