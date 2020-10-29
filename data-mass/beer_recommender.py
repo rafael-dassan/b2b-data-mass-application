@@ -278,7 +278,7 @@ def request_sell_up(zone, environment, abi_id, products):
 # Define an exclusive header for Recommended Products
 def get_header_request_recommender(zone, environment):
     # Define headers
-    if environment == 'SIT':
+    if environment == 'SIT' or environment == 'DEV':
         request_headers = get_header_request(zone, 'false', 'true')
     elif environment == 'UAT':
         switcher = {
