@@ -173,30 +173,28 @@ def check_if_invoice_exist(abi_id, invoice_id, zone, environment):
 def get_invoices(header_request, zone, abi_id, environment, invoice_option):
     if invoice_option == 'ALL_INVOICES_BY_COUNTRY':
         # Get url base
-        request_url = get_microservice_base_url(environment, 'false') + '/invoices-service/' + zone
+        request_url = get_microservice_base_url(environment, 'false') + '/invoices-service/?zone=' + zone
 
         # Place request
         response = place_request('GET', request_url, '', header_request)
-        json_data = loads(response.text)
-        if response.status_code == 200 and len(json_data) != 0:
-            invoice_id = json_data['invoiceId']
+        if response.status_code == 200:
+            invoice_info = response.json()
         else:
-            invoice_id = ''
+            invoice_info = ''
 
-        return invoice_id
+        return invoice_info
     elif invoice_option == 'INVOICES_BY_ACCOUNT':
         # Get url base
-        request_url = get_microservice_base_url(environment, 'false') + '/invoices-service/' + abi_id + '/' + zone
+        request_url = get_microservice_base_url(environment, 'false') + '/invoices-service/?accountId=' + abi_id
 
         # Place request
         response = place_request('GET', request_url, '', header_request)
-        json_data = loads(response.text)
-        if response.status_code == 200 and len(json_data) != 0:
-            invoice_id = json_data['invoiceId']
+        if response.status_code == 200:
+            invoice_info = response.json()
         else:
-            invoice_id = ''
+            invoice_info = ''
 
-        return invoice_id
+        return invoice_info
     else:
-        invoice_id = 'error!'
-        return invoice_id
+        invoice_info = 'error!'
+        return invoice_info

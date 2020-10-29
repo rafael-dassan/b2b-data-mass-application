@@ -604,7 +604,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(5), text.Yellow + 'Deals information by account')
         print(text.default_text_color + str(6), text.Yellow + 'Order information by account')
         print(text.default_text_color + str(7), text.Yellow + 'Recommender information by account')
-        print(text.default_text_color + str(7), text.Yellow + 'Retrieve available invoices')
+        print(text.default_text_color + str(8), text.Yellow + 'Retrieve available invoices')
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_option_request_selection(selection) == 'false':
             print(text.Red + '\n- Invalid option\n')
@@ -1930,8 +1930,11 @@ def print_invoice_retriever_menu():
     return structure
 
 
-def print_invoices(invoice_id):
-    print(invoice_id)
+def print_invoices(invoice_info):
+
+    for i in range(len(invoice_info['data'])+1):
+        print("Invoice Id: " + invoice_info['data'][i-1]['invoiceId'])
+
 
 
 
