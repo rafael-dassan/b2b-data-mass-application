@@ -398,8 +398,7 @@ def input_orders_to_account():
         input_order_item = input(text.default_text_color + 'Would you like to include a new sku for this order? y/N: ')
         while input_order_item.upper() != 'Y' and input_order_item.upper() != 'N':
             print(text.Red + '\n- Invalid option\n')
-            input_order_item = input(
-                text.default_text_color + 'Would you like to include a new sku for this order? y/N: ')
+            input_order_item = input(text.default_text_color + 'Would you like to include a new sku for this order? y/N: ')
 
         if input_order_item.upper() == 'Y':
             more_sku = 'Y'

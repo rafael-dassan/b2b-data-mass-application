@@ -6,8 +6,6 @@ from random import randint
 from datetime import timedelta, datetime
 
 # Local application imports
-from pip._internal.commands.list import tabulate
-
 from common import get_header_request, get_microservice_base_url, update_value_to_json, convert_json_to_string, \
     place_request, create_list
 from validations import is_number
