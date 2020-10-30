@@ -52,8 +52,9 @@
                                     "quantity": 0
                                 }
                             ],
-                            "fixed": "false",
-                            "proportion": "string"
+                            "fixed": false,
+                            "proportion": 0,
+                            "partial": false
                         },
                         {
                             "index": 1,
@@ -68,8 +69,9 @@
                                     "quantity": 0
                                 }
                             ],
-                            "fixed": "false",
-                            "proportion": "string"
+                            "fixed": false,
+                            "proportion": 0,
+                            "partial": false
                         }
                     ]
                 }

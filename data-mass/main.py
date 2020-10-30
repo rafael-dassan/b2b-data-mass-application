@@ -10,6 +10,9 @@ from invoice import *
 from menus.account_menu import print_account_operations_menu, print_minimum_order_menu, print_account_status_menu, \
     print_account_name_menu, print_account_enable_empties_loan_menu, print_alternative_delivery_date_menu, \
     print_include_delivery_cost_menu, print_payment_method_menu, print_account_id_menu, print_get_account_menu
+from menus.deals_menu import print_deals_operations_menu, print_discount_value_menu, print_minimum_quantity_menu, \
+    print_max_quantity_menu, print_free_good_quantity_range_menu, print_option_sku_menu, print_partial_free_good_menu, \
+    print_free_good_redemption_menu, print_free_good_quantity_menu, print_index_range_menu, print_discount_range_menu
 from order import *
 from combos import *
 from products import *
@@ -36,7 +39,7 @@ def show_menu():
             '3': input_recommendation_to_account_menu,
             '4': input_inventory_to_product,
             '5': input_orders_to_account,
-            '6': input_deals_menu,
+            '6': deals_menu,
             '7': input_combos_menu,
             '8': create_item_menu,
             '9': create_invoice_menu,
@@ -728,54 +731,35 @@ def input_recommendation_to_account_menu():
                                 'inside')
 
 
-# Input Deals to an account
-def input_deals_menu():
-    selection_structure = print_deals_menu()
-    zone = print_zone_menu_for_deals()
+def deals_menu():
+    operation = print_deals_operations_menu()
+    zone = print_zone_menu_for_ms()
     environment = print_environment_menu()
-    abi_id = print_account_id_menu(zone)
-    if abi_id == 'false':
+    account_id = print_account_id_menu(zone)
+
+    if account_id == 'false':
         print_finish_application_menu()
 
-    option_sku = print_option_sku()
-
-    switcher = {
-        '1': 'DISCOUNT',
-        '2': 'STEPPED_DISCOUNT',
-        '3': 'FREE_GOOD',
-        '4': 'STEPPED_FREE_GOOD',
-        '5': 'STEPPED_DISCOUNT'
-    }
-
-    deal_type = switcher.get(selection_structure, 'false')
-
     # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone, environment)
+    account = check_account_exists_microservice(account_id, zone, environment)
     if account == 'false':
         print_finish_application_menu()
 
+    option_sku = print_option_sku_menu()
+
     # Request POC's associated products
-    product_offers = request_get_offers_microservice(abi_id, zone, environment)
+    product_offers = request_get_offers_microservice(account_id, zone, environment)
     if product_offers == 'false':
         print_finish_application_menu()
     elif product_offers == 'not_found':
-        print(text.Red + '\n- [Catalog Service] There is no product associated with the account ' + abi_id)
+        print(text.Red + '\n- [Catalog Service] There is no product associated with the account {account_id}'
+              .format(account_id=account_id))
         print_finish_application_menu()
 
     sku_list = list()
     while len(sku_list) <= 2:
         index_offers = randint(0, (len(product_offers) - 1))
         product_data = product_offers[index_offers]
-        sku = product_data['sku']
-
-        # Check if the SKU is enabled on Items MS
-        item_enabled = check_item_enabled(sku, zone, environment)
-        while not item_enabled:
-            index_offers = randint(0, (len(product_offers) - 1))
-            product_data = product_offers[index_offers]
-            sku = product_data['sku']
-            item_enabled = check_item_enabled(sku, zone, environment)
-
         sku_list.append(product_data)
 
     if option_sku == '1':
@@ -787,22 +771,76 @@ def input_deals_menu():
     else:
         sku = sku_list[0]['sku']
 
-    if selection_structure == '1':
-        response = input_discount_to_account(abi_id, sku, deal_type, zone, environment)
-    elif selection_structure == '2':
-        response = input_stepped_discount_to_account(abi_id, sku, deal_type, zone, environment)
-    elif selection_structure == '3':
-        response = input_free_good_to_account(abi_id, sku, sku_list, deal_type, zone, environment)
-    elif selection_structure == '4':
-        response = input_stepped_free_good_to_account(abi_id, sku, deal_type, zone, environment)
-    else:
-        response = input_stepped_discount_with_qtd_to_account(abi_id, sku, deal_type, zone, environment)
+    return {
+        '1': lambda: flow_create_discount(zone, environment, account_id, sku),
+        '2': lambda: flow_create_stepped_discount(zone, environment, account_id, sku),
+        '3': lambda: flow_create_stepped_discount_with_limit(zone, environment, account_id, sku),
+        '4': lambda: flow_create_free_good(zone, environment, account_id, sku_list),
+        '5': lambda: flow_create_stepped_free_good(zone, environment, account_id, sku)
+    }.get(operation, lambda: None)()
 
+
+def flow_create_discount(zone, environment, account_id, sku):
+    minimum_quantity = print_minimum_quantity_menu()
+    discount_value = print_discount_value_menu()
+
+    response = input_discount_to_account(account_id, sku, zone, environment, discount_value, minimum_quantity)
     if response != 'false':
-        print(text.Green + '\n- Deal ' + response + ' created successfully')
-        if zone == 'ZA':
-            print(text.Yellow + '- Please, run the cron jobs `webjump_discount_import` and `webjump_discount_update_'
-                                'online_customers` to import your deal')
+        print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
+    else:
+        print_finish_application_menu()
+
+
+def flow_create_stepped_discount(zone, environment, account_id, sku):
+    index_range = print_index_range_menu()
+    discount_range = print_discount_range_menu()
+
+    response = input_stepped_discount_to_account(account_id, sku, zone, environment, index_range, discount_range)
+    if response != 'false':
+        print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
+    else:
+        print_finish_application_menu()
+
+
+def flow_create_stepped_discount_with_limit(zone, environment, account_id, sku):
+    index_range = print_index_range_menu(2)
+    discount_range = print_discount_range_menu(1)
+    max_quantity = print_max_quantity_menu()
+
+    response = input_stepped_discount_with_qtd_to_account(account_id, sku, zone, environment, index_range,
+                                                          discount_range, max_quantity)
+    if response != 'false':
+        print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
+    else:
+        print_finish_application_menu()
+
+
+def flow_create_free_good(zone, environment, account_id, sku_list):
+    partial_free_good = print_partial_free_good_menu(zone)
+    need_to_buy_product = print_free_good_redemption_menu(partial_free_good)
+
+    if need_to_buy_product == 'Y':
+        minimum_quantity = print_minimum_quantity_menu()
+        quantity = print_free_good_quantity_menu()
+    else:
+        minimum_quantity = 1
+        quantity = print_free_good_quantity_menu()
+
+    response = input_free_good_to_account(account_id, sku_list, zone, environment, minimum_quantity, quantity,
+                                          partial_free_good, need_to_buy_product)
+    if response != 'false':
+        print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
+    else:
+        print_finish_application_menu()
+
+
+def flow_create_stepped_free_good(zone, environment, account_id, sku):
+    index_range = print_index_range_menu()
+    quantity_range = print_free_good_quantity_range_menu()
+
+    response = input_stepped_free_good_to_account(account_id, sku, zone, environment, index_range, quantity_range)
+    if response != 'false':
+        print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
     else:
         print_finish_application_menu()
 
@@ -900,6 +938,10 @@ def input_products_to_account_menu():
 
     products = request_get_offers_microservice(abi_id, zone, environment)
     if products == 'false':
+        print_finish_application_menu()
+    elif products == 'not_found':
+        print(text.Red + '\n- [Catalog Service] There is no product associated with the account {abi_id}'
+              .format(abi_id=abi_id))
         print_finish_application_menu()
 
     proceed = 'N'
