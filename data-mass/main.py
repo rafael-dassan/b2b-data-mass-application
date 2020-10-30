@@ -52,7 +52,8 @@ def show_menu():
             '4': product_information_menu,
             '5': deals_information_menu,
             '6': order_information_menu,
-            '7': recommender_information_menu
+            '7': recommender_information_menu,
+            '8': retriever_sku_menu
         }
     elif selection_structure == '3':
         switcher = {
@@ -317,14 +318,14 @@ def create_rewards_to_account():
 
         abi_id = print_account_id_menu(zone)
 
-         # Call check account exists function
+        # Call check account exists function
         account = check_account_exists_microservice(abi_id, zone, environment)
 
         if account == 'false':
             print_finish_application_menu()
        
         delete_enroll_poc = delete_enroll_poc_to_program(abi_id, zone, environment)
-       
+
         if delete_enroll_poc == 'pgm_not_found':
             print(text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "Create new program" to create it')
         elif delete_enroll_poc == 204:
@@ -398,8 +399,7 @@ def input_orders_to_account():
         input_order_item = input(text.default_text_color + 'Would you like to include a new sku for this order? y/N: ')
         while input_order_item.upper() != 'Y' and input_order_item.upper() != 'N':
             print(text.Red + '\n- Invalid option\n')
-            input_order_item = input(
-                text.default_text_color + 'Would you like to include a new sku for this order? y/N: ')
+            input_order_item = input(text.default_text_color + 'Would you like to include a new sku for this order? y/N: ')
 
         if input_order_item.upper() == 'Y':
             more_sku = 'Y'
@@ -1318,6 +1318,7 @@ def delete_user_iam():
         print(text.Red + "\n- [Delete] Something went wrong, please try again")
         print_finish_application_menu()
 
+
 def create_invoice_menu():
     selection_structure = print_invoice_menu()
     switcher = {
@@ -1503,6 +1504,16 @@ def recommender_information_menu():
     display_recommendations_by_account(zone, environment, abi_id)
 
 
+def retriever_sku_menu():
+    zone = print_zone_menu_for_ms()
+    environment = printEnvironmentMenu()
+    abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
+
+    display_sku_rewards(zone, environment, abi_id)
+
+
 def create_credit_statement_menu():
     zone = print_zone_credit_statement()
     environment = print_environment_menu()
@@ -1556,4 +1567,3 @@ try:
 
 except KeyboardInterrupt:
     sys.exit(0)
-
