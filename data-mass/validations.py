@@ -1,0 +1,89 @@
+# Standard library imports
+from unicodedata import numeric
+
+
+def validate_yes_no_option(option):
+    if option == 'Y' or option == 'N':
+        return True
+    else:
+        return False
+
+
+# Validate State in account creation flow
+def validate_state(zone):
+    return {
+        'BR': 'RIO DE JANEIRO',
+        'DO': 'SANTO DOMINGO',
+        'ZA': 'FREE STATE',
+        'CO': 'SAN ALBERTO',
+        'MX': 'CIDADE DO MEXICO',
+        'AR': 'CORRIENTES',
+        'PE': 'SANTA CRUZ',
+        'EC': 'GUAYAS'
+
+    }.get(zone, 'false')
+
+
+# Validate length of account name
+def validate_account_name(name):
+    if len(name) == 0:
+        return False
+    else:
+        return name
+
+
+def validate_payments_method(payments_method):
+    size_payments_method = len(payments_method)
+
+    if size_payments_method == 0:
+        return 'error_0'
+    elif (size_payments_method > 0) and (is_number(payments_method) == 'false'):
+        return 'not_number'
+    elif (int(payments_method) != 1) and (int(payments_method) != 2) and (int(payments_method) != 3) \
+            and (int(payments_method) != 4):
+        return 'not_payments_method'
+    else:
+        return 'true'
+
+
+# Validate if value is a number
+def is_number(s):
+    try:
+        float(s)
+        return "true"
+    except ValueError:
+        pass
+
+    try:
+        numeric(s)
+        return "true"
+    except (TypeError, ValueError):
+        pass
+
+    return "false"
+
+
+# Validate length of Account ID
+def validate_account(account_id, zone):
+    size_account_id = len(account_id)
+
+    if size_account_id == 0:
+        return 'error_0'
+    elif (size_account_id > 0) and (is_number(account_id) == 'false'):
+        return 'not_number'
+    elif (zone == 'DO') and (is_number(account_id) == 'true') and (size_account_id < 10):
+        return 'error_10'
+    elif (zone == 'BR') and ((size_account_id == 11) or (size_account_id == 14)):
+        return 'true'
+    elif (zone == 'BR') and ((size_account_id != 11) or (size_account_id != 14)):
+        return 'error_cnpj_cpf'
+    elif is_number(account_id) == 'true':
+        return 'true'
+
+
+# Validate account sub-menus for Data Searching
+def validate_accounts(option):
+    if option == '1' or option == '2' or option == '3':
+        return 'true'
+    else:
+        return 'false'

@@ -35,9 +35,10 @@ def get_microservice_payload_post_delivery_date(account_data, is_alternative_del
     
     return json_object
 
+
 # Create payload for delivery fee
 def get_microservice_payload_post_delivery_fee(account_data, include_delivery_cost):
-
+    # Create dictionary with interest amount values
     dict_values = {
         'accounts[0]': account_data['accountId'],
         'interest[0].interestId': 'ID00001',
@@ -70,6 +71,7 @@ def get_microservice_payload_post_delivery_fee(account_data, include_delivery_co
     
     return json_object
 
+
 # Create delivery date in microservice
 def create_delivery_window_microservice(zone, environment, account_data, is_alternative_delivery_date):
     # Get headers
@@ -83,11 +85,9 @@ def create_delivery_window_microservice(zone, environment, account_data, is_alte
 
     index = 0
     request_body = list()
-    temporary_body = None
     while index <= (len(dates_list) - 1):
-
-        # force mixed values if is is_alternative_delivery_date
-        if (is_alternative_delivery_date  == 'true'):
+        # Force mixed values if it's is_alternative_delivery_date
+        if is_alternative_delivery_date == 'true':
             if (index % 2) == 0:
                 option_is_alternative_delivery_date = 'true'
             else:
@@ -96,25 +96,20 @@ def create_delivery_window_microservice(zone, environment, account_data, is_alte
             option_is_alternative_delivery_date = is_alternative_delivery_date
 
         # Get body request
-        temporary_body = get_microservice_payload_post_delivery_date(account_data, option_is_alternative_delivery_date, dates_list[index], index)
+        temporary_body = get_microservice_payload_post_delivery_date(account_data, option_is_alternative_delivery_date,
+                                                                     dates_list[index], index)
         request_body.append(temporary_body)
         index = index + 1
     
     # Place request
     response = place_request('POST', request_url, json.dumps(request_body), request_headers)
     if response.status_code != 202:
-        print(text.Red + '\n- [Account Relay Service] Failure to add delivery window to account. Response Status: ' + str(response.status_code) + '. Response message ' + response.text)
+        print(text.Red + '\n- [Account Relay Service] Failure to create delivery window. Response Status: '
+                         '{response_status}. Response message: {response_message}'
+              .format(response_status=str(response.status_code), response_message=response.text))
         return 'false'
 
     return 'success'
-
-
-# Validate alternative delivery date creation
-def validate_alternative_delivery_date(option):
-    if option == '' or (option != 'Y' and option != 'N'):
-        return 'false'
-    else:
-        return 'true'
 
 
 # Return payload next date for delivery date
@@ -123,12 +118,14 @@ def return_dates_payload():
     initial_date = datetime.now()
     initial_month = initial_date.strftime('%m')
     last_day_month = calendar.monthrange(int(initial_date.strftime('%Y')), int(initial_date.strftime('%m')))[1]
-    if (int(initial_date.strftime('%d')) == last_day_month):
+
+    if int(initial_date.strftime('%d')) == last_day_month:
         initial_date = initial_date + timedelta(days=1)
         initial_month = initial_date.strftime('%m')
         last_day_month = calendar.monthrange(int(initial_date.strftime('%Y')), int(initial_date.strftime('%m')))[1]
         
-    while (int(initial_date.strftime('%d')) < last_day_month) and (int(initial_date.strftime('%m')) <= int(initial_month)):
+    while (int(initial_date.strftime('%d')) < last_day_month) and (int(initial_date.strftime('%m'))
+                                                                   <= int(initial_month)):
         clone_initial_date = initial_date
         clone_initial_date = clone_initial_date + timedelta(days=1)
         start_date = clone_initial_date.strftime('%Y-%m-%d')
@@ -140,10 +137,10 @@ def return_dates_payload():
     
     return list_delivery_dates
 
+
 # Create delivery fee (interest) in microservice
 def create_delivery_fee_microservice(zone, environment, account_data, include_delivery_cost):
-
-     # Get headers
+    # Get headers
     request_headers = get_header_request(zone, 'false', 'false', 'false', 'false')
 
     # Get base URL
@@ -155,7 +152,9 @@ def create_delivery_fee_microservice(zone, environment, account_data, include_de
     # Place request
     response = place_request('PUT', request_url, json.dumps(request_body), request_headers)
     if response.status_code != 202:
-        print(text.Red + '\n- [cart-calculation-relay] Failure to add delivery cost. Response Status: ' + str(response.status_code) + '. Response message ' + response.text)
+        print(text.Red + '\n- [Pricing Engine Relay Service] Failure to add delivery cost. Response Status: '
+                         '{response_status}. Response message: {response_message}'
+              .format(response_status=str(response.status_code), response_message=response.text))
         return 'false'
 
     return 'success'

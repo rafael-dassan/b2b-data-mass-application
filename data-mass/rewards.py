@@ -5,11 +5,13 @@ import os
 from random import randint
 from datetime import timedelta, datetime
 
-# Local application imports
-from pip._internal.commands.list import tabulate
+# Third party imports
+from tabulate import tabulate
 
+# Local application imports
 from common import get_header_request, get_microservice_base_url, update_value_to_json, convert_json_to_string, \
-    place_request, create_list, is_number
+    place_request, create_list
+from validations import is_number
 from products import request_get_offers_microservice, request_get_products_by_account_microservice, \
     request_get_products_microservice, get_sku_name
 from account import check_account_exists_microservice
@@ -968,6 +970,7 @@ def generate_terms_information(zone):
 
     return terms_info
 
+
 # Displays the SKU's for rewards shopping
 def display_sku_rewards(zone, environment, abi_id):
     header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
@@ -982,6 +985,7 @@ def display_sku_rewards(zone, environment, abi_id):
             sku_name = get_sku_name(zone, environment, skus)
             print(text.default_text_color + "SKU name: " + sku_name + "  SKU ID: ", skus)
 
+
 def get_id_rewards(abi_id, header_request, environment):
     request_url = get_microservice_base_url(environment,'true') + '/rewards-service/rewards/' + abi_id
     response = place_request('GET', request_url, '', header_request)
@@ -989,6 +993,7 @@ def get_id_rewards(abi_id, header_request, environment):
     program_id = str(program_enrollment.get("programId"))
 
     return program_id
+
 
 def get_sku_rewards(program_id, header_request, environment):
     request_url = get_microservice_base_url(environment,'true') + '/rewards-service/programs/' + program_id

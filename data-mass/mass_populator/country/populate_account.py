@@ -8,7 +8,7 @@ from products import request_get_products_microservice
 from products import generate_random_price_ids
 from products import slice_array_products
 from products import request_post_products_account_microservice
-from common import validate_state
+from validations import validate_state
 from mass_populator.country.populate_inventory import populate_default_inventory
 from mass_populator.log import *
 

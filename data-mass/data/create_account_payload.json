@@ -45,8 +45,8 @@
       "name": "TEST SALES REP NAME",
       "phone": 11000000000
   },
-  "hasEmptiesLoan": "string",
-  "hasOverprice": "string",
+  "hasEmptiesLoan": false,
+  "hasOverprice": false,
   "salesRoute": null,
   "potential": "DM-POTENT",
   "segment": "DM-SEG",
