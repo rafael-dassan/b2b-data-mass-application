@@ -1931,9 +1931,9 @@ def print_invoice_retriever_menu():
 
 
 def print_invoices(invoice_info):
-
+    print(text.Yellow + "\nInvoice Id:")
     for i in range(len(invoice_info['data'])+1):
-        print("Invoice Id: " + invoice_info['data'][i-1]['invoiceId'])
+        print(text.default_text_color + invoice_info['data'][i-1]['invoiceId'])
 
 
 
