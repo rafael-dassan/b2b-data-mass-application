@@ -936,24 +936,17 @@ def input_products_to_account_menu():
 
     delivery_center_id = account[0]['deliveryCenterId']
 
+    proceed = 'N'
     products = request_get_offers_microservice(abi_id, zone, environment)
     if products == 'false':
         print_finish_application_menu()
     elif products == 'not_found':
-        print(text.Red + '\n- [Catalog Service] There is no product associated with the account {abi_id}'
-              .format(abi_id=abi_id))
-        print_finish_application_menu()
-
-    proceed = 'N'
-    if len(products) != 0:
+        proceed = 'Y'
+    else:
         proceed = input(text.Yellow + '\n- [Account] The account ' + str(abi_id) + ' already have products, do you '
                                                                                    'want to proceed? y/N: ').upper()
         if proceed == '':
             proceed = 'N'
-    elif len(products) == 0:
-        proceed = 'Y'
-    else:
-        print_finish_application_menu()
 
     if proceed == 'Y':
         all_products_zone = request_get_products_microservice(zone, environment)
