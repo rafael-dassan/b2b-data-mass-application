@@ -2,7 +2,6 @@ from common import block_print
 from mass_populator.csv_helper import search_data_by
 from mass_populator.log import *
 from mass_populator.country.populate_account import populate_pocs
-from mass_populator.country.populate_user import populate_users
 from mass_populator.country.populate_recomendation import populate_recommendations as populate_recommendations_base
 from mass_populator.country.populate_category import associate_products_to_category_magento_base
 from mass_populator.country.populate_product import enable_products_magento as enable_products_magento_base
@@ -28,15 +27,8 @@ def populate_accounts(country, environment):
 
 
 def populate_users_magento(country, environment):    
-    logger.info("populate_users_magento for %s/%s", country, environment)
-
-    # Colombia, Mexico, Brazil, Ecuador, Peru, Dominican Republic and South Africa use the registration v3 (IAM B2C)
-    # Argentina is still using registration v2
-    iam_allowed_countries = ['CO', 'MX', 'BR', 'EC', 'PE', 'DO', 'ZA']
-    if country in iam_allowed_countries:
-        populate_users_iam_b2c(country, environment, search_data_by(country, 'user'))
-    else:
-        populate_users(country, environment, search_data_by(country, 'user'))
+    logger.info("populate_users_iam_b2c for %s/%s", country, environment)
+    populate_users_iam_b2c(country, environment, search_data_by(country, 'user'))
 
 
 def populate_recommendations(country, environment):
