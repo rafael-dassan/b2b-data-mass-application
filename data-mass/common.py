@@ -57,74 +57,17 @@ def validate_option_update_invoice(option):
         return 'false'
 
 
-# Validate zone
-def validateZone(isMiddleware, zone):
-    if isMiddleware == 'true':
-        switcher = {
-            'CL': 'true'
-        }
-
-        value = switcher.get(zone, 'false')
-        return value
-    else:
-        switcher = {
-            'DO': 'true',
-            'ZA': 'true',
-            'BR': 'true',
-            'CO': 'true',
-            'AR': 'true',
-            'MX': 'true'
-        }
-
-        value = switcher.get(zone, 'false')
-        return value
-
-
 # Validate Country in User creation
 def validateCountryInUserCreation(country):
     switcher = {
         "BR": "true",
         "DO": "true",
         "AR": "true",
-        "CL": "true",
         "ZA": "true",
         "CO": "true"
     }
 
     value = switcher.get(country, "false")
-    return value
-
-
-def validate_zone_data_searching_deals(zone):
-    switcher = {
-        'BR': 'true',
-        'DO': 'true',
-        'CO': 'true',
-        'AR': 'true',
-        'CL': 'true',
-        'ZA': 'true',
-        'MX': 'true',
-        'PE': 'true',
-        'EC': 'true'
-    }
-
-    value = switcher.get(zone, 'false')
-    return value
-
-
-def validate_zone_for_rewards(zone):
-    switcher = {
-        'BR': 'true',
-        'DO': 'true',
-        'CO': 'true',
-        'AR': 'true',
-        'ZA': 'true',
-        'MX': 'true',
-        'PE': 'true',
-        'EC': 'true'
-    }
-
-    value = switcher.get(zone, 'false')
     return value
 
 
@@ -134,22 +77,6 @@ def validate_zone_for_inventory(zone):
         'CO': 'true',
         'MX': 'true',
         'AR': 'true',
-        'PE': 'true',
-        'EC': 'true'
-    }
-
-    value = switcher.get(zone, 'false')
-    return value
-
-
-def validate_zone_for_deals(zone):
-    switcher = {
-        'BR': 'true',
-        'DO': 'true',
-        'CO': 'true',
-        'MX': 'true',
-        'AR': 'true',
-        'ZA': 'true',
         'PE': 'true',
         'EC': 'true'
     }
@@ -185,65 +112,36 @@ def validate_zone_for_combos_dt(zone):
     return value
 
 
-def validate_zone_for_delivery_window(zone):
-    switcher = {
-        'BR': 'true',
-        'DO': 'true',
-        'ZA': 'true',
-        'CO': 'true',
-        'MX': 'true',
-        'AR': 'true',
-        'CL': 'true',
-        'PE': 'true',
-        'EC': 'true'
-    }
-
-    value = switcher.get(zone, 'false')
-    return value
-
-
-def validate_zone_for_recommender(zone):
-    switcher = {
-        'BR': 'true',
-        'DO': 'true',
-        'ZA': 'true',
-        'CO': 'true',
-        'MX': 'true',
-        'AR': 'true',
-        'PE': 'true',
-        'EC': 'true'
-    }
-
-    value = switcher.get(zone, 'false')
-    return value
-
-
 # Validate account structure
-def validateStructure(option):
-    if option == "1" or option == "2" or option == "3" or option == "4" or option == "5":
-        return "true"
-    else:
-        return "false"
-
-
-# Validate rewards
-def validate_rewards(option):
-    if option == '1' or option == '2' or option == '3' or option == '4' or option == '5' or option == '6':
+def validate_structure(option):
+    options = ['1', '2', '3', '4', '5']
+    if option in options:
         return 'true'
     else:
         return 'false'
 
 
-# Validate deals
+# Validate rewards structure
+def validate_rewards(option):
+    options = ['1', '2', '3', '4', '5', '6']
+    if option in options:
+        return 'true'
+    else:
+        return 'false'
+
+
+# Validate orders structure
 def validate_orders(option):
-    if option == '1' or option == '2' or option == '3' or option == '4':
+    options = ['1', '2', '3', '4']
+    if option in options:
         return 'true'
     else:
         return 'false'
 
 
 def validate_recommendation_type(option):
-    if option == '1' or option == '2' or option == '3' or option == '4' or option == '5':
+    options = ['1', '2', '3', '4', '5']
+    if option in options:
         return 'true'
     else:
         return 'false'
@@ -284,7 +182,6 @@ def get_header_request(header_country, use_jwt_auth='false', use_root_auth='fals
         'CO': 'America/Bogota',
         'PE': 'America/Lima',
         'EC': 'America/Guayaquil',
-        'CL': 'America/Santiago',
         'MX': 'UTC'
     }
     timezone = switcher.get(header_country.upper(), 'false')
@@ -319,23 +216,6 @@ def get_header_request(header_country, use_jwt_auth='false', use_root_auth='fals
     return header
 
 
-# Return base URL for Middleware
-def get_middleware_base_url(zone, environment, version_request):
-    prefix_zone = zone.lower()
-
-    if zone == 'AR' or zone == 'CL':
-        prefix_zone = 'las'
-
-    prefix_environment = environment.lower()
-
-    if environment == 'UAT':
-        prefix_environment = 'test'
-    elif environment == 'SIT':
-        prefix_environment = 'qa'
-
-    return 'https://b2b-' + prefix_zone.lower() + '-' + prefix_environment.lower() + '.azurewebsites.net/api/' + version_request + '/' + zone.upper()
-
-
 # Return base URL for Microservice
 def get_microservice_base_url(environment, is_v1='true'):
     if environment == 'DEV':
@@ -357,7 +237,6 @@ def get_magento_base_url(environment, country):
             'BR': 'https://br.uat.bees-platform.dev',
             'DO': 'https://do.uat.bees-platform.dev',
             'AR': 'https://ar.uat.bees-platform.dev',
-            'CL': 'https://cl.uat.bees-platform.dev',
             'ZA': 'https://za.uat.bees-platform.dev',
             'CO': 'https://co.uat.bees-platform.dev',
             'MX': 'https://mx.uat.bees-platform.dev',
@@ -368,7 +247,6 @@ def get_magento_base_url(environment, country):
             'BR': 'https://br.sit.bees-platform.dev',
             'DO': 'https://do.sit.bees-platform.dev',
             'AR': 'https://ar.sit.bees-platform.dev',
-            'CL': 'https://cl.sit.bees-platform.dev',
             'ZA': 'https://za.sit.bees-platform.dev',
             'CO': 'https://co.sit.bees-platform.dev',
             'MX': 'https://mx.sit.bees-platform.dev',
@@ -385,7 +263,6 @@ def get_region_id(country):
         "BR": "PT_BR",
         "DO": "ES_DO",
         "AR": "ES_AR",
-        "CL": "ES_CL",
         "ZA": "EN_ZA",
         "CO": "ES_CO"
     }
@@ -399,7 +276,6 @@ def get_magento_user_registration_access_token(environment, country):
             "BR": "qq8t0w0tvz7nbn4gxo5jh9u62gohvjrw",
             "DO": "56jqtzzto7tw9uox8nr3eckoeup53dt2",
             "AR": "30lqki06nbdegugcmdb0ttm9yppnmoec",
-            "CL": "30lqki06nbdegugcmdb0ttm9yppnmoec",
             "ZA": "31pdb0yht5kn3eld7gum021f6k984jh9",
             "CO": "8mh6b9b6ft6m1cr5k7zm2jh4aljq4slx",
             'PE': '4z0crqq6yb6t5mip43i63tgntdll09vc',
@@ -410,7 +286,6 @@ def get_magento_user_registration_access_token(environment, country):
             "BR": "qq8t0w0tvz7nbn4gxo5jh9u62gohvjrw",
             "DO": "56jqtzzto7tw9uox8nr3eckoeup53dt2",
             "AR": "30lqki06nbdegugcmdb0ttm9yppnmoec",
-            "CL": "30lqki06nbdegugcmdb0ttm9yppnmoec",
             "ZA": "nmvvuk58lc425a7p5l55orrkgh0jprr2",
             "CO": "walt5dp3keiq2du0f30kir21v13f3u0v",
             'PE': 'hwv67q9d3zyy2u500n2x0r5g7mr2j5is',
@@ -429,7 +304,6 @@ def get_magento_datamass_access_token(environment, country):
             'BR': '8z2z3y523hoqkcqci8q58afuoue81bns',
             'DO': 'js4gd8y9wkqogf7eo2s4uy6oys15lfkf',
             'AR': 'a34o213zgisn67efeg0zbq04sqg667qk',
-            'CL': 'a34o213zgisn67efeg0zbq04sqg667qk',
             'ZA': '0seca4btewbr3e1opma4je2x8ftj57wx',
             'CO': 'meqei3q5ztreebdpb5vyej378mt2o8qy',
             'MX': 'bqzqcmx3opvntxtwijh98s4kmb21pi8j',
@@ -440,7 +314,6 @@ def get_magento_datamass_access_token(environment, country):
             'BR': 'q6yti2dxmhp0e2xjgyvtt72nziss6ptp',
             'DO': 'tgqnjlqpfupf0i4zxcs2doqx409k1hyq',
             'AR': 'hzp6hw65oqiyeyv8ozfzunex0nc1rff8',
-            'CL': 'hzp6hw65oqiyeyv8ozfzunex0nc1rff8',
             'ZA': 'fde80w10jbbaed1mrz6yg0pwy1vzfo48',
             'CO': 'new189lnml9xmcr3m9gc0j6oji6w2izr',
             'MX': '86pg36lug4ivrx3xh5b5qnemzy1gw6v8',
@@ -498,25 +371,23 @@ def print_available_options(selection_structure):
     elif selection_structure == '2':
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
         print(text.default_text_color + str(1), text.Yellow + 'Order simulation via Microservice')
-        print(text.default_text_color + str(2), text.Yellow + 'Order simulation via Middleware')
-        print(text.default_text_color + str(3), text.Yellow + 'POC information')
-        print(text.default_text_color + str(4), text.Yellow + 'Product information')
-        print(text.default_text_color + str(5), text.Yellow + 'Deals information by account')
-        print(text.default_text_color + str(6), text.Yellow + 'Order information by account')
-        print(text.default_text_color + str(7), text.Yellow + 'Recommender information by account')
-        print(text.default_text_color + str(8), text.Yellow + 'SKUs for Reward Shopping')
+        print(text.default_text_color + str(2), text.Yellow + 'POC information')
+        print(text.default_text_color + str(3), text.Yellow + 'Product information')
+        print(text.default_text_color + str(4), text.Yellow + 'Deals information by account')
+        print(text.default_text_color + str(5), text.Yellow + 'Order information by account')
+        print(text.default_text_color + str(6), text.Yellow + 'Recommender information by account')
+        print(text.default_text_color + str(7), text.Yellow + 'SKUs for Reward Shopping')
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_option_request_selection(selection) == 'false':
             print(text.Red + '\n- Invalid option\n')
             print(text.default_text_color + str(0), text.Yellow + 'Close application')
             print(text.default_text_color + str(1), text.Yellow + 'Order simulation via Microservice')
-            print(text.default_text_color + str(2), text.Yellow + 'Order simulation via Middleware')
-            print(text.default_text_color + str(3), text.Yellow + 'POC information')
-            print(text.default_text_color + str(4), text.Yellow + 'Product information')
-            print(text.default_text_color + str(5), text.Yellow + 'Deals information')
-            print(text.default_text_color + str(6), text.Yellow + 'Order information by account')
-            print(text.default_text_color + str(7), text.Yellow + 'Recommender information by account')
-            print(text.default_text_color + str(8), text.Yellow + 'SKUs for Reward Shopping')
+            print(text.default_text_color + str(2), text.Yellow + 'POC information')
+            print(text.default_text_color + str(3), text.Yellow + 'Product information')
+            print(text.default_text_color + str(4), text.Yellow + 'Deals information')
+            print(text.default_text_color + str(5), text.Yellow + 'Order information by account')
+            print(text.default_text_color + str(6), text.Yellow + 'Recommender information by account')
+            print(text.default_text_color + str(7), text.Yellow + 'SKUs for Reward Shopping')
             selection = input(text.default_text_color + '\nPlease select: ')
 
     elif selection_structure == '3':
@@ -574,16 +445,16 @@ def print_welcome_script():
 # Print structure menu
 def print_structure_menu():
     print(text.default_text_color + str(1), text.Yellow + 'Data creation - Microservice')
-    print(text.default_text_color + str(2), text.Yellow + 'Data searching - Microservice/MDW')
+    print(text.default_text_color + str(2), text.Yellow + 'Data searching - Microservice')
     print(text.default_text_color + str(3), text.Yellow + 'Data creation - Magento')
     print(text.default_text_color + str(4), text.Yellow + 'Data creation - IAM')
     print(text.default_text_color + str(5), text.Yellow + 'Close application')
 
     structure = input(text.default_text_color + '\nPlease choose an option: ')
-    while validateStructure(structure) == 'false':
+    while validate_structure(structure) == 'false':
         print(text.Red + '\n- Invalid option\n')
         print(text.default_text_color + str(1), text.Yellow + 'Data creation - Microservice')
-        print(text.default_text_color + str(2), text.Yellow + 'Data searching - Microservice/MDW')
+        print(text.default_text_color + str(2), text.Yellow + 'Data searching - Microservice')
         print(text.default_text_color + str(3), text.Yellow + 'Data creation - Magento')
         print(text.default_text_color + str(4), text.Yellow + 'Data creation - IAM')
         print(text.default_text_color + str(5), text.Yellow + 'Close application')
@@ -599,7 +470,7 @@ def print_rewards_menu():
     print(text.default_text_color + str(3), text.Yellow + 'Enroll POC to a program')
     print(text.default_text_color + str(4), text.Yellow + 'Input Challenges to zone')
     print(text.default_text_color + str(5), text.Yellow + 'Input Redeem Products to account')
-    print(text.default_text_color + str(6), text.Yellow + 'Desenroll a POC to a program')
+    print(text.default_text_color + str(6), text.Yellow + 'Unenroll a POC from a program')
     structure = input(text.default_text_color + '\nPlease select: ')
     while validate_rewards(structure) == 'false':
         print(text.Red + '\n- Invalid option')
@@ -608,7 +479,7 @@ def print_rewards_menu():
         print(text.default_text_color + str(3), text.Yellow + 'Enroll POC to a program')
         print(text.default_text_color + str(4), text.Yellow + 'Input Challenges to zone')
         print(text.default_text_color + str(5), text.Yellow + 'Input Redeem Products to account')
-        print(text.default_text_color + str(6), text.Yellow + 'Desenroll a POC to a program')
+        print(text.default_text_color + str(6), text.Yellow + 'Unenroll a POC from a program')
         structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure
@@ -658,34 +529,11 @@ def print_combos_menu():
 
 # Validate combo type structure
 def validate_combo_structure(option):
-    if option == '1' or option == '2' or option == '3' or option == '4' or option == '5':
+    options = ['1', '2', '3', '4', '5']
+    if option in options:
         return 'true'
     else:
         return 'false'
-
-
-# Print zone menu for Recommenders
-def print_zone_menu_recommender(recommender_type):
-    if recommender_type != 'COMBOS_QUICKORDER':
-        zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX, PE, EC): ')
-        while validate_zone_for_recommender(zone.upper()) == 'false':
-            print(text.Red + '\n- Invalid option\n')
-            zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX, PE, EC): ')
-    else:
-        zone = input(text.default_text_color + 'Zone (DO): ')
-        while validate_zone_for_recommender(zone.upper()) == 'false':
-            print(text.Red + '\n- Invalid option\n')
-            zone = input(text.default_text_color + 'Zone (DO): ')
-    return zone.upper()
-
-
-def print_zone_menu_data_searching_deals():
-    zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO, ZA, MX, PE, EC): ')
-    while validate_zone_data_searching_deals(zone.upper()) == 'false':
-        print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (AR, BR, CL, CO, DO, ZA, MX, PE, EC): ')
-
-    return zone.upper()
 
 
 # Print zone menu for Microservice
@@ -698,32 +546,12 @@ def print_zone_menu_for_ms():
     return zone.upper()
 
 
-# Print zone menu for rewards
-def print_zone_menu_for_rewards():
-    zone = input(text.default_text_color + 'Zone (BR, DO, CO, AR, ZA, MX, PE, EC): ')
-    while validate_zone_for_rewards(zone.upper()) == 'false':
-        print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (BR, DO, CO, AR, ZA, MX, PE, EC): ')
-
-    return zone.upper()
-
-
 # Print zone menu for inventory
 def print_zone_menu_for_inventory():
     zone = input(text.default_text_color + 'Zone (AR, ZA, CO, MX, PE, EC): ')
     while validate_zone_for_inventory(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
         zone = input(text.default_text_color + 'Zone (AR, ZA, CO, MX, PE, EC): ')
-
-    return zone.upper()
-
-
-# Print zone menu for deals
-def print_zone_menu_for_deals():
-    zone = input(text.default_text_color + 'Zone (AR, BR, CO, DO, MX, ZA, PE, EC): ')
-    while validate_zone_for_deals(zone.upper()) == 'false':
-        print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (AR, BR, CO, DO, MX, ZA, PE, EC): ')
 
     return zone.upper()
 
@@ -746,10 +574,10 @@ def print_zone_menu_for_combos(combo_type=''):
 
 # Print country menu for User creation
 def printCountryMenuInUserCreation():
-    country = input(text.default_text_color + "Country (BR, DO, AR, CL, ZA, CO): ")
+    country = input(text.default_text_color + "Country (BR, DO, AR, ZA, CO): ")
     while validateCountryInUserCreation(country.upper()) == "false":
         print(text.Red + "\n- Invalid option\n")
-        country = input(text.default_text_color + "Country (BR, DO, AR, CL, ZA, CO): ")
+        country = input(text.default_text_color + "Country (BR, DO, AR, ZA, CO): ")
 
     return country.upper()
 
@@ -970,43 +798,6 @@ def print_environment_menu_in_user_create_iam():
     return environment.upper()
 
 
-# Print zone simulation menu
-def print_zone_simulation_menu(is_middleware='true'):
-    if is_middleware == 'true':
-        zone = input(text.default_text_color + 'Zone (CL): ')
-        while validateZone('true', zone.upper()) == 'false':
-            print(text.Red + '\n- Invalid option\n')
-            zone = input(text.default_text_color + 'Zone (CL): ')
-    else:
-        zone = input(text.default_text_color + 'Zone (AR, ZA, DO, BR, CO, MX): ')
-        while validateZone('false', zone.upper()) == 'false':
-            print(text.Red + '\n- Invalid option\n')
-            zone = input(text.default_text_color + 'Zone (AR, ZA, DO, BR, CO, MX): ')
-
-    return zone.upper()
-
-
-# Validate zone simulation
-def validate_zone_simulation_service(is_middleware, zone):
-    if is_middleware == "true":
-        switcher = {
-            "AR": "true",
-            "CL": "true"
-        }
-
-        value = switcher.get(zone, "false")
-        return value
-    else:
-        switcher = {
-            "DO": "true",
-            "ZA": "true",
-            "BR": "true"
-        }
-
-        value = switcher.get(zone, "false")
-        return value
-
-
 # Menu for payment method simulation
 def print_payment_method_simulation_menu(zone):
     if zone == 'BR':
@@ -1116,14 +907,16 @@ def print_recommender_type_menu():
 
 # Validate order sub-menus
 def validate_order_sub_menu(option):
-    if option == '1' or option == '2':
+    options = ['1', '2']
+    if option in options:
         return 'true'
     else:
         return 'false'
 
 
 def validate_get_products(option):
-    if option == '1' or option == '2' or option == '3':
+    options = ['1', '2', '3']
+    if option in options:
         return 'true'
     else:
         return 'false'
@@ -1204,43 +997,17 @@ def print_allow_cancellable_order_menu():
 def print_product_quantity_menu(all_products_zone):
     while True:
         try:
-            qtd = int(input(text.default_text_color + '\nNumber of products you want to add (Maximum: '
+            qtd = int(input(text.default_text_color + 'Number of products you want to add (Maximum: '
                             + str(len(all_products_zone)) + '): '))
             while qtd <= 0:
                 print(text.Red + '\n- The product quantity must be more than 0\n')
-                qtd = int(input(text.default_text_color + 'Number of products you want to add (Maximum: '
+                qtd = int(input(text.default_text_color + '\nNumber of products you want to add (Maximum: '
                                 + str(len(all_products_zone)) + '): '))
             break
         except ValueError:
             print(text.Red + '\n- The product quantity must be Numeric\n')
 
     return qtd
-
-
-def validate_zone_for_searching(zone):
-    switcher = {
-        'BR': 'true',
-        'DO': 'true',
-        'ZA': 'true',
-        'CO': 'true',
-        'MX': 'true',
-        'AR': 'true',
-        'CL': 'true',
-        'PE': 'true',
-        'EC': 'true'
-    }
-
-    value = switcher.get(zone, 'false')
-    return value
-
-
-def print_zone_menu_for_searching():
-    zone = input(text.default_text_color + 'Zone (AR, BR, CL, DO, ZA, CO, MX, PE, EC): ')
-    while validate_zone_for_searching(zone.upper()) == 'false':
-        print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (AR, BR, CL, DO, ZA, CO, MX, PE, EC): ')
-
-    return zone.upper()
 
 
 def validate_zone_for_credit_statement(zone):

@@ -4,11 +4,13 @@ from mass_populator.country.populate_rewards import unenroll_pocs as unenroll_ac
 
 logger = logging.getLogger(__name__)
 
+
 def execute_rewards(country, environment):
     unenroll_accounts(country, environment)
     return True
 
+
 def unenroll_accounts(country, environment):
     logger.info("unenroll_accounts for %s/%s", country, environment)
-    unenroll_accounts_base(country, environment, search_data_by(country,'rewards'))
+    unenroll_accounts_base(country, environment, search_data_by(country, 'rewards'))
     return True

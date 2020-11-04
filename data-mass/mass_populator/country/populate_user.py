@@ -1,4 +1,3 @@
-import pandas as pd
 from mass_populator.log import *
 from user_creation_magento import \
     create_user, user_already_exists_with_account, check_user, UserCheckDict, authenticate_user, \

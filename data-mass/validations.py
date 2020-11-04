@@ -3,7 +3,8 @@ from unicodedata import numeric
 
 
 def validate_yes_no_option(option):
-    if option == 'Y' or option == 'N':
+    options = ['Y', 'N']
+    if option in options:
         return True
     else:
         return False
@@ -83,13 +84,13 @@ def validate_account(account_id, zone):
 
 # Validate account sub-menus for Data Searching
 def validate_accounts(option):
-    if option == '1' or option == '2' or option == '3':
+    options = ['1', '2', '3']
+    if option in options:
         return 'true'
     else:
         return 'false'
 
 
-# Validate deals options
 def validate_deals_options(option):
     valid_options = ['1', '2', '3', '4', '5']
     if option in valid_options:
@@ -99,14 +100,15 @@ def validate_deals_options(option):
 
 
 def validate_option_sku(option):
-    if option == '1' or option == '2':
+    options = ['1', '2']
+    if option in options:
         return 'true'
     else:
         return 'false'
 
 
 def validate_zone_for_ms(zone):
-    switcher = {
+    return {
         'BR': 'true',
         'DO': 'true',
         'ZA': 'true',
@@ -115,14 +117,12 @@ def validate_zone_for_ms(zone):
         'AR': 'true',
         'PE': 'true',
         'EC': 'true'
-    }
-
-    value = switcher.get(zone, 'false')
-    return value
+    }.get(zone, 'false')
 
 
 def validate_environment(environment):
-    if environment == 'DEV' or environment == 'SIT' or environment == 'UAT':
+    environments = ['DEV', 'SIT', 'UAT']
+    if environment in environments:
         return True
     else:
         return False
