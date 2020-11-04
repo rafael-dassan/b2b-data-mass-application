@@ -2,7 +2,6 @@ def valid_country(country):
     switcher = {
         "AR": True,
         "BR": True,
-        "CL": True,
         "DO": True,
         "ZA": True,
         "CO": True,

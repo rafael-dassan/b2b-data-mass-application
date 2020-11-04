@@ -22,7 +22,7 @@ from products_magento import *
 import user_creation_magento as user_magento
 import user_creation_v3 as user_v3
 import user_delete_v3 as user_delete_v3
-from simulation import process_simulation_microservice, process_simulation_middleware
+from simulation import process_simulation_microservice
 from validations import validate_yes_no_option, validate_state, is_number
 
 
@@ -50,13 +50,12 @@ def show_menu():
         switcher = {
             '0': finish_application,
             '1': check_simulation_service_account_microservice_menu,
-            '2': check_simulation_service_mdw_menu,
-            '3': account_information_menu,
-            '4': product_information_menu,
-            '5': deals_information_menu,
-            '6': order_information_menu,
-            '7': recommender_information_menu,
-            '8': retriever_sku_menu
+            '2': account_information_menu,
+            '3': product_information_menu,
+            '4': deals_information_menu,
+            '5': order_information_menu,
+            '6': recommender_information_menu,
+            '7': retriever_sku_menu
         }
     elif selection_structure == '3':
         switcher = {
@@ -85,7 +84,7 @@ def show_menu():
 
 
 def deals_information_menu():
-    zone = print_zone_menu_data_searching_deals()
+    zone = print_zone_menu_for_ms()
     environment = print_environment_menu()
     abi_id = print_account_id_menu(zone)
     if abi_id == 'false':
@@ -95,18 +94,11 @@ def deals_information_menu():
     if account == 'false':
         print_finish_application_menu()
 
-    if zone == 'CL':
-        deals = request_get_deals_promotion_service(abi_id, zone, environment)
-        if deals == 'false' or deals == 'not_found':
-            print_finish_application_menu()
-        else:
-            display_deals_information_promotion(deals)
+    deals = request_get_deals_promo_fusion_service(zone, environment, abi_id)
+    if deals != 'false':
+        display_deals_information_promo_fusion(abi_id, deals)
     else:
-        deals = request_get_deals_promo_fusion_service(zone, environment, abi_id)
-        if deals != 'false':
-            display_deals_information_promo_fusion(abi_id, deals)
-        else:
-            print_finish_application_menu()
+        print_finish_application_menu()
 
 
 def product_information_menu():
@@ -164,7 +156,7 @@ def product_information_menu():
 
 def account_information_menu():
     selection_structure = print_get_account_menu()
-    zone = print_zone_menu_for_searching()
+    zone = print_zone_menu_for_ms()
     environment = print_environment_menu()
 
     switcher = {
@@ -214,7 +206,7 @@ def account_information_menu():
 # Input Rewards to account
 def create_rewards_to_account():
     selection_structure = print_rewards_menu()
-    zone = print_zone_menu_for_rewards()
+    zone = print_zone_menu_for_ms()
     environment = print_environment_menu()
 
     switcher = {
@@ -591,46 +583,6 @@ def check_simulation_service_account_microservice_menu():
     print_finish_application_menu()
 
 
-# Place request for simulation service in middleware
-def check_simulation_service_mdw_menu():
-    zone = print_zone_simulation_menu("true")
-    environment = print_environment_menu()
-    abi_id = print_account_id_menu(zone)
-    if abi_id == 'false':
-        print_finish_application_menu()
-
-    # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone, environment)
-
-    if account == 'false':
-        print_finish_application_menu()
-
-    order_items = list()
-    # input normal sku in simulation
-    input_order_item = input(text.default_text_color + "Would you like to include a new sku for simulation? (y/n) ")
-    while input_order_item.upper() != "Y" and input_order_item.upper() != "N":
-        print(text.Red + "\n- Invalid option\n")
-        input_order_item = input(text.default_text_color + "Would you like to include a new sku for simulation? (y/n) ")
-
-    if input_order_item.upper() == "Y":
-        more_sku = "Y"
-        while more_sku.upper() == "Y":
-            sku = input(text.default_text_color + "Inform sku for simulation: ")
-            quantity = input(text.default_text_color + "Inform sku quantity for simulation: ")
-            while is_number(quantity) == "false":
-                print(text.Red + "\n- Invalid quantity\n")
-                quantity = input(text.default_text_color + "Inform sku quantity for simulation: ")
-
-            temp_product_data = {"sku": sku, "quantity": quantity}
-            order_items.append(temp_product_data)
-            more_sku = input(text.default_text_color + "Would you like to include more skus for simulation? (y/N) ")
-
-    # Payment Method menu
-    payment_method = print_payment_method_simulation_menu(zone)
-    process_simulation_middleware(zone, environment, abi_id, account, order_items, payment_method)
-    print_finish_application_menu()
-
-
 # Input inventory (stock) to products
 def input_inventory_to_product():
     zone = print_zone_menu_for_inventory()
@@ -669,7 +621,7 @@ def input_inventory_to_product():
 # Input beer recommender by account on Microservice
 def input_recommendation_to_account_menu():
     recommender_type = print_recommender_type_menu()
-    zone = print_zone_menu_recommender(recommender_type)
+    zone = print_zone_menu_for_ms()
     environment = print_environment_menu()
     abi_id = print_account_id_menu(zone)
     if abi_id == 'false':
@@ -1435,7 +1387,7 @@ def get_categories_menu():
 def associate_product_to_category_menu():
     """Associate product to category
     Input Arguments:
-        - Country (BR, DO, AR, CL, ZA, CO)
+        - Country (BR, DO, AR, ZA, CO)
         - Environment (UAT, SIT)
         - Product SKU
         - Category ID
@@ -1465,7 +1417,7 @@ def associate_product_to_category_menu():
 def create_categories_menu():
     """Create categories
     Input Arguments:
-        - Country (BR, DO, AR, CL, ZA, CO)
+        - Country (BR, DO, AR, ZA, CO)
         - Environment (UAT, SIT)
         - Category name
         - Parent id (default: 0)
@@ -1495,7 +1447,7 @@ def create_categories_menu():
 
 def order_information_menu():
     selection_structure = print_get_order_menu()
-    zone = print_zone_menu_for_searching()
+    zone = print_zone_menu_for_ms()
     environment = print_environment_menu()
     abi_id = print_account_id_menu(zone)
     if abi_id == 'false':
@@ -1541,10 +1493,10 @@ def recommender_information_menu():
 
 def retriever_sku_menu():
     zone = print_zone_menu_for_ms()
-    environment = printEnvironmentMenu()
+    environment = print_environment_menu()
     abi_id = print_account_id_menu(zone)
     if abi_id == 'false':
-        printFinishApplicationMenu()
+        print_finish_application_menu()
 
     display_sku_rewards(zone, environment, abi_id)
 

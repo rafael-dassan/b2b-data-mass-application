@@ -5,7 +5,7 @@ from common import get_magento_base_url, get_magento_datamass_access_token, plac
 def enable_product(country, environment, product_sku):
     """Enable product
     Input Arguments:
-        - Country (BR, DO, AR, CL, ZA, CO)
+        - Country (BR, DO, AR, ZA, CO)
         - Environment (UAT, SIT)
         - Product SKU
         - Category ID

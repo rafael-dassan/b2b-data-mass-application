@@ -12,4 +12,4 @@ def execute_product(country, environment):
 
 def populate_products(country, environment):
     logger.info("populate_products for %s/%s", country, environment)
-    populate_products_base(country, environment, search_data_by(country,'product'))
+    populate_products_base(country, environment, search_data_by(country, 'product'))

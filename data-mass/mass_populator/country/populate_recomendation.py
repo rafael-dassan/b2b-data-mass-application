@@ -1,4 +1,3 @@
-import pandas as pd
 from products import request_get_offers_microservice
 from beer_recommender import request_quick_order, request_forgotten_items
 from mass_populator.log import *

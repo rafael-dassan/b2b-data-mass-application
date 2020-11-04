@@ -98,10 +98,6 @@ Example:
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
  ┃ ┗ 📜user.csv
- ┣ 📂cl
- ┃ ┣ 📜account.csv
- ┃ ┣ 📜product.csv
- ┃ ┗ 📜user.csv
  ┣ 📂co
  ┃ ┣ 📜account.csv
  ┃ ┣ 📜product.csv

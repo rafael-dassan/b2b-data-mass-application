@@ -1,4 +1,3 @@
-import pandas as pd
 from products import create_item, request_get_offers_microservice
 from products_magento import enable_product
 from mass_populator.log import *

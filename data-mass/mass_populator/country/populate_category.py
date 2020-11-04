@@ -1,7 +1,5 @@
 import json
-import pandas as pd
 from category_magento import *
-from products_magento import *
 from mass_populator.log import *
 
 
@@ -21,7 +19,7 @@ def apply_associate_products_to_category_magento_base(row, country, environment)
 def associate_products_to_category_magento(country, environment, category, products):
     """Associate product to category
     Input Arguments:
-        - Country (BR, DO, AR, CL, ZA, CO)
+        - Country (BR, DO, AR, ZA, CO)
         - Environment (UAT, SIT)
         - Category Name
         - List Products SKU
@@ -46,7 +44,7 @@ def associate(country, environment, categories, products):
 def get_categories_magento_web(country, environment, category_name):
     """Get categories
     Input Arguments:
-        - Country (BR, DO, AR, CL, ZA, CO)
+        - Country (BR, DO, AR, ZA, CO)
         - Environment (UAT, SIT)
         - Category Name
     """
@@ -83,7 +81,7 @@ def get_categories_magento_web(country, environment, category_name):
 def get_categories_magento_mobile(country, environment, sub_category_name):
     """Get categories
     Input Arguments:
-        - Country (BR, DO, AR, CL, ZA, CO)
+        - Country (BR, DO, AR, ZA, CO)
         - Environment (UAT, SIT)
         - Sub Category Name
     """

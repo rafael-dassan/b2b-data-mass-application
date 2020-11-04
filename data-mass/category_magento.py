@@ -8,7 +8,7 @@ from common import get_magento_base_url, get_magento_datamass_access_token, plac
 def get_categories(country, environment, parent_id):
     """Get Categories
     Input Arguments:
-        - Country (BR, DO, AR, CL, ZA, CO)
+        - Country (BR, DO, AR, ZA, CO)
         - Environment (UAT, SIT)
         - Parent ID
     Return list of categories
@@ -22,11 +22,11 @@ def get_categories(country, environment, parent_id):
 def associate_product_to_category(country, environment, product_sku, category_id):
     """Associate product to category
     Input Arguments:
-        - Country (BR, DO, AR, CL, ZA, CO)
+        - Country (BR, DO, AR, ZA, CO)
         - Environment (UAT, SIT)
         - Product SKU
-		- Category ID
-	Return str (success: association has been succeeded)
+        - Category ID
+    Return str (success: association has been succeeded)
     """
     response = request_associate_product_to_category(country, environment, product_sku, category_id)
     if response.status_code == 200 and response.text == 'true':
@@ -38,10 +38,10 @@ def associate_product_to_category(country, environment, product_sku, category_id
 def create_category(country, environment, category_name, parent_id, custom_attributes={}):
     """Create Category
     Input Arguments:
-        - Country (BR, DO, AR, CL, ZA, CO)
+        - Country (BR, DO, AR, ZA, CO)
         - Environment (UAT, SIT)
         - Category name
-		- Parent ID
+        - Parent ID
     Return category object
     """
     response = request_create_category(country, environment, category_name, parent_id, custom_attributes)

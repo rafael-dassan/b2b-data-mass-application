@@ -41,13 +41,6 @@ def populate_users_magento(country, environment):
 
 def populate_recommendations(country, environment):
     logger.info("populate_recommendations for %s/%s", country, environment)
-    
-    not_allowed_countries = ["CL"]
-    if country in not_allowed_countries:
-        logger.info(
-            "Skipping populate recommendations, because the country is not supported!")
-        return False
-    
     populate_recommendations_base(country, environment, search_data_by(country, 'recommendation'))
 
 
@@ -59,23 +52,9 @@ def categorize_and_enable_products_magento(country, environment):
 
 def enable_products_magento(country, environment):
     logger.info("enable_products_magento %s/%s", country, environment)
-    
-    not_allowed_countries = ["CL"]
-    if (country in not_allowed_countries):
-        logger.info(
-            "Skipping products activation in Magento, because the country is not supported!")
-        return False
-    
     enable_products_magento_base(country, environment, search_data_by(country, 'category'))
 
 
 def associate_products_to_categories(country, environment):
     logger.info("associate products to categories %s/%s", country, environment)
-
-    not_allowed_countries = ["CL"]
-    if (country in not_allowed_countries):
-        logger.info(
-            "Skipping products association to categories, because the country is not supported!")
-        return False
-    
     associate_products_to_category_magento_base(country, environment, search_data_by(country, 'category'))
