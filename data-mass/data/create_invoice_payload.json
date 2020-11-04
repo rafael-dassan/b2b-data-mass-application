@@ -10,10 +10,10 @@
     "itemsQuantity": 0,
     "orderDate": "string",
     "orderId": "string",
-    "paymentTerm": 0,
+    "paymentTerm": null,
     "paymentType": "string",
     "poNumber": "string",
-    "status": "CLOSED",
+    "status": "string",
     "subtotal": 0,
     "tax": 0,
     "total": 0

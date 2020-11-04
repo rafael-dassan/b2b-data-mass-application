@@ -10,43 +10,7 @@ from common import update_value_to_json, set_to_dictionary, get_microservice_bas
 from classes.text import text
 
 
-def get_order_items(order_data):
-    items = order_data['items']
-    item_list = list()
-    for i in range(len(items)):
-        items_details = {
-            'sku': items[i]['sku'],
-            'price': items[i]['price'],
-            'quantity': items[i]['quantity'],
-            'subtotal': items[i]['subtotal'],
-            'total': items[i]['total'],
-            'freeGood': items[i]['freeGood'],
-            'tax': items[i]['tax'],
-            'discount': 0
-        }
-        item_list.append(items_details)
-    return item_list
-
-
-def get_order_details(order_data):
-    order_details = {
-        'accountId': order_data['accountId'],
-        'placementDate': order_data['placementDate'],
-        'paymentMethod': order_data['paymentMethod'],
-        'channel': order_data['channel'],
-        'subtotal': order_data['subtotal'],
-        'total': order_data['total'],
-        'tax': order_data['tax'],
-        'discount': order_data['discount']
-    }
-    return order_details
-
-
-def create_invoice_request(zone, environment, order_id, status, order_data):
-    order_details = get_order_details(order_data)
-    order_items = get_order_items(order_data)
-    size_items = len(order_items)
-
+def create_invoice_request(zone, environment, order_id, status, order_details, order_items):
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
     file_path = os.path.join(path, 'data/create_invoice_payload.json')
@@ -57,6 +21,7 @@ def create_invoice_request(zone, environment, order_id, status, order_data):
 
     invoice_id = 'DM-' + str(randint(1, 100000))
     order_placement_date = order_details.get('placementDate')
+
     if zone == 'DO':
         placement_date = order_placement_date.split('T')[0] + 'T00:00:00Z'
     else:
@@ -66,27 +31,23 @@ def create_invoice_request(zone, environment, order_id, status, order_data):
         'accountId': order_details.get('accountId'),
         'channel': order_details.get('channel'),
         'date': placement_date,
-        'interestAmount': order_details.get('total'),
+        'interestAmount': order_details.get('interestAmount'),
         'orderDate': placement_date,
         'orderId': order_id,
-        'paymentTerm': order_details.get('paymentTerm'),
         'subtotal': order_details.get('subtotal'),
         'invoiceId': invoice_id,
         'status': status,
         'tax': order_details.get('tax'),
         'total': order_details.get('total'),
-        'poNumber': order_id
+        'poNumber': order_id,
+        'paymentType': order_details.get('paymentMethod'),
+        'discount': abs(order_details.get('discount'))
     }
 
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
-    if 'itemsQuantity' not in order_data:
-        set_to_dictionary(json_data, 'itemsQuantity', size_items)
-    else:
-        set_to_dictionary(json_data, 'itemsQuantity', order_data['itemsQuantity'])
-
-    items = set_to_dictionary(json_object, 'items', order_items)
+    set_to_dictionary(json_object, 'items', order_items)
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/invoices-relay'
@@ -95,7 +56,7 @@ def create_invoice_request(zone, environment, order_id, status, order_data):
     request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
 
     # Create body
-    list_dict_values = create_list(items)
+    list_dict_values = create_list(json_object)
     request_body = convert_json_to_string(list_dict_values)
 
     # Send request
@@ -105,11 +66,12 @@ def create_invoice_request(zone, environment, order_id, status, order_data):
         return invoice_id
     else:
         print(text.Red + '\n- [Invoice Relay Service] Failure to create an invoice. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
+                         '{response_status}. Response message: {response_message}'
+              .format(response_status=response.status_code, response_message=response.text))
         return 'false'
 
 
-def update_invoice_request(zone, environment, invoice_id, payment_type, status):
+def update_invoice_request(zone, environment, invoice_id, payment_method, status):
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
     file_path = os.path.join(path, 'data/update_invoice_status.json')
@@ -120,7 +82,7 @@ def update_invoice_request(zone, environment, invoice_id, payment_type, status):
 
     dict_values = {
         'invoiceId': invoice_id,
-        'paymentType': payment_type,
+        'paymentType': payment_method,
         'status': status
     }
 
@@ -134,26 +96,27 @@ def update_invoice_request(zone, environment, invoice_id, payment_type, status):
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
 
     # Create body
-    request_body = convert_json_to_string(dict_values)
+    request_body = convert_json_to_string(json_object)
 
     # Send request
     response = place_request('PATCH', request_url, request_body, request_headers)
 
     if response.status_code == 202:
-        return 'STATUS CHANGED'
+        return True
     else:
-        print(text.Red + '\n- [Invoice Relay Service] Failure to UPDATE an invoice. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
+        print(text.Red + '\n- [Invoice Service] Failure to update an invoice. Response Status: {response_status}. '
+                         'Response message: {response_message}'
+              .format(response_status=response.status_code, response_message=response.text))
         return 'false'
 
 
-def check_if_invoice_exist(abi_id, invoice_id, zone, environment):
+def check_if_invoice_exists(account_id, invoice_id, zone, environment):
     # Get header request
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
 
     # Get base URL
     request_url = get_microservice_base_url(
-        environment) + '/invoices-service/?accountId=' + abi_id + '&invoiceId=' + invoice_id
+        environment) + '/invoices-service/?accountId=' + account_id + '&invoiceId=' + invoice_id
 
     # Place request
     response = place_request('GET', request_url, '', request_headers)
@@ -162,11 +125,10 @@ def check_if_invoice_exist(abi_id, invoice_id, zone, environment):
     if response.status_code == 200 and len(json_data['data']) != 0:
         return json_data
     elif response.status_code == 200 and len(json_data['data']) == 0:
-        print(text.Red + '\n- [Invoice] The invoice ' + invoice_id + ' does not exist')
+        print(text.Red + '\n- [Invoice Service] The invoice {invoice_id} does not exist'.format(invoice_id=invoice_id))
         return 'false'
     else:
-        print(text.Red + '\n- [Invoice Service] Failure to retrieve the account ' + invoice_id + '. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
+        print(text.Red + '\n- [Invoice Service] Failure to retrieve the invoice {invoice_id}. Response status: '
+                         '{response_status}. Response message: {response_message}'
+              .format(invoice_id=invoice_id, response_status=response.status_code, response_message=response.text))
         return 'false'
-
-

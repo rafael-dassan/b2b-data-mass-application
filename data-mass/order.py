@@ -10,7 +10,7 @@ from tabulate import tabulate
 
 # Local application imports
 from common import update_value_to_json, convert_json_to_string, get_header_request, get_microservice_base_url, \
-    place_request, set_to_dictionary
+    place_request, set_to_dictionary, find_values
 from products import check_item_enabled
 from classes.text import text
 
@@ -443,37 +443,11 @@ def validate_order_parameters(order):
     return order_values
 
 
-def find_values(key, json_str):
-    """
-    Find values in a dictionary
-    Args:
-        key: dict key
-        json_str: json object
-    Returns: None if the key does not exist or the key's value in case of success
-    """
-
-    results = list()
-
-    def _decode_dict(a_dict):
-        try:
-            results.append(a_dict[key])
-        except KeyError:
-            pass
-        return a_dict
-
-    json.loads(json_str, object_hook=_decode_dict)
-
-    if len(results) == 0:
-        return 'None'
-    else:
-        return results[0]
-
-
-def check_if_order_exists(abi_id, zone, environment, order_id):
+def check_if_order_exists(account_id, zone, environment, order_id):
     """
     Check if an order exists via Order Service
     Args:
-        abi_id: POC unique identifier
+        account_id: POC unique identifier
         zone: e.g., AR, BR, CO, DO, MX, ZA
         environment: e.g., DEV, SIT, UAT
         order_id: order unique identifier
@@ -488,7 +462,7 @@ def check_if_order_exists(abi_id, zone, environment, order_id):
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/order-service/v1?orderIds=' + order_id + '&accountId=' \
-                  + abi_id
+                  + account_id
 
     # Place request
     response = place_request('GET', request_url, '', request_headers)
@@ -498,10 +472,61 @@ def check_if_order_exists(abi_id, zone, environment, order_id):
         return json_data
     elif response.status_code == 200 and len(json_data) == 0:
         if order_id == '':
-            return 'empty'
+            print(text.Red + '\n- [Order Service] The account {account_id} does not have orders'
+                  .format(account_id=account_id))
+            return 'not_found'
         else:
+            print(text.Red + '\n- [Order Service] The order {order_id} does not exist'.format(order_id=order_id))
             return 'not_found'
     else:
         print(text.Red + '\n- [Order Service] Failure to retrieve order information. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
+                         '{response_status}. Response message: {response_message}'
+              .format(response_status=response.status_code, response_message=response.text))
         return 'false'
+
+
+def get_order_details(order_data):
+    items = order_data['items']
+
+    interest_amount = 0
+    if 'interestAmount' in order_data:
+        interest_amount = order_data['interestAmount']
+
+    order_details = {
+        'accountId': order_data['accountId'],
+        'placementDate': order_data['placementDate'],
+        'paymentMethod': order_data['paymentMethod'],
+        'channel': order_data['channel'],
+        'subtotal': order_data['subtotal'],
+        'total': order_data['total'],
+        'tax': order_data['tax'],
+        'discount': order_data['discount'],
+        'itemsQuantity': len(items),
+        'interestAmount': interest_amount
+    }
+
+    return order_details
+
+
+def get_order_items(order_data):
+    items = order_data['items']
+    item_list = list()
+
+    for i in range(len(items)):
+        discount = 0
+        if 'pricingReasonDetail' in items[i] and len(items[i]['pricingReasonDetail']) != 0:
+            discount = items[i]['pricingReasonDetail'][0]['discountAmount']
+
+        items_details = {
+            'sku': items[i]['sku'],
+            'price': items[i]['price'],
+            'quantity': items[i]['quantity'],
+            'subtotal': items[i]['subtotal'],
+            'total': items[i]['total'],
+            'freeGood': items[i]['freeGood'],
+            'tax': items[i]['tax'],
+            'discount': discount
+        }
+        item_list.append(items_details)
+
+    return item_list

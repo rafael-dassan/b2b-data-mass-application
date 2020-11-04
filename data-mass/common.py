@@ -50,13 +50,6 @@ def validate_option_request_selection_for_structure_2(option):
     return value
 
 
-def validate_option_update_invoice(option):
-    if option == '0' or option == '1':
-        return 'true'
-    else:
-        return 'false'
-
-
 # Validate Country in User creation
 def validateCountryInUserCreation(country):
     switcher = {
@@ -347,7 +340,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(6), text.Yellow + 'Deals')
         print(text.default_text_color + str(7), text.Yellow + 'Input combos')
         print(text.default_text_color + str(8), text.Yellow + 'Create item')
-        print(text.default_text_color + str(9), text.Yellow + 'Create invoice')
+        print(text.default_text_color + str(9), text.Yellow + 'Invoice')
         print(text.default_text_color + str(10), text.Yellow + 'Create rewards')
         print(text.default_text_color + str(11), text.Yellow + 'Create credit statement')
         selection = input(text.default_text_color + '\nPlease select: ')
@@ -362,7 +355,7 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(6), text.Yellow + 'Input deals')
             print(text.default_text_color + str(7), text.Yellow + 'Input combos')
             print(text.default_text_color + str(8), text.Yellow + 'Create item')
-            print(text.default_text_color + str(9), text.Yellow + 'Create invoice')
+            print(text.default_text_color + str(9), text.Yellow + 'Invoice')
             print(text.default_text_color + str(10), text.Yellow + 'Create rewards')
             print(text.default_text_color + str(11), text.Yellow + 'Create credit statement')
 
@@ -865,12 +858,13 @@ def print_order_id_menu():
     order_id = input(text.default_text_color + 'Order ID: ')
 
     while True:
-        size_order_id = len(order_id)
-        if size_order_id == 0:
+        if len(order_id) == 0:
             print(text.Red + '\n- Order ID should not be empty')
-        elif size_order_id != 0:
+        else:
             break
+
         order_id = input(text.default_text_color + 'Order ID: ')
+
     return order_id
 
 
@@ -952,28 +946,6 @@ def print_get_order_menu():
         structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure
-
-
-def validate_invoice_status(option):
-    if option == '1' or option == '2' or option == '3':
-        return 'true'
-    else:
-        return 'false'
-
-
-def print_invoice_status_menu():
-    status = input(
-        text.default_text_color + 'Do you want to create the invoice with which status: 1. CLOSED, 2. OPEN or '
-                                  '3.DELIVERED: ')
-    while validate_invoice_status(status) == 'false':
-        print(text.Red + '\n- Invalid option')
-        status = input(
-            text.default_text_color + 'Do you want to create the invoice with which status: 1. CLOSED, 2. OPEN or '
-                                      '3.DELIVERED: ')
-    if status == '1':
-        return 'CLOSED'
-    else:
-        return 'OPEN'
 
 
 def print_combo_id_menu():
@@ -1089,27 +1061,6 @@ def print_year_credit_statement():
     return year
 
 
-def validate_invoice_menu(option):
-    if option == '1' or option == '2':
-        return 'true'
-    else:
-        return 'false'
-
-
-def print_invoice_menu():
-    print(text.default_text_color + str(1), text.Yellow + 'Create New Invoice')
-    print(text.default_text_color + str(2), text.Yellow + 'Update Invoice Status')
-    structure = input(text.default_text_color + '\nPlease select: ')
-    while validate_invoice_menu(structure) == 'false':
-        print(text.Red + '\n- Invalid option')
-        print(text.default_text_color + str(1), text.Yellow + 'Create New Invoice')
-        print(text.default_text_color + str(2), text.Yellow + 'Update Invoice Status')
-
-        structure = input(text.default_text_color + '\nPlease select: ')
-
-    return structure
-
-
 def validate_invoice_id(invoice_id):
     size_invoice_id = len(invoice_id)
 
@@ -1119,28 +1070,32 @@ def validate_invoice_id(invoice_id):
         return 'true'
 
 
-def print_invoice_id_menu():
-    invoice_id = str(input(text.default_text_color + 'Invoice ID: '))
-    while validate_invoice_id(invoice_id) != 'true':
-        if validate_invoice_id(invoice_id) == 'error_0':
-            print(text.Red + '\n- Invoice ID should not be empty')
-            invoice_id = str(input(text.default_text_color + 'Invoice ID: '))
-    else:
-        return invoice_id
-
-
-def print_payment_method():
-    payments_method = input(text.default_text_color + 'Please input Payment Method (0.CASH, 1.CREDIT): ')
-    while validate_option_update_invoice(payments_method) == 'false':
-        print(text.Red + '\n- Invalid option\n')
-        payments_method = input(text.default_text_color + '\nPlease input Payment Method (0.CASH, 1.CREDIT): ')
-
-    if payments_method == 0:
-        return 'CASH'
-    else:
-        return 'CREDIT'
-
-
 def block_print():
     # Overwrite standard output (stdout)
     sys.stdout = open(os.devnull, 'w')
+
+
+def find_values(key, json_str):
+    """
+    Find values in a dictionary
+    Args:
+        key: dict key
+        json_str: json object
+    Returns: None if the key does not exist or the key's value in case of success
+    """
+
+    results = list()
+
+    def _decode_dict(a_dict):
+        try:
+            results.append(a_dict[key])
+        except KeyError:
+            pass
+        return a_dict
+
+    json.loads(json_str, object_hook=_decode_dict)
+
+    if len(results) == 0:
+        return 'None'
+    else:
+        return results[0]
