@@ -5,14 +5,12 @@ from mass_populator.country.populate_user_v3 import populate_user_iam_b2c
 from mass_populator.log import *
 from mass_populator.country.populate_account import populate_poc
 from mass_populator.country.populate_recomendation import populate_recommendation
-from mass_populator.country.populate_user import populate_user
 from mass_populator.preconditions import delete_recommendation, delete_available_deals
 
 logger = logging.getLogger(__name__)
 
 
 def execute_test(country, environment):
-    iam_b2c_countries = ['BR', 'CO', 'DO', 'EC', 'MX', 'PE', 'ZA']
     account_params = get_account_params(country)
     user_params = get_user_params(country)
     product_params = get_product_params()
@@ -42,14 +40,9 @@ def execute_test(country, environment):
                  account_params.get('amount_of_products'), account_params.get('has_delivery_window'),
                  [product_params.get('sku')])
 
-    if country in iam_b2c_countries:
-        logger.info("populate_users_iam_b2c for %s/%s", country, environment)
-        populate_user_iam_b2c(country, environment, user_params.get('email'), user_params.get('password'),
+    logger.info("populate_users_iam_b2c for %s/%s", country, environment)
+    populate_user_iam_b2c(country, environment, user_params.get('email'), user_params.get('password'),
                               [account_params.get('id')])
-    else:
-        logger.info("populate_users_magento for %s/%s", country, environment)
-        populate_user(country, environment, user_params.get('email'), user_params.get('password'),
-                      [account_params.get('id')], None)
 
     logger.info("populate_recommendations for %s/%s", country, environment)
     populate_recommendation(country, environment, account_params.get('id'))
