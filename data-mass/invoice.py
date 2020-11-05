@@ -41,7 +41,8 @@ def create_invoice_request(zone, environment, order_id, status, order_details, o
         'total': order_details.get('total'),
         'poNumber': order_id,
         'paymentType': order_details.get('paymentMethod'),
-        'discount': abs(order_details.get('discount'))
+        'discount': abs(order_details.get('discount')),
+        'itemsQuantity': order_details.get('itemsQuantity')
     }
 
     for key in dict_values.keys():

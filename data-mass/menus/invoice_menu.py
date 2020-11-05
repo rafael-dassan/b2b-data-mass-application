@@ -21,15 +21,16 @@ def print_invoice_operations_menu():
 
 
 def print_invoice_status_menu():
-    status = input(text.default_text_color + 'Invoice status (1. Open / 2. Closed): ')
+    status = input(text.default_text_color + 'Invoice status (1. Open / 2. Closed / 3. Delivered): ')
     while validate_invoice_status(status) is False:
         print(text.Red + '\n- Invalid option')
-        status = input(text.default_text_color + 'Invoice status (1. Open / 2. Closed): ')
+        status = input(text.default_text_color + 'Invoice status (1. Open / 2. Closed / 3. Delivered): ')
 
-    if status == '1':
-        return 'OPEN'
-    else:
-        return 'CLOSED'
+    return {
+        '1': 'OPEN',
+        '2': 'CLOSED',
+        '3': 'DELIVERED'
+    }.get(status, 'false')
 
 
 def print_invoice_id_menu():
@@ -52,7 +53,7 @@ def print_invoice_payment_method_menu():
         print(text.Red + '\n- Invalid option')
         payment_method = input(text.default_text_color + 'Payment method (1. Cash / 2. Credit): ')
 
-    if payment_method == '1':
-        return 'CASH'
-    else:
-        return 'CREDIT'
+    return {
+        '1': 'CASH',
+        '2': 'CREDIT'
+    }.get(payment_method, 'false')
