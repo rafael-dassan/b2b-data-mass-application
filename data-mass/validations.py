@@ -126,3 +126,27 @@ def validate_environment(environment):
         return True
     else:
         return False
+
+
+def validate_invoice_options(option):
+    options = ['1', '2', '3']
+    if option in options:
+        return True
+    else:
+        return False
+
+
+def validate_invoice_status(option):
+    options = ['1', '2', '3']
+    if option in options:
+        return True
+    else:
+        return False
+
+
+def validate_invoice_payment_method(option):
+    options = ['1', '2']
+    if option in options:
+        return True
+    else:
+        return False

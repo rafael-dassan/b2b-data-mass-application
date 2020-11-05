@@ -13,6 +13,8 @@ from menus.account_menu import print_account_operations_menu, print_minimum_orde
 from menus.deals_menu import print_deals_operations_menu, print_discount_value_menu, print_minimum_quantity_menu, \
     print_max_quantity_menu, print_free_good_quantity_range_menu, print_option_sku_menu, print_partial_free_good_menu, \
     print_free_good_redemption_menu, print_free_good_quantity_menu, print_index_range_menu, print_discount_range_menu
+from menus.invoice_menu import print_invoice_operations_menu, print_invoice_status_menu, print_invoice_id_menu, \
+    print_invoice_payment_method_menu
 from order import *
 from combos import *
 from products import *
@@ -42,7 +44,7 @@ def show_menu():
             '6': deals_menu,
             '7': input_combos_menu,
             '8': create_item_menu,
-            '9': create_invoice_menu,
+            '9': invoice_menu,
             '10': create_rewards_to_account,
             '11': create_credit_statement_menu
         }
@@ -1306,60 +1308,77 @@ def delete_user_iam():
         print_finish_application_menu()
 
 
-def create_invoice_menu():
-    selection_structure = print_invoice_menu()
-    switcher = {
-        '1': 'NEW_INVOICE',
-        '2': 'UPDATE_INVOICE'
-    }
-
-    invoice_option = switcher.get(selection_structure, 'false')
-
+def invoice_menu():
+    operation = print_invoice_operations_menu()
     zone = print_zone_menu_for_ms()
     environment = print_environment_menu()
-    abi_id = print_account_id_menu(zone)
-    if abi_id == 'false':
+    account_id = print_account_id_menu(zone)
+
+    if account_id == 'false':
         print_finish_application_menu()
 
-    account = check_account_exists_microservice(abi_id, zone, environment)
+    account = check_account_exists_microservice(account_id, zone, environment)
     if account == 'false':
         print_finish_application_menu()
 
-    if invoice_option == 'NEW_INVOICE':
-        order_id = print_order_id_menu()
+    return {
+        '1': lambda: flow_create_invoice(zone, environment, account_id),
+        '2': lambda: flow_update_invoice_status(zone, environment, account_id),
+        '3': lambda: flow_update_invoice_payment_method(zone, environment, account_id)
+    }.get(operation, lambda: None)()
 
-        response = check_if_order_exists(abi_id, zone, environment, order_id)
-        if response == 'false':
-            print_finish_application_menu()
-        elif response == 'empty':
-            print(text.Red + '\n- [Order Service] The account ' + abi_id + ' does not have orders')
-            print_finish_application_menu()
-        elif response == 'not_found':
-            print(text.Red + '\n- [Order Service] The order ' + order_id + ' does not exist')
-            print_finish_application_menu()
 
+def flow_create_invoice(zone, environment, account_id):
+    order_id = print_order_id_menu()
+
+    response = check_if_order_exists(account_id, zone, environment, order_id)
+    if response == 'false' or response == 'not_found':
+        print_finish_application_menu()
+
+    order_data = response[0]
+    order_details = get_order_details(order_data)
+    order_items = get_order_items(order_data)
+    invoice_status = print_invoice_status_menu()
+
+    invoice_response = create_invoice_request(zone, environment, order_id, invoice_status, order_details, order_items)
+    if invoice_response == 'false':
+        print_finish_application_menu()
+    else:
+        print(text.Green + '\n- Invoice {invoice_id} created successfully'.format(invoice_id=invoice_response))
+
+
+def flow_update_invoice_status(zone, environment, account_id):
+    invoice_id = print_invoice_id_menu()
+    response = check_if_invoice_exists(account_id, invoice_id, zone, environment)
+
+    if response == 'false':
+        print_finish_application_menu()
+    else:
         status = print_invoice_status_menu()
-        invoice_response = create_invoice_request(zone, environment, order_id, status, response[0])
-        if invoice_response != 'false':
-            print(text.Green + '\n- Invoice ' + invoice_response + ' created successfully')
-            print(text.Yellow + '- Please, run the cron job `webjump_invoicelistabi_import_invoices` to import your '
-                                'invoice, so it can be used in the front-end applications')
-        else:
+        invoice_response = update_invoice_request(zone, environment, invoice_id, response['data'][0]['paymentType'],
+                                                  status)
+        if invoice_response == 'false':
             print_finish_application_menu()
-    elif invoice_option == 'UPDATE_INVOICE':
-        invoice_id = print_invoice_id_menu()
-        invoice = check_if_invoice_exist(abi_id, invoice_id, zone, environment)
-        if invoice != 'false':
-            payment_type = print_payment_method()
-            status = print_invoice_status_menu()
-            invoice_response = update_invoice_request(zone, environment, invoice_id, payment_type, status)
+        else:
+            print(text.Green + '\n- Invoice status updated to {invoice_status} for the invoice {invoice_id}'
+                  .format(invoice_status=status, invoice_id=invoice_id))
 
-            if invoice_response != 'false':
-                print(text.Green + '\n- Invoice ' + invoice_id + ' ' + invoice_response + '  successfully')
-            else:
-                print_finish_application_menu()
-        else:
+
+def flow_update_invoice_payment_method(zone, environment, account_id):
+    invoice_id = print_invoice_id_menu()
+    response = check_if_invoice_exists(account_id, invoice_id, zone, environment)
+
+    if response == 'false':
+        print_finish_application_menu()
+    else:
+        payment_method = print_invoice_payment_method_menu()
+        invoice_response = update_invoice_request(zone, environment, invoice_id, payment_method,
+                                                  response['data'][0]['status'])
+        if invoice_response == 'false':
             print_finish_application_menu()
+        else:
+            print(text.Green + '\n- Invoice payment method updated to {payment_method} for the invoice {invoice_id}'
+                  .format(payment_method=payment_method, invoice_id=invoice_id))
 
 
 def get_categories_menu():
@@ -1513,37 +1532,6 @@ def create_credit_statement_menu():
 
     doc = create_credit_statement(zone, abi_id, environment, month, year)
     if doc == 'false':
-        print_finish_application_menu()
-
-
-def update_invoice_status():
-    zone = print_zone_menu_for_ms()
-    environment = print_environment_menu()
-
-    print(text.Green + '\n- Digite o número da invoice')
-    invoice_id = input(text.default_text_color + '\nPlease select: ')
-
-    print(text.Green + '\n- Digite o tipo de pagamento (0- CASH,1- CREDIT)')
-    selection = input(text.default_text_color + '\nPlease select: ')
-    while validate_option_update_invoice(selection) == 'false':
-        print(text.Red + '\n- Invalid option\n')
-        print(text.default_text_color + str(0), text.Yellow + 'CASH')
-        print(text.default_text_color + str(1), text.Yellow + 'CREDIT')
-        selection = input(text.default_text_color + '\nPlease select: ')
-
-    print(text.Green + '\n- Digite o Status da invoice')
-    status = input(text.default_text_color + '\nPlease select: ')
-    if selection == 0:
-        payment_type = 'CASH'
-    else:
-        payment_type = 'CREDIT'
-
-    invoice_response = update_invoice_request(zone, environment, invoice_id, payment_type, status)
-
-    if invoice_response != 'false':
-        print(text.Green + '\n- Invoice ' + invoice_response + '  successfully')
-
-    else:
         print_finish_application_menu()
 
 
