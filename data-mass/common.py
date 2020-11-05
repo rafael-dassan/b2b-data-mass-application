@@ -1704,6 +1704,19 @@ def print_invoice_status_menu():
         return 'OPEN'
 
 
+def print_invoice_status_menu_retriever():
+    status = input(text.default_text_color + 'Do you want to retrieve the invoice with which status: 1. CLOSED, 2. OPEN or 3.DELIVERED: ')
+    while validate_invoice_status(status) == 'false':
+        print(text.Red + '\n- Invalid option')
+        status = input(text.default_text_color + 'Do you want to retrieve the invoice with which status: 1. CLOSED, 2. OPEN or 3.DELIVERED: ')
+    if status == '1':
+        return ['1', 'CLOSED']
+    elif status == '2':
+        return ['2', 'OPEN']
+    else:
+        return ['3', 'DELIVERED']
+
+
 def print_combo_id_menu():
     combo_id = input(text.default_text_color + 'Combo ID: ')
 
@@ -1932,10 +1945,19 @@ def print_invoice_retriever_menu():
     return structure
 
 
-def print_invoices(invoice_info):
-    print(text.Yellow + "\nInvoice Id:")
-    for i in range(len(invoice_info['data'])+1):
-        print(text.default_text_color + invoice_info['data'][i-1]['invoiceId'])
+def print_invoices(invoice_info, status):
+    if len(invoice_info) > 1:
+        print(text.Yellow + "\nInvoice Id:")
+        for x in invoice_info:
+            for i in x['data']:
+                if i['status'] == status[0] or i['status'] == status[1]:
+                    print(text.default_text_color + i['invoiceId'])
+                else:
+                    continue
+    else:
+        print(text.Yellow + "\nInvoice Id:")
+        for i in invoice_info[0]['data']:
+            print(text.default_text_color + i['invoiceId'])
 
 
 

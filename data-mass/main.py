@@ -1527,10 +1527,12 @@ def retrieve_available_invoices_menu():
     }
     invoice_option = switcher.get(selection_structure, 'false')
     if invoice_option == 'ALL_INVOICES_BY_COUNTRY':
+        status = print_invoice_status_menu_retriever()
         zone = print_zone_menu_for_ms()
         environment = printEnvironmentMenu()
         header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
         invoice_info = get_invoices(header_request, zone, 0, environment, invoice_option)
+        print_invoices(invoice_info, status)
     else:
         zone = print_zone_menu_for_ms()
         environment = printEnvironmentMenu()
@@ -1542,8 +1544,8 @@ def retrieve_available_invoices_menu():
             printFinishApplicationMenu()
         header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
         invoice_info = get_invoices(header_request, zone, abi_id, environment, invoice_option)
+        print_invoices(invoice_info, 'none')
 
-    print_invoices(invoice_info)
 
 
 def retriever_sku_menu():
