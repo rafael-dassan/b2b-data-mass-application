@@ -1540,26 +1540,6 @@ def retriever_sku_menu():
     environment = print_environment_menu()
     abi_id = print_account_id_menu(zone)
     if abi_id == 'false':
-        print_environment_menu()
-
-    display_sku_rewards(zone, environment, abi_id)
-
-
-def retriever_sku_menu():
-    zone = print_zone_menu_for_ms()
-    environment = print_environment_menu()
-    abi_id = print_account_id_menu(zone)
-    if abi_id == 'false':
-        print_finish_application_menu()
-
-    display_sku_rewards(zone, environment, abi_id)
-
-
-def retriever_sku_menu():
-    zone = print_zone_menu_for_ms()
-    environment = print_environment_menu()
-    abi_id = print_account_id_menu(zone)
-    if abi_id == 'false':
         print_finish_application_menu()
 
     display_sku_rewards(zone, environment, abi_id)
