@@ -71,11 +71,18 @@ def print_minimum_quantity_menu():
     return minimum_quantity
 
 
-def print_max_quantity_menu():
+def print_max_quantity_menu(default_index_range):
+    index_init = int(default_index_range[0])
+    index_end = int(default_index_range[1])
+
     max_quantity = input(text.default_text_color + 'Maximum quantity: ')
-    while max_quantity == '' or int(max_quantity) <= 0:
-        print(text.Red + '\n- Minimum quantity must be greater than 0')
-        max_quantity = input(text.default_text_color + 'Maximum quantity: ')
+    while True:
+        if len(max_quantity) == 0 or index_init > int(max_quantity) or int(max_quantity) >= index_end:
+            print(text.Red + '\n- Minimum quantity must be between {index_init} and {index_end}'
+                  .format(index_init=index_init, index_end=index_end - 1))
+            max_quantity = input(text.default_text_color + 'Maximum quantity: ')
+        else:
+            break
 
     return max_quantity
 

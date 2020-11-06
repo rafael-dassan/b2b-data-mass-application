@@ -736,7 +736,7 @@ def flow_create_discount(zone, environment, account_id, sku):
     minimum_quantity = print_minimum_quantity_menu()
     discount_value = print_discount_value_menu()
 
-    response = input_discount_to_account(account_id, sku, zone, environment, discount_value, minimum_quantity)
+    response = create_discount(account_id, sku, zone, environment, discount_value, minimum_quantity)
     if response != 'false':
         print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
     else:
@@ -747,7 +747,7 @@ def flow_create_stepped_discount(zone, environment, account_id, sku):
     index_range = print_index_range_menu()
     discount_range = print_discount_range_menu()
 
-    response = input_stepped_discount_to_account(account_id, sku, zone, environment, index_range, discount_range)
+    response = create_stepped_discount(account_id, sku, zone, environment, index_range, discount_range)
     if response != 'false':
         print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
     else:
@@ -755,12 +755,14 @@ def flow_create_stepped_discount(zone, environment, account_id, sku):
 
 
 def flow_create_stepped_discount_with_limit(zone, environment, account_id, sku):
-    index_range = print_index_range_menu(2)
-    discount_range = print_discount_range_menu(1)
-    max_quantity = print_max_quantity_menu()
+    # Default index range (from 1 to 9999 products)
+    default_index_range = [1, 9999]
 
-    response = input_stepped_discount_with_qtd_to_account(account_id, sku, zone, environment, index_range,
-                                                          discount_range, max_quantity)
+    discount_range = print_discount_range_menu(1)
+    max_quantity = print_max_quantity_menu(default_index_range)
+
+    response = create_stepped_discount_with_limit(account_id, sku, zone, environment, default_index_range,
+                                                  discount_range, max_quantity)
     if response != 'false':
         print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
     else:
@@ -778,8 +780,8 @@ def flow_create_free_good(zone, environment, account_id, sku_list):
         minimum_quantity = 1
         quantity = print_free_good_quantity_menu()
 
-    response = input_free_good_to_account(account_id, sku_list, zone, environment, minimum_quantity, quantity,
-                                          partial_free_good, need_to_buy_product)
+    response = create_free_good(account_id, sku_list, zone, environment, minimum_quantity, quantity,
+                                partial_free_good, need_to_buy_product)
     if response != 'false':
         print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
     else:
@@ -790,7 +792,7 @@ def flow_create_stepped_free_good(zone, environment, account_id, sku):
     index_range = print_index_range_menu()
     quantity_range = print_free_good_quantity_range_menu()
 
-    response = input_stepped_free_good_to_account(account_id, sku, zone, environment, index_range, quantity_range)
+    response = create_stepped_free_good(account_id, sku, zone, environment, index_range, quantity_range)
     if response != 'false':
         print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
     else:
