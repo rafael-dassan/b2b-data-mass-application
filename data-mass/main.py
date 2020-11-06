@@ -1519,33 +1519,18 @@ def recommender_information_menu():
     display_recommendations_by_account(zone, environment, abi_id)
 
 def retrieve_available_invoices_menu():
-    selection_structure = print_invoice_retriever_menu()
-
-    switcher = {
-        '1': 'ALL_INVOICES_BY_COUNTRY',
-        '2': 'INVOICES_BY_ACCOUNT'
-    }
-    invoice_option = switcher.get(selection_structure, 'false')
-    if invoice_option == 'ALL_INVOICES_BY_COUNTRY':
-        status = print_invoice_status_menu_retriever()
-        zone = print_zone_menu_for_ms()
-        environment = printEnvironmentMenu()
-        header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
-        invoice_info = get_invoices(header_request, zone, 0, environment, invoice_option)
-        print_invoices(invoice_info, status)
-    else:
-        zone = print_zone_menu_for_ms()
-        environment = printEnvironmentMenu()
-        abi_id = print_account_id_menu(zone)
-        if abi_id == 'false':
-            printFinishApplicationMenu()
-        account = check_account_exists_microservice(abi_id, zone, environment)
-        if account == 'false':
-            printFinishApplicationMenu()
-        header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
-        invoice_info = get_invoices(header_request, zone, abi_id, environment, invoice_option)
-        print_invoices(invoice_info, 'none')
-
+    status = print_invoice_status_menu_retriever()
+    zone = print_zone_menu_for_ms()
+    environment = printEnvironmentMenu()
+    abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
+    account = check_account_exists_microservice(abi_id, zone, environment)
+    if account == 'false':
+        printFinishApplicationMenu()
+    header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
+    invoice_info = get_invoices(header_request, abi_id, environment)
+    print_invoices(invoice_info, status)
 
 
 def retriever_sku_menu():
