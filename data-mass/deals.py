@@ -13,7 +13,7 @@ from common import get_microservice_base_url, get_header_request, place_request,
 from classes.text import text
 
 
-def input_deal_to_account(account_id, sku, deal_type, zone, environment):
+def request_create_deal(account_id, sku, deal_type, zone, environment):
     """
     Input deal to a specific POC. The deal is created by calling the Promotion Relay Service
     Args:
@@ -302,8 +302,8 @@ def create_free_good_group(sku, zone, environment):
         return 'false'
 
 
-def input_discount_to_account(account_id, sku, zone, environment, discount_value, minimum_quantity,
-                              discount_type='percentOff', deal_type='DISCOUNT'):
+def create_discount(account_id, sku, zone, environment, discount_value, minimum_quantity,
+                    discount_type='percentOff', deal_type='DISCOUNT'):
     """
     Input a deal type discount to a specific POC by calling the Promotion Relay Service and Pricing Engine Relay Service
     Args:
@@ -317,10 +317,10 @@ def input_discount_to_account(account_id, sku, zone, environment, discount_value
         deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
     Returns: `promotion_response` if success
     """
-    promotion_response = input_deal_to_account(account_id, sku, deal_type, zone, environment)
+    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment)
 
-    cart_response = input_discount_to_cart_calculation_v2(account_id, promotion_response, zone, environment, sku,
-                                                          discount_type, discount_value, minimum_quantity)
+    cart_response = request_create_discount_cart_calculation(account_id, promotion_response, zone, environment, sku,
+                                                             discount_type, discount_value, minimum_quantity)
 
     if promotion_response != 'false' and cart_response == 'success':
         return promotion_response
@@ -328,8 +328,8 @@ def input_discount_to_account(account_id, sku, zone, environment, discount_value
         return 'false'
 
 
-def input_stepped_discount_with_qtd_to_account(account_id, sku, zone, environment, index_range, discount_range,
-                                               max_quantity, discount_type='percentOff', deal_type='STEPPED_DISCOUNT'):
+def create_stepped_discount_with_limit(account_id, sku, zone, environment, index_range, discount_range,
+                                       max_quantity, discount_type='percentOff', deal_type='STEPPED_DISCOUNT'):
     """
     Input a deal type stepped discount with max quantity to a specific POC by calling the Promotion Relay Service and
     Pricing Engine Relay Service
@@ -345,11 +345,12 @@ def input_stepped_discount_with_qtd_to_account(account_id, sku, zone, environmen
         deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
     Returns: `promotion_response` if success
     """
-    promotion_response = input_deal_to_account(account_id, sku, deal_type, zone, environment)
+    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment)
 
-    cart_response = input_stepped_discount_with_qtd_to_cart_calculation_v2(account_id, promotion_response, zone,
-                                                                           environment, sku, max_quantity, index_range,
-                                                                           discount_type, discount_range)
+    cart_response = request_create_stepped_discount_with_limit_cart_calculation(account_id, promotion_response, zone,
+                                                                                environment, sku, max_quantity,
+                                                                                index_range, discount_type,
+                                                                                discount_range)
 
     if promotion_response != 'false' and cart_response == 'success':
         return promotion_response
@@ -357,8 +358,8 @@ def input_stepped_discount_with_qtd_to_account(account_id, sku, zone, environmen
         return 'false'
 
 
-def input_stepped_discount_to_account(account_id, sku, zone, environment, index_range, discount_range,
-                                      discount_type='percentOff', deal_type='STEPPED_DISCOUNT'):
+def create_stepped_discount(account_id, sku, zone, environment, index_range, discount_range, discount_type='percentOff',
+                            deal_type='STEPPED_DISCOUNT'):
     """
     Input a deal type stepped discount to a specific POC by calling the Promotion Relay Service and
     Pricing Engine Relay Service
@@ -373,10 +374,10 @@ def input_stepped_discount_to_account(account_id, sku, zone, environment, index_
         deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
     Returns: `promotion_response` if success
     """
-    promotion_response = input_deal_to_account(account_id, sku, deal_type, zone, environment)
+    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment)
 
-    cart_response = input_stepped_discount_to_cart_calculation_v2(account_id, promotion_response, zone, environment,
-                                                                  sku, discount_type, index_range, discount_range)
+    cart_response = request_create_stepped_discount_cart_calculation(account_id, promotion_response, zone, environment,
+                                                                     sku, discount_type, index_range, discount_range)
 
     if promotion_response != 'false' and cart_response == 'success':
         return promotion_response
@@ -384,8 +385,8 @@ def input_stepped_discount_to_account(account_id, sku, zone, environment, index_
         return 'false'
 
 
-def input_free_good_to_account(account_id, sku_list, zone, environment, minimum_quantity, quantity,
-                               partial_free_good, need_to_buy_product, deal_type='FREE_GOOD'):
+def create_free_good(account_id, sku_list, zone, environment, minimum_quantity, quantity, partial_free_good,
+                     need_to_buy_product, deal_type='FREE_GOOD'):
     """
     Input a deal type free good to a specific POC by calling the Promotion Relay Service and Pricing Engine Relay
     Service
@@ -402,11 +403,11 @@ def input_free_good_to_account(account_id, sku_list, zone, environment, minimum_
         need_to_buy_product: e.g., `Y` or `N`
     Returns: `promotion_response` if success
     """
-    promotion_response = input_deal_to_account(account_id, sku_list[0]['sku'], deal_type, zone, environment)
+    promotion_response = request_create_deal(account_id, sku_list[0]['sku'], deal_type, zone, environment)
 
-    cart_response = input_free_good_to_cart_calculation_v2(account_id, promotion_response, zone, environment, sku_list,
-                                                           minimum_quantity, quantity, partial_free_good,
-                                                           need_to_buy_product)
+    cart_response = request_create_free_good_cart_calculation(account_id, promotion_response, zone, environment,
+                                                              sku_list, minimum_quantity, quantity, partial_free_good,
+                                                              need_to_buy_product)
 
     if promotion_response != 'false' and cart_response == 'success':
         return promotion_response
@@ -414,8 +415,8 @@ def input_free_good_to_account(account_id, sku_list, zone, environment, minimum_
         return 'false'
 
 
-def input_stepped_free_good_to_account(account_id, sku, zone, environment, index_range, quantity_range,
-                                       deal_type='STEPPED_FREE_GOOD'):
+def create_stepped_free_good(account_id, sku, zone, environment, index_range, quantity_range,
+                             deal_type='STEPPED_FREE_GOOD'):
     """
     Input a deal type stepped free good to a specific POC by calling the Promotion Relay Service and Pricing Engine
     Relay Service
@@ -429,10 +430,10 @@ def input_stepped_free_good_to_account(account_id, sku, zone, environment, index
         quantity_range: range of quantity values to be applied (e.g., 1 for the range 0 e 2 for the range 1)
     Returns: `promotion_response` if success
     """
-    promotion_response = input_deal_to_account(account_id, sku, deal_type, zone, environment)
+    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment)
 
-    cart_response = input_stepped_free_good_to_cart_calculation_v2(account_id, promotion_response, zone, environment,
-                                                                   sku, index_range, quantity_range)
+    cart_response = request_create_stepped_free_good_cart_calculation(account_id, promotion_response, zone, environment,
+                                                                      sku, index_range, quantity_range)
 
     if promotion_response != 'false' and cart_response == 'success':
         return promotion_response
@@ -440,8 +441,8 @@ def input_stepped_free_good_to_account(account_id, sku, zone, environment, index
         return 'false'
 
 
-def input_free_good_to_cart_calculation_v2(account_id, deal_id, zone, environment, sku_list, minimum_quantity,
-                                           quantity, partial_free_good, need_buy_product):
+def request_create_free_good_cart_calculation(account_id, deal_id, zone, environment, sku_list, minimum_quantity,
+                                              quantity, partial_free_good, need_buy_product):
     """
     Input deal type free good rules (API version 2) to the Pricing Engine Relay Service
     Args:
@@ -542,8 +543,8 @@ def input_free_good_to_cart_calculation_v2(account_id, deal_id, zone, environmen
         return 'false'
 
 
-def input_stepped_free_good_to_cart_calculation_v2(account_id, deal_id, zone, environment, sku, index_range,
-                                                   quantity_range):
+def request_create_stepped_free_good_cart_calculation(account_id, deal_id, zone, environment, sku, index_range,
+                                                      quantity_range):
     """
     Input deal type stepped free good rules (API version 2) to the Pricing Engine Relay Service
     Args:
@@ -621,8 +622,8 @@ def input_stepped_free_good_to_cart_calculation_v2(account_id, deal_id, zone, en
         return 'false'
 
 
-def input_discount_to_cart_calculation_v2(account_id, deal_id, zone, environment, deal_sku, discount_type, discount_value,
-                                          minimum_quantity):
+def request_create_discount_cart_calculation(account_id, deal_id, zone, environment, deal_sku, discount_type,
+                                             discount_value, minimum_quantity):
     """
     Input deal type discount rules (API version 2) to the Pricing Engine Relay Service
     Args:
@@ -698,8 +699,8 @@ def input_discount_to_cart_calculation_v2(account_id, deal_id, zone, environment
         return 'false'
 
 
-def input_stepped_discount_to_cart_calculation_v2(account_id, deal_id, zone, environment, deal_sku, discount_type,
-                                                  index_range, discount_range):
+def request_create_stepped_discount_cart_calculation(account_id, deal_id, zone, environment, deal_sku, discount_type,
+                                                     index_range, discount_range):
     """
     Input deal type stepped discount rules (API version 2) to the Pricing Engine Relay Service
     Args:
@@ -781,8 +782,8 @@ def input_stepped_discount_to_cart_calculation_v2(account_id, deal_id, zone, env
         return 'false'
 
 
-def input_stepped_discount_with_qtd_to_cart_calculation_v2(account_id, deal_id, zone, environment, sku, quantity,
-                                                           index_range, discount_type, discount_range):
+def request_create_stepped_discount_with_limit_cart_calculation(account_id, deal_id, zone, environment, sku, quantity,
+                                                                index_range, discount_type, discount_range):
     """
     Input deal type stepped discount rules (API version 2) to the Pricing Engine Relay Service
     Args:
@@ -1004,7 +1005,7 @@ def display_deals_information_promo_fusion(account_id, deals):
         print(tabulate(promotion_information, headers='keys', tablefmt='grid'))
 
 
-def delete_deal_by_id(account_id, zone, environment, data):
+def request_delete_deal_by_id(account_id, zone, environment, data):
     """
     Delete deal by ID via Promotion Relay Service v2
     Args:
@@ -1085,7 +1086,7 @@ def request_get_deals_pricing_service(account_id, zone, environment):
         return 'false'
 
 
-def delete_deals_pricing_service(account_id, zone, environment, data):
+def request_delete_deals_pricing_service(account_id, zone, environment, data):
     """
     Delete deal by ID form Pricing Conditions Service database
     Args:
