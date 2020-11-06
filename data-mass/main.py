@@ -57,7 +57,8 @@ def show_menu():
             '4': deals_information_menu,
             '5': order_information_menu,
             '6': recommender_information_menu,
-            '7': retriever_sku_menu
+            '7': retrieve_available_invoices_menu,
+            '8': retriever_sku_menu
         }
     elif selection_structure == '3':
         switcher = {
@@ -1310,6 +1311,13 @@ def delete_user_iam():
         print_finish_application_menu()
 
 
+def create_invoice_menu():
+    selection_structure = print_invoice_menu()
+    switcher = {
+        '1': 'NEW_INVOICE',
+        '2': 'UPDATE_INVOICE'
+    }
+
 def invoice_menu():
     operation = print_invoice_operations_menu()
     zone = print_zone_menu_for_ms()
@@ -1510,6 +1518,30 @@ def recommender_information_menu():
         print_finish_application_menu()
 
     display_recommendations_by_account(zone, environment, abi_id)
+
+def retrieve_available_invoices_menu():
+    status = print_invoice_status_menu_retriever()
+    zone = print_zone_menu_for_ms()
+    environment = printEnvironmentMenu()
+    abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
+    account = check_account_exists_microservice(abi_id, zone, environment)
+    if account == 'false':
+        printFinishApplicationMenu()
+    header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
+    invoice_info = get_invoices(header_request, abi_id, environment)
+    print_invoices(invoice_info, status)
+
+
+def retriever_sku_menu():
+    zone = print_zone_menu_for_ms()
+    environment = printEnvironmentMenu()
+    abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        printFinishApplicationMenu()
+
+    display_sku_rewards(zone, environment, abi_id)
 
 
 def retriever_sku_menu():
