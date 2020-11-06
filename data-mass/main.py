@@ -1522,13 +1522,27 @@ def recommender_information_menu():
 def retrieve_available_invoices_menu():
     status = print_invoice_status_menu_retriever()
     zone = print_zone_menu_for_ms()
-    environment = printEnvironmentMenu()
+    environment = print_finish_application_menu()
     abi_id = print_account_id_menu(zone)
     if abi_id == 'false':
-        printFinishApplicationMenu()
+        print_finish_application_menu()
     account = check_account_exists_microservice(abi_id, zone, environment)
     if account == 'false':
-        printFinishApplicationMenu()
+        print_finish_application_menu()
+    header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
+    invoice_info = get_invoices(header_request, abi_id, environment)
+    print_invoices(invoice_info, status)
+
+def retrieve_available_invoices_menu():
+    status = print_invoice_status_menu_retriever()
+    zone = print_zone_menu_for_ms()
+    environment = print_environment_menu()
+    abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        print_finish_application_menu()
+    account = check_account_exists_microservice(abi_id, zone, environment)
+    if account == 'false':
+        print_finish_application_menu()
     header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
     invoice_info = get_invoices(header_request, abi_id, environment)
     print_invoices(invoice_info, status)
@@ -1536,10 +1550,20 @@ def retrieve_available_invoices_menu():
 
 def retriever_sku_menu():
     zone = print_zone_menu_for_ms()
-    environment = printEnvironmentMenu()
+    environment = print_environment_menu()
     abi_id = print_account_id_menu(zone)
     if abi_id == 'false':
-        printFinishApplicationMenu()
+        print_environment_menu()
+
+    display_sku_rewards(zone, environment, abi_id)
+
+
+def retriever_sku_menu():
+    zone = print_zone_menu_for_ms()
+    environment = print_environment_menu()
+    abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        print_finish_application_menu()
 
     display_sku_rewards(zone, environment, abi_id)
 
