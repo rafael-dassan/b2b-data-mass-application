@@ -516,6 +516,8 @@ def get_order_items(order_data):
         discount = 0
         if 'pricingReasonDetail' in items[i] and len(items[i]['pricingReasonDetail']) != 0:
             discount = items[i]['pricingReasonDetail'][0]['discountAmount']
+            if discount is None:
+                discount = 0
 
         items_details = {
             'sku': items[i]['sku'],
