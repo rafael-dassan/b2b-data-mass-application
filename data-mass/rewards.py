@@ -178,7 +178,7 @@ def enroll_poc_to_program(account_id, zone, environment):
         return 'pgm_not_found'
 
 
-# Desenroll a POC from the rewards program
+# Disenroll a POC from the rewards program
 def delete_enroll_poc_to_program(account_id, zone, environment):
 
     # Define headers
@@ -194,7 +194,7 @@ def delete_enroll_poc_to_program(account_id, zone, environment):
         response = place_request('DELETE', request_url, '', request_headers)
 
         if response.status_code != 204:
-             print(text.Red + '\n- [Rewards Service] Failure when desenroll an account to program. Response Status: '
+             print(text.Red + '\n- [Rewards Service] Failure when disenroll an account to program. Response Status: '
                             + str(response.status_code) + '. Response message ' + response.text)
            
         return response.status_code
@@ -993,6 +993,25 @@ def get_id_rewards(abi_id, header_request, environment):
     program_id = str(program_enrollment.get("programId"))
 
     return program_id
+
+
+def get_rewards_status(account_id, country, environment):
+    """
+        Returns the enrollment status of an account_id..
+
+        Parameters:
+            account_id  (str): AccountId (POC number)
+            country     (str): Country code
+            environment (str): Environment code
+
+        Returns:
+            str: 200 enrolled, 404 unenrolled, 406 ineligible
+    """
+
+    header_request = get_header_request(country, 'true', 'false', 'false', 'false')
+    request_url = get_microservice_base_url(environment,'true') + '/rewards-service/rewards/' + account_id
+    response = place_request('GET', request_url, '', header_request)
+    return response.status_code
 
 
 def get_sku_rewards(program_id, header_request, environment):
