@@ -952,39 +952,6 @@ def print_get_order_menu():
     return structure
 
 
-def validate_invoice_status(option):
-    if option == '1' or option == '2' or option == '3':
-        return 'true'
-    else:
-        return 'false'
-
-
-def print_invoice_status_menu():
-    status = input(
-        text.default_text_color + 'Do you want to create the invoice with which status: 1. CLOSED, 2. OPEN or 3.DELIVERED: ')
-    while validate_invoice_status(status) == 'false':
-        print(text.Red + '\n- Invalid option')
-        status = input(
-            text.default_text_color + 'Do you want to create the invoice with which status: 1. CLOSED, 2. OPEN or 3.DELIVERED: ')
-    if status == '1':
-        return 'CLOSED'
-    else:
-        return 'OPEN'
-
-
-def print_invoice_status_menu_retriever():
-    status = input(text.default_text_color + 'Do you want to retrieve the invoice with which status: 1. CLOSED, 2. OPEN or 3.DELIVERED: ')
-    while validate_invoice_status(status) == 'false':
-        print(text.Red + '\n- Invalid option')
-        status = input(text.default_text_color + 'Do you want to retrieve the invoice with which status: 1. CLOSED, 2. OPEN or 3.DELIVERED: ')
-    if status == '1':
-        return ['1', 'CLOSED']
-    elif status == '2':
-        return ['2', 'OPEN']
-    else:
-        return ['3', 'DELIVERED']
-
-
 def print_combo_id_menu():
     combo_id = input(text.default_text_color + 'Combo ID: ')
 
@@ -1098,63 +1065,6 @@ def print_year_credit_statement():
     return year
 
 
-def print_account_status_menu():
-    option = input(
-        text.default_text_color + 'With which status do you want to create your account? (1. ACTIVE / 2. BLOCKED): ')
-    while option == '' and option != '1' and option != '2':
-        print(text.Red + '\n- Invalid option')
-        option = input(
-            text.default_text_color + '\nWith which status do you want to create your account? (1. ACTIVE / 2. BLOCKED): ')
-
-    switcher = {
-        '1': 'ACTIVE',
-        '2': 'BLOCKED'
-    }
-
-    status = switcher.get(option, 'false')
-
-    return status
-
-
-def print_account_enable_empties_loan_menu():
-    option = input(
-        text.default_text_color + 'Would you like to enable the loan of empties for this account? (1. Yes / 2. No): ')
-    while option == '' and option != '1' and option != '2':
-        print(text.Red + '\n- Invalid option')
-        option = input(
-            text.default_text_color + 'Would you like to enable the loan of empties for this account? (1. Yes / 2. No): ')
-
-    switcher = {
-        '1': True,
-        '2': False
-    }
-
-    enable_empties_loan = switcher.get(option, 'false')
-
-    return enable_empties_loan
-
-
-def validate_invoice_menu(option):
-    if option == '1' or option == '2':
-        return 'true'
-    else:
-        return 'false'
-
-
-def print_invoice_menu():
-    print(text.default_text_color + str(1), text.Yellow + 'Create New Invoice')
-    print(text.default_text_color + str(2), text.Yellow + 'Update Invoice Status')
-    structure = input(text.default_text_color + '\nPlease select: ')
-    while validate_invoice_menu(structure) == 'false':
-        print(text.Red + '\n- Invalid option')
-        print(text.default_text_color + str(1), text.Yellow + 'Create New Invoice')
-        print(text.default_text_color + str(2), text.Yellow + 'Update Invoice Status')
-
-        structure = input(text.default_text_color + '\nPlease select: ')
-
-    return structure
-
-
 def print_invoices(invoice_info, status):
     print(text.Yellow + "\nInvoice Id:")
     for i in invoice_info['data']:
@@ -1162,6 +1072,8 @@ def print_invoices(invoice_info, status):
             print(text.default_text_color + i['invoiceId'])
         else:
             continue
+
+
 
 
 def validate_invoice_id(invoice_id):

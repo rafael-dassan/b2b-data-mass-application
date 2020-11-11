@@ -14,7 +14,7 @@ from menus.deals_menu import print_deals_operations_menu, print_discount_value_m
     print_max_quantity_menu, print_free_good_quantity_range_menu, print_option_sku_menu, print_partial_free_good_menu, \
     print_free_good_redemption_menu, print_free_good_quantity_menu, print_index_range_menu, print_discount_range_menu
 from menus.invoice_menu import print_invoice_operations_menu, print_invoice_status_menu, print_invoice_id_menu, \
-    print_invoice_payment_method_menu
+    print_invoice_payment_method_menu, print_invoice_status_menu_retriever
 from order import *
 from combos import *
 from products import *
@@ -1311,13 +1311,6 @@ def delete_user_iam():
         print_finish_application_menu()
 
 
-def create_invoice_menu():
-    selection_structure = print_invoice_menu()
-    switcher = {
-        '1': 'NEW_INVOICE',
-        '2': 'UPDATE_INVOICE'
-    }
-
 def invoice_menu():
     operation = print_invoice_operations_menu()
     zone = print_zone_menu_for_ms()
@@ -1530,8 +1523,9 @@ def retrieve_available_invoices_menu():
     account = check_account_exists_microservice(abi_id, zone, environment)
     if account == 'false':
         print_finish_application_menu()
-    header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
-    invoice_info = get_invoices(header_request, abi_id, environment)
+    invoice_info = get_invoices(zone, abi_id, environment)
+    if invoice_info == 'false':
+        print_finish_application_menu()
     print_invoices(invoice_info, status)
 
 

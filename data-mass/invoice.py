@@ -135,15 +135,16 @@ def check_if_invoice_exists(account_id, invoice_id, zone, environment):
         return 'false'
 
 
-def get_invoices(header_request, abi_id, environment):
+def get_invoices(zone, abi_id, environment):
+    header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
     # Get url base
     request_url = get_microservice_base_url(environment, 'false') + '/invoices-service/?accountId=' + abi_id
 
     # Place request
     response = place_request('GET', request_url, '', header_request)
     if response.status_code == 200:
-        invoice_info = response.json()
+        invoice_info = loads(response.text)
     else:
-        invoice_info = ''
+        invoice_info = 'false'
 
     return invoice_info
