@@ -134,11 +134,11 @@ def update_dt_combos_rewards(zone, environment, abi_id):
     else:
         request_url = get_microservice_base_url(environment) + '/combos/?accountID=' + abi_id + '&types=DT&includeDeleted=false&includeDisabled=false'
         response = place_request('GET', request_url, '', header_request)
+
         combos_info = loads(response.text)
         combos_info_list = list()
         for i in combos_info['combos']:
             combos_info_list.append(i.get('id'))
-        print(combos_info_list)
 
         request_url = get_microservice_base_url(environment) + '/rewards-service/programs/' + program_id
         response = place_request('GET', request_url, '', header_request)
@@ -146,11 +146,8 @@ def update_dt_combos_rewards(zone, environment, abi_id):
         program_combo_list = list()
         for i in program_info['combos']:
             program_combo_list.append(i.get('comboId'))
-        print(program_combo_list)
 
         missing_combo = list(list(list(set(combos_info_list) - set(program_combo_list))))
-
-        print(missing_combo)
 
         for i in combos_info['combos']:
             if i['id'] == missing_combo[0]:
@@ -176,6 +173,14 @@ def update_dt_combos_rewards(zone, environment, abi_id):
             'combos': [dict_missing_combo]
         }
 
+        dic_combos = {
+            'comboId': missing_combo[0],
+            'points': 500,
+            'redeemLimit': 5
+        }
+        program_info['combos'].append(dic_combos)
+        response = place_request('PUT', request_url, json.dumps(program_info), header_request)
+
         header_request = get_header_request(zone, 'false', 'false', 'true', 'false')
 
         # Define url request to post the association
@@ -183,20 +188,6 @@ def update_dt_combos_rewards(zone, environment, abi_id):
 
         # Send request to associate the combos to account
         response = place_request('POST', request_url, json.dumps(dict_values_account), header_request)
-
-        dic_combos = {
-            'comboId': missing_combo[0],
-            'points': 500,
-            'redeemLimit': 5
-        }
-
-        program_info['combos'].append(dic_combos)
-
-        request_url = get_microservice_base_url(environment) + '/rewards-service/programs/' + program_id
-
-        header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
-
-        response = place_request('PUT', request_url, json.dumps(program_info), header_request)
 
         return response
 

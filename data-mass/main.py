@@ -342,7 +342,7 @@ def create_rewards_to_account():
 
         update_dt_combos = update_dt_combos_rewards(zone, environment, abi_id)
 
-        if update_dt_combos.status_code == 200:
+        if update_dt_combos.status_code == 201:
             print(text.Green + '\n- [Rewards] The program has been successfully updated.')
         else:
             print(text.Red + '\n-Error:' + str(update_dt_combos.status_code))
