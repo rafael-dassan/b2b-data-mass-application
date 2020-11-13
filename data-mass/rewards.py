@@ -134,7 +134,7 @@ def update_dt_combos_rewards(zone, environment, abi_id):
     else:
         request_url = get_microservice_base_url(environment) + '/combos/?accountID=' + abi_id + '&types=DT&includeDeleted=false&includeDisabled=false'
         response = place_request('GET', request_url, '', header_request)
-        if response != 200:
+        if response.status_code != 200:
             return response
         else:
             combos_info = loads(response.text)
@@ -144,7 +144,7 @@ def update_dt_combos_rewards(zone, environment, abi_id):
 
             request_url = get_microservice_base_url(environment) + '/rewards-service/programs/' + program_id
             response = place_request('GET', request_url, '', header_request)
-            if response != 200:
+            if response.status_code != 200:
                 return response
             else:
                 program_info = loads(response.text)
@@ -185,7 +185,7 @@ def update_dt_combos_rewards(zone, environment, abi_id):
                 }
                 program_info['combos'].append(dic_combos)
                 response = place_request('PUT', request_url, json.dumps(program_info), header_request)
-                if response != 201:
+                if response.status_code != 200:
                     return response
                 else:
                     header_request = get_header_request(zone, 'false', 'false', 'true', 'false')
@@ -195,7 +195,6 @@ def update_dt_combos_rewards(zone, environment, abi_id):
 
                     # Send request to associate the combos to account
                     response = place_request('POST', request_url, json.dumps(dict_values_account), header_request)
-                    
                     return response
 
 
