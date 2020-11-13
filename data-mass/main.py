@@ -344,8 +344,10 @@ def create_rewards_to_account():
 
         if update_dt_combos.status_code == 201:
             print(text.Green + '\n- [Rewards] The program has been successfully updated.')
+        elif update_dt_combos == 'no_program':
+            print(text.Red + '\n-Error: POC not enrolled at a program')
         else:
-            print(text.Red + '\n-Error:' + str(update_dt_combos.status_code))
+            print(text.Red + '\n-Error:' + str(update_dt_combos.status_code) + str(update_dt_combos.reason))
 
         print_finish_application_menu()
 

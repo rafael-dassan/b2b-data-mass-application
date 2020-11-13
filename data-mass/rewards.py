@@ -134,62 +134,69 @@ def update_dt_combos_rewards(zone, environment, abi_id):
     else:
         request_url = get_microservice_base_url(environment) + '/combos/?accountID=' + abi_id + '&types=DT&includeDeleted=false&includeDisabled=false'
         response = place_request('GET', request_url, '', header_request)
+        if response != 200:
+            return response
+        else:
+            combos_info = loads(response.text)
+            combos_info_list = list()
+            for i in combos_info['combos']:
+                combos_info_list.append(i.get('id'))
 
-        combos_info = loads(response.text)
-        combos_info_list = list()
-        for i in combos_info['combos']:
-            combos_info_list.append(i.get('id'))
+            request_url = get_microservice_base_url(environment) + '/rewards-service/programs/' + program_id
+            response = place_request('GET', request_url, '', header_request)
+            if response != 200:
+                return response
+            else:
+                program_info = loads(response.text)
+                program_combo_list = list()
+                for i in program_info['combos']:
+                    program_combo_list.append(i.get('comboId'))
 
-        request_url = get_microservice_base_url(environment) + '/rewards-service/programs/' + program_id
-        response = place_request('GET', request_url, '', header_request)
-        program_info = loads(response.text)
-        program_combo_list = list()
-        for i in program_info['combos']:
-            program_combo_list.append(i.get('comboId'))
+                missing_combo = list(list(list(set(combos_info_list) - set(program_combo_list))))
 
-        missing_combo = list(list(list(set(combos_info_list) - set(program_combo_list))))
+                for i in combos_info['combos']:
+                    if i['id'] == missing_combo[0]:
+                        dict_missing_combo = {
+                            'id': i['id'],
+                            'externalId': i['id'],
+                            'title': i['title'],
+                            'description': i['id'],
+                            'startDate': i['startDate'],
+                            'endDate': i['endDate'],
+                            'updatedAt': i['updatedAt'],
+                            'type': 'DT',
+                            'image': 'https://test-conv-micerveceria.abi-sandbox.net/media/catalog/product/c/o/combo-icon_11.png',
+                            'freeGoods': i['freeGoods'],
+                            'limit': i['limit'],
+                            'originalPrice': 0,
+                            'price': 0,
+                            'score': 0,
+                        }
 
-        for i in combos_info['combos']:
-            if i['id'] == missing_combo[0]:
-                dict_missing_combo = {
-                    'id': i['id'],
-                    'externalId': i['id'],
-                    'title': i['title'],
-                    'description': i['id'],
-                    'startDate': i['startDate'],
-                    'endDate': i['endDate'],
-                    'updatedAt': i['updatedAt'],
-                    'type': 'DT',
-                    'image': 'https://test-conv-micerveceria.abi-sandbox.net/media/catalog/product/c/o/combo-icon_11.png',
-                    'freeGoods': i['freeGoods'],
-                    'limit': i['limit'],
-                    'originalPrice': 0,
-                    'price': 0,
-                    'score': 0,
+                dict_values_account = {
+                    'accounts': create_list(abi_id),
+                    'combos': [dict_missing_combo]
                 }
 
-        dict_values_account = {
-            'accounts': create_list(abi_id),
-            'combos': [dict_missing_combo]
-        }
+                dic_combos = {
+                    'comboId': missing_combo[0],
+                    'points': 500,
+                    'redeemLimit': 5
+                }
+                program_info['combos'].append(dic_combos)
+                response = place_request('PUT', request_url, json.dumps(program_info), header_request)
+                if response != 201:
+                    return response
+                else:
+                    header_request = get_header_request(zone, 'false', 'false', 'true', 'false')
 
-        dic_combos = {
-            'comboId': missing_combo[0],
-            'points': 500,
-            'redeemLimit': 5
-        }
-        program_info['combos'].append(dic_combos)
-        response = place_request('PUT', request_url, json.dumps(program_info), header_request)
+                    # Define url request to post the association
+                    request_url = get_microservice_base_url(environment) + '/combo-relay/accounts'
 
-        header_request = get_header_request(zone, 'false', 'false', 'true', 'false')
-
-        # Define url request to post the association
-        request_url = get_microservice_base_url(environment) + '/combo-relay/accounts'
-
-        # Send request to associate the combos to account
-        response = place_request('POST', request_url, json.dumps(dict_values_account), header_request)
-
-        return response
+                    # Send request to associate the combos to account
+                    response = place_request('POST', request_url, json.dumps(dict_values_account), header_request)
+                    
+                    return response
 
 
 # Enroll POC to a zone's reward program
