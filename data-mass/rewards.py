@@ -125,6 +125,48 @@ def create_new_program(zone, environment):
         return 'error_len_combo'
 
 
+def update_dt_combos_rewards(zone, environment, abi_id):
+    header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
+    program_id = get_id_rewards(abi_id, header_request, environment)
+
+    if program_id == 'false':
+        return 'no_program'
+    else:
+        request_url = get_microservice_base_url(environment) + '/combos/?accountID=' + abi_id + '&types=DT&includeDeleted=false&includeDisabled=false'
+        response = place_request('GET', request_url, '', header_request)
+        combos_info = loads(response.text)
+        combos_info_list = list()
+        for i in combos_info['combos']:
+            combos_info_list.append(i.get('id'))
+        print(combos_info_list)
+
+        request_url = get_microservice_base_url(environment) + '/rewards-service/programs/' + program_id
+        response = place_request('GET', request_url, '', header_request)
+        program_info = loads(response.text)
+        program_combo_list = list()
+        for i in program_info['combos']:
+            program_combo_list.append(i.get('comboId'))
+        print(program_combo_list)
+
+        missing_combo = list(list(list(set(combos_info_list) - set(program_combo_list))))
+
+        print(missing_combo)
+
+        dic_combos = {
+            'comboId': missing_combo[0],
+            'points': 500,
+            'redeemLimit': 5
+        }
+
+        program_info['combos'].append(dic_combos)
+
+        response = place_request('PUT', request_url, json.dumps(program_info), header_request)
+
+        print(response.status_code)
+
+        return response
+
+
 # Enroll POC to a zone's reward program
 def enroll_poc_to_program(account_id, zone, environment):
 
