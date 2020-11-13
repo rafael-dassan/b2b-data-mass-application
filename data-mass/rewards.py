@@ -152,6 +152,38 @@ def update_dt_combos_rewards(zone, environment, abi_id):
 
         print(missing_combo)
 
+        for i in combos_info['combos']:
+            if i['id'] == missing_combo[0]:
+                dict_missing_combo = {
+                    'id': i['id'],
+                    'externalId': i['id'],
+                    'title': i['title'],
+                    'description': i['id'],
+                    'startDate': i['startDate'],
+                    'endDate': i['endDate'],
+                    'updatedAt': i['updatedAt'],
+                    'type': 'DT',
+                    'image': 'https://test-conv-micerveceria.abi-sandbox.net/media/catalog/product/c/o/combo-icon_11.png',
+                    'freeGoods': i['freeGoods'],
+                    'limit': i['limit'],
+                    'originalPrice': 0,
+                    'price': 0,
+                    'score': 0,
+                }
+
+        dict_values_account = {
+            'accounts': create_list(abi_id),
+            'combos': [dict_missing_combo]
+        }
+
+        header_request = get_header_request(zone, 'false', 'false', 'true', 'false')
+
+        # Define url request to post the association
+        request_url = get_microservice_base_url(environment) + '/combo-relay/accounts'
+
+        # Send request to associate the combos to account
+        response = place_request('POST', request_url, json.dumps(dict_values_account), header_request)
+
         dic_combos = {
             'comboId': missing_combo[0],
             'points': 500,
@@ -160,9 +192,11 @@ def update_dt_combos_rewards(zone, environment, abi_id):
 
         program_info['combos'].append(dic_combos)
 
-        response = place_request('PUT', request_url, json.dumps(program_info), header_request)
+        request_url = get_microservice_base_url(environment) + '/rewards-service/programs/' + program_id
 
-        print(response.status_code)
+        header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
+
+        response = place_request('PUT', request_url, json.dumps(program_info), header_request)
 
         return response
 
@@ -364,7 +398,7 @@ def input_redeem_products(abi_id, zone, environment):
             i += 1
 
         # Creates the main payload based on the lists created above
-        dict_values_account  = {
+        dict_values_account = {
             'accounts': create_list(abi_id),
             'combos': combos_list
         }
