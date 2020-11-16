@@ -134,7 +134,7 @@ def product_information_menu():
         display_product_information(product_offers)
 
     elif products_type == 'INVENTORY':
-        zone = print_zone_menu_for_inventory()
+        zone = print_zone_menu_for_ms()
         abi_id = print_account_id_menu(zone)
         if abi_id == 'false':
             print_finish_application_menu()
@@ -587,7 +587,7 @@ def check_simulation_service_account_microservice_menu():
 
 # Input inventory (stock) to products
 def input_inventory_to_product():
-    zone = print_zone_menu_for_inventory()
+    zone = print_zone_menu_for_ms()
     environment = print_environment_menu()
     abi_id = print_account_id_menu(zone)
     if abi_id == 'false':
@@ -916,25 +916,24 @@ def input_products_to_account_menu():
             print(text.Red + '\n- [Products] Something went wrong, please try again')
             print_finish_application_menu()
 
-        if zone != 'BR' and zone != 'CL':
-            products = request_get_account_product_assortment(abi_id, zone, environment, delivery_center_id)
-            if products == 'false':
-                print_finish_application_menu()
-            elif products == 'not_found':
-                print(text.Red + '\n- [Product Assortment Service] There is no product associated with the account '
+        products = request_get_account_product_assortment(abi_id, zone, environment, delivery_center_id)
+        if products == 'false':
+            print_finish_application_menu()
+        elif products == 'not_found':
+            print(text.Red + '\n- [Product Assortment Service] There is no product associated with the account '
                       + abi_id)
-                print_finish_application_menu()
+            print_finish_application_menu()
 
-            skus_id = list()
-            aux_index = 0
-            while aux_index <= (len(products) - 1):
-                skus_id.append(products[aux_index])
-                aux_index = aux_index + 1
+        skus_id = list()
+        aux_index = 0
+        while aux_index <= (len(products) - 1):
+            skus_id.append(products[aux_index])
+            aux_index = aux_index + 1
 
-            update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id, skus_id)
+        update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id, skus_id)
 
-            if update_sku != 'true':
-                print_finish_application_menu()
+        if update_sku != 'true':
+            print_finish_application_menu()
 
 
 def account_menu():

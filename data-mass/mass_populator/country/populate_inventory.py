@@ -10,7 +10,7 @@ def populate_default_inventory(account_id, country, environment, delivery_center
     Populate the default inventory (99999) for all products associated to an account_id
     Args:
         account_id: POC unique identifier
-        country: AR, CO, DO, ZA
+        country: e.g., AR, CO, DO, ZA
         environment: SIT, UAT
         delivery_center_id: POC's delivery center unique identifier
     """
