@@ -142,11 +142,12 @@ def associate_products_to_account(country, environment, account_id, products):
     }
 
     products_length = len(products)
-    products_data = list(zip(generate_random_price_ids(products_length), [{'sku': products[i]} for i in range(products_length)]))
+    products_data = list(zip(generate_random_price_ids(products_length), [{'sku': products[i]} for i in
+                                                                          range(products_length)]))
 
-    if "success" != request_post_products_account_microservice(account['accountId'], country, environment, account['deliveryCenterId'], products_data):
+    if "success" != request_post_products_account_microservice(account['accountId'], country, environment,
+                                                               account['deliveryCenterId'], products_data):
         logger.error(log(Message.PRODUCT_ERROR, {"account_id": account_id}))
 
-    if country != "BR":
-        # Populate the default inventory for AR, CO, DO and ZA
-        populate_default_inventory(account_id, country, environment, account['deliveryCenterId'])
+    # Populate the default inventory for all countries
+    populate_default_inventory(account_id, country, environment, account['deliveryCenterId'])
