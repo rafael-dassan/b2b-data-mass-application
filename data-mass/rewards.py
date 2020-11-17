@@ -155,34 +155,36 @@ def update_dt_combos_rewards(zone, environment, abi_id):
                 missing_combo = list(list(list(set(combos_info_list) - set(program_combo_list))))
 
                 for i in combos_info['combos']:
-                    if i['id'] == missing_combo[0]:
-                        dict_missing_combo = {
-                            'id': i['id'],
-                            'externalId': i['id'],
-                            'title': i['title'],
-                            'description': i['id'],
-                            'startDate': i['startDate'],
-                            'endDate': i['endDate'],
-                            'updatedAt': i['updatedAt'],
-                            'type': 'DT',
-                            'image': 'https://test-conv-micerveceria.abi-sandbox.net/media/catalog/product/c/o/combo-icon_11.png',
-                            'freeGoods': i['freeGoods'],
-                            'limit': i['limit'],
-                            'originalPrice': 0,
-                            'price': 0,
-                            'score': 0,
+                    for j in range(len(missing_combo)):
+                        dic_combos = {
+                            'comboId': missing_combo[j],
+                            'points': 500,
+                            'redeemLimit': 5
                         }
+                        if i['id'] == missing_combo[j]:
+                            dict_missing_combo = {
+                                'id': i['id'],
+                                'externalId': i['id'],
+                                'title': i['title'],
+                                'description': i['id'],
+                                'startDate': i['startDate'],
+                                'endDate': i['endDate'],
+                                'updatedAt': i['updatedAt'],
+                                'type': 'DT',
+                                'image': 'https://test-conv-micerveceria.abi-sandbox.net/media/catalog/product/c/o/combo-icon_11.png',
+                                'freeGoods': i['freeGoods'],
+                                'limit': i['limit'],
+                                'originalPrice': 0,
+                                'price': 0,
+                                'score': 0,
+                            }
 
                 dict_values_account = {
                     'accounts': create_list(abi_id),
                     'combos': [dict_missing_combo]
                 }
 
-                dic_combos = {
-                    'comboId': missing_combo[0],
-                    'points': 500,
-                    'redeemLimit': 5
-                }
+
                 program_info['combos'].append(dic_combos)
                 response = place_request('PUT', request_url, json.dumps(program_info), header_request)
                 if response.status_code != 200:
