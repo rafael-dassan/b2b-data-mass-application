@@ -38,12 +38,12 @@ def print_invoice_status_menu_retriever():
     while validate_invoice_status(status) == 'false':
         print(text.Red + '\n- Invalid option')
         status = input(text.default_text_color + 'Do you want to retrieve the invoice with which status: 1. CLOSED, 2. OPEN or 3.DELIVERED: ')
-    if status == '1':
-        return ['1', 'CLOSED']
-    elif status == '2':
-        return ['2', 'OPEN']
-    else:
-        return ['3', 'DELIVERED']
+
+    return {
+        '1': ['1', 'CLOSED'],
+        '2': ['2', 'OPEN'],
+        '3': ['3', 'DELIVERED']
+    }.get(status, 'false')
 
 
 def print_invoice_id_menu():

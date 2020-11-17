@@ -142,9 +142,9 @@ def get_invoices(zone, abi_id, environment):
 
     # Place request
     response = place_request('GET', request_url, '', header_request)
+    invoice_info = loads(response.text)
     if response.status_code == 200:
-        invoice_info = loads(response.text)
+        return invoice_info
     else:
         invoice_info = 'false'
-
-    return invoice_info
+        return invoice_info
