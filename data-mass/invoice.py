@@ -146,5 +146,4 @@ def get_invoices(zone, abi_id, environment):
     if response.status_code == 200:
         return invoice_info
     else:
-        invoice_info = 'false'
-        return invoice_info
+        return 'false'
