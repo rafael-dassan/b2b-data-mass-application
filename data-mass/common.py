@@ -10,6 +10,7 @@ from uuid import uuid1
 from jsonpath_rw import Index, Fields
 from jsonpath_rw_ext import parse
 from requests import request
+from tabulate import tabulate
 
 # Local application imports
 from classes.text import text
@@ -1066,14 +1067,24 @@ def print_year_credit_statement():
 
 
 def print_invoices(invoice_info, status):
-    print(text.Yellow + "\nInvoice Id:")
+    invoice_list = list()
     for i in invoice_info['data']:
         if i['status'] == status[0] or i['status'] == status[1]:
-            print(text.default_text_color + i['invoiceId'])
+            invoice_values = {
+                'Invoice ID': i['invoiceId'],
+                'Product Quantity': i['itemsQuantity'],
+                'Sub Total': i['subtotal'],
+                'Tax': i['tax'],
+                'Discount': i['discount'],
+                'Total': i['total']
+            }
+            for j in range(i['itemsQuantity']):
+                invoice_values.setdefault('SKU', []).append(i['items'][j-1]['sku'])
+            invoice_list.append(invoice_values)
         else:
             continue
-
-
+    print(text.default_text_color + '\nInvoice Information By Account  -  Status:' + status[1])
+    print(tabulate(invoice_list, headers='keys', tablefmt='grid'))
 
 
 def validate_invoice_id(invoice_id):
