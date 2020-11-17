@@ -1083,8 +1083,11 @@ def print_invoices(invoice_info, status):
             invoice_list.append(invoice_values)
         else:
             continue
-    print(text.default_text_color + '\nInvoice Information By Account  -  Status:' + status[1])
-    print(tabulate(invoice_list, headers='keys', tablefmt='grid'))
+    if bool(invoice_list):
+        print(text.default_text_color + '\nInvoice Information By Account  -  Status:' + status[1])
+        print(tabulate(invoice_list, headers='keys', tablefmt='grid'))
+    else:
+        print(text.Red + '\nThere is no invoices with the status of ' + status[1] + ' for this account')
 
 
 def validate_invoice_id(invoice_id):
