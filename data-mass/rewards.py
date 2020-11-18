@@ -203,9 +203,6 @@ def update_dt_combos_rewards(zone, environment, abi_id):
                     return 'none'
 
 
-
-
-
 # Enroll POC to a zone's reward program
 def enroll_poc_to_program(account_id, zone, environment):
 
