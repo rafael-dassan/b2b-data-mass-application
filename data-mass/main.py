@@ -980,6 +980,10 @@ def flow_create_account(zone, environment, account_id):
 
     if create_account_response == 'success':
         print(text.Green + '\n- Your account {account_id} has been created successfully'.format(account_id=account_id))
+
+        # Input default credit to the account so it won't be `null` in the Account Service database
+        if 'false' == add_credit_to_account_microservice(account_id, zone, environment, 0, 0):
+            print_finish_application_menu()
     else:
         print_finish_application_menu()
 
