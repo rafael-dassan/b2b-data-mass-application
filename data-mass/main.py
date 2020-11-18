@@ -342,12 +342,14 @@ def create_rewards_to_account():
 
         update_dt_combos = update_dt_combos_rewards(zone, environment, abi_id)
 
-        if update_dt_combos.status_code == 201:
+        if update_dt_combos == 201:
             print(text.Green + '\n- [Rewards] The program has been successfully updated.')
         elif update_dt_combos == 'no_program':
             print(text.Red + '\n-Error: POC not enrolled at a program')
+        elif update_dt_combos == 'none':
+            print("\nThere is nothing to update, please insert a DT combo first")
         else:
-            print(text.Red + '\n-Error:' + str(update_dt_combos.status_code) + str(update_dt_combos.reason))
+            print(text.Red + '\n-Error: ' + str(update_dt_combos))
 
         print_finish_application_menu()
 
