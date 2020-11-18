@@ -1051,17 +1051,19 @@ def generate_terms_information(zone):
 
 # Displays the SKU's for rewards shopping
 def display_sku_rewards(zone, environment, abi_id):
+    rewards_list = dict()
     header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
     program_id = get_id_rewards(abi_id, header_request, environment)
-    print("Program ID: ", program_id)
+    print("\nProgram ID: ", program_id)
     program_data = get_sku_rewards(program_id, header_request, environment)
     for i in range(2):
-        print(text.Yellow + "Program name: ", program_data['rules'][i-1]['moneySpentSkuRule']['name'])
-        print("Gain " + str(program_data['rules'][i-1]['moneySpentSkuRule']['points']) + " points per " +
-              str(program_data['rules'][i-1]['moneySpentSkuRule']['amountSpent']) + " spent")
+        print(text.Yellow + "\nProgram name: ", program_data['rules'][i-1]['moneySpentSkuRule']['name'])
+        print("Gain " + str(program_data['rules'][i-1]['moneySpentSkuRule']['points']) + " points per " +str(program_data['rules'][i-1]['moneySpentSkuRule']['amountSpent']) + " spent")
         for skus in program_data['rules'][i-1]['moneySpentSkuRule']['skus']:
             sku_name = get_sku_name(zone, environment, skus)
-            print(text.default_text_color + "SKU name: " + sku_name + "  SKU ID: ", skus)
+            rewards_list.setdefault('SKU name',[]).append(sku_name)
+            rewards_list.setdefault('SKU ID', []).append(skus)
+        print(text.default_text_color + tabulate(rewards_list, headers='keys', tablefmt='grid'))
 
 
 def get_id_rewards(abi_id, header_request, environment):
