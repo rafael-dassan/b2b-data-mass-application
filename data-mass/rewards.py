@@ -152,44 +152,44 @@ def update_dt_combos_rewards(zone, environment, abi_id):
                 for i in program_info['combos']:
                     program_combo_list.append(i.get('comboId'))
 
-                missing_combo = list(list(list(set(combos_info_list) - set(program_combo_list))))
+                missing_combo = list(set(combos_info_list) - set(program_combo_list))
 
-                for i in combos_info['combos']:
-                    for j in range(len(missing_combo)):
-                        dic_combos = {
-                            'comboId': missing_combo[j],
-                            'points': 500,
-                            'redeemLimit': 5
-                        }
-                        if i['id'] == missing_combo[j]:
-                            dict_missing_combo = {
-                                'id': i['id'],
-                                'externalId': i['id'],
-                                'title': i['title'],
-                                'description': i['id'],
-                                'startDate': i['startDate'],
-                                'endDate': i['endDate'],
-                                'updatedAt': i['updatedAt'],
-                                'type': 'DT',
-                                'image': 'https://test-conv-micerveceria.abi-sandbox.net/media/catalog/product/c/o/combo-icon_11.png',
-                                'freeGoods': i['freeGoods'],
-                                'limit': i['limit'],
-                                'originalPrice': 0,
-                                'price': 0,
-                                'score': 0,
-                            }
+                for j in range(len(missing_combo)):
+                    dic_combos = {
+                        'comboId': missing_combo[j],
+                        'points': 500,
+                        'redeemLimit': 5
+                    }
+                    program_info['combos'].append(dic_combos)
 
-                dict_values_account = {
-                    'accounts': create_list(abi_id),
-                    'combos': [dict_missing_combo]
-                }
-
-
-                program_info['combos'].append(dic_combos)
                 response = place_request('PUT', request_url, json.dumps(program_info), header_request)
                 if response.status_code != 200:
                     return response
                 else:
+                    dict_values_account = {
+                        'accounts': create_list(abi_id)
+                    }
+                    for i in combos_info['combos']:
+                        for j in range(len(missing_combo)):
+                            if i['id'] == missing_combo[j]:
+                                dict_missing_combo = {
+                                    'id': i['id'],
+                                    'externalId': i['id'],
+                                    'title': i['title'],
+                                    'description': i['id'],
+                                    'startDate': i['startDate'],
+                                    'endDate': i['endDate'],
+                                    'updatedAt': i['updatedAt'],
+                                    'type': 'DT',
+                                    'image': 'https://test-conv-micerveceria.abi-sandbox.net/media/catalog/product/c/o/combo-icon_11.png',
+                                    'freeGoods': i['freeGoods'],
+                                    'limit': i['limit'],
+                                    'originalPrice': 0,
+                                    'price': 0,
+                                    'score': 0,
+                                }
+                                dict_values_account.setdefault('combos', []).append(dict_missing_combo)
+
                     header_request = get_header_request(zone, 'false', 'false', 'true', 'false')
 
                     # Define url request to post the association
