@@ -1056,12 +1056,12 @@ def display_sku_rewards(zone, environment, abi_id):
     program_id = get_id_rewards(abi_id, header_request, environment)
     print("\nProgram ID: ", program_id)
     program_data = get_sku_rewards(program_id, header_request, environment)
-    for i in range(2):
-        print(text.Yellow + "\nProgram name: ", program_data['rules'][i-1]['moneySpentSkuRule']['name'])
-        print("Gain " + str(program_data['rules'][i-1]['moneySpentSkuRule']['points']) + " points per " +str(program_data['rules'][i-1]['moneySpentSkuRule']['amountSpent']) + " spent")
-        for skus in program_data['rules'][i-1]['moneySpentSkuRule']['skus']:
+    for i in program_data['rules']:
+        print(text.Yellow + "\nProgram name: ", i['moneySpentSkuRule']['name'])
+        print("Gain " + str(i['moneySpentSkuRule']['points']) + " points per " + str(i['moneySpentSkuRule']['amountSpent']) + " spent")
+        for skus in i['moneySpentSkuRule']['skus']:
             sku_name = get_sku_name(zone, environment, skus)
-            rewards_list.setdefault('SKU name',[]).append(sku_name)
+            rewards_list.setdefault('SKU name', []).append(sku_name)
             rewards_list.setdefault('SKU ID', []).append(skus)
         print(text.default_text_color + tabulate(rewards_list, headers='keys', tablefmt='grid'))
 
