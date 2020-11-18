@@ -14,7 +14,7 @@ from menus.deals_menu import print_deals_operations_menu, print_discount_value_m
     print_max_quantity_menu, print_free_good_quantity_range_menu, print_option_sku_menu, print_partial_free_good_menu, \
     print_free_good_redemption_menu, print_free_good_quantity_menu, print_index_range_menu, print_discount_range_menu
 from menus.invoice_menu import print_invoice_operations_menu, print_invoice_status_menu, print_invoice_id_menu, \
-    print_invoice_payment_method_menu
+    print_invoice_payment_method_menu, print_invoice_status_menu_retriever
 from order import *
 from combos import *
 from products import *
@@ -57,7 +57,8 @@ def show_menu():
             '4': deals_information_menu,
             '5': order_information_menu,
             '6': recommender_information_menu,
-            '7': retriever_sku_menu
+            '7': retrieve_available_invoices_menu,
+            '8': retriever_sku_menu
         }
     elif selection_structure == '3':
         switcher = {
@@ -1509,6 +1510,22 @@ def recommender_information_menu():
         print_finish_application_menu()
 
     display_recommendations_by_account(zone, environment, abi_id)
+
+
+def retrieve_available_invoices_menu():
+    status = print_invoice_status_menu_retriever()
+    zone = print_zone_menu_for_ms()
+    environment = print_environment_menu()
+    abi_id = print_account_id_menu(zone)
+    if abi_id == 'false':
+        print_finish_application_menu()
+    account = check_account_exists_microservice(abi_id, zone, environment)
+    if account == 'false':
+        print_finish_application_menu()
+    invoice_info = get_invoices(zone, abi_id, environment)
+    if invoice_info == 'false':
+        print_finish_application_menu()
+    print_invoices(invoice_info, status)
 
 
 def retriever_sku_menu():

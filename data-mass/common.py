@@ -10,6 +10,7 @@ from uuid import uuid1
 from jsonpath_rw import Index, Fields
 from jsonpath_rw_ext import parse
 from requests import request
+from tabulate import tabulate
 
 # Local application imports
 from classes.text import text
@@ -369,7 +370,8 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(4), text.Yellow + 'Deals information by account')
         print(text.default_text_color + str(5), text.Yellow + 'Order information by account')
         print(text.default_text_color + str(6), text.Yellow + 'Recommender information by account')
-        print(text.default_text_color + str(7), text.Yellow + 'SKUs for Reward Shopping')
+        print(text.default_text_color + str(7), text.Yellow + 'Retrieve available invoices')
+        print(text.default_text_color + str(8), text.Yellow + 'SKUs for Reward Shopping')
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_option_request_selection(selection) == 'false':
             print(text.Red + '\n- Invalid option\n')
@@ -380,7 +382,8 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(4), text.Yellow + 'Deals information')
             print(text.default_text_color + str(5), text.Yellow + 'Order information by account')
             print(text.default_text_color + str(6), text.Yellow + 'Recommender information by account')
-            print(text.default_text_color + str(7), text.Yellow + 'SKUs for Reward Shopping')
+            print(text.default_text_color + str(7), text.Yellow + 'Retrieve available invoices')
+            print(text.default_text_color + str(8), text.Yellow + 'SKUs for Reward Shopping')
             selection = input(text.default_text_color + '\nPlease select: ')
 
     elif selection_structure == '3':
@@ -1051,6 +1054,30 @@ def print_year_credit_statement():
             year = input(text.default_text_color + 'Which year do you want to create the document?: ')
 
     return year
+
+
+def print_invoices(invoice_info, status):
+    invoice_list = list()
+    for i in invoice_info['data']:
+        if i['status'] == status[0] or i['status'] == status[1]:
+            invoice_values = {
+                'Invoice ID': i['invoiceId'],
+                'Product Quantity': i['itemsQuantity'],
+                'Sub Total': i['subtotal'],
+                'Tax': i['tax'],
+                'Discount': i['discount'],
+                'Total': i['total']
+            }
+            for j in range(i['itemsQuantity']):
+                invoice_values.setdefault('SKU', []).append(i['items'][j-1]['sku'])
+            invoice_list.append(invoice_values)
+        else:
+            continue
+    if bool(invoice_list):
+        print(text.default_text_color + '\nInvoice Information By Account  -  Status:' + status[1])
+        print(tabulate(invoice_list, headers='keys', tablefmt='grid'))
+    else:
+        print(text.Red + '\nThere is no invoices with the status of ' + status[1] + ' for this account')
 
 
 def validate_invoice_id(invoice_id):
