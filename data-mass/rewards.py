@@ -1051,7 +1051,7 @@ def generate_terms_information(zone):
 
 # Displays the SKU's for rewards shopping
 def display_sku_rewards(zone, environment, abi_id):
-    rewards_list = dict()
+    rewards_dictionary = dict()
     header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
     program_id = get_id_rewards(abi_id, header_request, environment)
     print("\nProgram ID: ", program_id)
@@ -1061,9 +1061,9 @@ def display_sku_rewards(zone, environment, abi_id):
         print("Gain " + str(i['moneySpentSkuRule']['points']) + " points per " + str(i['moneySpentSkuRule']['amountSpent']) + " spent")
         for skus in i['moneySpentSkuRule']['skus']:
             sku_name = get_sku_name(zone, environment, skus)
-            rewards_list.setdefault('SKU name', []).append(sku_name)
-            rewards_list.setdefault('SKU ID', []).append(skus)
-        print(text.default_text_color + tabulate(rewards_list, headers='keys', tablefmt='grid'))
+            rewards_dictionary.setdefault('SKU name', []).append(sku_name)
+            rewards_dictionary.setdefault('SKU ID', []).append(skus)
+        print(text.default_text_color + tabulate(rewards_dictionary, headers='keys', tablefmt='grid'))
 
 
 def get_id_rewards(abi_id, header_request, environment):
