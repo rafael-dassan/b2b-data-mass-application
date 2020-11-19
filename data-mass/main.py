@@ -215,10 +215,11 @@ def create_rewards_to_account():
     switcher = {
         '1': 'NEW_PROGRAM',
         '2': 'UPDATE_BALANCE',
-        '3': 'ENROLL_POC',
-        '4': 'ADD_CHALLENGE',
-        '5': 'ADD_REDEEM',
-        '6': 'DELETE_ENROLL_POC'
+        '3': 'UPDATE_COMBOS',
+        '4': 'ENROLL_POC',
+        '5': 'ADD_CHALLENGE',
+        '6': 'ADD_REDEEM',
+        '7': 'DELETE_ENROLL_POC'
     }
 
     reward_option = switcher.get(selection_structure, 'false')
@@ -328,6 +329,27 @@ def create_rewards_to_account():
             print(text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "Create new program" to create it')
         elif delete_enroll_poc == 204:
             print(text.Green + '\n- [Rewards] The enrollment has been deleted for this account from the rewards program')
+
+        print_finish_application_menu()
+
+    elif reward_option == 'UPDATE_COMBOS':
+        abi_id = print_account_id_menu(zone)
+
+        # Call check account exists function
+        account = check_account_exists_microservice(abi_id, zone, environment)
+        if account == 'false':
+            print_finish_application_menu()
+
+        update_dt_combos = update_dt_combos_rewards(zone, environment, abi_id)
+
+        if update_dt_combos == 201:
+            print(text.Green + '\n- [Rewards] The program has been successfully updated.')
+        elif update_dt_combos == 'no_program':
+            print(text.Red + '\n-Error: POC not enrolled at a program')
+        elif update_dt_combos == 'none':
+            print("\nThere is nothing to update, please insert a DT combo first")
+        else:
+            print(text.Red + '\n-Error: ' + str(update_dt_combos))
 
         print_finish_application_menu()
 
