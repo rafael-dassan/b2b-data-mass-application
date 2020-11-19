@@ -129,7 +129,7 @@ def update_dt_combos_rewards(zone, environment, abi_id):
     header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
     program_id = get_id_rewards(abi_id, header_request, environment)
 
-    if program_id == 'false':
+    if program_id.split(" ")[0] == 'false':
         return 'no_program'
     else:
         request_url = get_microservice_base_url(environment) + '/combos/?accountID=' + abi_id + '&types=DT&includeDeleted=false&includeDisabled=false'
@@ -142,7 +142,7 @@ def update_dt_combos_rewards(zone, environment, abi_id):
             for i in combos_info['combos']:
                 combos_info_list.append(i.get('id'))
 
-            request_url = get_microservice_base_url(environment) + '/rewards-service/programs/' + program_id
+            request_url = get_microservice_base_url(environment) + '/rewards-service/programs/' + str(program_id)
             response = place_request('GET', request_url, '', header_request)
             if response.status_code != 200:
                 return response.status_code
@@ -1054,25 +1054,33 @@ def display_sku_rewards(zone, environment, abi_id):
     rewards_dictionary = dict()
     header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
     program_id = get_id_rewards(abi_id, header_request, environment)
-    print("\nProgram ID: ", program_id)
-    program_data = get_sku_rewards(program_id, header_request, environment)
-    for i in program_data['rules']:
-        print(text.Yellow + "\nProgram name: ", i['moneySpentSkuRule']['name'])
-        print("Gain " + str(i['moneySpentSkuRule']['points']) + " points per " + str(i['moneySpentSkuRule']['amountSpent']) + " spent")
-        for skus in i['moneySpentSkuRule']['skus']:
-            sku_name = get_sku_name(zone, environment, skus)
-            rewards_dictionary.setdefault('SKU name', []).append(sku_name)
-            rewards_dictionary.setdefault('SKU ID', []).append(skus)
-        print(text.default_text_color + tabulate(rewards_dictionary, headers='keys', tablefmt='grid'))
+    if program_id.split(" ")[0] != 'false':
+        print("\nProgram ID: ", program_id)
+        program_data = get_sku_rewards(program_id, header_request, environment)
+        if isinstance(program_data, dict):
+            for i in program_data['rules']:
+                print(text.Yellow + "\nProgram name: ", i['moneySpentSkuRule']['name'])
+                print("Gain " + str(i['moneySpentSkuRule']['points']) + " points per " + str(i['moneySpentSkuRule']['amountSpent']) + " spent")
+                for skus in i['moneySpentSkuRule']['skus']:
+                    sku_name = get_sku_name(zone, environment, skus)
+                    rewards_dictionary.setdefault('SKU name', []).append(sku_name)
+                    rewards_dictionary.setdefault('SKU ID', []).append(skus)
+                print(text.default_text_color + tabulate(rewards_dictionary, headers='keys', tablefmt='grid'))
+            return '200'
+        else:
+            return program_data
+    else:
+        return program_id
+
 
 
 def get_id_rewards(abi_id, header_request, environment):
     request_url = get_microservice_base_url(environment,'true') + '/rewards-service/rewards/' + abi_id
     response = place_request('GET', request_url, '', header_request)
-    program_enrollment = loads(response.text)
-    program_id = str(program_enrollment.get("programId"))
-
-    return program_id
+    if response.status_code == 200:
+        return loads(response.text).get("programId")
+    else:
+        return 'false ' + str(response.status_code)
 
 
 def get_rewards_status(account_id, country, environment):
@@ -1097,6 +1105,7 @@ def get_rewards_status(account_id, country, environment):
 def get_sku_rewards(program_id, header_request, environment):
     request_url = get_microservice_base_url(environment,'true') + '/rewards-service/programs/' + program_id
     response = place_request('GET', request_url, '', header_request)
-    program_info = loads(response.text)
-
-    return program_info
+    if response.status_code == 200:
+        return loads(response.text)
+    else:
+        return 'false ' + str(response.status_code)
