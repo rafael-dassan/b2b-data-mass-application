@@ -53,11 +53,12 @@ def validate_option_request_selection_for_structure_2(option):
 # Validate Country in User creation
 def validateCountryInUserCreation(country):
     switcher = {
-        "BR": "true",
-        "DO": "true",
         "AR": "true",
-        "ZA": "true",
-        "CO": "true"
+        "BR": "true",
+        "CO": "true",
+        "DO": "true",
+        "MX": "true",
+        "ZA": "true"
     }
 
     value = switcher.get(country, "false")
@@ -142,10 +143,13 @@ def validate_recommendation_type(option):
 
 # Validate environment to User creation
 def validateEnvironmentInUserCreation(environment):
-    if environment == "UAT" or environment == "SIT":
-        return "true"
-    else:
-        return "false"
+    switcher = {
+        'DT': 'true',
+        'SIT': 'true',
+        'UAT': 'true'
+    }
+    
+    return switcher.get(environment, 'false')
 
 
 # Place generic request
@@ -211,40 +215,41 @@ def get_header_request(header_country, use_jwt_auth='false', use_root_auth='fals
 
 # Return base URL for Microservice
 def get_microservice_base_url(environment, is_v1='true'):
-    if environment == 'DEV':
-        if is_v1 == 'true':
-            return 'https://bees-services-dev.eastus2.cloudapp.azure.com/v1'
-        else:
-            return 'https://bees-services-dev.eastus2.cloudapp.azure.com/api'
-
-    elif is_v1 == 'false':
-        return 'https://services-' + environment.lower() + '.bees-platform.dev/api'
-    else:
-        return 'https://services-' + environment.lower() + '.bees-platform.dev/v1'
+    env_name = 'SIT' if (environment != 'SIT' or environment != 'UAT') else environment
+    context = '/v1' if (is_v1 == 'true') else '/api'
+    return 'https://services-' + env_name.lower() + '.bees-platform.dev' + context
 
 
 # Return base URL for Magento
 def get_magento_base_url(environment, country):
     magento_url = {
-        'UAT': {
-            'BR': 'https://br.uat.bees-platform.dev',
-            'DO': 'https://do.uat.bees-platform.dev',
-            'AR': 'https://ar.uat.bees-platform.dev',
-            'ZA': 'https://za.uat.bees-platform.dev',
-            'CO': 'https://co.uat.bees-platform.dev',
-            'MX': 'https://mx.uat.bees-platform.dev',
-            'EC': 'https://ec.uat.bees-platform.dev',
-            'PE': 'https://pe.uat.bees-platform.dev'
+        'DT': {
+            'AR': 'https://qa-dt-las-ar.abi-sandbox.net/',
+            'BR': 'https://qa-dt-br.abi-sandbox.net',
+            'CO': 'https://qa-dt-copec-co.abi-sandbox.net',
+            'DO': 'https://qa-dt-dr.abi-sandbox.net',
+            'MX': 'https://qa-dt-mx.abi-sandbox.net',
+            'ZA': 'https://qa-dt-za.abi-sandbox.net'
         },
         'SIT': {
-            'BR': 'https://br.sit.bees-platform.dev',
-            'DO': 'https://do.sit.bees-platform.dev',
             'AR': 'https://ar.sit.bees-platform.dev',
-            'ZA': 'https://za.sit.bees-platform.dev',
+            'BR': 'https://br.sit.bees-platform.dev',
             'CO': 'https://co.sit.bees-platform.dev',
-            'MX': 'https://mx.sit.bees-platform.dev',
+            'DO': 'https://do.sit.bees-platform.dev',
             'EC': 'https://ec.sit.bees-platform.dev',
-            'PE': 'https://pe.sit.bees-platform.dev'
+            'MX': 'https://mx.sit.bees-platform.dev',
+            'PE': 'https://pe.sit.bees-platform.dev',
+            'ZA': 'https://za.sit.bees-platform.dev'
+        },
+        'UAT': {
+            'AR': 'https://ar.uat.bees-platform.dev',
+            'BR': 'https://br.uat.bees-platform.dev',
+            'CO': 'https://co.uat.bees-platform.dev',
+            'DO': 'https://do.uat.bees-platform.dev',
+            'EC': 'https://ec.uat.bees-platform.dev',
+            'MX': 'https://mx.uat.bees-platform.dev',
+            'PE': 'https://pe.uat.bees-platform.dev',
+            'ZA': 'https://za.uat.bees-platform.dev'
         }
     }
 
@@ -253,11 +258,11 @@ def get_magento_base_url(environment, country):
 
 def get_region_id(country):
     region_id = {
-        "BR": "PT_BR",
-        "DO": "ES_DO",
-        "AR": "ES_AR",
-        "ZA": "EN_ZA",
-        "CO": "ES_CO"
+        'BR': 'PT_BR',
+        'DO': 'ES_DO',
+        'AR': 'ES_AR',
+        'ZA': 'EN_ZA',
+        'CO': 'ES_CO'
     }
     return region_id.get(country)
 
@@ -265,25 +270,33 @@ def get_region_id(country):
 # Returns Magento User Registration Integration Access Token
 def get_magento_user_registration_access_token(environment, country):
     access_token = {
-        "UAT": {
-            "BR": "qq8t0w0tvz7nbn4gxo5jh9u62gohvjrw",
-            "DO": "56jqtzzto7tw9uox8nr3eckoeup53dt2",
-            "AR": "30lqki06nbdegugcmdb0ttm9yppnmoec",
-            "ZA": "31pdb0yht5kn3eld7gum021f6k984jh9",
-            "CO": "8mh6b9b6ft6m1cr5k7zm2jh4aljq4slx",
-            'PE': '4z0crqq6yb6t5mip43i63tgntdll09vc',
-            'EC': 'awtm7d9as0n9k1o5zi9fi90rtukxdmqh',
-            'MX': 'kcsn7y80vvo2by9fluw2vq4r2a6pucfs'
+        'DT': {
+            'AR': '0pj40segd3h67zjn68z9oj18xyx5yib8',
+            'BR': 'qq8t0w0tvz7nbn4gxo5jh9u62gohvjrw',
+            'CO': '2z0re32n00z159oui0az2j2dr42bx8m5',
+            'DO': '56jqtzzto7tw9uox8nr3eckoeup53dt2',
+            'MX': '40qrmhwv93ixeysxsw5hxrvjn6dstdim',
+            'ZA': 'y4u1xqitth7k8y50ei5nlfm538sblk6j'
         },
-        "SIT": {
-            "BR": "qq8t0w0tvz7nbn4gxo5jh9u62gohvjrw",
-            "DO": "56jqtzzto7tw9uox8nr3eckoeup53dt2",
-            "AR": "30lqki06nbdegugcmdb0ttm9yppnmoec",
-            "ZA": "nmvvuk58lc425a7p5l55orrkgh0jprr2",
-            "CO": "walt5dp3keiq2du0f30kir21v13f3u0v",
-            'PE': 'hwv67q9d3zyy2u500n2x0r5g7mr2j5is',
+        'SIT': {
+            'AR': '30lqki06nbdegugcmdb0ttm9yppnmoec',
+            'BR': 'qq8t0w0tvz7nbn4gxo5jh9u62gohvjrw',
+            'CO': 'walt5dp3keiq2du0f30kir21v13f3u0v',
+            'DO': '56jqtzzto7tw9uox8nr3eckoeup53dt2',
             'EC': 'kyhzpszn0bswbf17mlb409ldg14j58uv',
-            'MX': 'w0mi88cajh0jbq0zrive3ht4eywc8xlm'
+            'MX': 'w0mi88cajh0jbq0zrive3ht4eywc8xlm',
+            'PE': 'hwv67q9d3zyy2u500n2x0r5g7mr2j5is',
+            'ZA': 'nmvvuk58lc425a7p5l55orrkgh0jprr2'
+        },
+        'UAT': {
+            'AR': '30lqki06nbdegugcmdb0ttm9yppnmoec',
+            'BR': 'qq8t0w0tvz7nbn4gxo5jh9u62gohvjrw',
+            'CO': '8mh6b9b6ft6m1cr5k7zm2jh4aljq4slx',
+            'DO': '56jqtzzto7tw9uox8nr3eckoeup53dt2',
+            'EC': 'awtm7d9as0n9k1o5zi9fi90rtukxdmqh',
+            'MX': 'kcsn7y80vvo2by9fluw2vq4r2a6pucfs',
+            'PE': '4z0crqq6yb6t5mip43i63tgntdll09vc',
+            'ZA': '31pdb0yht5kn3eld7gum021f6k984jh9'
         }
     }
 
@@ -316,7 +329,6 @@ def get_magento_datamass_access_token(environment, country):
     }
 
     return access_token.get(environment).get(country)
-
 
 # Clear terminal
 def clear_terminal():
@@ -567,10 +579,10 @@ def print_zone_menu_for_combos(combo_type=''):
 
 # Print country menu for User creation
 def printCountryMenuInUserCreation():
-    country = input(text.default_text_color + "Country (BR, DO, AR, ZA, CO): ")
+    country = input(text.default_text_color + "Country (AR, BR, CO, DO, MX, ZA): ")
     while validateCountryInUserCreation(country.upper()) == "false":
         print(text.Red + "\n- Invalid option\n")
-        country = input(text.default_text_color + "Country (BR, DO, AR, ZA, CO): ")
+        country = input(text.default_text_color + "Country (AR, BR, CO, DO, MX, ZA): ")
 
     return country.upper()
 
@@ -587,10 +599,10 @@ def print_environment_menu():
 
 # Print environment menu for User creation
 def printEnvironmentMenuInUserCreation():
-    environment = input(text.default_text_color + "Environment (UAT, SIT): ")
+    environment = input(text.default_text_color + "Environment (DT, SIT, UAT): ")
     while validateEnvironmentInUserCreation(environment.upper()) == 'false':
         print(text.Red + '\n- Invalid option')
-        environment = input(text.default_text_color + "Environment (UAT, SIT): ")
+        environment = input(text.default_text_color + "Environment (DT, SIT, UAT): ")
 
     return environment.upper()
 
