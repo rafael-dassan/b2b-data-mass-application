@@ -26,7 +26,7 @@ def populate_accounts(country, environment):
     populate_pocs(country, environment, search_data_by(country, 'account'))
 
 
-def populate_users_magento(country, environment):    
+def populate_users_magento(country, environment):
     logger.info("populate_users_iam_b2c for %s/%s", country, environment)
     populate_users_iam_b2c(country, environment, search_data_by(country, 'user'))
 

@@ -1,3 +1,4 @@
+from common import block_print
 from mass_populator.log import logging
 from mass_populator.csv_helper import search_data_by
 from mass_populator.country.populate_rewards import disenroll_pocs
@@ -6,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 def execute_rewards(country, environment):
+    block_print()
     disenroll_accounts(country, environment)
     return True
 

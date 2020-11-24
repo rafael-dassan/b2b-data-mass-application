@@ -18,5 +18,6 @@ def exec_disenroll_poc(row, country, environment):
     rewards_status = get_rewards_status(account_id, country, environment)
     if rewards_status == 200:
         delete_enroll_poc_to_program(account_id, country, environment)
+    else:
+        logger.info("The account %s is already unenrolled. Skipping...", account_id)
 
-    logger.debug("The account %s is unenrolled", account_id)
