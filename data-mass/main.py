@@ -1560,8 +1560,12 @@ def retriever_sku_menu():
     abi_id = print_account_id_menu(zone)
     if abi_id == 'false':
         print_finish_application_menu()
-
-    display_sku_rewards(zone, environment, abi_id)
+    response = display_sku_rewards(zone, environment, abi_id)
+    if response == '200':
+        print_finish_application_menu()
+    else:
+        print('\nError: ' + response.lstrip("false "))
+        print_finish_application_menu()
 
 
 def create_credit_statement_menu():
