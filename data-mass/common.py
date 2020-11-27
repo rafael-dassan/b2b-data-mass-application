@@ -221,11 +221,10 @@ def get_microservice_base_url(environment, is_v1='true'):
             return 'https://bees-services-dev.eastus2.cloudapp.azure.com/v1'
         else:
             return 'https://bees-services-dev.eastus2.cloudapp.azure.com/api'
-
-    elif is_v1 == 'false':
-        return 'https://services-' + environment.lower() + '.bees-platform.dev/api'
     else:
-        return 'https://services-' + environment.lower() + '.bees-platform.dev/v1'
+        env_name = 'SIT' if (environment != 'SIT' and environment != 'UAT') else environment
+        context = '/v1' if (is_v1 == 'true') else '/api'
+        return 'https://services-' + env_name.lower() + '.bees-platform.dev' + context
 
 
 # Return base URL for Magento
