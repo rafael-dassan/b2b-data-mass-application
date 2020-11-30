@@ -40,7 +40,7 @@ def request_create_deal(account_id, sku, deal_type, zone, environment):
         free_good = create_free_good_group(sku, zone, environment)
         free_good_group_id.append(free_good)
 
-    deals_v2_zones = ['BR', 'DO', 'CO', 'EC', 'MX', 'PE']
+    deals_v2_zones = ['AR', 'BR', 'CO', 'DO', 'EC', 'MX', 'PE']
     if zone in deals_v2_zones:
         # Get body
         request_body = get_deals_payload_v2(deal_id, deal_type)
