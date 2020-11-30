@@ -195,12 +195,11 @@ def get_header_request(header_country, use_jwt_auth='false', use_root_auth='fals
     }
 
     if use_jwt_auth == 'true':
-        header[
-            'Authorization'] = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYi1pbmJldiIsImF1ZCI6ImFiaS1t' \
-                               'aWNyb3NlcnZpY2VzIiwiZXhwIjoxNjA2Njk0NDAwLCJpYXQiOjE1MzY5NjMyNTcsInVwZGF0ZWRfYXQiOjE1M' \
-                               'zY5NjMyNTcsIm5hbWUiOiJmaWxpcGVyaWJlaXJvKzFAY2lhbmR0LmNvbSIsImFjY291bnRJRCI6IjU1MDE1MC' \
-                               'IsInVzZXJJRCI6IjExIiwicm9sZXMiOlsiUk9MRV9DVVNUT01FUiJdfQ.q1kb8Kb6OO9ewNo82WQdNwmrfgZt' \
-                               'I_0dB9jq3j0XOUk'
+        header['Authorization'] = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYi1pbmJldiIsImF1ZCI6ImF' \
+                                  'iaS1taWNyb3NlcnZpY2VzIiwiZXhwIjoxNjE2MjM5MDIyLCJpYXQiOjE1MTYyMzkwMjIsInVwZGF0ZWR' \
+                                  'fYXQiOjExMTExMTEsIm5hbWUiOiJ1c2VyQGFiLWluYmV2LmNvbSIsImFjY291bnRJRCI6IjAwMTAwMD' \
+                                  'EwMDEiLCJ1c2VySUQiOiIyMTE4Iiwicm9sZXMiOlsiUk9MRV9DVVNUT01FUiJdfQ.09CPxmskqvERwhJ' \
+                                  'SvTXb8RJeiwGGM4aEpMTBiBd72_M'
     elif use_root_auth == 'true':
         header['Authorization'] = 'Basic cm9vdDpyb290'
     elif use_inclusion_auth == 'true':
