@@ -8,7 +8,7 @@ from tabulate import tabulate
 
 # Local application imports
 from common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request
-from products import request_get_account_product_assortment, check_item_enabled, get_sku_name
+from products import request_get_account_product_assortment, check_item_enabled, get_sku_name, request_get_products_microservice
 from classes.text import text
 
 
@@ -16,64 +16,87 @@ from classes.text import text
 def display_available_products_account(account_id, zone, environment, delivery_center_id):
     # Retrieve all SKUs for the specified Account and DeliveryCenter IDs
     product_offers = request_get_account_product_assortment(account_id, zone, environment, delivery_center_id)
+    # Retrieve all SKUs for the specified Zone
+    products = request_get_products_microservice(zone, environment)
+    if products != 'false':
+        products_list = list()
+        for sku in products:
+            products_list.append(sku['sku'])
 
-    # Check if the SKU is enabled
-    enabled_skus = list()
-    if len(product_offers):
-        with Pool(20) as pool:
-            enabled_skus = pool.starmap(check_item_enabled, zip(product_offers, repeat(zone), repeat(environment)))
+        valid_products = list(set(product_offers).intersection(products_list))
 
-    # Get SKU name
-    if len(enabled_skus) > 0:
-        quantity_enabled_skus = len(enabled_skus)
-        with Pool(20) as pool:
-            sku_name = pool.starmap(get_sku_name, zip(repeat(zone), repeat(environment), enabled_skus))
+        if isinstance(product_offers, list):
+            # Check if the SKU is enabled
+            enabled_skus = list()
+            if len(product_offers):
+                with Pool(20) as pool:
+                    enabled_skus = pool.starmap(check_item_enabled,
+                                                zip(valid_products, repeat(zone), repeat(environment)))
 
-        stock_option = input(text.Yellow + '\nDo you want to choose which product will have the stock updated? '
-                                           '\nIf you don\'t, stock will be added to all products linked to your '
-                                           'account (1. Yes / 2. No): ')
+            # Get SKU name
+            if len(enabled_skus) > 0:
+                quantity_enabled_skus = len(enabled_skus)
+                with Pool(20) as pool:
+                    sku_name = pool.starmap(get_sku_name, zip(repeat(zone), repeat(environment), enabled_skus))
 
-        while stock_option != '1' and stock_option != '2':
-            print(text.Red + '\n- Invalid option')
-            stock_option = input(text.Yellow + '\nDo you want to choose which product will have the stock updated? '
-                                               '\nIf don\'t, stock will be added to all products linked to your account'
-                                               ' (1. Yes / 2. No): ')
+                stock_option = input(text.Yellow + '\nDo you want to choose which product will have the stock updated? '
+                                                   '\nIf you don\'t, stock will be added to all products linked to your '
+                                                   'account (1. Yes / 2. No): ')
 
-        if stock_option == '2':
-            update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id,
-                                                           enabled_skus)
+                while stock_option != '1' and stock_option != '2':
+                    print(text.Red + '\n- Invalid option')
+                    stock_option = input(
+                        text.Yellow + '\nDo you want to choose which product will have the stock updated? '
+                                      '\nIf don\'t, stock will be added to all products linked to your account'
+                                      ' (1. Yes / 2. No): ')
+
+                if stock_option == '2':
+                    update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id,
+                                                                   enabled_skus)
+                else:
+                    # Show all the enabled SKUs and its respective names on the screen
+                    aux_index = 0
+
+                    while aux_index < quantity_enabled_skus:
+                        if enabled_skus[aux_index] == 'false':
+                            aux_index = aux_index + 1
+                        else:
+                            print(
+                                text.default_text_color + '\n SKU: ' + text.Blue + enabled_skus[aux_index] + '  ||  ' +
+                                sku_name[aux_index].upper())
+                            aux_index = aux_index + 1
+
+                    sku_id = input(text.default_text_color + '\n Type here the SKU from the list above you want to add '
+                                                             'inventory: ')
+
+                    while validate_sku(sku_id.strip(), enabled_skus) != 'true':
+                        print(text.Red + '\n- Invalid SKU. Please check the list above and try again.')
+                        sku_id = input(
+                            text.default_text_color + '\n Type here the SKU from the list above you want to add '
+                                                      'inventory: ')
+
+                    sku_quantity = input(text.default_text_color + '\n Type here the quantity you want to add to it: ')
+
+                    while not sku_quantity.isdigit():
+                        print(text.Red + '\n- Invalid option.')
+                        sku_quantity = input(
+                            text.default_text_color + '\n Type here the quantity you want to add to it: ')
+
+                    update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id,
+                                                                   enabled_skus, sku_id, sku_quantity)
+
+                if update_sku == 'true':
+                    return 'true'
+                else:
+                    return 'false'
+            else:
+                return 'error_len'
         else:
-            # Show all the enabled SKUs and its respective names on the screen
-            aux_index = 0
-
-            while aux_index < quantity_enabled_skus:
-                print(text.default_text_color + '\n SKU: ' + text.Blue + enabled_skus[aux_index] + '  ||  ' +
-                      sku_name[aux_index].upper())
-                aux_index = aux_index + 1
-
-            sku_id = input(text.default_text_color + '\n Type here the SKU from the list above you want to add '
-                                                     'inventory: ')
-
-            while validate_sku(sku_id.strip(), enabled_skus) != 'true':
-                print(text.Red + '\n- Invalid SKU. Please check the list above and try again.')
-                sku_id = input(text.default_text_color + '\n Type here the SKU from the list above you want to add '
-                                                         'inventory: ')
-
-            sku_quantity = input(text.default_text_color + '\n Type here the quantity you want to add to it: ')
-
-            while not sku_quantity.isdigit():
-                print(text.Red + '\n- Invalid option.')
-                sku_quantity = input(text.default_text_color + '\n Type here the quantity you want to add to it: ')
-
-            update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id,
-                                                           enabled_skus, sku_id, sku_quantity)
-
-        if update_sku == 'true':
-            return 'true'
-        else:
-            return 'false'
+            return product_offers
     else:
-        return 'error_len'
+        return 'false'
+
+
 
 
 # Update SKU inventory

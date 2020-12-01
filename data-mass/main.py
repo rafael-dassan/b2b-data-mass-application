@@ -622,22 +622,14 @@ def input_inventory_to_product():
     if account == 'false':
         print_finish_application_menu()
 
-    # Check if the account has products
-    product_assortment = request_get_account_product_assortment(abi_id, zone, environment,
-                                                                account[0]['deliveryCenterId'])
-
-    if product_assortment == 'false':
-        print_finish_application_menu()
-    elif product_assortment == 'not_found':
-        print(text.Red + '\n- [Product Assortment Service] There is no product associated with the account ' + abi_id)
-        print_finish_application_menu()
-
     # Call function to display the SKUs on the screen
     inventory = display_available_products_account(abi_id, zone, environment, account[0]['deliveryCenterId'])
     if inventory == 'true':
         print(text.Green + '\n- The inventory has been added successfully for the account ' + abi_id)
     elif inventory == 'error_len':
         print(text.Red + '\n- There are no products available for the account ' + abi_id)
+        print_finish_application_menu()
+    elif inventory == 'false':
         print_finish_application_menu()
     else:
         print_finish_application_menu()
