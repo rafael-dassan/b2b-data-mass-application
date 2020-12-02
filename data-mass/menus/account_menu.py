@@ -29,6 +29,37 @@ def print_account_operations_menu():
     return option
 
 
+def delivery_window_menu():
+    print(text.default_text_color + '\nDelivery window options')
+    print(text.default_text_color + str(1), text.Yellow + 'Create default delivery window')
+    print(text.default_text_color + str(2), text.Yellow + 'Create delivery window with specific date')
+    option = input(text.default_text_color + '\nPlease select: ')
+    while validate_delivery_window_structure(option) is False:
+        print(text.Red + '\n- Invalid option')
+        print(text.default_text_color + '\nAccount operations')
+        print(text.default_text_color + str(1), text.Yellow + 'Create/update account')
+        print(text.default_text_color + str(2), text.Yellow + 'Create/update delivery window')
+        option = input(text.default_text_color + '\nPlease select: ')
+
+    return option
+
+
+def validate_delivery_window_structure(option):
+    valid_options = ['1', '2']
+    if option in valid_options:
+        return True
+    else:
+        return False
+
+
+def validate_account_operations_structure(option):
+    valid_options = ['1', '2', '3', '4', '5', '6', '7']
+    if option in valid_options:
+        return True
+    else:
+        return False
+
+
 def print_minimum_order_menu():
     option = input(text.default_text_color + 'Do you want to include the minimum order parameter? y/N: ')
     while validate_yes_no_option(option.upper()) is False:
