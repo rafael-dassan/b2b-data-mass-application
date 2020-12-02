@@ -127,7 +127,7 @@ def validate_rewards(option):
 
 # Validate orders structure
 def validate_orders(option):
-    options = ['1', '2', '3', '4']
+    options = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
     if option in options:
         return 'true'
     else:
@@ -507,6 +507,16 @@ def print_orders_menu():
     print(text.default_text_color + str(2), text.Yellow + 'Input Cancelled Order')
     print(text.default_text_color + str(3), text.Yellow + 'Input Changed Order')
     print(text.default_text_color + str(4), text.Yellow + 'Input Delivered Order')
+    print(text.default_text_color + str(5), text.Yellow + 'Input Confirmed Status')
+    print(text.default_text_color + str(6), text.Yellow + 'Input Pending Status')
+    print(text.default_text_color + str(7), text.Yellow + 'Input Invoiced Status')
+    print(text.default_text_color + str(8), text.Yellow + 'Input Denied Status')
+    print(text.default_text_color + str(9), text.Yellow + 'Input In Transit Status')
+    print(text.default_text_color + str(10), text.Yellow + 'Input Modified Status')
+    print(text.default_text_color + str(11), text.Yellow + 'Input Partial Delivery Status')
+    print(text.default_text_color + str(12), text.Yellow + 'Input Delivered Status')
+    print(text.default_text_color + str(13), text.Yellow + 'Input Pending Cancellation Status')
+
     structure = input(text.default_text_color + '\nPlease select: ')
     while validate_orders(structure) == 'false':
         print(text.Red + '\n- Invalid option')
@@ -515,10 +525,18 @@ def print_orders_menu():
         print(text.default_text_color + str(2), text.Yellow + 'Input Cancelled Order')
         print(text.default_text_color + str(3), text.Yellow + 'Input Changed Order')
         print(text.default_text_color + str(4), text.Yellow + 'Input Delivered Order')
+        print(text.default_text_color + str(5), text.Yellow + 'Input Confirmed Status')
+        print(text.default_text_color + str(6), text.Yellow + 'Input Pending Status')
+        print(text.default_text_color + str(7), text.Yellow + 'Input Invoiced Status')
+        print(text.default_text_color + str(8), text.Yellow + 'Input Denied Status')
+        print(text.default_text_color + str(9), text.Yellow + 'Input In Transit Status')
+        print(text.default_text_color + str(10), text.Yellow + 'Input Modified Status')
+        print(text.default_text_color + str(11), text.Yellow + 'Input Partial Delivery Status')
+        print(text.default_text_color + str(12), text.Yellow + 'Input Delivered Status')
+        print(text.default_text_color + str(13), text.Yellow + 'Input Pending Cancellation Status')
         structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure
-
 
 # Print combos menu
 def print_combos_menu():

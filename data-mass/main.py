@@ -367,7 +367,16 @@ def input_orders_to_account():
         '1': 'ACTIVE',
         '2': 'CANCELLED',
         '3': 'CHANGED',
-        '4': 'DELIVERED'
+        '4': 'DELIVERED',
+        '5': 'CONFIRMED',
+        '6': 'PENDING',
+        '7': 'INVOICED',
+        '8': 'DENIED',
+        '9': 'IN_TRANSIT',
+        '10': 'MODIFIED',
+        '11': 'PARTIAL_DELIVERY',
+        '12': 'DELIVERED',
+        '13': 'PENDING_CANCELLATION'
     }
 
     order_status = switcher.get(selection_structure, 'false')
@@ -377,7 +386,7 @@ def input_orders_to_account():
     if account == 'false':
         print_finish_application_menu()
 
-    if selection_structure == '2' or selection_structure == '4':
+    if selection_structure == '2' or selection_structure == '4' or selection_structure == '5' or selection_structure == '6' or selection_structure == '7' or selection_structure == '8' or selection_structure == '9' or selection_structure == '10' or selection_structure == '11' or selection_structure == '12' or selection_structure == '13':
         # Call function to check if the account has products inside
         product_offers = request_get_offers_microservice(abi_id, zone, environment)
         if product_offers == 'false':
