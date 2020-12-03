@@ -386,8 +386,6 @@ def input_orders_to_account():
     if account == 'false':
         print_finish_application_menu()
 
-    print('structure: ' + selection_structure)
-
     if selection_structure == '1':
         allow_order_cancel = print_allow_cancellable_order_menu()
         order_items = list()
@@ -482,7 +480,6 @@ def input_orders_to_account():
         else:
             print_finish_application_menu()
     else:
-        print('Other structure')
         # Call function to check if the account has products inside
         product_offers = request_get_offers_microservice(abi_id, zone, environment)
         if product_offers == 'false':
