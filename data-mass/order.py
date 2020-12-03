@@ -160,6 +160,8 @@ def create_order_payload(abi_id, sku_list, allow_order_cancel, order_status):
             json_object = update_value_to_json(json_data, key, dict_values[key])
 
         json_object = set_to_dictionary(json_object, 'status', 'DELIVERED')
+    else :
+        json_object = set_to_dictionary(json_object, 'status', order_status)
 
     # Create body
     request_body = convert_json_to_string(json_object)
