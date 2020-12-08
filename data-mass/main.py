@@ -10,11 +10,13 @@ from invoice import *
 from menus.account_menu import print_account_operations_menu, print_minimum_order_menu, print_account_status_menu, \
     print_account_name_menu, print_account_enable_empties_loan_menu, print_alternative_delivery_date_menu, \
     print_include_delivery_cost_menu, print_payment_method_menu, print_account_id_menu, print_get_account_menu
-from menus.deals_menu import print_deals_operations_menu, print_discount_value_menu, print_minimum_quantity_menu, \
+from menus.algo_selling_menu import print_recommender_type_menu
+from menus.deals_menu import print_deals_operations_menu, print_discount_percentage_menu, print_minimum_quantity_menu, \
     print_max_quantity_menu, print_free_good_quantity_range_menu, print_option_sku_menu, print_partial_free_good_menu, \
     print_free_good_redemption_menu, print_free_good_quantity_menu, print_index_range_menu, print_discount_range_menu
 from menus.invoice_menu import print_invoice_operations_menu, print_invoice_status_menu, print_invoice_id_menu, \
     print_invoice_payment_method_menu, print_invoice_status_menu_retriever
+from menus.product_menu import print_product_operations_menu, print_get_products_menu
 from order import *
 from combos import *
 from products import *
@@ -37,16 +39,13 @@ def show_menu():
         switcher = {
             '0': finish_application,
             '1': account_menu,
-            '2': input_products_to_account_menu,
-            '3': input_recommendation_to_account_menu,
-            '4': input_inventory_to_product,
-            '5': input_orders_to_account,
-            '6': deals_menu,
-            '7': input_combos_menu,
-            '8': create_item_menu,
-            '9': invoice_menu,
-            '10': create_rewards_to_account,
-            '11': create_credit_statement_menu
+            '2': product_menu,
+            '3': input_orders_to_account,
+            '4': deals_menu,
+            '5': input_combos_menu,
+            '6': invoice_menu,
+            '7': create_rewards_to_account,
+            '8': create_credit_statement_menu
         }
     elif selection_structure == '2':
         switcher = {
@@ -510,19 +509,6 @@ def input_orders_to_account():
                 print_finish_application_menu()
         else:
             print_finish_application_menu()
-    
-
-
-# Create an item for a specific Zone
-def create_item_menu():
-    zone = print_zone_menu_for_ms()
-    environment = print_environment_menu()
-    item_data = get_item_input_data()
-
-    response = create_item(zone, environment, item_data)
-    if response is not None:
-        print(text.Green + '\n- [Item Service] The item was created successfully')
-        print(text.default_text_color + '- Item ID: ' + response.get('sku') + ' / Item name: ' + response.get('name'))
 
 
 # Place request for simulation service in microservice
@@ -618,98 +604,6 @@ def check_simulation_service_account_microservice_menu():
     print_finish_application_menu()
 
 
-# Input inventory (stock) to products
-def input_inventory_to_product():
-    zone = print_zone_menu_for_ms()
-    environment = print_environment_menu()
-    abi_id = print_account_id_menu(zone)
-    if abi_id == 'false':
-        print_finish_application_menu()
-
-    # Check if the account exists
-    account = check_account_exists_microservice(abi_id, zone, environment)
-
-    if account == 'false':
-        print_finish_application_menu()
-
-    # Call function to display the SKUs on the screen
-    inventory = display_available_products_account(abi_id, zone, environment, account[0]['deliveryCenterId'])
-    if inventory == 'true':
-        print(text.Green + '\n- The inventory has been added successfully for the account ' + abi_id)
-    elif inventory == 'error_len':
-        print(text.Red + '\n- There are no products available for the account ' + abi_id)
-        print_finish_application_menu()
-    elif inventory == 'false':
-        print_finish_application_menu()
-    else:
-        print_finish_application_menu()
-
-
-# Input beer recommender by account on Microservice
-def input_recommendation_to_account_menu():
-    recommender_type = print_recommender_type_menu()
-    zone = print_zone_menu_for_ms()
-    environment = print_environment_menu()
-    abi_id = print_account_id_menu(zone)
-    if abi_id == 'false':
-        print_finish_application_menu()
-
-    # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone, environment)
-    if account == 'false':
-        print_finish_application_menu()
-
-    product_offers = request_get_offers_microservice(abi_id, zone, environment)
-    if product_offers == 'false':
-        print_finish_application_menu()
-    elif product_offers == 'not_found':
-        print(text.Red + '\n- [Catalog Service] There is no product associated with the account ' + abi_id)
-        print_finish_application_menu()
-
-    enabled_skus = list()
-    aux_index = 0
-    while aux_index < len(product_offers):
-        sku = product_offers[aux_index]['sku']
-        enabled_skus.append(sku)
-        aux_index = aux_index + 1
-
-    if len(enabled_skus) < 25:
-        print(text.Red + '\n- The account must have at least 25 enabled products to proceed')
-        print_finish_application_menu()
-
-    if recommender_type == 'QUICK_ORDER':
-        quick_order_response = request_quick_order(zone, environment, abi_id, enabled_skus)
-        if quick_order_response == 'success':
-            print(text.Green + '\n- Quick order items added successfully')
-        else:
-            print_finish_application_menu()
-    elif recommender_type == 'CROSS_SELL_UP_SELL':
-        sell_up_response = request_sell_up(zone, environment, abi_id, enabled_skus)
-        if sell_up_response == 'success':
-            print(text.Green + '\n- Up sell items added successfully')
-            print(text.Yellow + '- Up sell trigger: Add 3 of any products to the cart / Cart viewed with a product '
-                                'inside')
-        else:
-            print_finish_application_menu()
-    elif recommender_type == 'FORGOTTEN_ITEMS':
-        forgotten_items_response = request_forgotten_items(zone, environment, abi_id, enabled_skus)
-        if forgotten_items_response == 'success':
-            print(text.Green + '\n- Forgotten items added successfully')
-        else:
-            print_finish_application_menu()
-    elif recommender_type == 'COMBOS_QUICKORDER':
-        combos_quickorder_response = input_combos_quickorder(zone, environment, abi_id)
-        if combos_quickorder_response == 'success':
-            print(text.Green + '\n- Combos for quick order added successfully')
-        else:
-            print_finish_application_menu()
-    else:
-        if 'success' == create_all_recommendations(zone, environment, abi_id, enabled_skus):
-            print(text.Green + '\n- All recommendation use cases were added (quick order, up sell and forgotten items)')
-            print(text.Yellow + '- Up sell trigger: Add 3 of any products to the cart / Cart viewed with a product '
-                                'inside')
-
-
 def deals_menu():
     operation = print_deals_operations_menu()
     zone = print_zone_menu_for_ms()
@@ -761,7 +655,7 @@ def deals_menu():
 
 def flow_create_discount(zone, environment, account_id, sku):
     minimum_quantity = print_minimum_quantity_menu()
-    discount_value = print_discount_value_menu()
+    discount_value = print_discount_percentage_menu()
 
     response = create_discount(account_id, sku, zone, environment, discount_value, minimum_quantity)
     if response != 'false':
@@ -887,45 +781,60 @@ def input_combos_menu():
 
         if combo != 'false' and update_combo != 'false':
             print(text.Green + '\n- Combo consumption for ' + combo_id + ' was successfully updated')
-            print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to import your combo, so '
-                                'it can be used in the front-end applications')
 
     if selection_structure != '5' and response != 'false':
         print(text.Green + '\n- Combo ' + response + ' successfully registered')
-        print(text.Yellow + '- Please, run the cron job `abinbev_combos_service_importer` to import your combo, so '
-                            'it can be used in the front-end applications')
-
-    if (zone == 'DO' or zone == 'CO') and selection_structure != '5' and response != 'false':
-        print(
-            text.Yellow + '\n- Also on Magento Admin, turn the new combos `enable` through the menu `Catalog -> Products`')
 
     print_finish_application_menu()
 
 
-def input_products_to_account_menu():
+def product_menu():
+    operation = print_product_operations_menu()
     zone = print_zone_menu_for_ms()
     environment = print_environment_menu()
-    abi_id = print_account_id_menu(zone)
-    if abi_id == 'false':
+
+    return {
+        '1': lambda: flow_create_product(zone, environment),
+        '2': lambda: flow_associate_products_to_account(zone, environment),
+        '3': lambda: flow_input_inventory_to_product(zone, environment),
+        '4': lambda: flow_input_recommended_products_to_account(zone, environment),
+        '5': lambda: flow_input_empties_discounts(zone, environment)
+    }.get(operation, lambda: None)()
+
+
+def flow_create_product(zone, environment):
+    item_data = get_item_input_data()
+
+    response = create_product(zone, environment, item_data)
+    if response == 'false':
+        print_finish_application_menu()
+    else:
+        print(text.Green + '\n- The product {sku} - {product_name} was created successfully'
+              .format(sku=response.get('sku'), product_name=response.get('name')))
+
+
+def flow_associate_products_to_account(zone, environment):
+    account_id = print_account_id_menu(zone)
+
+    if account_id == 'false':
         print_finish_application_menu()
 
     # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone, environment)
+    account = check_account_exists_microservice(account_id, zone, environment)
 
     if account == 'false':
         print_finish_application_menu()
-
     delivery_center_id = account[0]['deliveryCenterId']
 
     proceed = 'N'
-    products = request_get_offers_microservice(abi_id, zone, environment)
+    products = request_get_offers_microservice(account_id, zone, environment)
     if products == 'false':
         print_finish_application_menu()
     elif products == 'not_found':
         proceed = 'Y'
     else:
-        proceed = input(text.Yellow + '\n- [Account] The account ' + str(abi_id) + ' already have products, do you '
-                                                                                   'want to proceed? y/N: ').upper()
+        proceed = input(text.Yellow + '\n- [Account] The account {account_id} already have products, do you want '
+                                      'to proceed? y/N: '.format(account_id=account_id)).upper()
         if proceed == '':
             proceed = 'N'
 
@@ -935,18 +844,18 @@ def input_products_to_account_menu():
             print_finish_application_menu()
 
         # Call add products to account function
-        add_products = add_products_to_account_microservice(abi_id, zone, environment, delivery_center_id,
+        add_products = add_products_to_account_microservice(account_id, zone, environment, delivery_center_id,
                                                             all_products_zone)
         if add_products != 'success':
             print(text.Red + '\n- [Products] Something went wrong, please try again')
             print_finish_application_menu()
 
-        products = request_get_account_product_assortment(abi_id, zone, environment, delivery_center_id)
+        products = request_get_account_product_assortment(account_id, zone, environment, delivery_center_id)
         if products == 'false':
             print_finish_application_menu()
         elif products == 'not_found':
             print(text.Red + '\n- [Product Assortment Service] There is no product associated with the account '
-                      + abi_id)
+                             '{account_id}'.format(account_id=account_id))
             print_finish_application_menu()
 
         skus_id = list()
@@ -955,10 +864,142 @@ def input_products_to_account_menu():
             skus_id.append(products[aux_index])
             aux_index = aux_index + 1
 
-        update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id, skus_id)
+        inventory_response = update_sku_inventory_microservice(zone, environment, delivery_center_id, skus_id)
 
-        if update_sku != 'true':
+        if inventory_response == 'false':
             print_finish_application_menu()
+
+
+def flow_input_inventory_to_product(zone, environment):
+    account_id = print_account_id_menu(zone)
+
+    if account_id == 'false':
+        print_finish_application_menu()
+
+    # Call check account exists function
+    account = check_account_exists_microservice(account_id, zone, environment)
+
+    if account == 'false':
+        print_finish_application_menu()
+    delivery_center_id = account[0]['deliveryCenterId']
+
+    # Call function to display the SKUs on the screen
+    inventory = display_available_products_account(account_id, zone, environment, delivery_center_id)
+    if inventory == 'true':
+        print(text.Green + '\n- The inventory has been added successfully for the account {account_id}'
+              .format(account_id=account_id))
+    elif inventory == 'error_len':
+        print(text.Red + '\n- There are no products available for the account {account_id}'
+              .format(account_id=account_id))
+        print_finish_application_menu()
+    elif inventory == 'false':
+        print_finish_application_menu()
+    else:
+        print_finish_application_menu()
+
+
+def flow_input_recommended_products_to_account(zone, environment):
+    account_id = print_account_id_menu(zone)
+
+    if account_id == 'false':
+        print_finish_application_menu()
+
+    # Call check account exists function
+    account = check_account_exists_microservice(account_id, zone, environment)
+
+    if account == 'false':
+        print_finish_application_menu()
+
+    recommender_type = print_recommender_type_menu()
+
+    product_offers = request_get_offers_microservice(account_id, zone, environment)
+    if product_offers == 'false':
+        print_finish_application_menu()
+    elif product_offers == 'not_found':
+        print(text.Red + '\n- [Catalog Service] There is no product associated with the account {account_id}'
+              .format(account_id=account_id))
+        print_finish_application_menu()
+
+    enabled_skus = list()
+    aux_index = 0
+    while aux_index < len(product_offers):
+        sku = product_offers[aux_index]['sku']
+        enabled_skus.append(sku)
+        aux_index = aux_index + 1
+
+    if len(enabled_skus) < 25:
+        print(text.Red + '\n- The account must have at least 25 enabled products to proceed')
+        print_finish_application_menu()
+
+    if recommender_type == 'QUICK_ORDER':
+        quick_order_response = request_quick_order(zone, environment, account_id, enabled_skus)
+        if quick_order_response == 'success':
+            print(text.Green + '\n- Quick order items added successfully')
+        else:
+            print_finish_application_menu()
+    elif recommender_type == 'CROSS_SELL_UP_SELL':
+        sell_up_response = request_sell_up(zone, environment, account_id, enabled_skus)
+        if sell_up_response == 'success':
+            print(text.Green + '\n- Up sell items added successfully')
+            print(text.Yellow + '- Up sell trigger: Add 3 of any products to the cart / Cart viewed with a product '
+                                'inside')
+        else:
+            print_finish_application_menu()
+    elif recommender_type == 'FORGOTTEN_ITEMS':
+        forgotten_items_response = request_forgotten_items(zone, environment, account_id, enabled_skus)
+        if forgotten_items_response == 'success':
+            print(text.Green + '\n- Forgotten items added successfully')
+        else:
+            print_finish_application_menu()
+    elif recommender_type == 'COMBOS_QUICKORDER':
+        combos_quick_order_response = input_combos_quickorder(zone, environment, account_id)
+        if combos_quick_order_response == 'success':
+            print(text.Green + '\n- Combos for quick order added successfully')
+        else:
+            print_finish_application_menu()
+    else:
+        if 'success' == create_all_recommendations(zone, environment, account_id, enabled_skus):
+            print(text.Green + '\n- All recommendation use cases were added (quick order, up sell and forgotten items)')
+            print(text.Yellow + '- Up sell trigger: Add 3 of any products to the cart / Cart viewed with a product '
+                                'inside')
+
+
+def flow_input_empties_discounts(zone, environment):
+    account_id = print_account_id_menu(zone)
+
+    if account_id == 'false':
+        print_finish_application_menu()
+
+    # Call check account exists function
+    account = check_account_exists_microservice(account_id, zone, environment)
+
+    if account == 'false':
+        print_finish_application_menu()
+
+    switcher = {
+        'CO': '000000000003500159',
+        'MX': '000000000002000162',
+        'EC': '000000000003500612',
+        'PE': '000000000003500192'
+    }
+
+    empty_sku = switcher.get(zone, 'false')
+    if empty_sku == 'false':
+        print(text.Red + '\n- Empties discounts it not enabled for {country}'.format(country=zone))
+        print_finish_application_menu()
+
+    while True:
+        try:
+            discount_value = int(input(text.default_text_color + 'Discount value: '))
+            break
+        except ValueError:
+            print(text.Red + '\n- Invalid value')
+
+    response = request_empties_discounts_creation(account_id, zone, environment, empty_sku, discount_value)
+    if response == 'false':
+        print_finish_application_menu()
+    else:
+        print(text.Green + '\n- Discount value for the empty SKU added successfully')
 
 
 def account_menu():

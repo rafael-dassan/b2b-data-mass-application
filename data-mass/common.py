@@ -15,7 +15,8 @@ from tabulate import tabulate
 # Local application imports
 from classes.text import text
 from logs.log import log_to_file
-from validations import validate_yes_no_option, is_number, validate_zone_for_ms, validate_environment
+from validations import validate_yes_no_option, is_number, validate_zone_for_ms, validate_environment, \
+    validate_structure, validate_rewards, validate_orders
 
 
 # Validate option menu selection
@@ -105,41 +106,6 @@ def validate_zone_for_combos_dt(zone):
 
     value = switcher.get(zone, 'false')
     return value
-
-
-# Validate account structure
-def validate_structure(option):
-    options = ['1', '2', '3', '4', '5']
-    if option in options:
-        return 'true'
-    else:
-        return 'false'
-
-
-# Validate rewards structure
-def validate_rewards(option):
-    options = ['1', '2', '3', '4', '5', '6', '7']
-    if option in options:
-        return 'true'
-    else:
-        return 'false'
-
-
-# Validate orders structure
-def validate_orders(option):
-    options = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
-    if option in options:
-        return 'true'
-    else:
-        return 'false'
-
-
-def validate_recommendation_type(option):
-    options = ['1', '2', '3', '4', '5']
-    if option in options:
-        return 'true'
-    else:
-        return 'false'
 
 
 # Validate environment to User creation
@@ -351,32 +317,25 @@ def print_available_options(selection_structure):
     if selection_structure == '1':
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
         print(text.default_text_color + str(1), text.Yellow + 'Account')
-        print(text.default_text_color + str(2), text.Yellow + 'Input products')
-        print(text.default_text_color + str(3), text.Yellow + 'Input recommended products')
-        print(text.default_text_color + str(4), text.Yellow + 'Input inventory to product')
-        print(text.default_text_color + str(5), text.Yellow + 'Input orders to account')
-        print(text.default_text_color + str(6), text.Yellow + 'Deals')
-        print(text.default_text_color + str(7), text.Yellow + 'Input combos')
-        print(text.default_text_color + str(8), text.Yellow + 'Create item')
-        print(text.default_text_color + str(9), text.Yellow + 'Invoice')
-        print(text.default_text_color + str(10), text.Yellow + 'Create rewards')
-        print(text.default_text_color + str(11), text.Yellow + 'Create credit statement')
+        print(text.default_text_color + str(2), text.Yellow + 'Product')
+        print(text.default_text_color + str(3), text.Yellow + 'Input orders to account')
+        print(text.default_text_color + str(4), text.Yellow + 'Deals')
+        print(text.default_text_color + str(5), text.Yellow + 'Input combos')
+        print(text.default_text_color + str(6), text.Yellow + 'Invoice')
+        print(text.default_text_color + str(7), text.Yellow + 'Create rewards')
+        print(text.default_text_color + str(8), text.Yellow + 'Create credit statement')
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_option_request_selection(selection) == 'false':
             print(text.Red + '\n- Invalid option\n')
             print(text.default_text_color + str(0), text.Yellow + 'Close application')
-            print(text.default_text_color + str(1), text.Yellow + 'Create account')
-            print(text.default_text_color + str(2), text.Yellow + 'Input products')
-            print(text.default_text_color + str(3), text.Yellow + 'Input recommended products')
-            print(text.default_text_color + str(4), text.Yellow + 'Input inventory to product')
-            print(text.default_text_color + str(5), text.Yellow + 'Input orders to account')
-            print(text.default_text_color + str(6), text.Yellow + 'Input deals')
-            print(text.default_text_color + str(7), text.Yellow + 'Input combos')
-            print(text.default_text_color + str(8), text.Yellow + 'Create item')
-            print(text.default_text_color + str(9), text.Yellow + 'Invoice')
-            print(text.default_text_color + str(10), text.Yellow + 'Create rewards')
-            print(text.default_text_color + str(11), text.Yellow + 'Create credit statement')
-
+            print(text.default_text_color + str(1), text.Yellow + 'Account')
+            print(text.default_text_color + str(2), text.Yellow + 'Product')
+            print(text.default_text_color + str(3), text.Yellow + 'Input orders to account')
+            print(text.default_text_color + str(4), text.Yellow + 'Deals')
+            print(text.default_text_color + str(5), text.Yellow + 'Input combos')
+            print(text.default_text_color + str(6), text.Yellow + 'Invoice')
+            print(text.default_text_color + str(7), text.Yellow + 'Create rewards')
+            print(text.default_text_color + str(8), text.Yellow + 'Create credit statement')
             selection = input(text.default_text_color + '\nPlease select: ')
 
     elif selection_structure == '2':
@@ -650,29 +609,6 @@ def print_input_phone():
     return input(text.default_text_color + "User phone (optional): ")
 
 
-def get_sku_price(abi_id, combo_item, zone, environment):
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + "/cart-calculator/prices?accountID=" + abi_id
-
-    # Get header request
-    request_headers = get_header_request(zone, "true", "false", "false", "false")
-
-    # Get body request
-    request_body = ""
-
-    # Send request
-    response = place_request("GET", request_url, request_body, request_headers)
-
-    if response.status_code == 200 and response.text != "":
-        json_data = json.loads(response.text)
-        for dict in json_data:
-            if dict["sku"] == combo_item:
-                return dict["price"]
-    else:
-        print(text.Red + "\n- [Pricing Engine] Something went wrong when searching for prices")
-        finish_application()
-
-
 def update_value_to_json(json_object, json_path, new_value):
     """Update value to JSON using JSONPath
     Arguments:
@@ -900,37 +836,6 @@ def print_order_id_menu():
     return order_id
 
 
-def print_recommender_type_menu():
-    print(text.default_text_color + '\nWhich recommendation type do you want to add?')
-    print(text.default_text_color + str(1), text.Yellow + 'Quick order')
-    print(text.default_text_color + str(2), text.Yellow + 'Up sell')
-    print(text.default_text_color + str(3), text.Yellow + 'Forgotten items')
-    print(text.default_text_color + str(4), text.Yellow + 'Standard recommendations (all use cases)')
-    print(text.default_text_color + str(5), text.Yellow + 'Input combos for Quick order')
-    option = input(text.default_text_color + '\nPlease select: ')
-    while validate_recommendation_type(option) == 'false':
-        print(text.Red + '\n- Invalid option')
-        print(text.default_text_color + '\nWhich recommendation type do you want to add?')
-        print(text.default_text_color + str(1), text.Yellow + 'Quick order')
-        print(text.default_text_color + str(2), text.Yellow + 'Up sell')
-        print(text.default_text_color + str(3), text.Yellow + 'Forgotten items')
-        print(text.default_text_color + str(4), text.Yellow + 'Standard recommendations (all use cases)')
-        print(text.default_text_color + str(5), text.Yellow + 'Input combos for Quick order')
-        option = input(text.default_text_color + '\nPlease select: ')
-
-    switcher = {
-        '1': 'QUICK_ORDER',
-        '2': 'CROSS_SELL_UP_SELL',
-        '3': 'FORGOTTEN_ITEMS',
-        '4': 'ALL',
-        '5': 'COMBOS_QUICKORDER'
-    }
-
-    recommender_type = switcher.get(option, 'false')
-
-    return recommender_type
-
-
 # Validate order sub-menus
 def validate_order_sub_menu(option):
     options = ['1', '2']
@@ -938,31 +843,6 @@ def validate_order_sub_menu(option):
         return 'true'
     else:
         return 'false'
-
-
-def validate_get_products(option):
-    options = ['1', '2', '3']
-    if option in options:
-        return 'true'
-    else:
-        return 'false'
-
-
-def print_get_products_menu():
-    print(text.default_text_color + '\nWhich option to retrieve products information do you want?')
-    print(text.default_text_color + str(1), text.Yellow + 'Products information by account')
-    print(text.default_text_color + str(2), text.Yellow + 'Products inventory information by account')
-    print(text.default_text_color + str(3), text.Yellow + 'Products information by zone')
-    structure = input(text.default_text_color + '\nPlease select: ')
-    while validate_get_products(structure) == 'false':
-        print(text.Red + '\n- Invalid option')
-        print(text.default_text_color + '\nWhich option to retrieve products information do you want?')
-        print(text.default_text_color + str(1), text.Yellow + 'Products information by account')
-        print(text.default_text_color + str(2), text.Yellow + 'Products inventory information by account')
-        print(text.default_text_color + str(3), text.Yellow + 'Products information by zone')
-        structure = input(text.default_text_color + '\nPlease select: ')
-
-    return structure
 
 
 def print_get_order_menu():
@@ -996,22 +876,6 @@ def print_allow_cancellable_order_menu():
         option = input(text.default_text_color + '\nDo you want to make this order cancellable? y/N: ')
 
     return option.upper()
-
-
-def print_product_quantity_menu(all_products_zone):
-    while True:
-        try:
-            qtd = int(input(text.default_text_color + 'Number of products you want to add (Maximum: '
-                            + str(len(all_products_zone)) + '): '))
-            while qtd <= 0:
-                print(text.Red + '\n- The product quantity must be more than 0\n')
-                qtd = int(input(text.default_text_color + '\nNumber of products you want to add (Maximum: '
-                                + str(len(all_products_zone)) + '): '))
-            break
-        except ValueError:
-            print(text.Red + '\n- The product quantity must be Numeric\n')
-
-    return qtd
 
 
 def validate_zone_for_credit_statement(zone):
