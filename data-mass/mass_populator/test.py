@@ -1,5 +1,6 @@
 from common import block_print
 from mass_populator.country.populate_category import associate_products_to_category_magento
+from mass_populator.country.populate_deals import populate_stepped_discount_with_limit
 from mass_populator.country.populate_product import enable_product_magento, populate_product
 from mass_populator.country.populate_user_v3 import populate_user_iam_b2c
 from mass_populator.log import *
@@ -15,6 +16,7 @@ def execute_test(country, environment):
     user_params = get_user_params(country)
     product_params = get_product_params()
     category_params = get_category_params()
+    deals_params = get_deals_params(country)
 
     # Overwrite standard output (stdout) - disable `print`
     block_print()
@@ -46,6 +48,11 @@ def execute_test(country, environment):
 
     logger.info("populate_recommendations for %s/%s", country, environment)
     populate_recommendation(country, environment, account_params.get('id'))
+
+    logger.info("populate_deals for %s/%s", country, environment)
+    populate_stepped_discount_with_limit(country, environment, deals_params.get('account_id'),
+                                         deals_params.get('deal_id'), deals_params.get('sku'),
+                                         deals_params.get('discount_value'), deals_params.get('max_quantity'))
 
     logger.info("enable_products_magento %s/%s", country, environment)
     enable_product_magento(country, environment, category_params.get('sku'))
@@ -114,6 +121,18 @@ def get_category_params():
     params = {
         'name': 'Journey',
         'sku': '0101WEB'
+    }
+
+    return params
+
+
+def get_deals_params(country):
+    params = {
+        'account_id': get_account_params(country).get('id'),
+        'deal_id': 'QM-{country}-TEST-0101'.format(country=country),
+        'sku': get_product_params().get('sku'),
+        'discount_value': 10,
+        'max_quantity': 10
     }
 
     return params

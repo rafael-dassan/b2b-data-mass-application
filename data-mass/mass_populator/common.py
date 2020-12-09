@@ -1,4 +1,5 @@
 from common import block_print
+from mass_populator.country.populate_deals import populate_deal_with_limit
 from mass_populator.csv_helper import search_data_by
 from mass_populator.log import *
 from mass_populator.country.populate_account import populate_pocs
@@ -17,6 +18,7 @@ def execute_common(country, environment):
     populate_accounts(country, environment)
     populate_users_magento(country, environment)
     populate_recommendations(country, environment)
+    populate_deals(country, environment)
     categorize_and_enable_products_magento(country, environment)
     return True
 
@@ -34,6 +36,11 @@ def populate_users_magento(country, environment):
 def populate_recommendations(country, environment):
     logger.info("populate_recommendations for %s/%s", country, environment)
     populate_recommendations_base(country, environment, search_data_by(country, 'recommendation'))
+
+
+def populate_deals(country, environment):
+    logger.info("populate_deals for %s/%s", country, environment)
+    populate_deal_with_limit(country, environment, search_data_by(country, 'deals'))
 
 
 def categorize_and_enable_products_magento(country, environment):

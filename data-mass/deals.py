@@ -13,10 +13,11 @@ from common import get_microservice_base_url, get_header_request, place_request,
 from classes.text import text
 
 
-def request_create_deal(account_id, sku, deal_type, zone, environment):
+def request_create_deal(account_id, sku, deal_type, zone, environment, deal_id=None):
     """
     Input deal to a specific POC. The deal is created by calling the Promotion Relay Service
     Args:
+        deal_id: deal unique identifier
         account_id: POC unique identifier
         sku: Product unique identifier that will have discount/free good associated with it
         deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
@@ -25,8 +26,9 @@ def request_create_deal(account_id, sku, deal_type, zone, environment):
     Returns: `deal_id` if success and error message in case of failure
     """
 
-    # Deal unique identifier
-    deal_id = 'DM-' + str(randint(1, 100000))
+    if deal_id is None:
+        # Deal unique identifier
+        deal_id = 'DM-' + str(randint(1, 100000))
 
     # Assign an account group unique identifier
     account_group_id = create_account_group(account_id, zone, environment)
@@ -329,7 +331,8 @@ def create_discount(account_id, sku, zone, environment, discount_value, minimum_
 
 
 def create_stepped_discount_with_limit(account_id, sku, zone, environment, index_range, discount_range,
-                                       max_quantity, discount_type='percentOff', deal_type='STEPPED_DISCOUNT'):
+                                       max_quantity, deal_id=None, discount_type='percentOff',
+                                       deal_type='STEPPED_DISCOUNT'):
     """
     Input a deal type stepped discount with max quantity to a specific POC by calling the Promotion Relay Service and
     Pricing Engine Relay Service
@@ -343,9 +346,11 @@ def create_stepped_discount_with_limit(account_id, sku, zone, environment, index
         max_quantity: deal limit
         discount_type: percentOff
         deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
+        deal_id: deal unique identifier
     Returns: `promotion_response` if success
     """
-    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment)
+
+    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, deal_id)
 
     cart_response = request_create_stepped_discount_with_limit_cart_calculation(account_id, promotion_response, zone,
                                                                                 environment, sku, max_quantity,
