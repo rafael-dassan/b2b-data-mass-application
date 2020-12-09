@@ -150,3 +150,59 @@ def validate_invoice_payment_method(option):
         return True
     else:
         return False
+
+
+def validate_account_operations_structure(option):
+    valid_options = ['1', '2', '3', '4', '5', '6', '7']
+    if option in valid_options:
+        return True
+    else:
+        return False
+
+
+def validate_product_operations_structure(option):
+    options = ['1', '2', '3', '4', '5']
+    if option in options:
+        return True
+    else:
+        return False
+
+
+def validate_recommendation_type(option):
+    options = ['1', '2', '3', '4', '5']
+    if option in options:
+        return True
+    else:
+        return False
+
+
+def validate_get_products(option):
+    options = ['1', '2', '3']
+    if option in options:
+        return True
+    else:
+        return False
+
+
+def validate_structure(option):
+    options = ['1', '2', '3', '4', '5']
+    if option in options:
+        return 'true'
+    else:
+        return 'false'
+
+
+def validate_rewards(option):
+    options = ['1', '2', '3', '4', '5', '6', '7']
+    if option in options:
+        return 'true'
+    else:
+        return 'false'
+
+
+def validate_orders(option):
+    options = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
+    if option in options:
+        return 'true'
+    else:
+        return 'false'

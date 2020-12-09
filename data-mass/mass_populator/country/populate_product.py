@@ -1,4 +1,4 @@
-from products import create_item, request_get_offers_microservice
+from products import create_product, request_get_offers_microservice
 from products_magento import enable_product
 from mass_populator.log import *
 
@@ -63,7 +63,7 @@ def populate_product(country, environment,
         'container.unitOfMeasurement': container_unitOfMeasurement,
         'salesRanking': sales_ranking
     }
-    response = create_item(country, environment, item_data)
+    response = create_product(country, environment, item_data)
     if response is None:
         logger.error(log(Message.PRODUCT_CREATE_ERROR,{"sku": sku}))
 

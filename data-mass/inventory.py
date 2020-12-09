@@ -97,8 +97,6 @@ def display_available_products_account(account_id, zone, environment, delivery_c
         return 'false'
 
 
-
-
 # Update SKU inventory
 def update_sku_inventory_microservice(zone, environment, delivery_center_id, list_skus, sku_id=None, sku_quantity=0):
     # Define headers
@@ -151,7 +149,8 @@ def update_sku_inventory_microservice(zone, environment, delivery_center_id, lis
         return 'true'
     else:
         print(text.Red + '\n- [Inventory Relay Service] Failure to add stock for products. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
+                         '{response_status}. Response message: {response_message}'
+              .format(response_status=response.status_code, response_message=response.text))
         return 'false'
 
 

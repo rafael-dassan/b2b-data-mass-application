@@ -24,7 +24,7 @@ def print_deals_operations_menu():
     return option
 
 
-def print_discount_value_menu():
+def print_discount_percentage_menu():
     while True:
         try:
             discount_value = float(input(text.default_text_color + 'Discount percentage (%): '))

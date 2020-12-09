@@ -1,0 +1,11 @@
+{
+  "accounts": "string",
+  "prices": [
+    {
+      "sku": "string",
+      "basePrice": 0,
+      "minimumPrice": 0,
+      "measureUnit": "CS"
+    }
+  ]
+}
