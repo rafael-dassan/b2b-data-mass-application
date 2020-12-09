@@ -5,3 +5,4 @@ sku,name,brand_name,sub_brand_name,package_id,container_name,container_size,cont
 "0102WEB","QMWEB02","Journey","Journey","0102WEB","Garrafa",1000,False,"ML",2
 "0102ANDROID","QMANDROID02","Journey","Journey","0102ANDROID","Garrafa",1000,False,"ML",2
 "0102IOS","QMIOS02","Journey","Journey","0102IOS","Garrafa",1000,False,"ML",2
+"0103WEB","QMWEB03","Journey","Journey","0103WEB","Garrafa",1000,False,"ML",3

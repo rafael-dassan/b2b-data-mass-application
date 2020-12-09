@@ -115,8 +115,8 @@ def check_product_associated_to_account(account_id, country, environment, produc
 
         for i in range(len(products)):
             if products[i] in available_skus:
-                logger.info("[Catalog Service] Product {product} is already associated to the account {account_id}."
-                            " Skipping...".format(product=products[i], account_id=account_id))
+                logger.debug("[Catalog Service] Product {product} is already associated to the account {account_id}. "
+                             "Skipping...".format(product=products[i], account_id=account_id))
             else:
                 not_associated_skus.append(products[i])
                 logger.info("[Catalog Service] Product {product} is not associated to the account {account_id} and"

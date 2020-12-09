@@ -35,7 +35,7 @@ def delete_available_deals(account_id, country, environment):
     if customer_deals == 'false':
         logger.error(log(Message.RETRIEVE_PROMOTION_ERROR, {'account_id': account_id}))
     elif customer_deals == 'not_found':
-        logger.info("[Pricing Conditions Service] The account {account_id} does not have deals associated. Skipping..."
+        logger.debug("[Pricing Conditions Service] The account {account_id} does not have deals associated. Skipping..."
                     .format(account_id=account_id))
     else:
         # Delete deals from Cart-Calculation MS database
@@ -47,7 +47,7 @@ def delete_available_deals(account_id, country, environment):
     if promotions == 'false':
         logger.error(log(Message.RETRIEVE_PROMOTION_ERROR, {'account_id': account_id}))
     elif promotions == 'not_found':
-        logger.info("[Promotion Service] The account {account_id} does not have deals associated. Skipping..."
+        logger.debug("[Promotion Service] The account {account_id} does not have deals associated. Skipping..."
                     .format(account_id=account_id))
     else:
         # Delete deals from Promotion MS database
@@ -66,8 +66,8 @@ def delete_recommendation(account_id, country, environment, use_case):
     """
     up_sell_data = get_recommendation_by_account(account_id, country, environment, use_case)
     if up_sell_data == 'not_found':
-        logger.info("[Global Recommendation Service] Recommendation type {use_case_type} not found for account "
-                    "{account_id}. Skipping...".format(use_case_type=use_case, account_id=account_id))
+        logger.debug("[Global Recommendation Service] Recommendation type {use_case_type} not found for account "
+                     "{account_id}. Skipping...".format(use_case_type=use_case, account_id=account_id))
     elif up_sell_data == 'false':
         logger.error(log(Message.RETRIEVE_RECOMMENDER_ERROR, {'use_case_type': use_case, 'account_id': account_id}))
     else:
