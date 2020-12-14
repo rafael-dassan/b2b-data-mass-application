@@ -1019,3 +1019,26 @@ def find_values(key, json_str):
         return 'None'
     else:
         return results[0]
+
+
+def remove_from_dictionary(dictionary, *keys):
+    """Removes the given ``keys`` from the ``dictionary``.
+
+    If the given ``key`` cannot be found from the ``dictionary``, it
+    is ignored.
+
+    Example:
+    | Remove From Dictionary | ${D3} | b | x | y |
+    =>
+    | ${D3} = {'a': 1, 'c': 3}
+    """
+    if is_string(dictionary) or isinstance(dictionary, (int, float)):
+        raise TypeError("Expected argument to be a dictionary or dictionary-like, got %s instead.")
+
+    for key in keys:
+        if key in dictionary:
+            dictionary.pop(key)
+
+
+def is_string(item):
+    return isinstance(item, str)

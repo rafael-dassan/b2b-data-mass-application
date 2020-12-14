@@ -1,10 +1,10 @@
 from account import *
 from common import *
 from credit import add_credit_to_account_microservice
-from credit_statement import create_credit_statement
 from deals import *
 from delivery_window import *
 from beer_recommender import *
+from files import create_file_api
 from inventory import *
 from invoice import *
 from menus.account_menu import print_account_operations_menu, print_minimum_order_menu, print_account_status_menu, \
@@ -1412,10 +1412,19 @@ def flow_create_invoice(zone, environment, account_id):
     invoice_status = print_invoice_status_menu()
 
     invoice_response = create_invoice_request(zone, environment, order_id, invoice_status, order_details, order_items)
-    if invoice_response == 'false':
-        print_finish_application_menu()
-    else:
+    if invoice_response != 'false':
         print(text.Green + '\n- Invoice {invoice_id} created successfully'.format(invoice_id=invoice_response))
+
+        # Generate files for bank_slip and invoice (NF) only for Brazil
+        if zone == 'BR':
+            purposes = ['invoice', 'bank-slip']
+            for i in range(len(purposes)):
+                data = {'invoice_id': invoice_response}
+                response = create_file_api(zone, environment, account_id, purposes[i], data)
+                if response == 'false':
+                    print_finish_application_menu()
+    else:
+        print_finish_application_menu()
 
 
 def flow_update_invoice_status(zone, environment, account_id):
@@ -1600,10 +1609,15 @@ def retrieve_available_invoices_menu():
 def retriever_sku_menu():
     zone = print_zone_menu_for_ms()
     environment = print_environment_menu()
-    abi_id = print_account_id_menu(zone)
-    if abi_id == 'false':
+    account_id = print_account_id_menu(zone)
+    if account_id == 'false':
         print_finish_application_menu()
-    response = display_sku_rewards(zone, environment, abi_id)
+
+    account = check_account_exists_microservice(account_id, zone, environment)
+    if account == 'false':
+        print_finish_application_menu()
+
+    response = display_sku_rewards(zone, environment, account_id)
     if response == '200':
         print_finish_application_menu()
     else:
@@ -1614,15 +1628,23 @@ def retriever_sku_menu():
 def create_credit_statement_menu():
     zone = print_zone_credit_statement()
     environment = print_environment_menu()
-    abi_id = print_account_id_menu(zone)
-    if abi_id == 'false':
+    account_id = print_account_id_menu(zone)
+    if account_id == 'false':
         print_finish_application_menu()
 
-    month = print_month_credit_statement()
-    year = print_year_credit_statement()
+    account = check_account_exists_microservice(account_id, zone, environment)
+    if account == 'false':
+        print_finish_application_menu()
 
-    doc = create_credit_statement(zone, abi_id, environment, month, year)
-    if doc == 'false':
+    data = {
+        'month': print_month_credit_statement(),
+        'year': print_year_credit_statement()
+    }
+
+    response = create_file_api(zone, environment, account_id, 'credit-statement', data)
+    if response == 'success':
+        print(text.Green + '\n- Credit Statement created for the account {account_id}'.format(account_id=account_id))
+    else:
         print_finish_application_menu()
 
 
