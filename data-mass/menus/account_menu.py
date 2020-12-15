@@ -237,7 +237,7 @@ def print_get_account_menu():
     print(text.default_text_color + str(2), text.Yellow + 'All accounts active in the zone')
     print(text.default_text_color + str(3), text.Yellow + 'All accounts with products in the zone')
     structure = input(text.default_text_color + '\nPlease select: ')
-    while validate_accounts(structure) == 'false':
+    while validate_accounts(structure) is False:
         print(text.Red + '\n- Invalid option')
         print(text.default_text_color + '\nWhich option to retrieve account do you want?')
         print(text.default_text_color + str(1), text.Yellow + 'All information from one account')

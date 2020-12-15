@@ -3,7 +3,6 @@ import json
 from json import loads
 import os
 from datetime import timedelta, datetime
-from random import uniform
 
 # Third party imports
 from tabulate import tabulate
@@ -11,7 +10,6 @@ from tabulate import tabulate
 # Local application imports
 from common import update_value_to_json, convert_json_to_string, get_header_request, get_microservice_base_url, \
     place_request, set_to_dictionary, find_values
-from products import check_item_enabled
 from classes.text import text
 
 
@@ -63,19 +61,21 @@ def configure_order_params(zone, environment, number_size, prefix):
         return 'false'
 
 
-def create_order_account(account_id, zone, environment, order_status, sku_list, allow_order_cancel, more_sku):
+def request_order_creation(account_id, delivery_center_id, zone, environment, allow_order_cancel, order_items,
+                           order_status):
     """
-    Create an order via the Order Service
+    Create an order through the Order Service
     Args:
         account_id: POC unique identifier
+        delivery_center_id: POC's delivery center
         zone: e.g., AR, BR, CO, DO, MX, ZA
         environment: e.g., DEV, SIT, UAT
         order_status: e.g., PLACED, CANCELLED, etc
-        sku_list: list of SKUs
+        order_items: list of SKUs
         allow_order_cancel: `Y` or `N`
+
     Returns: new json_data if success or error message in case of failure
     """
-
     # Define headers
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
 
@@ -83,10 +83,7 @@ def create_order_account(account_id, zone, environment, order_status, sku_list, 
     request_url = get_microservice_base_url(environment) + '/order-service'
 
     # Get body
-    if more_sku == 'N':
-        request_body = create_order_payload(account_id, sku_list, allow_order_cancel, order_status)
-    else:
-        request_body = create_order_with_sku_payload(account_id, sku_list, allow_order_cancel, zone, environment)
+    request_body = create_order_payload(account_id, delivery_center_id, allow_order_cancel, order_items, order_status)
 
     # Send request
     response = place_request('POST', request_url, request_body, request_headers)
@@ -95,27 +92,32 @@ def create_order_account(account_id, zone, environment, order_status, sku_list, 
     if response.status_code == 200 and len(json_data) != 0:
         return json_data
     else:
-        print(text.Red + '\n- [Order Service] Failure to create an order. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
+        print(text.Red + '\n- [Order Service] Failure to create an order. Response Status: {response_status}. '
+                         'Response message {response_message}'
+              .format(response_status=response.status_code, response_message=response.text))
         return 'false'
 
 
-def create_order_payload(abi_id, sku_list, allow_order_cancel, order_status):
+def create_order_payload(account_id, delivery_center_id, allow_order_cancel, order_items, order_status):
     """
     Create payload for order creation
     Args:
-        abi_id: POC unique identifier
-        sku_list: list of SKUs
+        account_id: POC unique identifier
+        delivery_center_id: POC's delivery center
+        order_items: list of SKUs
         allow_order_cancel: `Y` or `N`
         order_status: e.g., PLACED, CANCELLED, etc
     Returns: order payload
     """
-
     # Sets the format of the placement date of the order (current date and time)
     placement_date = datetime.now().strftime('%Y-%m-%dT%H:%M:%S') + '+00:00'
 
-    # Sets the format of the delivery date of the order (current date and time more one day)
-    delivery_date = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+    if order_status == 'DELIVERED':
+        # Sets the format of the delivery date of the order (current date and time less one day)
+        delivery_date = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+    else:
+        # Sets the format of the delivery date of the order (current date and time more one day)
+        delivery_date = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
 
     # Sets the format of the cancellable date of the order (current date and time more ten days)
     cancellable_date = (datetime.now() + timedelta(days=10)).strftime('%Y-%m-%dT%H:%M:%S') + '+00:00'
@@ -128,132 +130,105 @@ def create_order_payload(abi_id, sku_list, allow_order_cancel, order_status):
     with open(file_path) as file:
         json_data = json.load(file)
 
+    line_items = order_items.get('lineItems')
+    item_list = list()
+    for i in range(len(line_items)):
+        item_values = {
+            'price': line_items[i]['price'],
+            'unitPrice': line_items[i]['unitPrice'],
+            'unitPriceInclTax': line_items[i]['unitPriceInclTax'],
+            'quantity': line_items[i]['quantity'],
+            'discountAmount': line_items[i]['discountAmount'],
+            'deposit': line_items[i]['deposit'],
+            'subtotal': line_items[i]['subtotal'],
+            'taxAmount': line_items[i]['taxAmount'],
+            'total': line_items[i]['total'],
+            'totalExclDeposit': line_items[i]['totalExclDeposit'],
+            'sku': line_items[i]['sku'],
+            'hasInventory': line_items[i]['hasInventory'],
+            'freeGood': line_items[i]['freeGood'],
+            'originalPrice': line_items[i]['originalPrice'],
+        }
+        item_list.append(item_values)
+
     dict_values = {
-        'accountId': str(abi_id),
+        'accountId': account_id,
+        'deliveryCenter': delivery_center_id,
         'delivery.date': delivery_date,
-        'items[0].sku': sku_list[0],
-        'items[1].sku': sku_list[1],
-        'placementDate': placement_date
+        'deposit': order_items.get('deposit'),
+        'discount': order_items.get('discountAmount'),
+        'interestAmount': order_items.get('interestAmount'),
+        'itemsQuantity': len(order_items.get('lineItems')),
+        'total': order_items.get('total'),
+        'subtotal': order_items.get('subtotal'),
+        'tax': order_items.get('taxAmount'),
+        'placementDate': placement_date,
+        'status': order_status
     }
 
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
-    if order_status == 'ACTIVE':
-        if allow_order_cancel == 'Y':   
-            json_object = set_to_dictionary(json_object, 'status', 'PLACED')
-            json_object = set_to_dictionary(json_object, 'cancellableUntil', cancellable_date)
-        else:
-            json_object = set_to_dictionary(json_object, 'status', 'PLACED')
+    set_to_dictionary(json_object, 'items', item_list)
+
+    if order_status == 'PLACED':
+        if allow_order_cancel == 'Y':
+            set_to_dictionary(json_object, 'cancellableUntil', cancellable_date)
     elif order_status == 'CANCELLED':
-        json_object = set_to_dictionary(json_object, 'status', 'CANCELLED')
-        json_object = set_to_dictionary(json_object, 'cancellationReason', 'ORDER CANCELLED FOR TESTING PURPOSES')
-    elif order_status == 'DELIVERED':
-        # Sets the format of the delivery date of the order (current date and time more one day)
-        delivery_date_old = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+        set_to_dictionary(json_object, 'cancellationReason', 'Order cancelled for testing purposes')
 
-        dict_values = {
-            'delivery.date': delivery_date_old
+    return convert_json_to_string(json_object)
+
+
+def get_order_prefix_params(zone):
+    params = {
+        'AR': {
+            'order_number_size': 12,
+            'prefix': 'UAT'
+        },
+        'BR': {
+            'order_number_size': 8,
+            'prefix': '31'
+        },
+        'CO': {
+            'order_number_size': 7,
+            'prefix': 'UAT'
+        },
+        'DO': {
+            'order_number_size': 7,
+            'prefix': 'UAT'
+        },
+        'EC': {
+            'order_number_size': 7,
+            'prefix': 'UAT'
+        },
+        'MX': {
+            'order_number_size': 7,
+            'prefix': 'UAT'
+        },
+        'PE': {
+            'order_number_size': 7,
+            'prefix': 'UAT'
+        },
+        'ZA': {
+            'order_number_size': 7,
+            'prefix': 'UAT'
         }
-
-        for key in dict_values.keys():
-            json_object = update_value_to_json(json_data, key, dict_values[key])
-
-        json_object = set_to_dictionary(json_object, 'status', 'DELIVERED')
-    else :
-        json_object = set_to_dictionary(json_object, 'status', order_status)
-
-    # Create body
-    request_body = convert_json_to_string(json_object)
-
-    return request_body
-
-
-def create_order_with_sku_payload(abi_id, sku_list, allow_order_cancel, zone, environment):
-    """
-    Create payload for order creation
-    Args:
-        abi_id: POC unique identifier
-        sku_list: list of SKUs
-        allow_order_cancel: `Y` or `N`
-    Returns: order payload
-    """
-
-    # Sets the format of the placement date of the order (current date and time)
-    placement_date = datetime.now().strftime('%Y-%m-%dT%H:%M:%S') + '+00:00'
-
-    # Sets the format of the delivery date of the order (current date and time more one day)
-    delivery_date = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
-
-    # Sets the format of the cancellable date of the order (current date and time more ten days)
-    cancellable_date = (datetime.now() + timedelta(days=10)).strftime('%Y-%m-%dT%H:%M:%S') + '+00:00'
-
-    # Create file path
-    abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, 'data/create_order_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
-
-    item_list = list()
-    for i in range(len(sku_list)):
-        item = check_item_enabled(sku_list[i]['sku'], zone, environment)
-        if item != 'false':
-            quantity = int(sku_list[i]['quantity'])
-            price = round(uniform(1, 2000), 2)
-            total = round(price * quantity, 2)
-            dict_values = {
-                    'price': price,
-                    'unitPrice': price,
-                    'unitPriceInclTax': price,
-                    'quantity': sku_list[i]['quantity'],
-                    'discountAmount': round(uniform(1, 20), 2),
-                    'deposit': round(uniform(1, 20), 2),
-                    'subtotal': total,
-                    'taxAmount': round(uniform(1, 20), 2),
-                    'total': total,
-                    'totalExclDeposit': round(uniform(1, 20), 2),
-                    'tax': round(uniform(1, 2000), 2),
-                    'sku': sku_list[i]['sku'],
-                    'hasInventory': 'true',
-                    'freeGood': 'false',
-                    'originalPrice': price
-                }
-            item_list.append(dict_values)
-
-    order_info = {
-        'accountId': str(abi_id),
-        'delivery.date': delivery_date,
-        'placementDate': placement_date
     }
-    for key in order_info.keys():
-        json_object = update_value_to_json(json_data, key, order_info[key])
 
-    if allow_order_cancel == 'Y':
-        json_object = set_to_dictionary(json_object, 'status', 'PLACED')
-        json_object = set_to_dictionary(json_object, 'cancellableUntil', cancellable_date)
-    json_object = set_to_dictionary(json_object, 'accountId', str(abi_id))
-    json_object = set_to_dictionary(json_object, 'delivery.date', delivery_date)
-    json_object = set_to_dictionary(json_object, 'placementDate', placement_date)
-
-    items = set_to_dictionary(json_object, 'items', item_list)
-
-    # Create body
-    request_body = convert_json_to_string(json_object)
-    return request_body
+    return params[zone]
 
 
-def change_order(zone, environment, order_data):
+def request_changed_order_creation(zone, environment, order_data):
     """
-    Change/Update order information via the Order Relay Service
+    Change/Update order information through the Order Relay Service
     Args:
         zone: e.g., AR, BR, CO, DO, MX, ZA
         environment: e.g., DEV, SIT, UAT
         order_data: order information
+
     Returns `success` or error message in case of failure
     """
-
     # Define headers
     request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
 
@@ -261,26 +236,27 @@ def change_order(zone, environment, order_data):
     request_url = get_microservice_base_url(environment) + '/order-relay/'
 
     # Get body
-    request_body = create_changed_order_payload(order_data)
+    request_body = get_changed_order_payload(order_data)
+
     # Send request
     response = place_request('POST', request_url, request_body, request_headers)
-
     if response.status_code == 202:
         return 'success'
     else:
-        print(text.Red + '\n- [Order Relay Service] Failure to change an order. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
+        print(text.Red + '\n- [Order Relay Service] Failure to change an order. Response Status: {response_status}. '
+                         'Response message: {response_message}'
+              .format(response_status=response.status_code, response_message=response.text))
         return 'false'
 
 
-def create_changed_order_payload(order_data):
+def get_changed_order_payload(order_data):
     """
     Create payload for order update
     Args:
         order_data: order information
+
     Returns: updated order payload
     """
-
     items = order_data[0]['items']
 
     if len(items) == 1:
@@ -298,10 +274,6 @@ def create_changed_order_payload(order_data):
             update_value_to_json(order_data[0], 'items[0].total', item_total)
             update_value_to_json(order_data[0], 'subtotal', order_subtotal)
             update_value_to_json(order_data[0], 'total', order_total)
-
-            # Create body
-            request_body = convert_json_to_string(order_data)
-
     elif len(items) > 1:
         for i in range(len(items)):
             if items[i]['quantity'] > 1:
@@ -313,10 +285,7 @@ def create_changed_order_payload(order_data):
                 update_value_to_json(order_data[0], 'items['+str(i)+'].subtotal', item_subtotal)
                 update_value_to_json(order_data[0], 'items['+str(i)+'].total', item_total)
 
-        # Create body
-        request_body = convert_json_to_string(order_data)
-
-    return request_body
+    return convert_json_to_string(order_data)
 
 
 def display_specific_order_information(orders):
@@ -324,9 +293,9 @@ def display_specific_order_information(orders):
     Display order information
     Args:
         orders: order data by account and order ID
+
     Returns: a table containing the available order information
     """
-
     items = orders[0]['items']
     item_information = list()
     if len(items) == 0:
@@ -388,9 +357,9 @@ def display_all_order_information(orders):
     Display all order information by POC
     Args:
         orders: order data by account
+
     Returns: a table containing the available order information
     """
-
     order_information = list()
 
     for i in range(len(orders)):
@@ -406,9 +375,9 @@ def validate_order_parameters(order):
     Validate order parameters
     Args:
         order: order information
+
     Returns: validated order values
     """
-
     if 'subtotal' not in order:
         subtotal = 'null'
     else:
@@ -453,12 +422,12 @@ def check_if_order_exists(account_id, zone, environment, order_id):
         zone: e.g., AR, BR, CO, DO, MX, ZA
         environment: e.g., DEV, SIT, UAT
         order_id: order unique identifier
+
     Returns:
         empty: if an account does not have any order
         not_found: if the order_id does not exist
         false: if an error comes from back-end
     """
-
     # Get header request
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
 
