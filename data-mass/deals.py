@@ -449,7 +449,7 @@ def create_stepped_free_good(account_id, sku, zone, environment, index_range, qu
 # Create Interactive Combos List
 def create_interactive_combos(account_id, sku, zone, environment, index_range, operation, deal_type='FLEXIBLE_DISCOUNT'):
     """
-    Input a deal type discount to a specific POC by calling the Promotion Relay Service and Pricing Engine Relay Service
+    Input a deal type interactive combos to a specific POC by calling the Promotion Relay Service and Pricing Engine Relay Service
     Args:
         account_id: POC unique identifier
         sku: product unique identifier

@@ -741,7 +741,7 @@ def flow_create_stepped_free_good(zone, environment, account_id, sku):
     else:
         print_finish_application_menu()
 
-#interactive combos
+# interactive combos
 def flow_create_interactive_combos(zone, environment, account_id, sku, operation):
 
     index_range = print_interactive_combos_quantity_range_menu()

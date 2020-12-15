@@ -542,7 +542,7 @@ def print_zone_for_interactive_combos_menu_for_ms():
     zone = input(text.default_text_color + 'Zone (BR, CO): ')
     while validate_zone_for_interactive_combos_ms(zone.upper()) == 'false':
         print(text.Red + '\n- Invalid option\n')
-        zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX, PE, EC): ')
+        zone = input(text.default_text_color + 'Zone (BR, CO): ')
 
     return zone.upper()
 
