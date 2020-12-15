@@ -20,27 +20,6 @@ from validations import validate_yes_no_option, is_number, validate_zone_for_ms,
 
 
 # Validate option menu selection
-def validate_option_request_selection(selection):
-    switcher = {
-        '0': 'true',
-        '1': 'true',
-        '2': 'true',
-        '3': 'true',
-        '4': 'true',
-        '5': 'true',
-        '6': 'true',
-        '7': 'true',
-        '8': 'true',
-        '9': 'true',
-        '10': 'true',
-        '11': 'true'
-    }
-
-    value = switcher.get(selection, 'false')
-    return value
-
-
-# Validate option menu selection
 def validate_option_request_selection_for_structure_2(option):
     switcher = {
         '0': 'true',
@@ -318,7 +297,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
         print(text.default_text_color + str(1), text.Yellow + 'Account')
         print(text.default_text_color + str(2), text.Yellow + 'Product')
-        print(text.default_text_color + str(3), text.Yellow + 'Input orders to account')
+        print(text.default_text_color + str(3), text.Yellow + 'Orders')
         print(text.default_text_color + str(4), text.Yellow + 'Deals')
         print(text.default_text_color + str(5), text.Yellow + 'Input combos')
         print(text.default_text_color + str(6), text.Yellow + 'Invoice')
@@ -330,7 +309,7 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(0), text.Yellow + 'Close application')
             print(text.default_text_color + str(1), text.Yellow + 'Account')
             print(text.default_text_color + str(2), text.Yellow + 'Product')
-            print(text.default_text_color + str(3), text.Yellow + 'Input orders to account')
+            print(text.default_text_color + str(3), text.Yellow + 'Orders')
             print(text.default_text_color + str(4), text.Yellow + 'Deals')
             print(text.default_text_color + str(5), text.Yellow + 'Input combos')
             print(text.default_text_color + str(6), text.Yellow + 'Invoice')
@@ -421,9 +400,8 @@ def print_structure_menu():
     print(text.default_text_color + str(3), text.Yellow + 'Data creation - Magento')
     print(text.default_text_color + str(4), text.Yellow + 'Data creation - IAM')
     print(text.default_text_color + str(5), text.Yellow + 'Close application')
-
     structure = input(text.default_text_color + '\nPlease choose an option: ')
-    while validate_structure(structure) == 'false':
+    while validate_structure(structure) is False:
         print(text.Red + '\n- Invalid option\n')
         print(text.default_text_color + str(1), text.Yellow + 'Data creation - Microservice')
         print(text.default_text_color + str(2), text.Yellow + 'Data searching - Microservice')
@@ -445,7 +423,7 @@ def print_rewards_menu():
     print(text.default_text_color + str(6), text.Yellow + 'Input Redeem Products to account')
     print(text.default_text_color + str(7), text.Yellow + 'Unenroll a POC from a program')
     structure = input(text.default_text_color + '\nPlease select: ')
-    while validate_rewards(structure) == 'false':
+    while validate_rewards(structure) is False:
         print(text.Red + '\n- Invalid option')
         print(text.default_text_color + str(1), text.Yellow + 'Create new program')
         print(text.default_text_color + str(2), text.Yellow + 'Update Initial Balance of a program')
@@ -458,44 +436,6 @@ def print_rewards_menu():
 
     return structure
 
-
-# Print orders menu
-def print_orders_menu():
-    print(text.default_text_color + '\nWhich type of order do you want to create?')
-    print(text.default_text_color + str(1), text.Yellow + 'Input Active Order')
-    print(text.default_text_color + str(2), text.Yellow + 'Input Cancelled Order')
-    print(text.default_text_color + str(3), text.Yellow + 'Input Changed Order')
-    print(text.default_text_color + str(4), text.Yellow + 'Input Delivered Order')
-    print(text.default_text_color + str(5), text.Yellow + 'Input Confirmed Status')
-    print(text.default_text_color + str(6), text.Yellow + 'Input Pending Status')
-    print(text.default_text_color + str(7), text.Yellow + 'Input Invoiced Status')
-    print(text.default_text_color + str(8), text.Yellow + 'Input Denied Status')
-    print(text.default_text_color + str(9), text.Yellow + 'Input In Transit Status')
-    print(text.default_text_color + str(10), text.Yellow + 'Input Modified Status')
-    print(text.default_text_color + str(11), text.Yellow + 'Input Partial Delivery Status')
-    print(text.default_text_color + str(12), text.Yellow + 'Input Delivered Status')
-    print(text.default_text_color + str(13), text.Yellow + 'Input Pending Cancellation Status')
-
-    structure = input(text.default_text_color + '\nPlease select: ')
-    while validate_orders(structure) == 'false':
-        print(text.Red + '\n- Invalid option')
-        print(text.default_text_color + '\nWhich type of order do you want to create?')
-        print(text.default_text_color + str(1), text.Yellow + 'Input Active Order')
-        print(text.default_text_color + str(2), text.Yellow + 'Input Cancelled Order')
-        print(text.default_text_color + str(3), text.Yellow + 'Input Changed Order')
-        print(text.default_text_color + str(4), text.Yellow + 'Input Delivered Order')
-        print(text.default_text_color + str(5), text.Yellow + 'Input Confirmed Status')
-        print(text.default_text_color + str(6), text.Yellow + 'Input Pending Status')
-        print(text.default_text_color + str(7), text.Yellow + 'Input Invoiced Status')
-        print(text.default_text_color + str(8), text.Yellow + 'Input Denied Status')
-        print(text.default_text_color + str(9), text.Yellow + 'Input In Transit Status')
-        print(text.default_text_color + str(10), text.Yellow + 'Input Modified Status')
-        print(text.default_text_color + str(11), text.Yellow + 'Input Partial Delivery Status')
-        print(text.default_text_color + str(12), text.Yellow + 'Input Delivered Status')
-        print(text.default_text_color + str(13), text.Yellow + 'Input Pending Cancellation Status')
-        structure = input(text.default_text_color + '\nPlease select: ')
-
-    return structure
 
 # Print combos menu
 def print_combos_menu():
@@ -830,44 +770,6 @@ def set_to_dictionary(dictionary, *key_value_pairs, **items):
     return dictionary
 
 
-def print_order_id_menu():
-    order_id = input(text.default_text_color + 'Order ID: ')
-
-    while True:
-        if len(order_id) == 0:
-            print(text.Red + '\n- Order ID should not be empty')
-        else:
-            break
-
-        order_id = input(text.default_text_color + 'Order ID: ')
-
-    return order_id
-
-
-# Validate order sub-menus
-def validate_order_sub_menu(option):
-    options = ['1', '2']
-    if option in options:
-        return 'true'
-    else:
-        return 'false'
-
-
-def print_get_order_menu():
-    print(text.default_text_color + '\nWhich option to retrieve orders do you want?')
-    print(text.default_text_color + str(1), text.Yellow + 'Specific order information by account')
-    print(text.default_text_color + str(2), text.Yellow + 'All order information by account')
-    structure = input(text.default_text_color + '\nPlease select: ')
-    while validate_order_sub_menu(structure) == 'false':
-        print(text.Red + '\n- Invalid option')
-        print(text.default_text_color + '\nWhich option to retrieve orders do you want?')
-        print(text.default_text_color + str(1), text.Yellow + 'Specific order information by account')
-        print(text.default_text_color + str(2), text.Yellow + 'All order information by account')
-        structure = input(text.default_text_color + '\nPlease select: ')
-
-    return structure
-
-
 def print_combo_id_menu():
     combo_id = input(text.default_text_color + 'Combo ID: ')
 
@@ -875,15 +777,6 @@ def print_combo_id_menu():
         print(text.Red + '\n- Combo ID should not be empty')
         combo_id = input(text.default_text_color + 'Combo ID: ')
     return combo_id
-
-
-def print_allow_cancellable_order_menu():
-    option = input(text.default_text_color + 'Do you want to make this order cancellable? y/N: ')
-    while validate_yes_no_option(option.upper()) is False:
-        print(text.Red + '\n- Invalid option')
-        option = input(text.default_text_color + '\nDo you want to make this order cancellable? y/N: ')
-
-    return option.upper()
 
 
 def validate_zone_for_credit_statement(zone):

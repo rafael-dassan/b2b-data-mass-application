@@ -17,6 +17,8 @@ from menus.deals_menu import print_deals_operations_menu, print_discount_percent
     print_interactive_combos_quantity_range_menu
 from menus.invoice_menu import print_invoice_operations_menu, print_invoice_status_menu, print_invoice_id_menu, \
     print_invoice_payment_method_menu, print_invoice_status_menu_retriever
+from menus.order_menu import print_order_operations_menu, print_allow_cancellable_order_menu, print_get_order_menu, \
+    print_order_id_menu, print_order_status_menu
 from menus.product_menu import print_product_operations_menu, print_get_products_menu
 from order import *
 from combos import *
@@ -27,7 +29,7 @@ from products_magento import *
 import user_creation_magento as user_magento
 import user_creation_v3 as user_v3
 import user_delete_v3 as user_delete_v3
-from simulation import process_simulation_microservice
+from simulation import process_simulation_microservice, request_order_simulation
 from validations import validate_yes_no_option, validate_state, is_number
 
 
@@ -41,7 +43,7 @@ def show_menu():
             '0': finish_application,
             '1': account_menu,
             '2': product_menu,
-            '3': input_orders_to_account,
+            '3': order_menu,
             '4': deals_menu,
             '5': input_combos_menu,
             '6': invoice_menu,
@@ -354,162 +356,106 @@ def create_rewards_to_account():
         print_finish_application_menu()
 
 
-# Input orders to account
-def input_orders_to_account():
-    selection_structure = print_orders_menu()
+def order_menu():
+    operation = print_order_operations_menu()
     zone = print_zone_menu_for_ms()
     environment = print_environment_menu()
-    abi_id = print_account_id_menu(zone)
-    if abi_id == 'false':
+    account_id = print_account_id_menu(zone)
+
+    if account_id == 'false':
         print_finish_application_menu()
-
-    switcher = {
-        '1': 'ACTIVE',
-        '2': 'CANCELLED',
-        '3': 'CHANGED',
-        '4': 'DELIVERED',
-        '5': 'CONFIRMED',
-        '6': 'PENDING',
-        '7': 'INVOICED',
-        '8': 'DENIED',
-        '9': 'IN_TRANSIT',
-        '10': 'MODIFIED',
-        '11': 'PARTIAL_DELIVERY',
-        '12': 'DELIVERED',
-        '13': 'PENDING_CANCELLATION'
-    }
-
-    order_status = switcher.get(selection_structure, 'false')
 
     # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone, environment)
+    account = check_account_exists_microservice(account_id, zone, environment)
     if account == 'false':
         print_finish_application_menu()
+    delivery_center_id = account[0]['deliveryCenterId']
 
-    if selection_structure == '1':
+    # Call function to check if the account has products inside
+    product_offers = request_get_offers_microservice(account_id, zone, environment)
+    if product_offers == 'false':
+        print_finish_application_menu()
+    elif product_offers == 'not_found':
+        print(text.Red + '\n- There is no product associated with the account {account_id}'
+              .format(account_id=account_id))
+        print_finish_application_menu()
+
+    if operation != '2':
+        order_status = print_order_status_menu()
+
+        quantity = int(input(text.default_text_color + 'Quantity of products you want to include in this order: '))
+        while is_number(quantity) == 'false':
+            quantity = int(input(text.default_text_color + 'Quantity of products you want to include in this order: '))
+
+        item_list = list()
+        while len(item_list) < quantity:
+            index_offers = randint(0, (len(product_offers) - 1))
+            sku = product_offers[index_offers]['sku']
+            data = {'sku': sku, 'itemQuantity': randint(0, 10)}
+            item_list.append(data)
+
+    return {
+        '1': lambda: flow_create_order(zone, environment, account_id, delivery_center_id, order_status, item_list),
+        '2': lambda: flow_create_changed_order(zone, environment, account_id),
+    }.get(operation, lambda: None)()
+
+
+def flow_create_order(zone, environment, account_id, delivery_center_id, order_status, item_list):
+    if order_status == 'PLACED':
         allow_order_cancel = print_allow_cancellable_order_menu()
-        order_items = list()
-
-        # Call function to configure prefix and order number size in the database sequence
-        if 'false' == configure_order_params(zone, environment, 5, 'DM-ORDER-'):
-            print_finish_application_menu()
-
-        input_order_item = input(text.default_text_color + 'Would you like to include a new sku for this order? y/N: ')
-        while input_order_item.upper() != 'Y' and input_order_item.upper() != 'N':
-            print(text.Red + '\n- Invalid option\n')
-            input_order_item = input(text.default_text_color + 'Would you like to include a new sku for this order? y/N: ')
-
-        if input_order_item.upper() == 'Y':
-            more_sku = 'Y'
-            while more_sku.upper() == 'Y':
-                sku = input(text.default_text_color + 'Inform sku for this order: ')
-                quantity = input(text.default_text_color + 'Inform sku quantity for  this order: ')
-                while is_number(quantity) == 'false':
-                    print(text.Red + '\n- Invalid quantity\n')
-                    quantity = input(text.default_text_color + 'Inform sku quantity for  this order: ')
-
-                temp_product_data = {'sku': sku, 'quantity': quantity}
-                order_items.append(temp_product_data)
-                more_sku = input(text.default_text_color + 'Would you like to include a new sku for this order? y/N: ')
-
-            response = create_order_account(abi_id, zone, environment, order_status, order_items, allow_order_cancel,
-                                            more_sku)
-            if response != 'false':
-                print(text.Green + '\n- Order ' + response.get('orderNumber') + ' created successfully')
-                # Call function to re-configure prefix and order number size to the previous format
-                if 'false' == configure_order_params(zone, environment, 9, '00'):
-                    print_finish_application_menu()
-            else:
-                print_finish_application_menu()
-        else:
-            more_sku = 'N'
-            # Call function to check if the account has products inside
-            product_offers = request_get_offers_microservice(abi_id, zone, environment)
-            if product_offers == 'false':
-                print_finish_application_menu()
-            elif product_offers == 'not_found':
-                print(text.Red + '\n- [Catalog Service] There is no product associated with the account ' + abi_id)
-                print_finish_application_menu()
-
-            # Call function to configure prefix and order number size in the database sequence
-            if 'false' == configure_order_params(zone, environment, 5, 'DM-ORDER-'):
-                print_finish_application_menu()
-
-            sku_list = list()
-            aux_index = 0
-            while len(sku_list) < 2:
-                sku = product_offers[aux_index]['sku']
-                sku_list.append(sku)
-                aux_index += 1
-
-            # Call function to create the Order according to the 'order_option' parameter (active or cancelled)
-            response = create_order_account(abi_id, zone, environment, order_status, sku_list, allow_order_cancel,
-                                            more_sku)
-            if response != 'false':
-                print(text.Green + '\n- Order ' + response.get('orderNumber') + ' created successfully')
-                # Call function to re-configure prefix and order number size to the previous format
-                if 'false' == configure_order_params(zone, environment, 9, '00'):
-                    print_finish_application_menu()
-            else:
-                print_finish_application_menu()
-    elif selection_structure == '3':
-        order_id = print_order_id_menu()
-        order_data = check_if_order_exists(abi_id, zone, environment, order_id)
-        if order_data == 'false':
-            print_finish_application_menu()
-        elif order_data == 'empty':
-            print(text.Red + '\n- [Order Service] The account ' + abi_id + ' does not have orders')
-            print_finish_application_menu()
-        elif order_data == 'not_found':
-            print(text.Red + '\n- [Order Service] The order ' + order_id + ' does not exist')
-            print_finish_application_menu()
-
-        statuses = ['DENIED', 'CANCELLED', 'DELIVERED', 'PARTIAL_DELIVERY', 'PENDING_CANCELLATION']
-        if order_data[0]['status'] in statuses:
-            print(text.Red + '\n- This order cannot be changed. Order status: ' + order_data[0]['status'])
-            print_finish_application_menu()
-
-        if len(order_data[0]['items']) == 1 and order_data[0]['items'][0]['quantity'] == 1:
-            print(text.Red + '\n- It\'s not possible to change this order because the order has only one '
-                             'product with quantity equals 1')
-            print_finish_application_menu()
-
-        response = change_order(zone, environment, order_data)
-        if response == 'success':
-            print(text.Green + '\n- Order ' + order_id + ' was changed successfully')
-        else:
-            print_finish_application_menu()
     else:
-        # Call function to check if the account has products inside
-        product_offers = request_get_offers_microservice(abi_id, zone, environment)
-        if product_offers == 'false':
-            print_finish_application_menu()
-        elif product_offers == 'not_found':
-            print(text.Red + '\n- [Catalog Service] There is no product associated with the account ' + abi_id)
-            print_finish_application_menu()
-
         allow_order_cancel = 'N'
 
-        # Call function to configure prefix and order number size in the database sequence
-        if 'false' == configure_order_params(zone, environment, 5, 'DM-ORDER-'):
+    # Call function to configure prefix and order number size in the database sequence
+    if 'false' == configure_order_params(zone, environment, 8, 'DM-{zone}-'.format(zone=zone)):
+        print_finish_application_menu()
+
+    order_items = request_order_simulation(zone, environment, account_id, delivery_center_id, item_list, None, None,
+                                           'CASH', 0)
+    if order_items == 'false':
+        print_finish_application_menu()
+
+    response = request_order_creation(account_id, delivery_center_id, zone, environment, allow_order_cancel,
+                                      order_items, order_status)
+    if response != 'false':
+        print(text.Green + '\n- Order ' + response.get('orderNumber') + ' created successfully')
+        # Call function to re-configure prefix and order number size according to the zone's format
+        order_prefix_params = get_order_prefix_params(zone)
+        if 'false' == configure_order_params(zone, environment, order_prefix_params.get('order_number_size'),
+                                             order_prefix_params.get('prefix')):
             print_finish_application_menu()
 
-        sku_list = list()
-        aux_index = 0
-        while len(sku_list) < 2:
-            sku = product_offers[aux_index]['sku']
-            sku_list.append(sku)
-            aux_index += 1
 
-        # Call function to create the Order according to the 'order_option' parameter (active or cancelled)
-        response = create_order_account(abi_id, zone, environment, order_status, sku_list, allow_order_cancel, 'N')
-        if response != 'false':
-            print(text.Green + '\n- Order ' + response.get('orderNumber') + ' created successfully')
-            # Call function to re-configure prefix and order number size to the previous format
-            if 'false' == configure_order_params(zone, environment, 9, '00'):
-                print_finish_application_menu()
-        else:
-            print_finish_application_menu()
+def flow_create_changed_order(zone, environment, account_id):
+    order_id = print_order_id_menu()
+    order_data = check_if_order_exists(account_id, zone, environment, order_id)
+    if order_data == 'false':
+        print_finish_application_menu()
+    elif order_data == 'empty':
+        print(text.Red + '\n- The account {account_id} does not have orders'.format(account_id=account_id))
+        print_finish_application_menu()
+    elif order_data == 'not_found':
+        print(text.Red + '\n- The order {order_id} does not exist'.format(order_id=order_id))
+        print_finish_application_menu()
+
+    statuses = ['DENIED', 'CANCELLED', 'DELIVERED', 'PARTIAL_DELIVERY', 'PENDING_CANCELLATION', 'INVOICED',
+                'IN_TRANSIT']
+
+    if order_data[0]['status'] in statuses:
+        print(text.Red + '\n- This order cannot be changed. Order status: {order_status}'
+              .format(order_status=order_data[0]['status']))
+        print_finish_application_menu()
+
+    if len(order_data[0]['items']) == 1 and order_data[0]['items'][0]['quantity'] == 1:
+        print(text.Red + '\n- It\'s not possible to change this order because it has only one product with '
+                         'quantity equals 1')
+        print_finish_application_menu()
+
+    response = request_changed_order_creation(zone, environment, order_data)
+    if response == 'success':
+        print(text.Green + '\n- The order {order_id} was changed successfully'.format(order_id=order_id))
+    else:
+        print_finish_application_menu()
 
 
 # Place request for simulation service in microservice
@@ -600,9 +546,12 @@ def check_simulation_service_account_microservice_menu():
     else:
         payment_term = 0
 
-    process_simulation_microservice(zone, environment, abi_id, account, order_items, order_combos, empties_skus,
-                                    payment_method, payment_term)
-    print_finish_application_menu()
+    cart_response = request_order_simulation(zone, environment, abi_id, account[0]['deliveryCenterId'], order_items,
+                                             order_combos, empties_skus, payment_method, payment_term)
+    if cart_response != 'false':
+        process_simulation_microservice(cart_response)
+    else:
+        print_finish_application_menu()
 
 
 def deals_menu():

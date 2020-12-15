@@ -170,7 +170,7 @@ def print_free_good_quantity_range_menu():
 
 def print_option_sku_menu():
     option = input(text.default_text_color + 'Do you want to input this deal to a specific SKU? (1. Yes / 2. No): ')
-    while validate_option_sku(option) != 'true':
+    while validate_option_sku(option) is False:
         print(text.Red + '\n- Invalid option')
         option = input(text.default_text_color + '\nDo you want to input this deal to a specific SKU? (1. Yes / '
                                                  '2. No): ')
