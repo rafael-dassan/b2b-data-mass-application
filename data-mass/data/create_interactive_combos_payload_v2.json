@@ -1,0 +1,51 @@
+{ 
+    "accounts": [ "string" ], 
+    "deals": [ 
+  
+      { 
+       "dealId": "string", 
+       "externalId": "string", 
+       "priority": 1, 
+       "conditions": { 
+            "multipleLineItem": { 
+                "items": [ 
+                    { 
+                    "skus": "string", 
+                    "minimumQuantity": "string"
+                    }, 
+                    { 
+                    "skus": "string", 
+                    "minimumQuantity": "string"
+                    },
+                    {
+                    "skus": "string", 
+                    "minimumQuantity": "string" 
+                    } 
+                ] 
+            } 
+        }, 
+       "output": { 
+            "multipleLineItemDiscount": { 
+                "type": "PROMOTIONAL_PRICE", 
+                "items": [ 
+                    { 
+                    "sku": "string", 
+                    "value": "string", 
+                    "maxQuantity": "string" 
+                    }, 
+                    { 
+                    "sku": "string",
+                    "value": "string", 
+                    "maxQuantity": "string" 
+                    },
+                    { 
+                    "sku": "string",
+                    "value": "string", 
+                    "maxQuantity": "string" 
+                    }
+                ]
+            } 
+        } 
+    }
+] 
+} 
