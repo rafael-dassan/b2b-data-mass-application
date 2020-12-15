@@ -16,7 +16,7 @@ from tabulate import tabulate
 from classes.text import text
 from logs.log import log_to_file
 from validations import validate_yes_no_option, is_number, validate_zone_for_ms, validate_environment, \
-    validate_structure, validate_rewards, validate_orders, validate_zone_for_interactive_combos_ms \
+    validate_structure, validate_rewards, validate_orders, validate_zone_for_interactive_combos_ms, \
     validate_option_request_selection
 
 
