@@ -10,6 +10,7 @@ def print_deals_operations_menu():
     print(text.default_text_color + str(3), text.Yellow + 'Create deal type stepped discount with limit')
     print(text.default_text_color + str(4), text.Yellow + 'Create deal type free good')
     print(text.default_text_color + str(5), text.Yellow + 'Create deal type stepped free good')
+    print(text.default_text_color + str(6), text.Yellow + 'Create deal type Interactive Combos')  # interactive combos
     option = input(text.default_text_color + '\nPlease select: ')
     while validate_deals_options(option) is False:
         print(text.Red + '\n- Invalid option')
@@ -19,6 +20,7 @@ def print_deals_operations_menu():
         print(text.default_text_color + str(3), text.Yellow + 'Create deal type stepped discount with limit')
         print(text.default_text_color + str(4), text.Yellow + 'Create deal type free good')
         print(text.default_text_color + str(5), text.Yellow + 'Create deal type stepped free good')
+        print(text.default_text_color + str(6), text.Yellow + 'Create deal type Interactive Combos')  # interactive combos
         option = input(text.default_text_color + '\nPlease select: ')
 
     return option
@@ -95,6 +97,35 @@ def print_free_good_quantity_menu():
 
     return quantity
 
+#Maximum and Mininum index for Interactive Combos
+def print_interactive_combos_quantity_range_menu():
+    index_list_min = list()
+    index_list_max = list()
+    index_dict = dict()
+    index_dict['minimum'] = {}
+    index_dict['maximum'] = {}
+
+    for x in range(3):
+        min_quantity = input(text.default_text_color + 'Type the ' + str(x + 1) + '° minimum value: ')
+        while min_quantity == '' or int(min_quantity) < 0:
+            print(text.Red + '\n- SKU minimum quantity must be greater than 0')
+            min_quantity = input(text.default_text_color + '\nType the ' + str(x) + '° minimum value: ')
+
+        index_list_min.append(min_quantity)
+
+    index_dict['minimum'] = index_list_min
+
+    for x in range(3):
+        max_quantity = input(text.default_text_color + 'Type the ' + str(x + 1) + '° maximum value: ')
+        while max_quantity == '' or int(max_quantity) <= 0:
+            print(text.Red + '\n- SKU maximum quantity must be greater than 0')
+            max_quantity = input(text.default_text_color + '\nType the ' + str(x) + '° maximum value:1'
+                                                                                    ' ')
+
+        index_list_max.append(max_quantity)
+
+    index_dict['maximum'] = index_list_max
+    return index_dict
 
 def print_partial_free_good_menu(zone):
     if zone != 'BR':

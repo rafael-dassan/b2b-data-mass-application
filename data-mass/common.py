@@ -16,7 +16,7 @@ from tabulate import tabulate
 from classes.text import text
 from logs.log import log_to_file
 from validations import validate_yes_no_option, is_number, validate_zone_for_ms, validate_environment, \
-    validate_structure, validate_rewards, validate_orders
+    validate_structure, validate_rewards, validate_orders, validate_zone_for_interactive_combos_ms
 
 
 # Validate option menu selection
@@ -537,6 +537,14 @@ def print_zone_menu_for_ms():
 
     return zone.upper()
 
+# For interactive combos
+def print_zone_for_interactive_combos_menu_for_ms():
+    zone = input(text.default_text_color + 'Zone (BR, CO): ')
+    while validate_zone_for_interactive_combos_ms(zone.upper()) == 'false':
+        print(text.Red + '\n- Invalid option\n')
+        zone = input(text.default_text_color + 'Zone (AR, BR, DO, ZA, CO, MX, PE, EC): ')
+
+    return zone.upper()
 
 # Print zone menu for combos
 def print_zone_menu_for_combos(combo_type=''):

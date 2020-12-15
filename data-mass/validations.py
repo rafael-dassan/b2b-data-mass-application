@@ -92,7 +92,7 @@ def validate_accounts(option):
 
 
 def validate_deals_options(option):
-    valid_options = ['1', '2', '3', '4', '5']
+    valid_options = ['1', '2', '3', '4', '5', '6']
     if option in valid_options:
         return True
     else:
@@ -106,6 +106,12 @@ def validate_option_sku(option):
     else:
         return 'false'
 
+#Zones for Interactive Combos
+def validate_zone_for_interactive_combos_ms(zone):
+    return {
+        'BR': 'true',
+        'CO': 'true'
+    }.get(zone, 'false')
 
 def validate_zone_for_ms(zone):
     return {

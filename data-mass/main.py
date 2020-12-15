@@ -13,7 +13,8 @@ from menus.account_menu import print_account_operations_menu, print_minimum_orde
 from menus.algo_selling_menu import print_recommender_type_menu
 from menus.deals_menu import print_deals_operations_menu, print_discount_percentage_menu, print_minimum_quantity_menu, \
     print_max_quantity_menu, print_free_good_quantity_range_menu, print_option_sku_menu, print_partial_free_good_menu, \
-    print_free_good_redemption_menu, print_free_good_quantity_menu, print_index_range_menu, print_discount_range_menu
+    print_free_good_redemption_menu, print_free_good_quantity_menu, print_index_range_menu, print_discount_range_menu, \
+    print_interactive_combos_quantity_range_menu
 from menus.invoice_menu import print_invoice_operations_menu, print_invoice_status_menu, print_invoice_id_menu, \
     print_invoice_payment_method_menu, print_invoice_status_menu_retriever
 from menus.product_menu import print_product_operations_menu, print_get_products_menu
@@ -606,7 +607,13 @@ def check_simulation_service_account_microservice_menu():
 
 def deals_menu():
     operation = print_deals_operations_menu()
-    zone = print_zone_menu_for_ms()
+
+    #For Interactive Combos
+    if operation == '6':
+        zone = print_zone_for_interactive_combos_menu_for_ms()
+    else:
+        zone = print_zone_menu_for_ms()
+
     environment = print_environment_menu()
     account_id = print_account_id_menu(zone)
 
@@ -630,10 +637,24 @@ def deals_menu():
         print_finish_application_menu()
 
     sku_list = list()
-    while len(sku_list) <= 2:
-        index_offers = randint(0, (len(product_offers) - 1))
-        product_data = product_offers[index_offers]
-        sku_list.append(product_data)
+    flag = 0
+    #Interactive combos: Validation of SKU to be different.
+    if operation == 4:
+        while len(sku_list) <= 3 and flag == 1:
+            index_offers = randint(0, (len(product_offers) - 1))
+            product_data = product_offers[index_offers]
+            sku_list.append(product_data)
+            if len(sku_list) <=3:
+               if sku_list[0] != sku_list[1]:
+                   if sku_list[1] != sku_list[2]:
+                       if sku_list[2] != sku_list[0]:
+                           flag = 1
+
+    else:
+        while len(sku_list) <= 2:
+            index_offers = randint(0, (len(product_offers) - 1))
+            product_data = product_offers[index_offers]
+            sku_list.append(product_data)
 
     if option_sku == '1':
         sku = input(text.default_text_color + 'SKU: ')
@@ -649,7 +670,8 @@ def deals_menu():
         '2': lambda: flow_create_stepped_discount(zone, environment, account_id, sku),
         '3': lambda: flow_create_stepped_discount_with_limit(zone, environment, account_id, sku),
         '4': lambda: flow_create_free_good(zone, environment, account_id, sku_list),
-        '5': lambda: flow_create_stepped_free_good(zone, environment, account_id, sku)
+        '5': lambda: flow_create_stepped_free_good(zone, environment, account_id, sku),
+        '6': lambda: flow_create_interactive_combos(zone, environment, account_id, sku_list, operation)
     }.get(operation, lambda: None)()
 
 
@@ -719,6 +741,17 @@ def flow_create_stepped_free_good(zone, environment, account_id, sku):
     else:
         print_finish_application_menu()
 
+#interactive combos
+def flow_create_interactive_combos(zone, environment, account_id, sku, operation):
+
+    index_range = print_interactive_combos_quantity_range_menu()
+
+    response = create_interactive_combos(account_id, sku, zone, environment, index_range, operation)
+
+    if response != 'false':
+        print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
+    else:
+        print_finish_application_menu()
 
 # Input combos to an account
 def input_combos_menu():
