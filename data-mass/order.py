@@ -490,6 +490,14 @@ def get_order_items(order_data):
             if discount is None:
                 discount = 0
 
+        if 'tax' in items[i]:
+            if items[i]['tax'] is None:
+                tax = 0
+            else:
+                tax = items[i]['tax']
+        else:
+            tax = 0
+
         items_details = {
             'sku': items[i]['sku'],
             'price': items[i]['price'],
@@ -497,7 +505,7 @@ def get_order_items(order_data):
             'subtotal': items[i]['subtotal'],
             'total': items[i]['total'],
             'freeGood': items[i]['freeGood'],
-            'tax': items[i]['tax'],
+            'tax': tax,
             'discount': discount
         }
         item_list.append(items_details)
