@@ -615,38 +615,38 @@ def deals_menu():
         sku = sku_list[0]['sku']
 
     return {
-        '1': lambda: flow_create_discount(zone, environment, account_id, sku),
-        '2': lambda: flow_create_stepped_discount(zone, environment, account_id, sku),
-        '3': lambda: flow_create_stepped_discount_with_limit(zone, environment, account_id, sku),
-        '4': lambda: flow_create_free_good(zone, environment, account_id, sku_list),
-        '5': lambda: flow_create_stepped_free_good(zone, environment, account_id, sku),
+        '1': lambda: flow_create_discount(zone, environment, account_id, sku, operation),
+        '2': lambda: flow_create_stepped_discount(zone, environment, account_id, sku, operation),
+        '3': lambda: flow_create_stepped_discount_with_limit(zone, environment, account_id, sku, operation),
+        '4': lambda: flow_create_free_good(zone, environment, account_id, sku_list, operation),
+        '5': lambda: flow_create_stepped_free_good(zone, environment, account_id, sku, operation),
         '6': lambda: flow_create_interactive_combos(zone, environment, account_id, sku_list, operation)
     }.get(operation, lambda: None)()
 
 
-def flow_create_discount(zone, environment, account_id, sku):
+def flow_create_discount(zone, environment, account_id, sku, operation):
     minimum_quantity = print_minimum_quantity_menu()
     discount_value = print_discount_percentage_menu()
 
-    response = create_discount(account_id, sku, zone, environment, discount_value, minimum_quantity)
+    response = create_discount(account_id, sku, zone, environment, discount_value, minimum_quantity, operation)
     if response != 'false':
         print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
     else:
         print_finish_application_menu()
 
 
-def flow_create_stepped_discount(zone, environment, account_id, sku):
+def flow_create_stepped_discount(zone, environment, account_id, sku, operation):
     index_range = print_index_range_menu()
     discount_range = print_discount_range_menu()
 
-    response = create_stepped_discount(account_id, sku, zone, environment, index_range, discount_range)
+    response = create_stepped_discount(account_id, sku, zone, environment, index_range, discount_range, operation)
     if response != 'false':
         print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
     else:
         print_finish_application_menu()
 
 
-def flow_create_stepped_discount_with_limit(zone, environment, account_id, sku):
+def flow_create_stepped_discount_with_limit(zone, environment, account_id, sku, operation):
     # Default index range (from 1 to 9999 products)
     default_index_range = [1, 9999]
 
@@ -654,14 +654,14 @@ def flow_create_stepped_discount_with_limit(zone, environment, account_id, sku):
     max_quantity = print_max_quantity_menu(default_index_range)
 
     response = create_stepped_discount_with_limit(account_id, sku, zone, environment, default_index_range,
-                                                  discount_range, max_quantity)
+                                                  discount_range, max_quantity, operation)
     if response != 'false':
         print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
     else:
         print_finish_application_menu()
 
 
-def flow_create_free_good(zone, environment, account_id, sku_list):
+def flow_create_free_good(zone, environment, account_id, sku_list, operation):
     partial_free_good = print_partial_free_good_menu(zone)
     need_to_buy_product = print_free_good_redemption_menu(partial_free_good)
 
@@ -673,18 +673,18 @@ def flow_create_free_good(zone, environment, account_id, sku_list):
         quantity = print_free_good_quantity_menu()
 
     response = create_free_good(account_id, sku_list, zone, environment, minimum_quantity, quantity,
-                                partial_free_good, need_to_buy_product)
+                                partial_free_good, need_to_buy_product, operation)
     if response != 'false':
         print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
     else:
         print_finish_application_menu()
 
 
-def flow_create_stepped_free_good(zone, environment, account_id, sku):
+def flow_create_stepped_free_good(zone, environment, account_id, sku, operation):
     index_range = print_index_range_menu()
     quantity_range = print_free_good_quantity_range_menu()
 
-    response = create_stepped_free_good(account_id, sku, zone, environment, index_range, quantity_range)
+    response = create_stepped_free_good(account_id, sku, zone, environment, index_range, quantity_range, operation)
     if response != 'false':
         print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
     else:
