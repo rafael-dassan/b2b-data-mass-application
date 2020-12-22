@@ -1009,7 +1009,6 @@ def flow_create_account(zone, environment, account_id):
 
 
 def flow_create_delivery_window(zone, environment, account_id, option):
-    if option == '1':
         allow_flexible_delivery_dates = ['BR', 'ZA', 'MX']
         allow_delivery_cost = ['BR', 'MX']
 
@@ -1031,7 +1030,7 @@ def flow_create_delivery_window(zone, environment, account_id, option):
 
         # Call add delivery window to account function
         delivery_window = create_delivery_window_microservice(zone, environment, account_data,
-                                                              is_alternative_delivery_date)
+                                                              is_alternative_delivery_date, option)
 
         if delivery_window == 'success':
             print(text.Green + '\n- Delivery window created successfully for the account {account_id}'
@@ -1052,8 +1051,7 @@ def flow_create_delivery_window(zone, environment, account_id, option):
                     print_finish_application_menu()
         else:
             print_finish_application_menu()
-    else:
-        print('Hello World!')
+
 
 def flow_create_credit_information(zone, environment, account_id):
     # Check if account exists
