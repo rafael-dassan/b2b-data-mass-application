@@ -422,7 +422,6 @@ def print_rewards_menu():
 
     return structure
 
-
 # Print combos menu
 def print_combos_menu():
     print(text.default_text_color + '\nWhich type of combo do you want to create?')

@@ -192,7 +192,7 @@ def create_rewards_to_account():
         '4': 'ENROLL_POC',
         '5': 'ADD_CHALLENGE',
         '6': 'ADD_REDEEM',
-        '7': 'DELETE_ENROLL_POC'
+        '7': 'DELETE_ENROLL_POC',
     }
 
     reward_option = switcher.get(selection_structure, 'false')
