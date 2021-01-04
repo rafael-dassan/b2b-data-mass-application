@@ -4,11 +4,12 @@ import json
 import sys
 from datetime import timedelta, datetime
 from PyQt5.QtWidgets import QApplication
+import calendar
 
 # Local application imports
 from common import update_value_to_json, get_header_request, get_microservice_base_url, place_request
 from classes.text import text
-from classes.window import *
+from classes.window import window
 
 
 # Create payload for delivery date
@@ -127,21 +128,36 @@ def return_dates_payload(option):
             initial_month = initial_date.strftime('%m')
             last_day_month = calendar.monthrange(int(initial_date.strftime('%Y')), int(initial_date.strftime('%m')))[1]
 
-        while (int(initial_date.strftime('%d')) < last_day_month) and (int(initial_date.strftime('%m'))
-                                                                       <= int(initial_month)):
+        while (int(initial_date.strftime('%d')) < last_day_month) and (int(initial_date.strftime('%m'))<= int(initial_month)):
             clone_initial_date = initial_date
             clone_initial_date = clone_initial_date + timedelta(days=1)
             start_date = clone_initial_date.strftime('%Y-%m-%d')
             end_date = start_date
             expiration_date = initial_date.strftime('%Y-%m-%d') + 'T20:00:00Z'
 
-            list_delivery_dates.append(
-                {'startDate': start_date, 'endDate': end_date, 'expirationDate': expiration_date})
+            list_delivery_dates.append({'startDate': start_date, 'endDate': end_date, 'expirationDate': expiration_date})
             initial_date = initial_date + timedelta(days=2)
-
+        print(list_delivery_dates)
         return list_delivery_dates
     else:
-        delivery_window_menu()
+        date_list = delivery_window_selector()
+        datetime_object = datetime.strptime(date_list[0], "%B")
+        month_number = datetime_object.month
+        today = datetime.today()
+        date_datetime_object = datetime(int(today.year), month_number, int(date_list[1]))
+        initial_date = today
+        list_delivery_dates = list()
+
+        while initial_date < date_datetime_object:
+            clone_initial_date = initial_date
+            clone_initial_date = clone_initial_date + timedelta(days=1)
+            start_date = clone_initial_date.strftime('%Y-%m-%d')
+            end_date = start_date
+            expiration_date = initial_date.strftime('%Y-%m-%d') + 'T20:00:00Z'
+
+            list_delivery_dates.append({'startDate': start_date, 'endDate': end_date, 'expirationDate': expiration_date})
+            initial_date = initial_date + timedelta(days=2)
+        return list_delivery_dates
 
 
 # Create delivery fee (interest) in microservice
@@ -166,15 +182,15 @@ def create_delivery_fee_microservice(zone, environment, account_data, include_de
     return 'success'
 
 
-def delivery_window_menu():
+def delivery_window_selector():
 
-    selected_dates = list()
     # create pyqt5 app
     app = QApplication(sys.argv)
 
-    # create the instance of our Window
-    window = Window()
+    # create the instance of window
+    Window = window()
     app.exec()
-    selected_dates = window.dates
+    selected_dates = getattr(Window, 'dates')
     sys.is_finalizing()
-    print(selected_dates)
+
+    return selected_dates
