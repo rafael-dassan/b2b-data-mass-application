@@ -557,7 +557,7 @@ def check_simulation_service_account_microservice_menu():
 def deals_menu():
     operation = print_deals_operations_menu()
 
-    #For Interactive Combos
+    # For Interactive Combos
     if operation == '6':
         zone = print_zone_for_interactive_combos_menu_for_ms()
     else:
@@ -587,7 +587,7 @@ def deals_menu():
 
     sku_list = list()
     flag = 0
-    #Interactive combos: Validation of SKU to be different.
+    # Interactive combos: Validation of SKU to be different
     if operation == 4:
         while len(sku_list) <= 3 and flag == 1:
             index_offers = randint(0, (len(product_offers) - 1))

@@ -1,5 +1,6 @@
 # Standard library imports
 import json
+from json import loads
 import os
 import sys
 from datetime import date
@@ -15,8 +16,9 @@ from tabulate import tabulate
 # Local application imports
 from classes.text import text
 from logs.log import log_to_file
-from validations import validate_yes_no_option, is_number, validate_zone_for_ms, validate_environment, \
-    validate_structure, validate_rewards, validate_orders, validate_zone_for_interactive_combos_ms, \
+from user_v3 import get_b2c_ropc_params
+from validations import is_number, validate_zone_for_ms, validate_environment, \
+    validate_structure, validate_rewards, validate_zone_for_interactive_combos_ms, \
     validate_option_request_selection
 
 
@@ -944,3 +946,20 @@ def remove_from_dictionary(dictionary, *keys):
 
 def is_string(item):
     return isinstance(item, str)
+
+
+def request_b2c_ropc_login(country, environment):
+    request_params = get_b2c_ropc_params(country, environment)
+
+    # Send request
+    response = place_request('POST', request_params['request_url'], request_params['request_body'],
+                             request_params['request_headers'])
+
+    json_data = loads(response.text)
+    if response.status_code == 200:
+        return 'Bearer {0}'.format(json_data['id_token'])
+    else:
+        print(text.Red + '\n- [B2C ROPC] Failure to get B2C token. Response Status: {response_status}. '
+                         'Response message: {response_message}'
+              .format(response_status=response.status_code, response_message=response.text))
+        return 'false'

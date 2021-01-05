@@ -350,7 +350,7 @@ def create_stepped_discount_with_limit(account_id, sku, zone, environment, index
     Returns: `promotion_response` if success
     """
 
-    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, deal_id, operation)
+    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, operation, deal_id)
 
     cart_response = request_create_stepped_discount_with_limit_cart_calculation(account_id, promotion_response, zone,
                                                                                 environment, sku, max_quantity,

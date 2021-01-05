@@ -1,6 +1,7 @@
 # Standard library imports
 import re
 import logging
+import urllib
 
 
 def get_iam_b2c_environment_uat(environment):
@@ -154,3 +155,67 @@ def get_iam_b2c_policy_params(country):
         "B2B_ONBOARDING_POLICY": "B2C_1A_Onboarding_{0}".format(country)
     }
     return params
+
+
+def get_b2c_ropc_params(country, environment):
+    b2c_azure_params = get_iam_b2c_azure_params(environment)
+    b2b_server_name = b2c_azure_params['B2B_SERVER_NAME']
+    b2b_path = b2c_azure_params['B2B_PATH']
+
+    client_id = get_b2c_web_application_id(country, environment)
+
+    request_headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+
+    request_body = {
+        'username': 'qm.team.{0}+b2clogin@mailinator.com'.format(country).lower(),
+        'password': 'Password1',
+        'grant_type': 'password',
+        'client_id': client_id,
+        'response_type': 'token id_token',
+        'scope': 'openid {0}'.format(client_id)
+    }
+
+    params = {
+        'request_url': 'https://{0}/{1}/B2C_1A_ROPC_{2}/oauth2/v2.0/token'.format(b2b_server_name, b2b_path, country),
+        'request_body': urllib.parse.urlencode(request_body),
+        'request_headers': request_headers
+    }
+
+    return params
+
+
+def get_b2c_web_application_id(country, environment):
+    if get_iam_b2c_environment_uat(environment):
+        return get_b2c_web_application_id_uat(country)
+    else:
+        return get_b2c_web_application_id_sit(country)
+
+
+def get_b2c_web_application_id_uat(country):
+    params = {
+        'AR': 'fba61bce-50d5-426c-b7cb-2915d577d784',
+        'BR': 'e4502f2d-c14a-426f-8149-08954f4a9df5',
+        'CO': '7d659ba2-1a3c-4a09-b62e-308aad83bb67',
+        'DO': '197968bd-f5fa-492d-a8d0-36e6b6126fd9',
+        'EC': '1359f5e5-09c7-4937-93f9-52656df3654a',
+        'MX': '1cf501fc-2977-4178-ab2b-0f2bd07cd057',
+        'PE': '6dfc84ba-e587-41e4-83c7-7ad21b214361',
+        'ZA': '9fa1e0e1-7c61-4d6c-a422-976547b6cb89'
+    }
+
+    return params[country]
+
+
+def get_b2c_web_application_id_sit(country):
+    params = {
+        'AR': '',
+        'BR': '',
+        'CO': '9a362195-d403-4b37-acd4-5133f5d028e4',
+        'DO': '',
+        'EC': '',
+        'MX': '',
+        'PE': '',
+        'ZA': ''
+    }
+
+    return params[country]
