@@ -85,34 +85,39 @@ def create_delivery_window_microservice(zone, environment, account_data, is_alte
 
     # Return list of dates
     dates_list = return_dates_payload(option)
-
-    index = 0
-    request_body = list()
-    while index <= (len(dates_list) - 1):
-        # Force mixed values if it's is_alternative_delivery_date
-        if is_alternative_delivery_date == 'true':
-            if (index % 2) == 0:
-                option_is_alternative_delivery_date = 'true'
-            else:
-                option_is_alternative_delivery_date = 'false'
-        else:
-            option_is_alternative_delivery_date = is_alternative_delivery_date
-
-        # Get body request
-        temporary_body = get_microservice_payload_post_delivery_date(account_data, option_is_alternative_delivery_date,
-                                                                     dates_list[index], index)
-        request_body.append(temporary_body)
-        index = index + 1
-    
-    # Place request
-    response = place_request('POST', request_url, json.dumps(request_body), request_headers)
-    if response.status_code != 202:
-        print(text.Red + '\n- [Account Relay Service] Failure to create delivery window. Response Status: '
-                         '{response_status}. Response message: {response_message}'
-              .format(response_status=str(response.status_code), response_message=response.text))
+    if dates_list == 'false':
         return 'false'
+    else:
+        index = 0
+        request_body = list()
+        while index <= (len(dates_list) - 1):
+            # Force mixed values if it's is_alternative_delivery_date
+            if is_alternative_delivery_date == 'true':
+                if (index % 2) == 0:
+                    option_is_alternative_delivery_date = 'true'
+                else:
+                    option_is_alternative_delivery_date = 'false'
+            else:
+                option_is_alternative_delivery_date = is_alternative_delivery_date
 
-    return 'success'
+            # Get body request
+            temporary_body = get_microservice_payload_post_delivery_date(account_data,
+                                                                         option_is_alternative_delivery_date,
+                                                                         dates_list[index], index)
+            request_body.append(temporary_body)
+            index = index + 1
+
+        # Place request
+        response = place_request('POST', request_url, json.dumps(request_body), request_headers)
+        if response.status_code != 202:
+            print(
+                text.Red + '\n- [Account Relay Service] Failure to create delivery window. Response Status: {response_status}. Response message: {response_message}'.format(
+                    response_status=str(response.status_code), response_message=response.text))
+            return 'false'
+
+        return 'success'
+
+
 
 
 # Return payload next date for delivery date
@@ -140,23 +145,28 @@ def return_dates_payload(option):
         return list_delivery_dates
     else:
         date_list = delivery_window_selector()
-        datetime_object = datetime.strptime(date_list[0], "%B")
-        month_number = datetime_object.month
-        today = datetime.today()
-        date_datetime_object = datetime(int(today.year), month_number, int(date_list[1]))
-        initial_date = today
-        list_delivery_dates = list()
+        if date_list == "false":
+            print("\nNo delivery window end date was selected.")
+            return "false"
+        else:
+            datetime_object = datetime.strptime(date_list[0], "%B")
+            month_number = datetime_object.month
+            today = datetime.today()
+            date_datetime_object = datetime(int(today.year), month_number, int(date_list[1]))
+            initial_date = today
+            list_delivery_dates = list()
 
-        while initial_date < date_datetime_object:
-            clone_initial_date = initial_date
-            clone_initial_date = clone_initial_date + timedelta(days=1)
-            start_date = clone_initial_date.strftime('%Y-%m-%d')
-            end_date = start_date
-            expiration_date = initial_date.strftime('%Y-%m-%d') + 'T20:00:00Z'
+            while initial_date < date_datetime_object:
+                clone_initial_date = initial_date
+                clone_initial_date = clone_initial_date + timedelta(days=1)
+                start_date = clone_initial_date.strftime('%Y-%m-%d')
+                end_date = start_date
+                expiration_date = initial_date.strftime('%Y-%m-%d') + 'T20:00:00Z'
 
-            list_delivery_dates.append({'startDate': start_date, 'endDate': end_date, 'expirationDate': expiration_date})
-            initial_date = initial_date + timedelta(days=2)
-        return list_delivery_dates
+                list_delivery_dates.append(
+                    {'startDate': start_date, 'endDate': end_date, 'expirationDate': expiration_date})
+                initial_date = initial_date + timedelta(days=2)
+            return list_delivery_dates
 
 
 # Create delivery fee (interest) in microservice
@@ -191,5 +201,7 @@ def delivery_window_selector():
     app.exec()
     selected_dates = getattr(Window, 'dates')
     sys.is_finalizing()
-
-    return selected_dates
+    if selected_dates:
+        return selected_dates
+    else:
+        return 'false'
