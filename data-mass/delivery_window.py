@@ -137,7 +137,6 @@ def return_dates_payload(option):
 
             list_delivery_dates.append({'startDate': start_date, 'endDate': end_date, 'expirationDate': expiration_date})
             initial_date = initial_date + timedelta(days=2)
-        print(list_delivery_dates)
         return list_delivery_dates
     else:
         date_list = delivery_window_selector()
