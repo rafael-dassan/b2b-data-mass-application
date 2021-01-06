@@ -84,7 +84,7 @@ def validate_account(account_id, zone):
 
 # Validate account sub-menus for Data Searching
 def validate_accounts(option):
-    options = ['1', '2', '3']
+    options = ['1']
     if option in options:
         return True
     else:

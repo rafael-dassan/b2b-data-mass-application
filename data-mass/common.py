@@ -3,6 +3,7 @@ import json
 import os
 import sys
 from datetime import date
+import time as t
 from time import time
 from uuid import uuid1
 
@@ -11,12 +12,13 @@ from jsonpath_rw import Index, Fields
 from jsonpath_rw_ext import parse
 from requests import request
 from tabulate import tabulate
+import jwt
 
 # Local application imports
 from classes.text import text
 from logs.log import log_to_file
-from validations import validate_yes_no_option, is_number, validate_zone_for_ms, validate_environment, \
-    validate_structure, validate_rewards, validate_orders, validate_zone_for_interactive_combos_ms, \
+from validations import is_number, validate_zone_for_ms, validate_environment, \
+    validate_structure, validate_rewards, validate_zone_for_interactive_combos_ms, \
     validate_option_request_selection
 
 
@@ -116,7 +118,7 @@ def place_request(request_method, request_url, request_body, request_headers):
 
 # Return JWT header request
 def get_header_request(header_country, use_jwt_auth='false', use_root_auth='false', use_inclusion_auth='false',
-                       sku_product='false'):
+                       sku_product='false', account_id=None):
 
     switcher = {
         'ZA': 'UTC',
@@ -141,11 +143,7 @@ def get_header_request(header_country, use_jwt_auth='false', use_root_auth='fals
     }
 
     if use_jwt_auth == 'true':
-        header['Authorization'] = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYi1pbmJldiIsImF1ZCI6ImF' \
-                                  'iaS1taWNyb3NlcnZpY2VzIiwiZXhwIjoxNjE2MjM5MDIyLCJpYXQiOjE1MTYyMzkwMjIsInVwZGF0ZWR' \
-                                  'fYXQiOjExMTExMTEsIm5hbWUiOiJ1c2VyQGFiLWluYmV2LmNvbSIsImFjY291bnRJRCI6IjAwMTAwMD' \
-                                  'EwMDEiLCJ1c2VySUQiOiIyMTE4Iiwicm9sZXMiOlsiUk9MRV9DVVNUT01FUiJdfQ.09CPxmskqvERwhJ' \
-                                  'SvTXb8RJeiwGGM4aEpMTBiBd72_M'
+        header['Authorization'] = generate_hmac_jwt(account_id)
     elif use_root_auth == 'true':
         header['Authorization'] = 'Basic cm9vdDpyb290'
     elif use_inclusion_auth == 'true':
@@ -944,3 +942,28 @@ def remove_from_dictionary(dictionary, *keys):
 
 def is_string(item):
     return isinstance(item, str)
+
+
+def generate_hmac_jwt(account_id, expire_months=1):
+    now = int(t.time())
+    expire_in = now + (2592000 * expire_months)
+
+    # Create file path
+    abs_path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(abs_path, 'data/create_jwt_payload.json')
+
+    # Load JSON file
+    with open(file_path) as file:
+        json_data = json.load(file)
+
+    dict_values = {
+        'exp': expire_in,
+        'iat': now,
+        'accounts': [account_id]
+    }
+
+    for key in dict_values.keys():
+        json_object = update_value_to_json(json_data, key, dict_values[key])
+
+    encoded = jwt.encode(json_object, '20735d31-46b5-411d-af02-47897a01c0c9', algorithm='HS256')
+    return 'Bearer {0}'.format(encoded)

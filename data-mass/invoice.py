@@ -72,7 +72,7 @@ def create_invoice_request(zone, environment, order_id, status, order_details, o
         return 'false'
 
 
-def update_invoice_request(zone, environment, invoice_id, payment_method, status):
+def update_invoice_request(zone, environment, account_id, invoice_id, payment_method, status):
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
     file_path = os.path.join(path, 'data/update_invoice_status.json')
@@ -94,7 +94,7 @@ def update_invoice_request(zone, environment, invoice_id, payment_method, status
     request_url = get_microservice_base_url(environment) + '/invoices-service'
 
     # Get headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Create body
     request_body = convert_json_to_string(json_object)
@@ -113,7 +113,7 @@ def update_invoice_request(zone, environment, invoice_id, payment_method, status
 
 def check_if_invoice_exists(account_id, invoice_id, zone, environment):
     # Get header request
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Get base URL
     request_url = get_microservice_base_url(
@@ -135,10 +135,10 @@ def check_if_invoice_exists(account_id, invoice_id, zone, environment):
         return 'false'
 
 
-def get_invoices(zone, abi_id, environment):
-    header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
+def get_invoices(zone, account_id, environment):
+    header_request = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
     # Get url base
-    request_url = get_microservice_base_url(environment, 'false') + '/invoices-service/?accountId=' + abi_id
+    request_url = get_microservice_base_url(environment, 'false') + '/invoices-service/?accountId=' + account_id
 
     # Place request
     response = place_request('GET', request_url, '', header_request)

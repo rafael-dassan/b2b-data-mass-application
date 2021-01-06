@@ -1,0 +1,15 @@
+{
+  "sub": "ab-inbev",
+  "aud": "abi-microservices",
+  "exp": "string",
+  "iat": "string",
+  "iss": "https://b2biamgbussit1.b2clogin.com",
+  "name": "Data Mass Script",
+  "signInNames.emailAddress": "data-mass@mailinator.com",
+  "accountID": "000999999",
+  "userID": "999",
+  "roles": [
+    "ROLE_CUSTOMER"
+  ],
+  "accounts": "string"
+}

@@ -164,15 +164,15 @@ def validate_sku(sku_id, enabled_skus):
         aux_index = aux_index + 1
 
 
-def display_inventory_by_account(zone, environment, abi_id, delivery_center_id):
-    product_offers = request_get_account_product_assortment(abi_id, zone, environment, delivery_center_id)
+def display_inventory_by_account(zone, environment, account_id, delivery_center_id):
+    product_offers = request_get_account_product_assortment(account_id, zone, environment, delivery_center_id)
     if len(product_offers) != 0:
         dict_values = {
             'fulfillmentCenterId': delivery_center_id,
             'skus': product_offers
         }
         request_body = convert_json_to_string(dict_values)
-        response = get_delivery_center_inventory(environment, zone, request_body)
+        response = get_delivery_center_inventory(environment, zone, account_id, request_body)
 
         json_data = loads(response.text)
         inventory_info = list()
@@ -194,9 +194,9 @@ def display_inventory_by_account(zone, environment, abi_id, delivery_center_id):
             print(tabulate(inventory_info, headers='keys', tablefmt='grid'))
 
 
-def get_delivery_center_inventory(environment, zone, request_body):
+def get_delivery_center_inventory(environment, zone, account_id, request_body):
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Define url request
     request_url = get_microservice_base_url(environment) + '/inventory/'

@@ -15,7 +15,7 @@ from menus.account_menu import print_minimum_order_type_menu, print_minimum_orde
 
 def check_account_exists_microservice(account_id, zone, environment):
     # Get header request
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/accounts?accountId=' + account_id
@@ -216,43 +216,6 @@ def display_account_information(account):
 
     print(text.default_text_color + '\nAccount - Maximum Order Information')
     print(tabulate(maximum_order_information, headers='keys', tablefmt='grid'))
-
-
-def display_all_account_info(account):
-    """Display account information
-    Arguments:
-        - account: all account data
-    Print a table containing information about which accounts it's active on the zone (accountID, taxId and
-    LiquorLicense)
-    """
-    account_info = list()
-    size_account = len(account)
-
-    if len(account) == 0:
-        account_values = {
-            'Accounts': 'None'
-        }
-        account_info.append(account_values)
-    else:
-        for i in range(size_account):
-            if account[i]['status'] == 'ACTIVE':
-                account_values = {
-                    'Account ID': account[i]['accountId'],
-                    'Tax Id': account[i]['taxId'],
-                    'Status': account[i]['status']
-                }
-                liquor_license = account[i]['liquorLicense']
-                for y in range(len(liquor_license)):
-                    set_to_dictionary(account_values, 'Liquor License', liquor_license[y]['number'])
-                account_info.append(account_values)
-
-    print(text.default_text_color + '\nAccount - Account ID, Tax ID and Liquor License information ')
-    print(tabulate(account_info, headers='keys', tablefmt='grid'))
-
-
-def display_account_with_products(account_info_list):
-    print(text.default_text_color + '\nAccount - Account ID with products per zone')
-    print(tabulate(account_info_list, headers='keys', tablefmt='grid'))
 
 
 def get_minimum_order_info():

@@ -28,7 +28,7 @@ def create_file_api(zone, environment, account_id, purpose, data):
     title = '{file_id}-{purpose}-{account_id}'.format(file_id=file_id, purpose=purpose, account_id=account_id)
 
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
     set_to_dictionary(request_headers, 'linkExpirationTime', str(-1))
     set_to_dictionary(request_headers, 'metadata', metadata)
     set_to_dictionary(request_headers, 'purpose', purpose)
