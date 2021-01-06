@@ -471,6 +471,7 @@ def create_interactive_combos(account_id, sku, zone, environment, index_range, o
     else:
         return 'false'
 
+
 def request_create_free_good_cart_calculation(account_id, deal_id, zone, environment, sku_list, minimum_quantity,
                                               quantity, partial_free_good, need_buy_product):
     """
@@ -891,7 +892,8 @@ def request_create_stepped_discount_with_limit_cart_calculation(account_id, deal
               .format(response_status=response.status_code, response_message=response.text))
         return 'false'
 
-#Request Cart Interactive Combos
+
+# Request Cart Interactive Combos
 def request_create_interactive_combos_cart_calculation(account_id, deal_id, zone, environment, sku, index_range):
     """
     Input deal type stepped discount rules (API version 2) to the Pricing Engine Relay Service
@@ -962,6 +964,7 @@ def request_create_interactive_combos_cart_calculation(account_id, deal_id, zone
               .format(response_status=response.status_code, response_message=response.text))
         return 'false'
 
+
 def request_get_deals_promo_fusion_service(zone, environment, account_id=''):
     """
     Get deals data from the Promo Fusion Service
@@ -976,7 +979,7 @@ def request_get_deals_promo_fusion_service(zone, environment, account_id=''):
     request_url = get_microservice_base_url(environment) + '/promo-fusion-service/' + account_id
 
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Send request
     response = place_request('GET', request_url, '', request_headers)
@@ -1007,7 +1010,7 @@ def request_get_deals_promotion_service(account_id, zone, environment):
                   + '&includeDisabled=false'
 
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Send request
     response = place_request('GET', request_url, '', request_headers)
@@ -1163,7 +1166,7 @@ def request_get_deals_pricing_service(account_id, zone, environment):
     Returns: new json_object
     """
     # Get headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/cart-calculator/v2/accounts/' + account_id + '/deals?' \
@@ -1196,7 +1199,7 @@ def request_delete_deals_pricing_service(account_id, zone, environment, data):
         data: deals response payload
     """
     # Get headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     for i in range(len(data)):
         deal_id = data[i]['dealId']

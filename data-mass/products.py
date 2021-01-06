@@ -226,12 +226,12 @@ def get_body_price_inclusion_microservice_request(delivery_center_id):
     return body_price_inclusion
 
 
-def request_get_offers_microservice(abi_id, zone, environment):
+def request_get_offers_microservice(account_id, zone, environment):
     """
     Get available SKUs for a specific account via Catalog Service
     Projection: SMALL
     Args:
-        abi_id: POC unique identifier
+        account_id: POC unique identifier
         zone: e.g., AR, BR, CO, DO, MX, ZA
         environment: e.g., DEV, SIT, UAT
     Returns:
@@ -241,11 +241,11 @@ def request_get_offers_microservice(abi_id, zone, environment):
     """
 
     # Get headers
-    headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Get base URL
     request_url = get_microservice_base_url(
-        environment) + '/catalog-service/catalog?accountId=' + abi_id + '&projection=SMALL'
+        environment) + '/catalog-service/catalog?accountId=' + account_id + '&projection=SMALL'
 
     # Send request
     response = place_request('GET', request_url, '', headers)
@@ -297,12 +297,12 @@ def check_item_enabled(sku, zone, environment):
         return 'false'
 
 
-def request_get_products_by_account_microservice(abi_id, zone, environment):
+def request_get_products_by_account_microservice(account_id, zone, environment):
     """
     Get available SKUs for a specific account via Catalog Service
     Projection: LIST
     Args:
-        abi_id: POC unique identifier
+        account_id: POC unique identifier
         zone: e.g., AR, BR, CO, DO, MX, ZA
         environment: e.g., DEV, SIT, UAT
     Returns:
@@ -312,11 +312,11 @@ def request_get_products_by_account_microservice(abi_id, zone, environment):
     """
 
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Define base URL
     request_url = get_microservice_base_url(
-        environment) + '/catalog-service/catalog?accountId=' + abi_id + '&projection=LIST'
+        environment) + '/catalog-service/catalog?accountId=' + account_id + '&projection=LIST'
 
     # Send request
     response = place_request('GET', request_url, '', request_headers)
@@ -385,7 +385,7 @@ def request_get_account_product_assortment(account_id, zone, environment, delive
     """
 
     # Get headers
-    headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/product-assortment/?accountId=accountId' + account_id \
@@ -633,7 +633,7 @@ def get_sku_price(account_id, combo_item, zone, environment):
     request_url = get_microservice_base_url(environment) + '/cart-calculator/prices?accountID=' + account_id
 
     # Get header request
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Send request
     response = place_request('GET', request_url, '', request_headers)

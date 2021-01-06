@@ -207,7 +207,7 @@ def update_dt_combos_rewards(zone, environment, abi_id):
 def enroll_poc_to_program(account_id, zone, environment):
 
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Check if the zone already have a reward program created
     program_found = locate_program_for_zone(zone, environment, request_headers)
@@ -260,7 +260,7 @@ def enroll_poc_to_program(account_id, zone, environment):
 def delete_enroll_poc_to_program(account_id, zone, environment):
 
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Check if the zone already have a reward program created
     program_found = locate_program_for_zone(zone, environment, request_headers)
@@ -281,10 +281,10 @@ def delete_enroll_poc_to_program(account_id, zone, environment):
 
 
 # Add Redeem products to account
-def input_redeem_products(abi_id, zone, environment):
+def input_redeem_products(account_id, zone, environment):
 
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Check if the zone already have a reward program created
     program_found = locate_program_for_zone(zone, environment, request_headers)
@@ -345,12 +345,12 @@ def input_redeem_products(abi_id, zone, environment):
         len_combos_match = len(combos_match)
 
         # Get a SKU to be used on FreeGood's list below
-        product_offers = request_get_offers_microservice(abi_id, zone, environment)
+        product_offers = request_get_offers_microservice(account_id, zone, environment)
         
         if product_offers == 'false':
             return 'false'
         elif product_offers == 'not_found':
-            print(text.Red + '\n- [Catalog Service] There is no product associated with the account ' + abi_id)
+            print(text.Red + '\n- [Catalog Service] There is no product associated with the account ' + account_id)
             return 'false'
 
         index_offers = randint(0, (len(product_offers) - 1))
@@ -401,7 +401,7 @@ def input_redeem_products(abi_id, zone, environment):
 
         # Creates the main payload based on the lists created above
         dict_values_account = {
-            'accounts': create_list(abi_id),
+            'accounts': create_list(account_id),
             'combos': combos_list
         }
 

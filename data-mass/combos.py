@@ -261,12 +261,12 @@ def update_combo_consumption(abi_id, zone, environment, combo_id):
         return 'false'
 
 
-def check_combo_exists_microservice(abi_id, zone, environment, combo_id):
+def check_combo_exists_microservice(account_id, zone, environment, combo_id):
     # Get header request
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Get base URL
-    request_url = get_microservice_base_url(environment) + '/combos/?accountID=' + abi_id + '&comboIds=' + combo_id \
+    request_url = get_microservice_base_url(environment) + '/combos/?accountID=' + account_id + '&comboIds=' + combo_id \
                   + '&includeDeleted=false&includeDisabled=false'
 
     # Place request

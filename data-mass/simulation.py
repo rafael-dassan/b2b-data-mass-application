@@ -8,7 +8,7 @@ from tabulate import tabulate
 
 # Local application imports
 from common import get_header_request, update_value_to_json, convert_json_to_string, \
-    place_request, get_microservice_base_url, set_to_dictionary
+    place_request, get_microservice_base_url
 from classes.text import text
 
 
@@ -35,7 +35,7 @@ def request_order_simulation(zone, environment, account_id, delivery_center_id, 
         combos = []
 
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Define URL Microservice
     request_url = get_microservice_base_url(environment, 'false') + '/cart-service/v2'

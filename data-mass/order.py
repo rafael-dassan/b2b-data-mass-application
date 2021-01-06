@@ -13,12 +13,13 @@ from common import update_value_to_json, convert_json_to_string, get_header_requ
 from classes.text import text
 
 
-def configure_order_params(zone, environment, number_size, prefix):
+def configure_order_params(zone, environment, account_id, number_size, prefix):
     """
     Configure the fields prefix and order number size in the database sequence via Order Service
     Args:
         zone: e.g., AR, BR, CO, DO, MX, ZA
         environment: e.g., DEV, SIT, UAT
+        account_id: POC unique identifier
         number_size: order number size
         prefix: order prefix
     Returns: `success` or error message in case of failure
@@ -45,7 +46,7 @@ def configure_order_params(zone, environment, number_size, prefix):
     request_body = convert_json_to_string(json_object)
 
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Define url request 
     request_url = get_microservice_base_url(environment) + '/order-service/configure'
@@ -77,7 +78,7 @@ def request_order_creation(account_id, delivery_center_id, zone, environment, al
     Returns: new json_data if success or error message in case of failure
     """
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Define url request 
     request_url = get_microservice_base_url(environment) + '/order-service'
@@ -429,7 +430,7 @@ def check_if_order_exists(account_id, zone, environment, order_id):
         false: if an error comes from back-end
     """
     # Get header request
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/order-service/v1?orderIds=' + order_id + '&accountId=' \

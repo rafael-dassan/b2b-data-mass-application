@@ -9,7 +9,7 @@ from inventory import *
 from invoice import *
 from menus.account_menu import print_account_operations_menu, print_minimum_order_menu, print_account_status_menu, \
     print_account_name_menu, print_account_enable_empties_loan_menu, print_alternative_delivery_date_menu, \
-    print_include_delivery_cost_menu, print_payment_method_menu, print_account_id_menu, print_get_account_menu
+    print_include_delivery_cost_menu, print_payment_method_menu, print_account_id_menu, print_get_account_operations_menu
 from menus.algo_selling_menu import print_recommender_type_menu
 from menus.deals_menu import print_deals_operations_menu, print_discount_percentage_menu, print_minimum_quantity_menu, \
     print_max_quantity_menu, print_free_good_quantity_range_menu, print_option_sku_menu, print_partial_free_good_menu, \
@@ -160,52 +160,25 @@ def product_information_menu():
 
 
 def account_information_menu():
-    selection_structure = print_get_account_menu()
+    operation = print_get_account_operations_menu()
     zone = print_zone_menu_for_ms()
     environment = print_environment_menu()
 
-    switcher = {
-        '1': 'ONE_ACCOUNT',
-        '2': 'ALL_ACCOUNT',
-        '3': 'ACCOUNT_PRODUCT'
-    }
+    return {
+        '1': lambda: flow_get_account(zone, environment)
+    }.get(operation, lambda: None)()
 
-    account_type = switcher.get(selection_structure, 'false')
 
-    if account_type == 'ONE_ACCOUNT':
-        abi_id = print_account_id_menu(zone)
-        if abi_id == 'false':
-            print_finish_application_menu()
-        account = check_account_exists_microservice(abi_id, zone, environment)
+def flow_get_account(zone, environment):
+    account_id = print_account_id_menu(zone)
+    if account_id == 'false':
+        print_finish_application_menu()
 
-        if account == 'false':
-            print_finish_application_menu()
+    account = check_account_exists_microservice(account_id, zone, environment)
+    if account == 'false':
+        print_finish_application_menu()
 
-        display_account_information(account)
-    elif account_type == 'ALL_ACCOUNT':
-        account = check_account_exists_microservice('', zone, environment)
-        if account == 'false':
-            print_finish_application_menu()
-        display_all_account_info(account)
-    else:
-        print(text.default_text_color + '\nThis process can take some time... ')
-
-        account = check_account_exists_microservice('', zone, environment)
-        if account == 'false':
-            print_finish_application_menu()
-        account_info_list = list()
-        for i in range(len(account)):
-            account_id = account[i]['accountId']
-            product = request_get_offers_microservice(account_id, zone, environment)
-            if product != 'false' or product != 'not_found':
-                account_info = {
-                    'Account ID': account_id,
-                    'Tax ID': account[i]['taxId'],
-                    'Poc Name': account[i]['name']
-                }
-                account_info_list.append(account_info)
-
-        display_account_with_products(account_info_list)
+    display_account_information(account)
 
 
 # Input Rewards to account
@@ -407,7 +380,7 @@ def flow_create_order(zone, environment, account_id, delivery_center_id, order_s
         allow_order_cancel = 'N'
 
     # Call function to configure prefix and order number size in the database sequence
-    if 'false' == configure_order_params(zone, environment, 8, 'DM-{zone}-'.format(zone=zone)):
+    if 'false' == configure_order_params(zone, environment, account_id, 8, 'DM-{zone}-'.format(zone=zone)):
         print_finish_application_menu()
 
     order_items = request_order_simulation(zone, environment, account_id, delivery_center_id, item_list, None, None,
@@ -421,7 +394,7 @@ def flow_create_order(zone, environment, account_id, delivery_center_id, order_s
         print(text.Green + '\n- Order ' + response.get('orderNumber') + ' created successfully')
         # Call function to re-configure prefix and order number size according to the zone's format
         order_prefix_params = get_order_prefix_params(zone)
-        if 'false' == configure_order_params(zone, environment, order_prefix_params.get('order_number_size'),
+        if 'false' == configure_order_params(zone, environment, account_id, order_prefix_params.get('order_number_size'),
                                              order_prefix_params.get('prefix')):
             print_finish_application_menu()
 
@@ -557,7 +530,7 @@ def check_simulation_service_account_microservice_menu():
 def deals_menu():
     operation = print_deals_operations_menu()
 
-    #For Interactive Combos
+    # For Interactive Combos
     if operation == '6':
         zone = print_zone_for_interactive_combos_menu_for_ms()
     else:
@@ -587,7 +560,7 @@ def deals_menu():
 
     sku_list = list()
     flag = 0
-    #Interactive combos: Validation of SKU to be different.
+    # Interactive combos: Validation of SKU to be different.
     if operation == 4:
         while len(sku_list) <= 3 and flag == 1:
             index_offers = randint(0, (len(product_offers) - 1))
@@ -1417,8 +1390,8 @@ def flow_update_invoice_status(zone, environment, account_id):
         print_finish_application_menu()
     else:
         status = print_invoice_status_menu()
-        invoice_response = update_invoice_request(zone, environment, invoice_id, response['data'][0]['paymentType'],
-                                                  status)
+        invoice_response = update_invoice_request(zone, environment, account_id, invoice_id,
+                                                  response['data'][0]['paymentType'], status)
         if invoice_response == 'false':
             print_finish_application_menu()
         else:
@@ -1435,7 +1408,7 @@ def flow_update_invoice_payment_method(zone, environment, account_id):
     else:
         payment_method = print_invoice_payment_method_menu()
         invoice_response = update_invoice_request(zone, environment, invoice_id, payment_method,
-                                                  response['data'][0]['status'])
+                                                  response['data'][0]['status'], account_id)
         if invoice_response == 'false':
             print_finish_application_menu()
         else:

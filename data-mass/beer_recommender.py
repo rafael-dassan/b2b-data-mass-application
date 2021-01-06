@@ -308,11 +308,11 @@ def get_header_request_recommender(zone, environment):
     return request_headers
 
 
-def get_recommendation_by_account(abi_id, zone, environment, use_case):
-    headers = get_header_request(zone, 'true')
+def get_recommendation_by_account(account_id, zone, environment, use_case):
+    headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     request_url = get_microservice_base_url(environment, 'true') + '/global-recommendation/?useCase=' + use_case + \
-                  '&useCaseId=' + abi_id + '&useCaseType=ACCOUNT'
+                  '&useCaseId=' + account_id + '&useCaseType=ACCOUNT'
 
     response = place_request('GET', request_url, '', headers)
 
@@ -323,7 +323,7 @@ def get_recommendation_by_account(abi_id, zone, environment, use_case):
         if len(content) != 0:
             return recommendation_data
         elif len(content) == 0:
-            print(text.Yellow + '\n- [Global Recommendation Service] The account ' + abi_id
+            print(text.Yellow + '\n- [Global Recommendation Service] The account ' + account_id
                   + ' does not have recommendation type ' + use_case)
             return 'not_found'
     else:
@@ -424,18 +424,18 @@ def display_recommendations_by_account(zone, environment, abi_id):
         print(tabulate(combo_list, headers='keys', tablefmt='grid'))
 
 
-def input_combos_quickorder(zone, environment, abi_id):
+def input_combos_quickorder(zone, environment, account_id):
 
     # Retrieve quick order recommendation of the account
-    account_recommendation = get_recommendation_by_account(abi_id, zone, environment, 'QUICK_ORDER')
+    account_recommendation = get_recommendation_by_account(account_id, zone, environment, 'QUICK_ORDER')
     
     if account_recommendation == 'not_found' or account_recommendation == 'false':
         return 'false'
     else: 
         # Retrieve combos type Discount of the account
-        request_headers = get_header_request(zone, 'true')
+        request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
-        request_url = get_microservice_base_url(environment, 'true') + '/combos/?accountID=' + abi_id + '&types=D&includeDeleted=false&includeDisabled=false'
+        request_url = get_microservice_base_url(environment, 'true') + '/combos/?accountID=' + account_id + '&types=D&includeDeleted=false&includeDisabled=false'
 
         response = place_request('GET', request_url, '', request_headers)
 
@@ -479,4 +479,3 @@ def input_combos_quickorder(zone, environment, abi_id):
             print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: '
                 + str(response.status_code) + '. Response message ' + response.text)
             return 'false'
-
