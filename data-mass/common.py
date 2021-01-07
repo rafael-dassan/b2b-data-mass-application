@@ -315,7 +315,6 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(7), text.Yellow + 'Create rewards')
             print(text.default_text_color + str(8), text.Yellow + 'Create credit statement')
             selection = input(text.default_text_color + '\nPlease select: ')
-
     elif selection_structure == '2':
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
         print(text.default_text_color + str(1), text.Yellow + 'Order simulation via Microservice')
@@ -339,42 +338,30 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(7), text.Yellow + 'Retrieve available invoices')
             print(text.default_text_color + str(8), text.Yellow + 'SKUs for Reward Shopping')
             selection = input(text.default_text_color + '\nPlease select: ')
-
     elif selection_structure == '3':
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
-        print(text.default_text_color + str(1), text.Yellow + 'Create User')
-        print(text.default_text_color + str(2), text.Yellow + 'Associate Account to user')
-        print(text.default_text_color + str(3), text.Yellow + 'List Categories')
-        print(text.default_text_color + str(4), text.Yellow + 'Associate Product to category')
-        print(text.default_text_color + str(5), text.Yellow + 'Create Category')
-
+        print(text.default_text_color + str(1), text.Yellow + 'List categories')
+        print(text.default_text_color + str(2), text.Yellow + 'Associate product to category')
+        print(text.default_text_color + str(3), text.Yellow + 'Create category')
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_option_request_selection(selection) == 'false':
             print(text.Red + '\n- Invalid option\n')
             print(text.default_text_color + str(0), text.Yellow + 'Close application')
-            print(text.default_text_color + str(1), text.Yellow + 'Create User')
-            print(text.default_text_color + str(2), text.Yellow + 'Create User IAM')
-            print(text.default_text_color + str(3), text.Yellow + 'Associate Account to user')
-            print(text.default_text_color + str(4), text.Yellow + 'List Categories')
-            print(text.default_text_color + str(5), text.Yellow + 'Associate Product to category')
-            print(text.default_text_color + str(6), text.Yellow + 'Create Category')
-
+            print(text.default_text_color + str(1), text.Yellow + 'List categories')
+            print(text.default_text_color + str(2), text.Yellow + 'Associate product to category')
+            print(text.default_text_color + str(3), text.Yellow + 'Create category')
             selection = input(text.default_text_color + '\nPlease select: ')
-
     elif selection_structure == '4':
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
         print(text.default_text_color + str(1), text.Yellow + 'Create User')
         print(text.default_text_color + str(2), text.Yellow + 'Delete User')
-
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_option_request_selection_for_structure_2(selection) == 'false':
             print(text.Red + '\n- Invalid option\n')
             print(text.default_text_color + str(0), text.Yellow + 'Close application')
             print(text.default_text_color + str(1), text.Yellow + 'Create User')
             print(text.default_text_color + str(2), text.Yellow + 'Delete User')
-
             selection = input(text.default_text_color + '\nPlease select: ')
-
     else:
         finish_application()
 

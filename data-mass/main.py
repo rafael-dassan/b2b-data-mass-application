@@ -26,7 +26,6 @@ from products import *
 from rewards import *
 from category_magento import *
 from products_magento import *
-import user_creation_magento as user_magento
 import user_creation_v3 as user_v3
 import user_delete_v3 as user_delete_v3
 from simulation import process_simulation_microservice, request_order_simulation
@@ -65,11 +64,9 @@ def show_menu():
     elif selection_structure == '3':
         switcher = {
             '0': finish_application,
-            '1': create_user_magento_menu,
-            '2': associateUserToAccount,
-            '3': get_categories_menu,
-            '4': associate_product_to_category_menu,
-            '5': create_categories_menu
+            '1': get_categories_menu,
+            '2': associate_product_to_category_menu,
+            '3': create_categories_menu
         }
     elif selection_structure == '4':
         switcher = {
@@ -1161,83 +1158,6 @@ def flow_update_account_payment_method(zone, environment, account_id):
               .format(account_id=account_id))
     else:
         print_finish_application_menu()
-
-
-# Create User for zones in Microservice
-def create_user_magento_menu():
-    country = printCountryMenuInUserCreation()
-    env = printEnvironmentMenuInUserCreation()
-    account_id = print_account_id_menu(country)
-    email = print_input_email()
-    password = print_input_password()
-    phone = print_input_phone()
-
-    account_id_list = user_magento.get_user_accounts(env, country, email, password)
-    if len(account_id_list) > 0:
-        if account_id in account_id_list:
-            print(text.Green + "\n- The user already exists with the same accountId: " + account_id)
-        else:
-            print(text.Red +
-                  "\n- The user already exists but without the accountId informed: " + account_id)
-        print_finish_application_menu()
-
-    account_result = check_account_exists_microservice(account_id, country, env)
-    if account_result == "false":
-        print_finish_application_menu()
-    else:
-        if account_result[0].get("status") != "ACTIVE":
-            print(text.Red + "\n- The account isn't ACTIVE.")
-            print_finish_application_menu()
-
-    status_response = user_magento.create_user(env, country, email, password, account_result[0], phone)
-    if status_response == "success":
-        print(text.Green + "\n- User created successfully")
-    else:
-        print(text.Red + "\n- [User] Something went wrong, please try again")
-        print_finish_application_menu()
-
-    print_finish_application_menu()
-
-
-def associateUserToAccount():
-    """ Associate user to account
-    Input Arguments:
-        - Country
-        - Environment
-        - Account ID
-        - Email
-        - Password
-    """
-    country = printCountryMenuInUserCreation()
-    env = printEnvironmentMenuInUserCreation()
-    accountId = print_account_id_menu(country)
-    email = print_input_email()
-    password = print_input_password()
-
-    # Check if user has already associated to account
-    account_id_list = user_magento.get_user_accounts(env, country, email, password)
-    if len(account_id_list) > 0:
-        if accountId in account_id_list:
-            print(text.Green + "\n- The user already exists with the same accountId: " + accountId)
-            print_finish_application_menu()
-
-    # Check if account exists and is active
-    account_result = check_account_exists_microservice(accountId, country, env)
-    if account_result == "false":
-        print_finish_application_menu()
-    else:
-        if account_result[0].get("status") != "ACTIVE":
-            print(text.Red + "\n- The account isn't ACTIVE.")
-            print_finish_application_menu()
-    account = account_result[0]
-
-    # Check if user exists
-    user = user_magento.authenticate_user(env, country, email, password)
-    if user == "fail":
-        print(text.Red + "\n- Fail to authenticate user.")
-        print_finish_application_menu()
-
-    print(user_magento.associate_user_to_account(env, country, user, account))
 
 
 # Print Finish Menu application

@@ -8,7 +8,8 @@ from tabulate import tabulate
 
 # Local application imports
 from common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request
-from products import request_get_account_product_assortment, check_item_enabled, get_sku_name, request_get_products_microservice
+from products import request_get_account_product_assortment, check_item_enabled, get_sku_name, \
+    request_get_products_microservice
 from classes.text import text
 
 
