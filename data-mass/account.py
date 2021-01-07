@@ -8,7 +8,7 @@ from tabulate import tabulate
 
 # Local application imports
 from common import get_header_request, get_microservice_base_url, place_request, update_value_to_json, create_list, \
-    convert_json_to_string, set_to_dictionary
+    convert_json_to_string
 from classes.text import text
 from menus.account_menu import print_minimum_order_type_menu, print_minimum_order_value_menu
 

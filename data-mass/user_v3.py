@@ -1,8 +1,3 @@
-# Standard library imports
-import re
-import logging
-
-
 def get_iam_b2c_environment_uat(environment):
     return environment == "UAT"
 
