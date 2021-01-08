@@ -30,16 +30,16 @@ def apply_populate_poc(row, country, environment):
         row['balance'],
         row['amount_of_products'],
         row['has_delivery_window'],
-        row['products'])
+        row['products'],)
 
 
 # Populate the POC
 def populate_poc(country, environment, account_id, account_name, payment_method, credit, balance, amount_of_products,
-                 has_delivery_window, products=None):
+                 has_delivery_window, products=None, option='1'):
     
-    populate_account(country, environment, account_id,account_name, payment_method)
+    populate_account(country, environment, account_id, account_name, payment_method)
     if has_delivery_window:
-        populate_delivery_window(country, environment, account_id)
+        populate_delivery_window(country, environment, account_id, option)
     populate_credit(country, environment, account_id, credit, balance)
     populate_product(account_id, country, environment, amount_of_products)
     if products:
@@ -56,12 +56,12 @@ def populate_account(country, environment, account_id, account_name, payment_met
 
 
 # Populate the delivery window for an account
-def populate_delivery_window(country, environment, account_id):
+def populate_delivery_window(country, environment, account_id, option):
     account_data = {
         "deliveryScheduleId": account_id,
         "accountId": account_id
     }
-    if "success" != create_delivery_window_microservice(country, environment, account_data, "false"):
+    if "success" != create_delivery_window_microservice(country, environment, account_data, "false", option):
         logger.error(log(Message.DELIVERY_WINDOW_ERROR,
                          {"account_id": account_id}))
 
