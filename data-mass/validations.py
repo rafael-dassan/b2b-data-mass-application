@@ -249,3 +249,11 @@ def validate_option_request_selection(selection):
 
     value = switcher.get(selection, 'false')
     return value
+
+
+def validate_delivery_window_structure(option):
+    valid_options = ['1', '2']
+    if option in valid_options:
+        return True
+    else:
+        return False

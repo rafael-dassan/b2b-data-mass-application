@@ -1,7 +1,7 @@
 # Local application imports
 from classes.text import text
 from validations import validate_yes_no_option, validate_account_name, validate_payments_method, validate_account, \
-    validate_accounts, validate_account_operations_structure
+    validate_accounts, validate_account_operations_structure, validate_delivery_window_structure
 
 
 def print_account_operations_menu():
@@ -42,22 +42,6 @@ def delivery_window_menu():
         option = input(text.default_text_color + '\nPlease select: ')
 
     return option
-
-
-def validate_delivery_window_structure(option):
-    valid_options = ['1', '2']
-    if option in valid_options:
-        return True
-    else:
-        return False
-
-
-def validate_account_operations_structure(option):
-    valid_options = ['1', '2', '3', '4', '5', '6', '7']
-    if option in valid_options:
-        return True
-    else:
-        return False
 
 
 def print_minimum_order_menu():
