@@ -1,6 +1,7 @@
 from common import block_print
-from mass_populator.country.populate_deals import populate_deal_with_limit
-from mass_populator.csv_helper import search_data_by
+from mass_populator.country.populate_deal import populate_deal_with_limit
+from mass_populator.country.populate_order import populate_orders_base
+from mass_populator.helpers.csv_helper import search_data_by
 from mass_populator.log import *
 from mass_populator.country.populate_account import populate_pocs
 from mass_populator.country.populate_recomendation import populate_recommendations as populate_recommendations_base
@@ -16,9 +17,10 @@ def execute_common(country, environment):
     block_print()
     run_preconditions(search_data_by(country, 'account'), country, environment)
     populate_accounts(country, environment)
-    populate_users_magento(country, environment)
     populate_recommendations(country, environment)
     populate_deals(country, environment)
+    populate_orders(country, environment)
+    populate_users_magento(country, environment)
     categorize_and_enable_products_magento(country, environment)
     return True
 
@@ -40,7 +42,12 @@ def populate_recommendations(country, environment):
 
 def populate_deals(country, environment):
     logger.info("populate_deals for %s/%s", country, environment)
-    populate_deal_with_limit(country, environment, search_data_by(country, 'deals'))
+    populate_deal_with_limit(country, environment, search_data_by(country, 'deal'))
+
+
+def populate_orders(country, environment):
+    logger.info("populate_orders for %s/%s", country, environment)
+    populate_orders_base(country, environment, search_data_by(country, 'order'))
 
 
 def categorize_and_enable_products_magento(country, environment):

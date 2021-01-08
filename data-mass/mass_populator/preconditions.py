@@ -1,6 +1,7 @@
 from beer_recommender import get_recommendation_by_account, delete_recommendation_by_id
 from deals import request_get_deals_promotion_service, request_delete_deal_by_id, request_get_deals_pricing_service, \
     request_delete_deals_pricing_service
+from mass_populator.helpers.database_helper import delete_from_database, get_database_params
 from mass_populator.log import *
 
 logger = logging.getLogger(__name__)
@@ -8,6 +9,12 @@ logger = logging.getLogger(__name__)
 
 def run_preconditions(dataframe_account, country, environment):
     logger.info("Running pre-conditions for %s/%s", country, environment)
+
+    logger.info("delete_orders for %s/%s", country, environment)
+    order_database_params = get_database_params(country, environment, 'order-service-ms')
+    delete_from_database(order_database_params.get('client'), order_database_params.get('db_name'),
+                         order_database_params.get('collection_name'), order_database_params.get('prefix'))
+
     if dataframe_account is not None:
         dataframe_account.apply(apply_run_preconditions, args=(country, environment), axis=1)
 
@@ -18,11 +25,11 @@ def apply_run_preconditions(row, country, environment):
     logger.info("delete_recommendations for account %s", account_id)
     delete_recommendation(account_id, country, environment, 'CROSS_SELL_UP_SELL')
 
-    logger.info("delete_available_deals for account %s", account_id)
-    delete_available_deals(account_id, country, environment)
+    logger.info("delete_deals for account %s", account_id)
+    delete_deals(account_id, country, environment)
 
 
-def delete_available_deals(account_id, country, environment):
+def delete_deals(account_id, country, environment):
     """
     Delete available deals from Cart-Calculation MS and Promotion MS databases
     Args:

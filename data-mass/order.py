@@ -311,10 +311,12 @@ def display_specific_order_information(orders):
                 'Price': items[i]['price'],
                 'Quantity': items[i]['quantity'],
                 'Subtotal': items[i]['subtotal'],
-                'Tax': items[i]['tax'],
                 'Total': items[i]['total'],
                 'Free Good': items[i]['freeGood']
             }
+            if 'tax' in items:
+                tax = items[i]['tax']
+                set_to_dictionary(item_values, 'tax', tax)
             item_information.append(item_values)
 
     combos = orders[0]['combos']

@@ -20,7 +20,7 @@ def populate_user_iam_b2c(country, environment, email, password, account_id):
     if authenticate_response == 'wrong_password':
         logger.info('The user {email} already exists, but the password is wrong'. format(email=email))
     elif authenticate_response != 'fail':
-        logger.info('The user {email} already exists. Skipping...'.format(email=email))
+        logger.debug('The user {email} already exists. Skipping...'.format(email=email))
     else:
         if len(account_id) > 0:
             for x in range(len(account_id)):

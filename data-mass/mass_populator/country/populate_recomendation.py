@@ -7,8 +7,7 @@ logger = logging.getLogger(__name__)
 
 def populate_recommendations(country, environment, dataframe_recommendations):
     if dataframe_recommendations is not None:
-        dataframe_recommendations.apply(apply_populate_recommendation,
-            args=(country, environment), axis=1)
+        dataframe_recommendations.apply(apply_populate_recommendation, args=(country, environment), axis=1)
 
 
 def apply_populate_recommendation(row, country, environment):

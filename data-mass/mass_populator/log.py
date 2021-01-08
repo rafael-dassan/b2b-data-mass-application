@@ -37,3 +37,6 @@ class Message(Enum):
     DELETE_PROMOTION_ERROR = "Fail on delete deals for account {account_id}."
     RETRIEVE_PRODUCT_ERROR = "Failure to retrieve products for account {account_id}."
     CREATE_DEALS_ERROR = "Fail on populate deal {deal_id} with account {account_id}."
+    CONFIGURE_ORDER_PREFIX_ERROR = "Fail on configure order prefix and number size for account {account_id}."
+    CREATE_ORDER_ERROR = "Fail on create an order for account {account_id}."
+    ORDER_SIMULATION_ERROR = "Fail on simulate the order for account {account_id}."
