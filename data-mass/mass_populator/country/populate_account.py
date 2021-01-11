@@ -30,7 +30,7 @@ def apply_populate_poc(row, country, environment):
         row['balance'],
         row['amount_of_products'],
         row['has_delivery_window'],
-        row['products'],)
+        row['products'])
 
 
 # Populate the POC
