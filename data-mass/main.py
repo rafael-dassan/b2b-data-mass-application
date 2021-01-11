@@ -9,7 +9,8 @@ from inventory import *
 from invoice import *
 from menus.account_menu import print_account_operations_menu, print_minimum_order_menu, print_account_status_menu, \
     print_account_name_menu, print_account_enable_empties_loan_menu, print_alternative_delivery_date_menu, \
-    print_include_delivery_cost_menu, print_payment_method_menu, print_account_id_menu, print_get_account_operations_menu
+    print_include_delivery_cost_menu, print_payment_method_menu, print_account_id_menu, \
+    print_get_account_operations_menu, delivery_window_menu
 from menus.algo_selling_menu import print_recommender_type_menu
 from menus.deals_menu import print_deals_operations_menu, print_discount_percentage_menu, print_minimum_quantity_menu, \
     print_max_quantity_menu, print_free_good_quantity_range_menu, print_option_sku_menu, print_partial_free_good_menu, \
@@ -956,6 +957,8 @@ def flow_input_empties_discounts(zone, environment):
 
 def account_menu():
     operation = print_account_operations_menu()
+    if operation == '2':
+        option = delivery_window_menu()
     zone = print_zone_menu_for_ms()
     environment = print_environment_menu()
     account_id = print_account_id_menu(zone)
@@ -965,7 +968,7 @@ def account_menu():
 
     return {
         '1': lambda: flow_create_account(zone, environment, account_id),
-        '2': lambda: flow_create_delivery_window(zone, environment, account_id),
+        '2': lambda: flow_create_delivery_window(zone, environment, account_id, option),
         '3': lambda: flow_create_credit_information(zone, environment, account_id),
         '4': lambda: flow_update_account_name(zone, environment, account_id),
         '5': lambda: flow_update_account_status(zone, environment, account_id),
@@ -1005,46 +1008,49 @@ def flow_create_account(zone, environment, account_id):
         print_finish_application_menu()
 
 
-def flow_create_delivery_window(zone, environment, account_id):
-    allow_flexible_delivery_dates = ['BR', 'ZA', 'MX']
-    allow_delivery_cost = ['BR', 'MX']
+def flow_create_delivery_window(zone, environment, account_id, option):
+        allow_flexible_delivery_dates = ['BR', 'ZA', 'MX']
+        allow_delivery_cost = ['BR', 'MX']
 
-    # Call check account exists function
-    account = check_account_exists_microservice(account_id, zone, environment)
-    if account == 'false':
-        print_finish_application_menu()
-    account_data = account[0]
+        # Call check account exists function
+        account = check_account_exists_microservice(account_id, zone, environment)
+        if account == 'false':
+            print_finish_application_menu()
+        account_data = account[0]
 
-    is_alternative_delivery_date = 'false'
-    if zone in allow_flexible_delivery_dates:
-        # Validate if is alternative delivery window
-        is_alternative_delivery_date = print_alternative_delivery_date_menu()
+        is_alternative_delivery_date = 'false'
+        if zone in allow_flexible_delivery_dates:
+            # Validate if is alternative delivery window
+            is_alternative_delivery_date = print_alternative_delivery_date_menu()
 
-        if is_alternative_delivery_date.upper() == 'Y':
-            is_alternative_delivery_date = 'true'
-        else:
-            is_alternative_delivery_date = 'false'
-
-    # Call add delivery window to account function
-    delivery_window = create_delivery_window_microservice(zone, environment, account_data, is_alternative_delivery_date)
-
-    if delivery_window == 'success':
-        print(text.Green + '\n- Delivery window created successfully for the account {account_id}'
-              .format(account_id=account_id))
-
-        # Check if delivery cost (interest) should be included
-        if is_alternative_delivery_date == 'true' and zone in allow_delivery_cost:
-            option_include_delivery_cost = print_include_delivery_cost_menu()
-            if option_include_delivery_cost.upper() == 'Y':
-                delivery_cost_values = get_delivery_cost_values(option_include_delivery_cost)
-                delivery_cost = create_delivery_fee_microservice(zone, environment, account_data, delivery_cost_values)
-                if delivery_cost == 'success':
-                    print(text.Green + '\n- Delivery cost (interest) added successfully for the account {account_id}'
-                          .format(account_id=account_id))
+            if is_alternative_delivery_date.upper() == 'Y':
+                is_alternative_delivery_date = 'true'
             else:
-                print_finish_application_menu()
-    else:
-        print_finish_application_menu()
+                is_alternative_delivery_date = 'false'
+
+        # Call add delivery window to account function
+        delivery_window = create_delivery_window_microservice(zone, environment, account_data,
+                                                              is_alternative_delivery_date, option)
+
+        if delivery_window == 'success':
+            print(text.Green + '\n- Delivery window created successfully for the account {account_id}'
+                  .format(account_id=account_id))
+
+            # Check if delivery cost (interest) should be included
+            if is_alternative_delivery_date == 'true' and zone in allow_delivery_cost:
+                option_include_delivery_cost = print_include_delivery_cost_menu()
+                if option_include_delivery_cost.upper() == 'Y':
+                    delivery_cost_values = get_delivery_cost_values(option_include_delivery_cost)
+                    delivery_cost = create_delivery_fee_microservice(zone, environment, account_data,
+                                                                     delivery_cost_values)
+                    if delivery_cost == 'success':
+                        print(
+                            text.Green + '\n- Delivery cost (interest) added successfully for the account {account_id}'
+                            .format(account_id=account_id))
+                else:
+                    print_finish_application_menu()
+        else:
+            print_finish_application_menu()
 
 
 def flow_create_credit_information(zone, environment, account_id):
@@ -1283,7 +1289,7 @@ def flow_create_invoice(zone, environment, account_id):
 
     order_data = response[0]
     order_details = get_order_details(order_data)
-    order_items = get_order_items(order_data)
+    order_items = get_order_items(order_data, zone)
     invoice_status = print_invoice_status_menu()
 
     invoice_response = create_invoice_request(zone, environment, order_id, invoice_status, order_details, order_items)

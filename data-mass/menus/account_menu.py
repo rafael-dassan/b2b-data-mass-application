@@ -1,7 +1,7 @@
 # Local application imports
 from classes.text import text
 from validations import validate_yes_no_option, validate_account_name, validate_payments_method, validate_account, \
-    validate_accounts, validate_account_operations_structure
+    validate_accounts, validate_account_operations_structure, validate_delivery_window_structure
 
 
 def print_account_operations_menu():
@@ -24,6 +24,21 @@ def print_account_operations_menu():
         print(text.default_text_color + str(5), text.Yellow + 'Update account status')
         print(text.default_text_color + str(6), text.Yellow + 'Update minimum order type/value')
         print(text.default_text_color + str(7), text.Yellow + 'Update payment method')
+        option = input(text.default_text_color + '\nPlease select: ')
+
+    return option
+
+
+def delivery_window_menu():
+    print(text.default_text_color + '\nDelivery window options')
+    print(text.default_text_color + str(1), text.Yellow + 'Create default delivery window')
+    print(text.default_text_color + str(2), text.Yellow + 'Create delivery window with specific date')
+    option = input(text.default_text_color + '\nPlease select: ')
+    while validate_delivery_window_structure(option) is False:
+        print(text.Red + '\n- Invalid option')
+        print(text.default_text_color + '\nAccount operations')
+        print(text.default_text_color + str(1), text.Yellow + 'Create/update account')
+        print(text.default_text_color + str(2), text.Yellow + 'Create/update delivery window')
         option = input(text.default_text_color + '\nPlease select: ')
 
     return option

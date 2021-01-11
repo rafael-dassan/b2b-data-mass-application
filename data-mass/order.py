@@ -480,7 +480,7 @@ def get_order_details(order_data):
     return order_details
 
 
-def get_order_items(order_data):
+def get_order_items(order_data, zone):
     items = order_data['items']
     item_list = list()
 
@@ -499,16 +499,29 @@ def get_order_items(order_data):
         else:
             tax = 0
 
-        items_details = {
-            'sku': items[i]['sku'],
-            'price': items[i]['price'],
-            'quantity': items[i]['quantity'],
-            'subtotal': items[i]['subtotal'],
-            'total': items[i]['total'],
-            'freeGood': items[i]['freeGood'],
-            'tax': tax,
-            'discount': discount
-        }
-        item_list.append(items_details)
+        if zone == "ZA":
+            items_details = {
+                'sku': items[i]['sku'],
+                'price': items[i]['price'],
+                'quantity': items[i]['quantity'],
+                'subtotal': items[i]['subtotal'],
+                'total': items[i]['total'],
+                'freeGood': 0,
+                'tax': tax,
+                'discount': discount
+            }
+            item_list.append(items_details)
+        else:
+            items_details = {
+                'sku': items[i]['sku'],
+                'price': items[i]['price'],
+                'quantity': items[i]['quantity'],
+                'subtotal': items[i]['subtotal'],
+                'total': items[i]['total'],
+                'freeGood': items[i]['freeGood'],
+                'tax': tax,
+                'discount': discount
+            }
+            item_list.append(items_details)
 
     return item_list
