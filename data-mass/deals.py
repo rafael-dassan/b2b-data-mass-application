@@ -30,7 +30,7 @@ def request_create_deal(account_id, sku, deal_type, zone, environment, operation
         # Deal unique identifier
         deal_id = 'DM-' + str(randint(1, 100000))
 
-    if operation != '6':
+    if operation != '6' and operation != '7':
         # Assign an account group unique identifier
         account_group_id = create_account_group(account_id, zone, environment)
         # Assign a SKU group unique identifier
@@ -446,14 +446,14 @@ def create_stepped_free_good(account_id, sku, zone, environment, index_range, qu
         return 'false'
 
 
-# Create Interactive Combos List
+# Create Interactive Combos v1 List
 def create_interactive_combos(account_id, sku, zone, environment, index_range, operation, deal_type='FLEXIBLE_DISCOUNT'):
     """
     Input a deal type interactive combos to a specific POC by calling the Promotion Relay Service and Pricing Engine Relay Service
     Args:
         account_id: POC unique identifier
         sku: product unique identifier
-        zone: e.g., BR, CO
+        zone: e.g., BR, CO, AR
         environment: e.g, DEV, SIT, UAT
         min_quantity: minimum quantity for the for each sku to be applied
         max_quantity: maximum quantity for the for each sku to be applied
@@ -471,6 +471,30 @@ def create_interactive_combos(account_id, sku, zone, environment, index_range, o
     else:
         return 'false'
 
+# Create Interactive Combos v2 List
+def create_interactive_combos_v2(account_id, sku, zone, environment, index_range, operation, deal_type='FLEXIBLE_DISCOUNT'):
+    """
+    Input a deal type interactive combos to a specific POC by calling the Promotion Relay Service and Pricing Engine Relay Service
+    Args:
+        account_id: POC unique identifier
+        sku: product unique identifier
+        zone: e.g., BR, CO, AR
+        environment: e.g, DEV, SIT, UAT
+        min_quantity: minimum quantity for the for each sku to be applied
+        max_quantity: maximum quantity for the for each sku to be applied
+        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD, FLEXIBLE_DISCOUNT
+    Returns: `promotion_response` if success
+    """
+
+    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, operation)
+
+    cart_response = request_create_interactive_combos_cart_calculation_v2(account_id, promotion_response, zone,
+                                                                       environment, sku, index_range)
+
+    if promotion_response != 'false' and cart_response == 'success':
+        return promotion_response
+    else:
+        return 'false'
 
 def request_create_free_good_cart_calculation(account_id, deal_id, zone, environment, sku_list, minimum_quantity,
                                               quantity, partial_free_good, need_buy_product):
@@ -820,7 +844,7 @@ def request_create_stepped_discount_with_limit_cart_calculation(account_id, deal
     Args:
         deal_id: deal unique identifier
         account_id: POC unique identifier
-        zone: e.g., BR, DO, CO
+        zone: e.g., BR, AR, CO
         environment: e.g., DEV, SIT, UAT
         sku: product unique identifier
         quantity: quantity limit for the deal to be applied
@@ -893,7 +917,7 @@ def request_create_stepped_discount_with_limit_cart_calculation(account_id, deal
         return 'false'
 
 
-# Request Cart Interactive Combos
+# Request Cart Interactive Combos v1
 def request_create_interactive_combos_cart_calculation(account_id, deal_id, zone, environment, sku, index_range):
     """
     Input deal type stepped discount rules (API version 2) to the Pricing Engine Relay Service
@@ -924,6 +948,75 @@ def request_create_interactive_combos_cart_calculation(account_id, deal_id, zone
         'deals[0].conditions.multipleLineItem.items[0].minimumQuantity': int(index_range['minimum'][0]),
         'deals[0].conditions.multipleLineItem.items[1].minimumQuantity': int(index_range['minimum'][1]),
         'deals[0].conditions.multipleLineItem.items[2].minimumQuantity': int(index_range['minimum'][2]),
+        'deals[0].output.multipleLineItemDiscount.items[0].sku': sku[0]['sku'],
+        'deals[0].output.multipleLineItemDiscount.items[1].sku': sku[1]['sku'],
+        'deals[0].output.multipleLineItemDiscount.items[2].sku': sku[2]['sku'],
+        'deals[0].output.multipleLineItemDiscount.items[0].value': sku[0]['price'],
+        'deals[0].output.multipleLineItemDiscount.items[1].value': sku[1]['price'],
+        'deals[0].output.multipleLineItemDiscount.items[2].value': sku[2]['price'],
+        'deals[0].output.multipleLineItemDiscount.items[0].maxQuantity': int(index_range['maximum'][0]),
+        'deals[0].output.multipleLineItemDiscount.items[1].maxQuantity': int(index_range['maximum'][1]),
+        'deals[0].output.multipleLineItemDiscount.items[2].maxQuantity': int(index_range['maximum'][2])
+    }
+
+    # Create file path
+    path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(path, 'data/create_interactive_combos_payload_v1.json')
+
+    # Load JSON file
+    with open(file_path) as file:
+        json_data = json.load(file)
+
+    # Update the deal's values in runtime
+    for key in dict_values.keys():
+        json_object = update_value_to_json(json_data, key, dict_values[key])
+
+    # Create body
+    request_body = convert_json_to_string(json_object)
+
+    # Get headers
+    request_headers = get_header_request(zone, 'false', 'false', 'false', 'false')
+
+    # Send request
+    response = place_request('PUT', request_url, request_body, request_headers)
+
+    if response.status_code == 202:
+        return 'success'
+    else:
+        print(text.Red + '\n- [Pricing Engine Relay Service] Failure to associate a deal. Response Status: '
+                         '{response_status}. Response message: {response_message}'
+              .format(response_status=response.status_code, response_message=response.text))
+        return 'false'
+
+# Request Cart Interactive Combos v2
+def request_create_interactive_combos_cart_calculation_v2(account_id, deal_id, zone, environment, sku, index_range):
+    """
+    Input deal type stepped discount rules (API version 2) to the Pricing Engine Relay Service
+    Args:
+        deal_id: deal unique identifier
+        account_id: POC unique identifier
+        zone: e.g., BR, AR, CO
+        environment: e.g., DEV, SIT, UAT
+        sku: product unique identifier
+        maxquantity: maximum quantity for each SKU to be applied
+        minquantity: minimum quantity for each SKU to be applied
+
+    Returns: Success if the request went ok and the status code if there's a problem
+    """
+
+    # Get base URL
+    request_url = get_microservice_base_url(environment, 'false') + '/cart-calculation-relay/v2/deals'    
+
+    # Create dictionary with deal's values
+    dict_values = {
+
+        'accounts': [account_id],
+        'deals[0].dealId': deal_id,
+        'deals[0].externalId': deal_id,
+        'deals[0].conditions.multipleLineItem.items[0].skus': [sku[0]['sku'], sku[1]['sku']],
+        'deals[0].conditions.multipleLineItem.items[1].skus': [sku[2]['sku']],
+        'deals[0].conditions.multipleLineItem.items[0].minimumQuantity': int(index_range['minimum'][0]),
+        'deals[0].conditions.multipleLineItem.items[1].minimumQuantity': int(index_range['minimum'][1]),
         'deals[0].output.multipleLineItemDiscount.items[0].sku': sku[0]['sku'],
         'deals[0].output.multipleLineItemDiscount.items[1].sku': sku[1]['sku'],
         'deals[0].output.multipleLineItemDiscount.items[2].sku': sku[2]['sku'],
