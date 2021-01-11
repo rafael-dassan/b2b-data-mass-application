@@ -1289,7 +1289,7 @@ def flow_create_invoice(zone, environment, account_id):
 
     order_data = response[0]
     order_details = get_order_details(order_data)
-    order_items = get_order_items(order_data)
+    order_items = get_order_items(order_data, zone)
     invoice_status = print_invoice_status_menu()
 
     invoice_response = create_invoice_request(zone, environment, order_id, invoice_status, order_details, order_items)
