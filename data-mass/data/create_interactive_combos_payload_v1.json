@@ -10,12 +10,16 @@
             "multipleLineItem": { 
                 "items": [ 
                     { 
-                    "skus": ["string", "string"],
+                    "skus": "string", 
                     "minimumQuantity": "string"
                     }, 
-                    {
-                    "skus": "string",
+                    { 
+                    "skus": "string", 
                     "minimumQuantity": "string"
+                    },
+                    {
+                    "skus": "string", 
+                    "minimumQuantity": "string" 
                     } 
                 ] 
             } 

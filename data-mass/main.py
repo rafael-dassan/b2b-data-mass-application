@@ -15,7 +15,7 @@ from menus.algo_selling_menu import print_recommender_type_menu
 from menus.deals_menu import print_deals_operations_menu, print_discount_percentage_menu, print_minimum_quantity_menu, \
     print_max_quantity_menu, print_free_good_quantity_range_menu, print_option_sku_menu, print_partial_free_good_menu, \
     print_free_good_redemption_menu, print_free_good_quantity_menu, print_index_range_menu, print_discount_range_menu, \
-    print_interactive_combos_quantity_range_menu
+    print_interactive_combos_quantity_range_menu, print_interactive_combos_quantity_range_menu_v2
 from menus.invoice_menu import print_invoice_operations_menu, print_invoice_status_menu, print_invoice_id_menu, \
     print_invoice_payment_method_menu, print_invoice_status_menu_retriever
 from menus.order_menu import print_order_operations_menu, print_allow_cancellable_order_menu, print_get_order_menu, \
@@ -529,7 +529,7 @@ def deals_menu():
     operation = print_deals_operations_menu()
 
     # For Interactive Combos
-    if operation == '6':
+    if operation == '6' or operation == '7':
         zone = print_zone_for_interactive_combos_menu_for_ms()
     else:
         zone = print_zone_menu_for_ms()
@@ -591,7 +591,8 @@ def deals_menu():
         '3': lambda: flow_create_stepped_discount_with_limit(zone, environment, account_id, sku, operation),
         '4': lambda: flow_create_free_good(zone, environment, account_id, sku_list, operation),
         '5': lambda: flow_create_stepped_free_good(zone, environment, account_id, sku, operation),
-        '6': lambda: flow_create_interactive_combos(zone, environment, account_id, sku_list, operation)
+        '6': lambda: flow_create_interactive_combos(zone, environment, account_id, sku_list, operation),
+        '7': lambda: flow_create_interactive_combos_v2(zone, environment, account_id, sku_list, operation)
     }.get(operation, lambda: None)()
 
 
@@ -661,12 +662,24 @@ def flow_create_stepped_free_good(zone, environment, account_id, sku, operation)
     else:
         print_finish_application_menu()
 
-# interactive combos
+# interactive combos v1
 def flow_create_interactive_combos(zone, environment, account_id, sku, operation):
 
     index_range = print_interactive_combos_quantity_range_menu()
 
     response = create_interactive_combos(account_id, sku, zone, environment, index_range, operation)
+
+    if response != 'false':
+        print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
+    else:
+        print_finish_application_menu()
+
+# interactive combos v2
+def flow_create_interactive_combos_v2(zone, environment, account_id, sku, operation):
+
+    index_range = print_interactive_combos_quantity_range_menu_v2()
+
+    response = create_interactive_combos_v2(account_id, sku, zone, environment, index_range, operation)
 
     if response != 'false':
         print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
