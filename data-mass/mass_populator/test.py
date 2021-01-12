@@ -1,6 +1,7 @@
 from common import block_print
 from mass_populator.country.populate_category import associate_products_to_category_magento
 from mass_populator.country.populate_deal import populate_stepped_discount_with_limit
+from mass_populator.country.populate_invoice import populate_invoice
 from mass_populator.country.populate_order import populate_order
 from mass_populator.country.populate_product import enable_product_magento, populate_product
 from mass_populator.country.populate_user_v3 import populate_user_iam_b2c
@@ -8,7 +9,7 @@ from mass_populator.helpers.database_helper import get_database_params, delete_f
 from mass_populator.log import *
 from mass_populator.country.populate_account import populate_poc
 from mass_populator.country.populate_recomendation import populate_recommendation
-from mass_populator.preconditions import delete_recommendation, delete_deals
+from mass_populator.preconditions import delete_recommendation, delete_deal, delete_invoice
 
 logger = logging.getLogger(__name__)
 
@@ -21,18 +22,27 @@ def execute_test(country, environment):
     deals_params = get_deals_params(country)
     order_database_params = get_database_params(country, environment, 'order-service-ms')
     order_params = get_order_params(country)
+    invoice_params = get_invoice_params(country)
 
     # Overwrite standard output (stdout) - disable `print`
     block_print()
 
     # Run pre-conditions
     logger.info("Running pre-conditions for %s/%s", country, environment)
+    logger.info("delete_recommendations for account %s", account_params.get('id'))
     delete_recommendation(account_params.get('id'), country, environment, 'QUICK_ORDER')
     delete_recommendation(account_params.get('id'), country, environment, 'FORGOTTEN_ITEMS')
     delete_recommendation(account_params.get('id'), country, environment, 'CROSS_SELL_UP_SELL')
-    delete_deals(account_params.get('id'), country, environment)
+
+    logger.info("delete_deals for account %s", deals_params.get('account_id'))
+    delete_deal(deals_params.get('account_id'), country, environment)
+
+    logger.info("delete_orders for %s/%s", country, environment)
     delete_from_database(order_database_params.get('client'), order_database_params.get('db_name'),
                          order_database_params.get('collection_name'), order_database_params.get('prefix'))
+
+    logger.info("delete_invoices for account %s", invoice_params.get('account_id'))
+    delete_invoice(invoice_params.get('account_id'), country, environment)
 
     # Start creating data mass
     logger.info("populate_products for %s/%s", country, environment)
@@ -58,12 +68,17 @@ def execute_test(country, environment):
     logger.info("populate_deals for %s/%s", country, environment)
     populate_stepped_discount_with_limit(country, environment, deals_params.get('account_id'),
                                          deals_params.get('deal_id'), deals_params.get('sku'),
-                                         deals_params.get('discount_value'), deals_params.get('max_quantity'))
+                                         deals_params.get('discount_value'), deals_params.get('max_quantity'),
+                                         deals_params.get('operation'))
 
     logger.info("populate_orders for %s/%s", country, environment)
     populate_order(country, environment, order_params.get('account_id'), order_params.get('allow_order_cancel'),
                    order_params.get('items'), order_params.get('quantity'), order_params.get('order_status'),
                    order_params.get('prefix'))
+
+    logger.info("populate_invoices for %s/%s", country, environment)
+    populate_invoice(country, environment, invoice_params.get('account_id'), invoice_params.get('invoice_status'),
+                     invoice_params.get('order_prefix'), invoice_params.get('invoice_prefix'))
 
     logger.info("enable_products_magento %s/%s", country, environment)
     enable_product_magento(country, environment, category_params.get('sku'))
@@ -143,7 +158,8 @@ def get_deals_params(country):
         'deal_id': 'QM-{country}-TEST-0101'.format(country=country),
         'sku': get_product_params().get('sku'),
         'discount_value': 10,
-        'max_quantity': 10
+        'max_quantity': 10,
+        'operation': '3'
     }
 
     return params
@@ -157,6 +173,17 @@ def get_order_params(country):
         'quantity': 5,
         'order_status': 'PLACED',
         'prefix': 'DMA-TEST-{0}-'.format(country)
+    }
+
+    return params
+
+
+def get_invoice_params(country):
+    params = {
+        'account_id': get_account_params(country).get('id'),
+        'invoice_status': 'CLOSED',
+        'order_prefix': 'DMA-TEST-{0}-'.format(country),
+        'invoice_prefix': 'DMA-TEST'
     }
 
     return params

@@ -40,3 +40,7 @@ class Message(Enum):
     CONFIGURE_ORDER_PREFIX_ERROR = "Fail on configure order prefix and number size for account {account_id}."
     CREATE_ORDER_ERROR = "Fail on create an order for account {account_id}."
     ORDER_SIMULATION_ERROR = "Fail on simulate the order for account {account_id}."
+    RETRIEVE_ORDER_ERROR = "Failure to retrieve orders for the account {account_id}."
+    CREATE_INVOICE_ERROR = "Fail on create an invoice for account {account_id}."
+    RETRIEVE_INVOICE_ERROR = "Failure to retrieve invoices for the account {account_id}."
+    DELETE_INVOICE_ERROR = "Fail on delete invoice for account {account_id}."

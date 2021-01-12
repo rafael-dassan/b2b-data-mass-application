@@ -10,7 +10,7 @@ from common import update_value_to_json, set_to_dictionary, get_microservice_bas
 from classes.text import text
 
 
-def create_invoice_request(zone, environment, order_id, status, order_details, order_items):
+def create_invoice_request(zone, environment, order_id, status, order_details, order_items, invoice_id=None):
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
     file_path = os.path.join(path, 'data/create_invoice_payload.json')
@@ -19,7 +19,9 @@ def create_invoice_request(zone, environment, order_id, status, order_details, o
     with open(file_path) as file:
         json_data = json.load(file)
 
-    invoice_id = 'DM-' + str(randint(1, 100000))
+    if invoice_id is None:
+        invoice_id = 'DM-' + str(randint(1, 100000))
+
     order_placement_date = order_details.get('placementDate')
 
     if zone == 'DO':
@@ -146,4 +148,23 @@ def get_invoices(zone, account_id, environment):
     if response.status_code == 200:
         return invoice_info
     else:
+        return 'false'
+
+
+def delete_invoice_by_id(zone, environment, invoice_id):
+    # Get base URL
+    request_url = get_microservice_base_url(environment) + '/invoices-relay/id/{0}'.format(invoice_id)
+
+    # Get headers
+    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+
+    # Send request
+    response = place_request('DELETE', request_url, '', request_headers)
+
+    if response.status_code == 202:
+        return 'success'
+    else:
+        print(text.Red + '\n- [Invoice Relay Service] Failure to delete the invoice {invoice_id}. Response status: '
+                         '{response_status}. Response message: {response_message}'
+              .format(invoice_id=invoice_id, response_status=response.status_code, response_message=response.text))
         return 'false'

@@ -527,3 +527,39 @@ def get_order_items(order_data, zone):
             item_list.append(items_details)
 
     return item_list
+
+
+def request_get_order_by_date_updated(zone, environment, account_id, order_prefix):
+    """
+        Check if an order exists via Order Service
+        Args:
+            account_id: POC unique identifier
+            zone: e.g., AR, BR, CO, DO, MX, ZA
+            environment: e.g., DEV, SIT, UAT
+            order_prefix: order unique identifier
+        Returns:
+            json_data: order response data
+            false: if an error comes from back-end
+        """
+    # Get header request
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+
+    updated_since = datetime.now().strftime('%Y-%m-%d') + 'T00:00:00.000Z'
+
+    # Get base URL
+    request_url = get_microservice_base_url(environment) + '/order-service/v1?updatedSince={0}&accountId={1}&sort={2}'\
+        .format(updated_since, account_id, 'DESC')
+
+    # Place request
+    response = place_request('GET', request_url, '', request_headers)
+
+    json_data = loads(response.text)
+    if response.status_code == 200 and len(json_data) != 0:
+        for i in range(len(json_data)):
+            if '{0}-{1}'.format(order_prefix, zone) in json_data[i]['orderNumber']:
+                return json_data
+    else:
+        print(text.Red + '\n- [Order Service] Failure to retrieve order information. Response Status: '
+                         '{response_status}. Response message: {response_message}'
+                  .format(response_status=response.status_code, response_message=response.text))
+        return 'false'
