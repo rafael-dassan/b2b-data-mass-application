@@ -317,6 +317,7 @@ def create_discount(account_id, sku, zone, environment, discount_value, minimum_
         minimum_quantity: minimum quantity for the discount to be applied
         discount_type: percentOff
         deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
+        operation: deals operations, e.g., discount creation, free good creation, etc
     Returns: `promotion_response` if success
     """
     promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, operation)
@@ -347,10 +348,11 @@ def create_stepped_discount_with_limit(account_id, sku, zone, environment, index
         discount_type: percentOff
         deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
         deal_id: deal unique identifier
+        operation: deals operations, e.g., discount creation, free good creation, etc
     Returns: `promotion_response` if success
     """
 
-    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, deal_id, operation)
+    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, operation, deal_id)
 
     cart_response = request_create_stepped_discount_with_limit_cart_calculation(account_id, promotion_response, zone,
                                                                                 environment, sku, max_quantity,
@@ -377,6 +379,7 @@ def create_stepped_discount(account_id, sku, zone, environment, index_range, dis
         discount_range: range of discount values to be applied (e.g., 10% for the range 0 e 20% for the range 1)
         discount_type: percentOff
         deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
+        operation: deals operations, e.g., discount creation, free good creation, etc
     Returns: `promotion_response` if success
     """
     promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, operation)
@@ -406,6 +409,7 @@ def create_free_good(account_id, sku_list, zone, environment, minimum_quantity, 
         quantity: quantity of SKUs to offer as free goods
         partial_free_good: partial SKU to be rescued
         need_to_buy_product: e.g., `Y` or `N`
+        operation: deals operations, e.g., discount creation, free good creation, etc
     Returns: `promotion_response` if success
     """
     promotion_response = request_create_deal(account_id, sku_list[0]['sku'], deal_type, zone, environment, operation)
@@ -433,6 +437,7 @@ def create_stepped_free_good(account_id, sku, zone, environment, index_range, qu
         environment: e.g, DEV, SIT, UAT
         index_range: range of quantity for the free good to be applied (e.g., from 1 to 50)
         quantity_range: range of quantity values to be applied (e.g., 1 for the range 0 e 2 for the range 1)
+        operation: deals operations, e.g., discount creation, free good creation, etc
     Returns: `promotion_response` if success
     """
     promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, operation)
@@ -455,9 +460,9 @@ def create_interactive_combos(account_id, sku, zone, environment, index_range, o
         sku: product unique identifier
         zone: e.g., BR, CO
         environment: e.g, DEV, SIT, UAT
-        min_quantity: minimum quantity for the for each sku to be applied
-        max_quantity: maximum quantity for the for each sku to be applied
+        index_range: SKU quantity range for the discount to be applied
         deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD, FLEXIBLE_DISCOUNT
+        operation: deals operations, e.g., discount creation, free good creation, etc
     Returns: `promotion_response` if success
     """
 
@@ -586,7 +591,6 @@ def request_create_stepped_free_good_cart_calculation(account_id, deal_id, zone,
         sku: product unique identifier
         index_range: range of SKU quantities that the free good is valid to be applied
         quantity_range: different free good values to be applied according to the index_range parameter
-
     Returns: Success if the request went ok and the status code if there's a problem
     """
 

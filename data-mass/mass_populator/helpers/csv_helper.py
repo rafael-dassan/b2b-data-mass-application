@@ -1,5 +1,4 @@
 import pandas as pd
-import json
 import os
 import sys
 from mass_populator.log import *
@@ -34,7 +33,7 @@ def converter_dtype_to_string_by_entity(entity):
 
 def search_file_path(country, entity, is_default_file=True):
     absolute_path = os.path.dirname(os.path.abspath(__file__))
-    base_file = "country/data"
+    base_file = "../country/data"
 
     default_file = "{base_file}/{entity}.csv".format(
         base_file=base_file, entity=entity)

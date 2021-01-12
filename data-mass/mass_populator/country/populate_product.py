@@ -105,8 +105,10 @@ def check_product_associated_to_account(account_id, country, environment, produc
     if product_offers == 'not_found':
         logger.info("[Catalog Service] Products not found for account "
                     "{account_id}. Skipping...".format(account_id=account_id))
+        return False
     elif product_offers == 'false':
         logger.error(log(Message.RETRIEVE_PRODUCT_ERROR, {'account_id': account_id}))
+        return False
     else:
         available_skus = list()
         not_associated_skus = list()
