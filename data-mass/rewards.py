@@ -490,33 +490,26 @@ def input_challenge_to_zone(abi_id, zone, environment):
     
     # Verify if the account has at least 10 SKUs inside for PURCHASE type
     if len(product_offers) > 10:
-        sku_list = list()
-        counter_offers = 0
-        while counter_offers < len(product_offers):
-            sku_list.append(product_offers[counter_offers]['sku'])
-            counter_offers += 1
-
-        if counter_offers > 0:
-            offers_flag = 'true'
-        else:
-            offers_flag = 'false'
+        offers_flag = 'true'
     else:
         offers_flag = 'false'  
 
-    # Generates six challenges - two of each type (take_photo, mark_complete and purchase)
+    # Generates challenges - two of each type (take_photo, mark_complete, purchase and purchase_multiple)
     i = 1
     error_flag = 'false'
-    while i <= 9:
+    while i <= 8:
         # Generates the new Program ID
-        challenge_id = 'DM-CHALLENGE-' + str(randint(100,900))
+        challenge_id = 'DM-CHALLENGE-100' + str(i)
 
         # Getting all the basic information to create the challenges
         if i == 1:
             generated_challenges = challenge_details(1)
-        elif i == 4:
+        elif i == 3:
             generated_challenges = challenge_details(2)
+        elif i == 5 and offers_flag == 'true':
+            generated_challenges = challenge_details(3, product_offers)
         elif i == 7 and offers_flag == 'true':
-            generated_challenges = challenge_details(3, sku_list)
+            generated_challenges = challenge_details(4, product_offers)
 
         # Create file path
         path = os.path.abspath(os.path.dirname(__file__))
@@ -526,7 +519,7 @@ def input_challenge_to_zone(abi_id, zone, environment):
         with open(file_path) as file:
             json_data = json.load(file)
 
-        if i == 1 or i == 4:
+        if i == 1 or i == 3:
             dict_values  = {
                 'title' : challenge_id,
                 'description' : generated_challenges[0],
@@ -538,7 +531,7 @@ def input_challenge_to_zone(abi_id, zone, environment):
                 'goodPhotoSample' : generated_challenges[6],
                 'badPhotoSample' : generated_challenges[7]
             }
-        elif i == 2 or i == 5:
+        elif i == 2 or i == 4:
             dict_values  = {
                 'title' : challenge_id,
                 'description' : generated_challenges[8],
@@ -550,19 +543,7 @@ def input_challenge_to_zone(abi_id, zone, environment):
                 'goodPhotoSample' : generated_challenges[14],
                 'badPhotoSample' : generated_challenges[15]
             }
-        elif i == 3 or i == 6:
-            dict_values  = {
-                'title' : challenge_id,
-                'description' : generated_challenges[16],
-                'detailedDescription' : generated_challenges[17],
-                'startDate' : generated_challenges[18],
-                'endDate' : generated_challenges[19],
-                'image' : generated_challenges[20],
-                'executionMethod' : generated_challenges[21],
-                'goodPhotoSample' : generated_challenges[22],
-                'badPhotoSample' : generated_challenges[23]
-            }   
-        elif i == 7 and offers_flag == 'true':
+        elif i == 5 or i == 7 and offers_flag == 'true':
             dict_values  = {
                 'title' : challenge_id,
                 'description' : generated_challenges[0],
@@ -575,7 +556,7 @@ def input_challenge_to_zone(abi_id, zone, environment):
                 'badPhotoSample' : generated_challenges[7],
                 'skus' : generated_challenges[8]
             }
-        elif i == 8 and offers_flag == 'true':
+        elif i == 6 or i == 8 and offers_flag == 'true':
             dict_values  = {
                 'title' : challenge_id,
                 'description' : generated_challenges[9],
@@ -587,19 +568,6 @@ def input_challenge_to_zone(abi_id, zone, environment):
                 'goodPhotoSample' : generated_challenges[15],
                 'badPhotoSample' : generated_challenges[16],
                 'skus' : generated_challenges[17]
-            }
-        elif i == 9 and offers_flag == 'true':
-            dict_values  = {
-                'title' : challenge_id,
-                'description' : generated_challenges[18],
-                'detailedDescription' : generated_challenges[19],
-                'startDate' : generated_challenges[20],
-                'endDate' : generated_challenges[21],
-                'image' : generated_challenges[22],
-                'executionMethod' : generated_challenges[23],
-                'goodPhotoSample' : generated_challenges[24],
-                'badPhotoSample' : generated_challenges[25],
-                'skus' : generated_challenges[26]
             }
 
         for key in dict_values.keys():
@@ -636,8 +604,7 @@ def input_challenge_to_zone(abi_id, zone, environment):
         return 'true'
 
 
-def challenge_details(challenge_type, sku_ids = None):
-
+def challenge_details(challenge_type, products = None):
     # Sets the format of the challenge's start date (current date and time)
     start_date = datetime.now()
     start_date = start_date.strftime('%Y-%m-%dT%H:%M:%S')
@@ -659,7 +626,7 @@ def challenge_details(challenge_type, sku_ids = None):
     expired_start_date = expired_start_date + 'Z'
 
     # Sets the format of the challenge's end date already expired (for expired challenges)
-    expired_end_date = datetime.now() - timedelta(days=30)
+    expired_end_date = datetime.now() - timedelta(days=1)
     expired_end_date = expired_end_date.strftime('%Y-%m-%dT%H:%M:%S')
     expired_end_date = expired_end_date + 'Z'
 
@@ -675,18 +642,8 @@ def challenge_details(challenge_type, sku_ids = None):
         challenge_details.append('TAKE_PHOTO')
         challenge_details.append('https://b2bstaticwebsagbdev.blob.core.windows.net/digitaltrade/uat/images/br/challenges/1659/photo_of_cooler_ok.jpg')
         challenge_details.append('https://b2bstaticwebsagbdev.blob.core.windows.net/digitaltrade/uat/images/br/challenges/1659/photo_of_cooler_nok.jpg')
-        
-        # Details of the take photo #2 (expiration within 60 days)
-        challenge_details.append('TAKE A PHOTO')
-        challenge_details.append('Complete this challenge and receive extra points')
-        challenge_details.append(start_date)
-        challenge_details.append(end_date_two)
-        challenge_details.append('https://b2bfilemgmtsagbtest.blob.core.windows.net/files-do/rewards-admin_challenge-image.png?sig=IzFb2Eo16gb61Y92j3qry%2BiC61kqijYPkAZxuqf4ESI%3D&se=3019-06-23T15%3A38%3A29Z&sv=2015-04-05&sp=r&sr=b')
-        challenge_details.append('TAKE_PHOTO')
-        challenge_details.append('https://b2bstaticwebsagbdev.blob.core.windows.net/digitaltrade/uat/images/br/challenges/1659/photo_of_cooler_ok.jpg')
-        challenge_details.append('https://b2bstaticwebsagbdev.blob.core.windows.net/digitaltrade/uat/images/br/challenges/1659/photo_of_cooler_nok.jpg')
 
-       # Details of the take photo #3 (already expired)
+       # Details of the take photo #2 (already expired)
         challenge_details.append('TAKE A PHOTO')
         challenge_details.append('Complete this challenge and receive extra points')
         challenge_details.append(expired_start_date)
@@ -705,18 +662,8 @@ def challenge_details(challenge_type, sku_ids = None):
         challenge_details.append('MARK_COMPLETE')
         challenge_details.append('')
         challenge_details.append('')
-        
-        # Details of the mark complete #2 (expiration within 60 days)
-        challenge_details.append('MARK COMPLETE')
-        challenge_details.append('Complete this challenge and receive extra points')
-        challenge_details.append(start_date)
-        challenge_details.append(end_date_two)
-        challenge_details.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/br/challenges/1661/execution_2nd_display.jpg')
-        challenge_details.append('MARK_COMPLETE')
-        challenge_details.append('')
-        challenge_details.append('')
 
-        # Details of the mark complete #3 (already expired)
+        # Details of the mark complete #2 (already expired)
         challenge_details.append('MARK COMPLETE')
         challenge_details.append('Complete this challenge and receive extra points')
         challenge_details.append(expired_start_date)
@@ -726,46 +673,46 @@ def challenge_details(challenge_type, sku_ids = None):
         challenge_details.append('')
         challenge_details.append('')
     elif challenge_type == 3:
-        if len(sku_ids) >= 10:
+        if len(products) >= 10:
             dict_values_purchase = [
                 {
-                    'sku' : sku_ids[0],
+                    'sku' : products[0]['sku'],
                     'quantity' : 2
                 },
                 {
-                    'sku' : sku_ids[1],
+                    'sku' : products[1]['sku'],
                     'quantity' : 2,
                 },
                 {
-                    'sku' : sku_ids[2],
+                    'sku' : products[2]['sku'],
                     'quantity' : 2,
                 },
                 {
-                    'sku' : sku_ids[3],
+                    'sku' : products[3]['sku'],
                     'quantity' : 2,
                 },
                 {
-                    'sku' : sku_ids[4],
+                    'sku' : products[4]['sku'],
                     'quantity' : 2,
                 },
                 {
-                    'sku' : sku_ids[5],
+                    'sku' : products[5]['sku'],
                     'quantity' : 2,
                 },
                 {
-                    'sku' : sku_ids[6],
+                    'sku' : products[6]['sku'],
                     'quantity' : 2,
                 },
                 {
-                    'sku' : sku_ids[7],
+                    'sku' : products[7]['sku'],
                     'quantity' : 2,
                 },
                 {
-                    'sku' : sku_ids[8],
+                    'sku' : products[8]['sku'],
                     'quantity' : 2,
                 },
                 {
-                    'sku' : sku_ids[9],
+                    'sku' : products[9]['sku'],
                     'quantity' : 2,
                 }
             ]
@@ -783,24 +730,142 @@ def challenge_details(challenge_type, sku_ids = None):
         challenge_details.append('')
         challenge_details.append(dict_values_purchase)
 
-        # Details of the purchase #2 (expiration within 60 days)
-        challenge_details.append('PURCHASE')
-        challenge_details.append('Complete this challenge and receive extra points')
-        challenge_details.append(start_date)
-        challenge_details.append(end_date_two)
-        challenge_details.append('https://b2bstaticwebsagbprod.blob.core.windows.net/challenge/DO/images/afiche_12oz_PTE.jpg')
-        challenge_details.append('PURCHASE')
-        challenge_details.append('')
-        challenge_details.append('')
-        challenge_details.append(dict_values_purchase)
-
-        # Details of the purchase #3 (already expired)
+        # Details of the purchase #2 (already expired)
         challenge_details.append('PURCHASE')
         challenge_details.append('Complete this challenge and receive extra points')
         challenge_details.append(expired_start_date)
         challenge_details.append(expired_end_date)
         challenge_details.append('https://b2bstaticwebsagbprod.blob.core.windows.net/challenge/DO/images/afiche_12oz_PTE.jpg')
         challenge_details.append('PURCHASE')
+        challenge_details.append('')
+        challenge_details.append('')
+        challenge_details.append(dict_values_purchase)
+
+    elif challenge_type == 4:
+        if len(products) >= 10:
+            dict_values_purchase = [
+                {
+                    'sku' : products[0]['sku'],
+                    'quantity' : 2,
+                    'quantityPurchased' : 0,
+                    'itemImage': products[0]['itemImage'],
+                    'itemName': products[0]['itemName'],
+                    'price': products[0]['price'],
+                    'container' : products[0]['container'],
+                    'package': products[0]['package'],
+                },
+                {
+                    'sku' : products[1]['sku'],
+                    'quantity' : 2,
+                    'quantityPurchased' : 1,
+                    'itemImage': products[1]['itemImage'],
+                    'itemName': products[1]['itemName'],
+                    'price': products[1]['price'],
+                    'container' : products[1]['container'],
+                    'package': products[1]['package'],
+                },
+                {
+                    'sku' : products[2]['sku'],
+                    'quantity' : 2,
+                    'quantityPurchased' : 2,
+                    'itemImage': products[2]['itemImage'],
+                    'itemName': products[2]['itemName'],
+                    'price': products[2]['price'],
+                    'container' : products[2]['container'],
+                    'package': products[2]['package'],
+                },
+                {
+                    'sku' : products[3]['sku'],
+                    'quantity' : 2,
+                    'quantityPurchased' : 3,
+                    'itemImage': products[3]['itemImage'],
+                    'itemName': products[3]['itemName'],
+                    'price': products[3]['price'],
+                    'container' : products[3]['container'],
+                    'package': products[3]['package'],
+                },
+                {
+                    'sku' : products[4]['sku'],
+                    'quantity' : 2,
+                    'quantityPurchased' : 4,
+                    'itemImage': products[4]['itemImage'],
+                    'itemName': products[4]['itemName'],
+                    'price': products[4]['price'],
+                    'container' : products[4]['container'],
+                    'package': products[4]['package'],
+                },
+                {
+                    'sku' : products[5]['sku'],
+                    'quantity' : 2,
+                    'quantityPurchased' : 5,
+                    'itemImage': products[5]['itemImage'],
+                    'itemName': products[5]['itemName'],
+                    'price': products[5]['price'],
+                    'container' : products[5]['container'],
+                    'package': products[5]['package'],
+                },
+                {
+                    'sku' : products[6]['sku'],
+                    'quantity' : 2,
+                    'quantityPurchased' : 6,
+                    'itemImage': products[6]['itemImage'],
+                    'itemName': products[6]['itemName'],
+                    'price': products[6]['price'],
+                    'container' : products[6]['container'],
+                    'package': products[6]['package'],
+                },
+                {
+                    'sku' : products[7]['sku'],
+                    'quantity' : 2,
+                    'quantityPurchased' : 7,
+                    'itemImage': products[7]['itemImage'],
+                    'itemName': products[7]['itemName'],
+                    'price': products[7]['price'],
+                    'container' : products[7]['container'],
+                    'package': products[7]['package'],
+                },
+                {
+                    'sku' : products[8]['sku'],
+                    'quantity' : 2,
+                    'quantityPurchased' : 8,
+                    'itemImage': products[8]['itemImage'],
+                    'itemName': products[8]['itemName'],
+                    'price': products[8]['price'],
+                    'container' : products[8]['container'],
+                    'package': products[8]['package'],
+                },
+                {
+                    'sku' : products[9]['sku'],
+                    'quantity' : 2,
+                    'quantityPurchased' : 9,
+                    'itemImage': products[9]['itemImage'],
+                    'itemName': products[9]['itemName'],
+                    'price': products[9]['price'],
+                    'container' : products[9]['container'],
+                    'package': products[9]['package'],
+                }
+            ]
+        else:
+            dict_values_purchase = None
+
+        # Details of the multiple purchase #1 (expiration within 30 days)
+        challenge_details.append('MULTIPLE PURCHASE')
+        challenge_details.append('Complete this challenge and receive extra points')
+        challenge_details.append(start_date)
+        challenge_details.append(end_date_one)
+        challenge_details.append('https://b2bstaticwebsagbprod.blob.core.windows.net/challenge/DO/images/afiche_12oz_PTE.jpg')
+        challenge_details.append('PURCHASE_MULTIPLE')
+        challenge_details.append('')
+        challenge_details.append('')
+        challenge_details.append(dict_values_purchase)
+
+        # Details of the multiple purchase #2 (already expired)
+        challenge_details.append('MULTIPLE PURCHASE')
+        challenge_details.append('Complete this challenge and receive extra points')
+        challenge_details.append(expired_start_date)
+        challenge_details.append(expired_end_date)
+        challenge_details.append('https://b2bstaticwebsagbprod.blob.core.windows.net/challenge/DO/images/afiche_12oz_PTE.jpg')
+        challenge_details.append('PURCHASE_MULTIPLE')
         challenge_details.append('')
         challenge_details.append('')
         challenge_details.append(dict_values_purchase)
@@ -906,7 +971,7 @@ def generate_skus_for_rules(zone, environment):
 
     sku_rules = list()
     for i in range(len(products)):
-        sku_rules.append(products[i]['sku'])
+        sku_rules.append(products[i]['sku']['sku'])
 
     return sku_rules
 

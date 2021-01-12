@@ -1,65 +1,59 @@
 {
-    "name": "string",
-    "rules": [
-      {
-        "ruleId": "PREMIUM",
-        "moneySpentSkuRule": {
-          "name": "PREMIUM RULE",
-          "skus": "string",
-          "amountSpent": 1000,
-          "points": 100
-        }
-      },
-      {
-        "ruleId": "CORE",
-        "moneySpentSkuRule": {
-          "name": "CORE RULE",
-          "skus": "string",
-          "amountSpent": 1000,
-          "points": 50
-        }
+  "name": "string",
+  "rules": [
+    {
+      "ruleId": "PREMIUM",
+      "moneySpentSkuRule": {
+        "name": "PREMIUM RULE",
+        "skus": "string",
+        "amountSpent": 1000,
+        "points": 100
       }
-    ],
-    "combos": "string",
-    "filter": {
-      "potential": [
-        "DM-POTENT"
-      ],
-      "segment": [
-        "DM-SEG"
-      ],
-      "subsegment": [
-        "DM-SUBSEG"
-      ]
     },
-    "initialBalance": 0,
-    "calculationType": "SUBTOTAL",
-    "freeGoodEnabled": true,
-    "categories": [
-      {
-        "categoryId": "string",
-        "categoryIdWeb": "string",
-        "description": "string",
-        "buttonLabel": "string",
-        "buttonName": "Premium-product-button",
-        "image": "string"
-      },
-      {
-        "categoryId": "string",
-        "categoryIdWeb": "string",
-        "description": "string",
-        "buttonLabel": "string",
-        "buttonName": "Core-product-button",
-        "image": "string"
+    {
+      "ruleId": "CORE",
+      "moneySpentSkuRule": {
+        "name": "CORE RULE",
+        "skus": "string",
+        "amountSpent": 1000,
+        "points": 50
       }
-    ],
-    "termsAndConditions": [
-      {
-        "versionId": "1",
-        "documentDate": "2019-08-07T08:00:00.000Z",
-        "startDate": "2019-08-07T08:00:00.000Z",
-        "documentURL": "string",
-        "changeLog": "string"
-      }
-    ]
-  }
+    }
+  ],
+  "combos": "string",
+  "filter": {
+    "potential": ["DM-POTENT"],
+    "segment": ["DM-SEG"],
+    "subsegment": ["DM-SUBSEG"]
+  },
+  "initialBalance": 0,
+  "calculationType": "SUBTOTAL",
+  "freeGoodEnabled": true,
+  "categories": [
+    {
+      "categoryId": "string",
+      "categoryIdWeb": "string",
+      "description": "string",
+      "buttonLabel": "string",
+      "buttonName": "Premium-product-button",
+      "image": "string"
+    },
+    {
+      "categoryId": "string",
+      "categoryIdWeb": "string",
+      "description": "string",
+      "buttonLabel": "string",
+      "buttonName": "Core-product-button",
+      "image": "string"
+    }
+  ],
+  "termsAndConditions": [
+    {
+      "versionId": "1",
+      "documentDate": "2019-08-07T08:00:00.000Z",
+      "startDate": "2019-08-07T08:00:00.000Z",
+      "documentURL": "string",
+      "changeLog": "string"
+    }
+  ]
+}

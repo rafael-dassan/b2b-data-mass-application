@@ -205,6 +205,13 @@ def validate_rewards(option):
     else:
         return False
 
+def validade_challenge_type(type):
+    types = ['1', '2', '3', '4']
+    if type in types:
+        return True
+    else:
+        return False
+
 
 def validate_orders(option):
     options = ['1', '2']

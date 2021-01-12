@@ -25,7 +25,8 @@ def converters_by_entity(entity):
 def converter_dtype_to_string_by_entity(entity):
     entities_converters_switcher = {
         'account':        ['account_id'],
-        'recommendation': ['account_id']
+        'recommendation': ['account_id'],
+        'rewards':        ['account_id_unenroll','account_id_enrolled']
     }
     converter = entities_converters_switcher.get(entity)
     return dict.fromkeys(converter, 'str') if converter is not None else {}
