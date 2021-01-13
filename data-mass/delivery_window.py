@@ -118,8 +118,6 @@ def create_delivery_window_microservice(zone, environment, account_data, is_alte
         return 'success'
 
 
-
-
 # Return payload next date for delivery date
 def return_dates_payload(option):
     if option == '1':
