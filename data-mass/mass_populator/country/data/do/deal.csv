@@ -1,2 +1,2 @@
-account_id,deal_id,sku,discount_value,max_quantity
-"9883300001","QM-DO-WEB-0101","0103WEB",10,10
+account_id,deal_id,sku,discount_value,max_quantity,operation
+"9883300001","QM-DO-WEB-0101","0103WEB",10,10,"3"

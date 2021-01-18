@@ -5,12 +5,12 @@ import pymongo
 def get_database_params(country, environment, microservice):
     microservice_clients = {
         'order-service-ms': {
-            'SIT': pymongo.MongoClient('mongodb+srv://order:khKNakyFgPfSpTPPyhg4nWY9RJAxeG@europe-sit.qi3as.azure'
-                                       '.mongodb.net/?readPreference=nearest&maxStalenessSeconds=90&retryWrites='
-                                       'true&w=majority', ssl_cert_reqs=ssl.CERT_NONE),
-            'UAT': pymongo.MongoClient('mongodb+srv://order:ZJT7QGYGFhudpvZfnM2NSBtcXTWVL9@europe-uat.cqllk.azure'
-                                       '.mongodb.net/?readPreference=nearest&maxStalenessSeconds=90&retryWrites='
-                                       'true&w=majority', ssl_cert_reqs=ssl.CERT_NONE)
+            'SIT': pymongo.MongoClient('mongodb+srv://order:khKNakyFgPfSpTPPyhg4nWY9RJAxeG@europe-sit.qi3as.azure.'
+                                       'mongodb.net/?readPreference=nearest&maxStalenessSeconds=90&retryWrites=true&'
+                                       'w=majority', ssl_cert_reqs=ssl.CERT_NONE),
+            'UAT': pymongo.MongoClient('mongodb+srv://order:ZJT7QGYGFhudpvZfnM2NSBtcXTWVL9@europe-uat.cqllk.azure.'
+                                       'mongodb.net/?readPreference=nearest&maxStalenessSeconds=90&retryWrites=true&'
+                                       'w=majority', ssl_cert_reqs=ssl.CERT_NONE)
         }
     }
     client = microservice_clients[microservice][environment]
