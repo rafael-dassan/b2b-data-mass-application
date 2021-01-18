@@ -953,3 +953,27 @@ def generate_hmac_jwt(account_id, expire_months=1):
 
     encoded = jwt.encode(json_object, '20735d31-46b5-411d-af02-47897a01c0c9', algorithm='HS256')
     return 'Bearer {0}'.format(encoded)
+
+
+def generate_erp_token(expire_months=1):
+    now = int(t.time())
+    expire_in = now + (2592000 * expire_months)
+
+    # Create file path
+    abs_path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(abs_path, 'data/create_erp_token_payload.json')
+
+    # Load JSON file
+    with open(file_path) as file:
+        json_data = json.load(file)
+
+    dict_values = {
+        'exp': expire_in,
+        'iat': now
+    }
+
+    for key in dict_values.keys():
+        json_object = update_value_to_json(json_data, key, dict_values[key])
+
+    encoded = jwt.encode(json_object, '20735d31-46b5-411d-af02-47897a01c0c9', algorithm='HS256')
+    return 'Bearer {0}'.format(encoded)
