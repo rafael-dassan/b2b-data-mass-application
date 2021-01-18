@@ -14,7 +14,7 @@ steps:
     pip3 install -r data-mass/requirements.txt
   displayName: 'Install dependencies'
 - script: |
-    python3 data-mass/populate.py do sit test
+    python3 data-mass/populate.py do uat test
   displayName: 'Run tests'
   condition: eq(variables['Build.Reason'], 'PullRequest')
 

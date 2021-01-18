@@ -12,7 +12,7 @@ def populate_deal_with_limit(country, environment, dataframe_deals):
 
 def apply_populate_stepped_discount_with_limit(row, country, environment):
     populate_stepped_discount_with_limit(country, environment, str(row['account_id']), row['deal_id'], row['sku'],
-                                         row['discount_value'], row['max_quantity'])
+                                         row['discount_value'], row['max_quantity'], row['operation'])
 
 
 def populate_stepped_discount_with_limit(country, environment, account_id, deal_id, sku, discount_value, max_quantity,
