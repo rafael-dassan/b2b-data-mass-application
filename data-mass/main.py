@@ -578,10 +578,15 @@ def deals_menu():
 
     if option_sku == '1':
         sku = input(text.default_text_color + 'SKU: ')
-        item_enabled = check_item_enabled(sku, zone, environment)
-        while not item_enabled:
-            sku = input(text.default_text_color + '\nSKU: ')
-            item_enabled = check_item_enabled(sku, zone, environment)
+        sku_id = sku.strip()
+        sku_list.clear()
+        for i in range(len(product_offers)):
+            if product_offers[i]['sku'] == sku_id:
+                sku_list.append(product_offers[i])
+        if len(sku_list) == 0:
+            print(text.Red + '\n- The SKU {sku_id} is not associated with the account {account_id} or it doesn`t exist'
+                  .format(sku_id=sku_id, account_id=account_id))
+            print_finish_application_menu()
     else:
         sku = sku_list[0]['sku']
 
@@ -662,7 +667,8 @@ def flow_create_stepped_free_good(zone, environment, account_id, sku, operation)
     else:
         print_finish_application_menu()
 
-# interactive combos v1
+
+# Interactive combos v1
 def flow_create_interactive_combos(zone, environment, account_id, sku, operation):
 
     index_range = print_interactive_combos_quantity_range_menu()
@@ -674,7 +680,8 @@ def flow_create_interactive_combos(zone, environment, account_id, sku, operation
     else:
         print_finish_application_menu()
 
-# interactive combos v2
+
+# Interactive combos v2
 def flow_create_interactive_combos_v2(zone, environment, account_id, sku, operation):
 
     index_range = print_interactive_combos_quantity_range_menu_v2()
@@ -685,6 +692,7 @@ def flow_create_interactive_combos_v2(zone, environment, account_id, sku, operat
         print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
     else:
         print_finish_application_menu()
+
 
 # Input combos to an account
 def input_combos_menu():
