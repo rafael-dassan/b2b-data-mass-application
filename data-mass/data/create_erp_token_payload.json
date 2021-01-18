@@ -1,0 +1,13 @@
+{
+  "sub": "ab-inbev",
+  "aud": "abi-microservices",
+  "exp": "string",
+  "iat": "string",
+  "updated_at": 1111111,
+  "name": "user@ab-inbev.com",
+  "accountID": "",
+  "userID": "2118",
+  "roles": [
+    "ROLE_ADMIN"
+  ]
+}
