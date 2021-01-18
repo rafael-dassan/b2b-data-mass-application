@@ -121,6 +121,7 @@ def check_product_associated_to_account(account_id, country, environment, produc
                              "Skipping...".format(product=products[i], account_id=account_id))
             else:
                 not_associated_skus.append(products[i])
-                logger.info("[Catalog Service] Product {product} is not associated to the account {account_id} and"
-                            " needs to be added.".format(product=products[i], account_id=account_id))
-                return not_associated_skus
+                logger.debug("[Catalog Service] Product {product} is not associated to the account {account_id} and "
+                             "needs to be added.".format(product=products[i], account_id=account_id))
+
+        return not_associated_skus

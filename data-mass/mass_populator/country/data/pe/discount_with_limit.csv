@@ -1,0 +1,4 @@
+account_id,deal_id,sku,discount_value,max_quantity,operation
+"3377645990","QM-PE-WEB-0101","0103WEB",10,10,"3"
+"3193946371","DMA-PE-ANDROID-0101","0103ANDROID",10,10,"3"
+"3585524632","DMA-PE-IOS-0101","0103IOS",10,10,"3"

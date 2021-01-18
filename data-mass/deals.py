@@ -23,6 +23,7 @@ def request_create_deal(account_id, sku, deal_type, zone, environment, operation
         deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
         zone: e.g., AR, BR, CO, DO, MX, ZA
         environment: e.g., DEV, SIT, UAT
+        operation: deals operations, e.g., discount creation, free good creation, etc
     Returns: `deal_id` if success and error message in case of failure
     """
 
@@ -305,7 +306,7 @@ def create_free_good_group(sku, zone, environment):
 
 
 def create_discount(account_id, sku, zone, environment, discount_value, minimum_quantity,
-                    operation, discount_type='percentOff', deal_type='DISCOUNT'):
+                    operation, deal_id=None, discount_type='percentOff', deal_type='DISCOUNT'):
     """
     Input a deal type discount to a specific POC by calling the Promotion Relay Service and Pricing Engine Relay Service
     Args:
@@ -318,9 +319,10 @@ def create_discount(account_id, sku, zone, environment, discount_value, minimum_
         discount_type: percentOff
         deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
         operation: deals operations, e.g., discount creation, free good creation, etc
+        deal_id: deal unique identifier
     Returns: `promotion_response` if success
     """
-    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, operation)
+    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, operation, deal_id)
 
     cart_response = request_create_discount_cart_calculation(account_id, promotion_response, zone, environment, sku,
                                                              discount_type, discount_value, minimum_quantity)
@@ -1111,7 +1113,6 @@ def request_get_deals_promotion_service(account_id, zone, environment):
 
     # Send request
     response = place_request('GET', request_url, '', request_headers)
-
     json_data = loads(response.text)
 
     if response.status_code == 200:
@@ -1225,32 +1226,56 @@ def request_delete_deal_by_id(account_id, zone, environment, data):
     # Get headers
     request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
 
+    deal_ids = list()
     for i in range(len(data)):
         deal_id = data[i]['promotionId']
+        deal_ids.append(deal_id)
 
-        dict_values = {
-            'accounts': [account_id],
-            'promotions': [deal_id]
-        }
+    dict_values = {
+        'accounts': [account_id],
+        'promotions': deal_ids
+    }
 
-        # Update the deal's values in runtime
-        for key in dict_values.keys():
-            json_object = update_value_to_json(json_data, key, dict_values[key])
+    # Update the deal's values in runtime
+    for key in dict_values.keys():
+        json_object = update_value_to_json(json_data, key, dict_values[key])
 
-        # Create body
-        request_body = convert_json_to_string(json_object)
-        print(request_body)
+    # Create body
+    request_body = convert_json_to_string(json_object)
 
-        # Get base URL
-        request_url = get_microservice_base_url(environment) + '/promotion-relay/v2'
+    # Get base URL
+    request_url = get_microservice_base_url(environment) + '/promotion-relay/v2'
 
-        # Send request
-        response = place_request('DELETE', request_url, request_body, request_headers)
-        if response.status_code != 202:
-            print(text.Red + '\n- [Promotion Relay Service] Failure to delete the deal {deal_id}. Response Status: '
-                             '{status_code}. Response message: {response_message}'
-                  .format(deal_id=deal_id, status_code=response.status_code, response_message=response.text))
-            return 'false'
+    # Send request
+    response = place_request('DELETE', request_url, request_body, request_headers)
+    if response.status_code != 202:
+        print(text.Red + '\n- [Promotion Relay Service] Failure to delete the deal {deal_id}. Response Status: '
+                         '{status_code}. Response message: {response_message}'
+              .format(deal_id=deal_id, status_code=response.status_code, response_message=response.text))
+        return 'false'
+
+
+def request_delete_deal_by_id_v1(deal_id, zone, environment):
+    """
+    Delete deal by ID via Promotion Relay Service v1
+    Args:
+        deal_id: deal unique identifier
+        zone: e.g., AR, BR, CO, DO, MX, ZA
+        environment: e.g., SIT, UAT
+    """
+    # Get headers
+    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+
+    # Get base URL
+    request_url = get_microservice_base_url(environment) + '/promotion-relay/v1/{0}'.format(deal_id)
+
+    # Send request
+    response = place_request('DELETE', request_url, '', request_headers)
+    if response.status_code != 202:
+        print(text.Red + '\n- [Promotion Relay Service] Failure to delete the deal {deal_id}. Response Status: '
+                         '{status_code}. Response message: {response_message}'
+              .format(deal_id=deal_id, status_code=response.status_code, response_message=response.text))
+        return 'false'
 
 
 def request_get_deals_pricing_service(account_id, zone, environment):
@@ -1266,8 +1291,8 @@ def request_get_deals_pricing_service(account_id, zone, environment):
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Get base URL
-    request_url = get_microservice_base_url(environment) + '/cart-calculator/v2/accounts/' + account_id + '/deals?' \
-                                                                                                      'projection=PLAIN'
+    request_url = get_microservice_base_url(environment) + '/cart-calculator/v2/accounts/{0}/deals?projection=PLAIN'\
+        .format(account_id)
 
     # Send request
     response = place_request('GET', request_url, '', request_headers)
@@ -1302,8 +1327,8 @@ def request_delete_deals_pricing_service(account_id, zone, environment, data):
         deal_id = data[i]['dealId']
 
         # Get base URL
-        request_url = get_microservice_base_url(environment) + f'/cart-calculator/v1/account/' + account_id + '/deals/'\
-                      + deal_id
+        request_url = get_microservice_base_url(environment) + '/cart-calculator/v1/account/{0}/deals/{1}'\
+            .format(account_id, deal_id)
 
         # Send request
         response = place_request('DELETE', request_url, '', request_headers)

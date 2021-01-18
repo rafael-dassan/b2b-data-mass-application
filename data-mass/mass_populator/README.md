@@ -90,38 +90,73 @@ Example:
 📦data
  ┣ 📂ar
  ┃ ┣ 📜account.csv
+ ┃ ┣ 📜deal.csv
+ ┃ ┣ 📜invoice.csv
+ ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
+ ┃ ┣ 📜rewards.csv
  ┃ ┗ 📜user.csv
  ┣ 📂br
  ┃ ┣ 📜account.csv
+ ┃ ┣ 📜deal.csv
+ ┃ ┣ 📜invoice.csv
+ ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
+ ┃ ┣ 📜rewards.csv
  ┃ ┗ 📜user.csv
  ┣ 📂co
  ┃ ┣ 📜account.csv
+ ┃ ┣ 📜deal.csv
+ ┃ ┣ 📜invoice.csv
+ ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
+ ┃ ┣ 📜rewards.csv
  ┃ ┗ 📜user.csv
  ┣ 📂do
  ┃ ┣ 📜account.csv
+ ┃ ┣ 📜deal.csv
+ ┃ ┣ 📜invoice.csv
+ ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
+ ┃ ┣ 📜rewards.csv
  ┃ ┗ 📜user.csv
  ┣ 📂ec
  ┃ ┣ 📜account.csv
+ ┃ ┣ 📜deal.csv
+ ┃ ┣ 📜invoice.csv
+ ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
  ┃ ┗ 📜user.csv
  ┣ 📂mx
  ┃ ┣ 📜account.csv
+ ┃ ┣ 📜deal.csv
+ ┃ ┣ 📜invoice.csv
+ ┃ ┣ 📜order.csv
+ ┃ ┣ 📜product.csv
+ ┃ ┣ 📜recommendation.csv
+ ┃ ┣ 📜rewards.csv
+ ┃ ┗ 📜user.csv
+ ┣ 📂pe
+ ┃ ┣ 📜account.csv
+ ┃ ┣ 📜deal.csv
+ ┃ ┣ 📜invoice.csv
+ ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
  ┃ ┗ 📜user.csv
  ┣ 📂za
  ┃ ┣ 📜account.csv
+ ┃ ┣ 📜deal.csv
+ ┃ ┣ 📜invoice.csv
+ ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
+ ┃ ┣ 📜rewards.csv
  ┃ ┗ 📜user.csv
  ┗ 📜category.csv
 ```

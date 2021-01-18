@@ -1,0 +1,4 @@
+account_id,deal_id,sku,discount_value,min_quantity,operation
+"1932469950","DMA-MX-WEB-0102","0104WEB",15,1,"1"
+"1002406140","DMA-MX-ANDROID-0102","0104ANDROID",15,1,"1"
+"1802367400","DMA-MX-IOS-0102","0104IOS",15,1,"1"
