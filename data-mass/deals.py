@@ -367,13 +367,14 @@ def create_stepped_discount_with_limit(account_id, sku, zone, environment, index
         return 'false'
 
 
-def create_stepped_discount(account_id, sku, zone, environment, index_range, discount_range, operation, discount_type='percentOff',
-                            deal_type='STEPPED_DISCOUNT'):
+def create_stepped_discount(account_id, sku, zone, environment, index_range, discount_range, operation, deal_id=None,
+                            discount_type='percentOff', deal_type='STEPPED_DISCOUNT'):
     """
     Input a deal type stepped discount to a specific POC by calling the Promotion Relay Service and
     Pricing Engine Relay Service
     Args:
         account_id: POC unique identifier
+        deal_id: deal unique identifier
         sku: product unique identifier
         zone: e.g., AR, BR, CO, DO, MX, ZA
         environment: e.g, DEV, SIT, UAT
@@ -384,7 +385,7 @@ def create_stepped_discount(account_id, sku, zone, environment, index_range, dis
         operation: deals operations, e.g., discount creation, free good creation, etc
     Returns: `promotion_response` if success
     """
-    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, operation)
+    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, operation, deal_id)
 
     cart_response = request_create_stepped_discount_cart_calculation(account_id, promotion_response, zone, environment,
                                                                      sku, discount_type, index_range, discount_range)

@@ -13,9 +13,10 @@ def converter_string_to_list(columns_converter=[]):
 
 def converters_by_entity(entity):
     entities_converters_switcher = {
-        'account':        ['payment_method','products'],
-        'category':       ['products'],
-        'user':           ['account_ids']
+        'account': ['payment_method', 'products'],
+        'category': ['products'],
+        'user': ['account_ids'],
+        'stepped_discount': ['index_range', 'discount_range']
     }
     converter = entities_converters_switcher.get(entity)
     return converter if converter is not None else {}
@@ -23,9 +24,9 @@ def converters_by_entity(entity):
 
 def converter_dtype_to_string_by_entity(entity):
     entities_converters_switcher = {
-        'account':        ['account_id'],
+        'account': ['account_id'],
         'recommendation': ['account_id'],
-        'rewards':        ['account_id_unenroll','account_id_enrolled']
+        'rewards': ['account_id_unenroll','account_id_enrolled']
     }
     converter = entities_converters_switcher.get(entity)
     return dict.fromkeys(converter, 'str') if converter is not None else {}

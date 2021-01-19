@@ -1,0 +1,4 @@
+account_id,deal_id,sku,index_range,discount_range,operation
+"9883300101","DMA-ZA-WEB-0103","0105WEB","1;10;11;9999","10;20","2"
+"9883300102","DMA-ZA-ANDROID-0103","0105ANDROID","1;10;11;9999","10;20","2"
+"9883300103","DMA-ZA-IOS-0103","0105IOS","1;10;11;9999","10;20","2"

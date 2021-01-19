@@ -90,73 +90,89 @@ Example:
 📦data
  ┣ 📂ar
  ┃ ┣ 📜account.csv
- ┃ ┣ 📜deal.csv
+ ┃ ┣ 📜discount.csv
+ ┃ ┣ 📜discount_with_limit.csv
  ┃ ┣ 📜invoice.csv
  ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
  ┃ ┣ 📜rewards.csv
+ ┃ ┣ 📜stepped_discount.csv
  ┃ ┗ 📜user.csv
  ┣ 📂br
  ┃ ┣ 📜account.csv
- ┃ ┣ 📜deal.csv
+ ┃ ┣ 📜discount.csv
+ ┃ ┣ 📜discount_with_limit.csv
  ┃ ┣ 📜invoice.csv
  ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
  ┃ ┣ 📜rewards.csv
+ ┃ ┣ 📜stepped_discount.csv
  ┃ ┗ 📜user.csv
  ┣ 📂co
  ┃ ┣ 📜account.csv
- ┃ ┣ 📜deal.csv
+ ┃ ┣ 📜discount.csv
+ ┃ ┣ 📜discount_with_limit.csv
  ┃ ┣ 📜invoice.csv
  ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
  ┃ ┣ 📜rewards.csv
+ ┃ ┣ 📜stepped_discount.csv
  ┃ ┗ 📜user.csv
  ┣ 📂do
  ┃ ┣ 📜account.csv
- ┃ ┣ 📜deal.csv
+ ┃ ┣ 📜discount.csv
+ ┃ ┣ 📜discount_with_limit.csv
  ┃ ┣ 📜invoice.csv
  ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
  ┃ ┣ 📜rewards.csv
+ ┃ ┣ 📜stepped_discount.csv
  ┃ ┗ 📜user.csv
  ┣ 📂ec
  ┃ ┣ 📜account.csv
- ┃ ┣ 📜deal.csv
+ ┃ ┣ 📜discount.csv
+ ┃ ┣ 📜discount_with_limit.csv
  ┃ ┣ 📜invoice.csv
  ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
+ ┃ ┣ 📜stepped_discount.csv
  ┃ ┗ 📜user.csv
  ┣ 📂mx
  ┃ ┣ 📜account.csv
- ┃ ┣ 📜deal.csv
+ ┃ ┣ 📜discount.csv
+ ┃ ┣ 📜discount_with_limit.csv
  ┃ ┣ 📜invoice.csv
  ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
  ┃ ┣ 📜rewards.csv
+ ┃ ┣ 📜stepped_discount.csv
  ┃ ┗ 📜user.csv
  ┣ 📂pe
  ┃ ┣ 📜account.csv
- ┃ ┣ 📜deal.csv
+ ┃ ┣ 📜discount.csv
+ ┃ ┣ 📜discount_with_limit.csv
  ┃ ┣ 📜invoice.csv
  ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
+ ┃ ┣ 📜stepped_discount.csv
  ┃ ┗ 📜user.csv
  ┣ 📂za
  ┃ ┣ 📜account.csv
- ┃ ┣ 📜deal.csv
+ ┃ ┣ 📜discount.csv
+ ┃ ┣ 📜discount_with_limit.csv
  ┃ ┣ 📜invoice.csv
  ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
  ┃ ┣ 📜rewards.csv
+ ┃ ┣ 📜stepped_discount.csv
  ┃ ┗ 📜user.csv
  ┗ 📜category.csv
 ```
