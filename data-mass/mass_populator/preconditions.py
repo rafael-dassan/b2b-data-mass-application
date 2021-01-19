@@ -1,6 +1,6 @@
 from beer_recommender import get_recommendation_by_account, delete_recommendation_by_id
 from deals import request_get_deals_promotion_service, request_delete_deal_by_id, request_get_deals_pricing_service, \
-    request_delete_deals_pricing_service
+    request_delete_deals_pricing_service, request_delete_deal_by_id_v1
 from invoice import get_invoices, delete_invoice_by_id
 from mass_populator.helpers.database_helper import delete_from_database, get_database_params
 from mass_populator.log import *
@@ -61,9 +61,16 @@ def delete_deal(account_id, country, environment):
         logger.debug("[Promotion Service] The account {account_id} does not have deals associated. Skipping..."
                     .format(account_id=account_id))
     else:
-        # Delete deals from Promotion MS database
-        if 'false' == request_delete_deal_by_id(account_id, country, environment, promotions):
-            logger.error(log(Message.DELETE_PROMOTION_ERROR, {'account_id': account_id}))
+        if country == 'ZA':
+            for i in range(len(promotions)):
+                deal_id = promotions[i]['id']
+
+                # Delete deals from Promotion MS database
+                if 'false' == request_delete_deal_by_id_v1(deal_id, country, environment):
+                    logger.error(log(Message.DELETE_PROMOTION_ERROR, {'account_id': account_id}))
+        else:
+            if 'false' == request_delete_deal_by_id(account_id, country, environment, promotions):
+                logger.error(log(Message.DELETE_PROMOTION_ERROR, {'account_id': account_id}))
 
 
 def delete_recommendation(account_id, country, environment, use_case):
