@@ -92,6 +92,7 @@ Example:
  ┃ ┣ 📜account.csv
  ┃ ┣ 📜discount.csv
  ┃ ┣ 📜discount_with_limit.csv
+ ┃ ┣ 📜free_good.csv
  ┃ ┣ 📜invoice.csv
  ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
@@ -103,6 +104,7 @@ Example:
  ┃ ┣ 📜account.csv
  ┃ ┣ 📜discount.csv
  ┃ ┣ 📜discount_with_limit.csv
+ ┃ ┣ 📜free_good.csv
  ┃ ┣ 📜invoice.csv
  ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
@@ -114,6 +116,7 @@ Example:
  ┃ ┣ 📜account.csv
  ┃ ┣ 📜discount.csv
  ┃ ┣ 📜discount_with_limit.csv
+ ┃ ┣ 📜free_good.csv
  ┃ ┣ 📜invoice.csv
  ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
@@ -125,6 +128,7 @@ Example:
  ┃ ┣ 📜account.csv
  ┃ ┣ 📜discount.csv
  ┃ ┣ 📜discount_with_limit.csv
+ ┃ ┣ 📜free_good.csv
  ┃ ┣ 📜invoice.csv
  ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
@@ -136,6 +140,7 @@ Example:
  ┃ ┣ 📜account.csv
  ┃ ┣ 📜discount.csv
  ┃ ┣ 📜discount_with_limit.csv
+ ┃ ┣ 📜free_good.csv
  ┃ ┣ 📜invoice.csv
  ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
@@ -146,6 +151,7 @@ Example:
  ┃ ┣ 📜account.csv
  ┃ ┣ 📜discount.csv
  ┃ ┣ 📜discount_with_limit.csv
+ ┃ ┣ 📜free_good.csv
  ┃ ┣ 📜invoice.csv
  ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
@@ -157,6 +163,7 @@ Example:
  ┃ ┣ 📜account.csv
  ┃ ┣ 📜discount.csv
  ┃ ┣ 📜discount_with_limit.csv
+ ┃ ┣ 📜free_good.csv
  ┃ ┣ 📜invoice.csv
  ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
@@ -167,6 +174,7 @@ Example:
  ┃ ┣ 📜account.csv
  ┃ ┣ 📜discount.csv
  ┃ ┣ 📜discount_with_limit.csv
+ ┃ ┣ 📜free_good.csv
  ┃ ┣ 📜invoice.csv
  ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv

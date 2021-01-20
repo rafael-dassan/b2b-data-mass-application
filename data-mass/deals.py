@@ -396,29 +396,30 @@ def create_stepped_discount(account_id, sku, zone, environment, index_range, dis
         return 'false'
 
 
-def create_free_good(account_id, sku_list, zone, environment, minimum_quantity, quantity, partial_free_good,
-                     need_to_buy_product, operation, deal_type='FREE_GOOD'):
+def create_free_good(account_id, sku_list, zone, environment, proportion, quantity, partial_free_good,
+                     need_to_buy_product, operation, deal_id=None, deal_type='FREE_GOOD'):
     """
     Input a deal type free good to a specific POC by calling the Promotion Relay Service and Pricing Engine Relay
     Service
     Args:
         account_id: POC unique identifier
-        sku: product unique identifier
+        deal_id: deal unique identifier
         sku_list: SKU list to offer as free good
         deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
         zone: e.g., AR, BR, CO, DO, MX, ZA
         environment: e.g, DEV, SIT, UAT
-        minimum_quantity: SKU minimum's quantity for the free good to be applied
+        proportion: proportion for the free good to be applied
         quantity: quantity of SKUs to offer as free goods
         partial_free_good: partial SKU to be rescued
         need_to_buy_product: e.g., `Y` or `N`
         operation: deals operations, e.g., discount creation, free good creation, etc
     Returns: `promotion_response` if success
     """
-    promotion_response = request_create_deal(account_id, sku_list[0]['sku'], deal_type, zone, environment, operation)
+    promotion_response = request_create_deal(account_id, sku_list[0]['sku'], deal_type, zone, environment, operation,
+                                             deal_id)
 
     cart_response = request_create_free_good_cart_calculation(account_id, promotion_response, zone, environment,
-                                                              sku_list, minimum_quantity, quantity, partial_free_good,
+                                                              sku_list, proportion, quantity, partial_free_good,
                                                               need_to_buy_product)
 
     if promotion_response != 'false' and cart_response == 'success':
@@ -504,7 +505,8 @@ def create_interactive_combos_v2(account_id, sku, zone, environment, index_range
     else:
         return 'false'
 
-def request_create_free_good_cart_calculation(account_id, deal_id, zone, environment, sku_list, minimum_quantity,
+
+def request_create_free_good_cart_calculation(account_id, deal_id, zone, environment, sku_list, proportion,
                                               quantity, partial_free_good, need_buy_product):
     """
     Input deal type free good rules (API version 2) to the Pricing Engine Relay Service
@@ -515,7 +517,7 @@ def request_create_free_good_cart_calculation(account_id, deal_id, zone, environ
         zone: e.g., BR, DO, CO
         environment: e.g., DEV, SIT, UAT
         sku_list: list of SKUs used as free goods
-        minimum_quantity: SKU minimum's quantity for the free good to be applied
+        proportion: proportion for the free good to be applied
         quantity: quantity of SKUs to offer as free goods
         partial_free_good: partial SKU to be rescued
         need_buy_product: e.g., `Y` or `N`
@@ -551,8 +553,7 @@ def request_create_free_good_cart_calculation(account_id, deal_id, zone, environ
             'deals[0].conditions.simulationDateTime[0].startDate': dates_payload['startDate'],
             'deals[0].conditions.simulationDateTime[0].endDate': dates_payload['endDate'],
             'deals[0].conditions.lineItem.skus': [sku_list[0]['sku']],
-            'deals[0].conditions.lineItem.minimumQuantity': minimum_quantity,
-            'deals[0].output.freeGoods.proportion': minimum_quantity,
+            'deals[0].output.freeGoods.proportion': proportion,
             'deals[0].output.freeGoods.partial': boolean_partial_free_good,
             'deals[0].output.freeGoods.freeGoods[0].skus[0].sku': sku_list[0]['sku'],
             'deals[0].output.freeGoods.freeGoods[0].skus[0].price': sku_list[0]['price'],
@@ -569,7 +570,6 @@ def request_create_free_good_cart_calculation(account_id, deal_id, zone, environ
             'deals[0].quantityLimit': quantity,
             'deals[0].conditions.simulationDateTime[0].startDate': dates_payload['startDate'],
             'deals[0].conditions.simulationDateTime[0].endDate': dates_payload['endDate'],
-            'deals[0].output.freeGoods.proportion': 1,
             'deals[0].output.freeGoods.partial': boolean_partial_free_good,
             'deals[0].output.freeGoods.freeGoods[0].skus[0].sku': sku_list[0]['sku'],
             'deals[0].output.freeGoods.freeGoods[0].skus[0].price': sku_list[0]['price'],

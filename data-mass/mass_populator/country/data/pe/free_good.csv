@@ -1,0 +1,4 @@
+account_id,deal_id,sku,proportion,quantity,partial_free_good,need_to_buy_product,operation
+"3377645990","DMA-PE-WEB-0104","0106WEB",10,1,"N","Y","4"
+"3193946371","DMA-PE-ANDROID-0104","0106ANDROID",10,1,"N","Y","4"
+"3585524632","DMA-PE-IOS-0104","0106IOS",10,1,"N","Y","4"

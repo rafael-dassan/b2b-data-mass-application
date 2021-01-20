@@ -23,7 +23,7 @@
                 "freeGoods": {
                     "partial": "string",
                     "fixed": false,
-                    "proportion": "string",
+                    "proportion": 1,
                     "freeGoods": [
                         {
                             "skus": [

@@ -20,7 +20,7 @@
                 ],
                 "lineItem": {
                     "skus": "string",
-                    "minimumQuantity": "string",
+                    "minimumQuantity": 1,
                     "sharedMinimumQuantity": true,
                     "crossDiscount": true
                 }
