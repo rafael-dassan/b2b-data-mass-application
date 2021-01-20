@@ -2,7 +2,6 @@ from beer_recommender import get_recommendation_by_account, delete_recommendatio
 from deals import request_get_deals_promotion_service, request_delete_deal_by_id, request_get_deals_pricing_service, \
     request_delete_deals_pricing_service, request_delete_deal_by_id_v1
 from invoice import get_invoices, delete_invoice_by_id
-from mass_populator.helpers.database_helper import delete_from_database, get_database_params
 from mass_populator.log import *
 
 logger = logging.getLogger(__name__)

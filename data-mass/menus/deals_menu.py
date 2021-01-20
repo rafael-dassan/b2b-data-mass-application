@@ -39,26 +39,44 @@ def print_discount_percentage_menu():
     return discount_value
 
 
-def print_index_range_menu(indexes=4):
-    index_list = list()
-    for x in range(indexes):
-        range_index = input(text.default_text_color + 'Range index #' + str(x) + ': ')
-        while range_index == '' or int(range_index) <= 0:
-            print(text.Red + '\n- Range index must be greater than 0')
-            range_index = input(text.default_text_color + '\nRange index #' + str(x) + ': ')
+def print_stepped_free_good_ranges_menu(indexes=2):
+    range_list = list()
+    for i in range(indexes):
+        print(text.Yellow + 'Range #{0}'.format(str(i+1)))
+        dict_values = {
+            'start': input(text.default_text_color + 'From: '),
+            'end': input(text.default_text_color + 'To: '),
+            'quantity': input(text.default_text_color + 'SKU quantity to offer as free good: '),
+            'proportion': input(text.default_text_color + 'Proportion: ')
+        }
 
-        index_list.append(range_index)
+        range_list.append(dict_values)
 
-    return index_list
+    return range_list
+
+
+def print_stepped_discount_ranges_menu(indexes=2):
+    range_list = list()
+    for i in range(indexes):
+        print(text.Yellow + 'Range #{0}'.format(str(i + 1)))
+        dict_values = {
+            'start': input(text.default_text_color + 'From: '),
+            'end': input(text.default_text_color + 'To: '),
+            'discount': input(text.default_text_color + 'Discount percentage (%): ')
+        }
+
+        range_list.append(dict_values)
+
+    return range_list
 
 
 def print_discount_range_menu(indexes=2):
     index_list = list()
     for x in range(indexes):
-        discount_value = input(text.default_text_color + 'Discount value for index #' + str(x) + ': ')
+        discount_value = input(text.default_text_color + 'Discount percentage (%): ')
         while discount_value == '' or float(discount_value) <= 0:
             print(text.Red + '\n- Discount value must be greater than 0')
-            discount_value = input(text.default_text_color + '\nDiscount value for index #' + str(x) + ': ')
+            discount_value = input(text.default_text_color + 'Discount percentage (%): ')
 
         index_list.append(discount_value)
 
@@ -131,7 +149,7 @@ def print_interactive_combos_quantity_range_menu():
     return index_dict
 
 
-# Maximum and Mininum index for Interactive Combos v2
+# Maximum and Minimum index for Interactive Combos v2
 def print_interactive_combos_quantity_range_menu_v2():
     index_list_min = list()
     index_list_max = list()
@@ -188,19 +206,6 @@ def print_free_good_redemption_menu(partial_free_good):
                                                                   '(y/N): ')
 
     return need_to_buy_product.upper()
-
-
-def print_free_good_quantity_range_menu():
-    index_list = list()
-    for x in range(2):
-        quantity_value = input(text.default_text_color + 'SKU quantity for index #' + str(x) + ': ')
-        while quantity_value == '' or int(quantity_value) <= 0:
-            print(text.Red + '\n- SKU quantity must be greater than 0')
-            quantity_value = input(text.default_text_color + '\nSKU quantity for index #' + str(x) + ': ')
-
-        index_list.append(quantity_value)
-
-    return index_list
 
 
 def print_option_sku_menu():

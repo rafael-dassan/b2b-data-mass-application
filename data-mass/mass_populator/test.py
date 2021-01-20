@@ -1,12 +1,11 @@
 from common import block_print
 from mass_populator.country.populate_category import associate_products_to_category_magento
 from mass_populator.country.populate_deal import populate_stepped_discount_with_limit, populate_discount, \
-    populate_stepped_discount, populate_free_good
+    populate_stepped_discount, populate_free_good, populate_stepped_free_good
 from mass_populator.country.populate_invoice import populate_invoice
 from mass_populator.country.populate_order import populate_order
 from mass_populator.country.populate_product import enable_product_magento, populate_product
 from mass_populator.country.populate_user_v3 import populate_user_iam_b2c
-from mass_populator.helpers.database_helper import get_database_params, delete_from_database
 from mass_populator.log import *
 from mass_populator.country.populate_account import populate_poc
 from mass_populator.country.populate_recomendation import populate_recommendation
@@ -24,7 +23,7 @@ def execute_test(country, environment):
     stepped_discount_params = get_deals_params(country, 'STEPPED_DISCOUNT')
     stepped_discount_limit_params = get_deals_params(country, 'STEPPED_DISCOUNT_LIMIT')
     free_good_params = get_deals_params(country, 'FREE_GOOD')
-    order_database_params = get_database_params(country, environment, 'order-service-ms')
+    stepped_free_good_params = get_deals_params(country, 'STEPPED_FREE_GOOD')
     order_params = get_order_params(country)
     invoice_params = get_invoice_params(country)
 
@@ -40,10 +39,6 @@ def execute_test(country, environment):
 
     logger.info("delete_deals for account %s", account_params.get('id'))
     delete_deal(account_params.get('id'), country, environment)
-
-    logger.info("delete_orders for %s/%s", country, environment)
-    delete_from_database(order_database_params.get('client'), order_database_params.get('db_name'),
-                         order_database_params.get('collection_name'), order_database_params.get('prefix'))
 
     logger.info("delete_invoices for account %s", invoice_params.get('account_id'))
     delete_invoice(invoice_params.get('account_id'), country, environment)
@@ -75,8 +70,7 @@ def execute_test(country, environment):
                       discount_params.get('min_quantity'), discount_params.get('operation'))
     populate_stepped_discount(country, environment, stepped_discount_params.get('account_id'),
                               stepped_discount_params.get('deal_id'), stepped_discount_params.get('sku'),
-                              stepped_discount_params.get('index_range'), stepped_discount_params.get('discount_range'),
-                              stepped_discount_params.get('operation'))
+                              stepped_discount_params.get('ranges'), stepped_discount_params.get('operation'))
     populate_stepped_discount_with_limit(country, environment, stepped_discount_limit_params.get('account_id'),
                                          stepped_discount_limit_params.get('deal_id'),
                                          stepped_discount_limit_params.get('sku'),
@@ -87,6 +81,9 @@ def execute_test(country, environment):
                        free_good_params.get('sku'), free_good_params.get('proportion'),
                        free_good_params.get('quantity'), free_good_params.get('partial_free_good'),
                        free_good_params.get('need_to_buy_product'), free_good_params.get('operation'))
+    populate_stepped_free_good(country, environment, stepped_free_good_params.get('account_id'),
+                               stepped_free_good_params.get('deal_id'), stepped_free_good_params.get('sku'),
+                               stepped_free_good_params.get('ranges'), stepped_free_good_params.get('operation'))
 
     logger.info("populate_orders for %s/%s", country, environment)
     populate_order(country, environment, order_params.get('account_id'), order_params.get('allow_order_cancel'),
@@ -183,8 +180,7 @@ def get_deals_params(country, deal_type):
             'account_id': get_account_params(country).get('id'),
             'deal_id': 'DMA-{country}-TEST-0103'.format(country=country),
             'sku': get_product_params().get('sku'),
-            'index_range': ['1', '10', '11', '9999'],
-            'discount_range': ['10', '20'],
+            'ranges': ['1,10,10', '11,9999,15'],
             'operation': '2'
         },
         'STEPPED_DISCOUNT_LIMIT': {
@@ -197,13 +193,20 @@ def get_deals_params(country, deal_type):
         },
         'FREE_GOOD': {
             'account_id': get_account_params(country).get('id'),
-            'deal_id': 'DMA-{country}-TEST-0101'.format(country=country),
+            'deal_id': 'DMA-{country}-TEST-0104'.format(country=country),
             'sku': get_product_params().get('sku'),
             'proportion': 10,
             'quantity': 1,
             'partial_free_good': 'N',
             'need_to_buy_product': 'Y',
             'operation': '4'
+        },
+        'STEPPED_FREE_GOOD': {
+            'account_id': get_account_params(country).get('id'),
+            'deal_id': 'DMA-{country}-TEST-0105'.format(country=country),
+            'sku': get_product_params().get('sku'),
+            'ranges': ['1,10,1,2', '11,9999,2,2'],
+            'operation': '5'
         }
     }
 

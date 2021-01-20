@@ -1,5 +1,6 @@
 from account import check_account_exists_microservice
-from deals import create_stepped_discount_with_limit, create_discount, create_stepped_discount, create_free_good
+from deals import create_stepped_discount_with_limit, create_discount, create_stepped_discount, create_free_good, \
+    create_stepped_free_good
 from mass_populator.log import *
 from products import request_get_offers_microservice
 
@@ -55,15 +56,25 @@ def populate_stepped_discount_base(country, environment, dataframe_deals):
 
 def apply_populate_stepped_discount(row, country, environment):
     populate_stepped_discount(country, environment, str(row['account_id']), row['deal_id'], row['sku'],
-                              row['index_range'], row['discount_range'], row['operation'])
+                              row['ranges'], row['operation'])
 
 
-def populate_stepped_discount(country, environment, account_id, deal_id, sku, index_range, discount_range, operation):
+def populate_stepped_discount(country, environment, account_id, deal_id, sku, ranges, operation):
     if 'false' == check_account_exists_microservice(account_id, country, environment):
         logger.error(log(Message.RETRIEVE_ACCOUNT_ERROR, {'account_id': account_id}))
     else:
-        if 'false' == create_stepped_discount(account_id, sku, country, environment, index_range, discount_range,
-                                              operation, deal_id):
+        range_list = list()
+        for i in range(len(ranges)):
+            range_values = ranges[i].split(',')
+            dict_values = {
+                'start': range_values[0],
+                'end': range_values[1],
+                'discount': range_values[2]
+            }
+
+            range_list.append(dict_values)
+
+        if 'false' == create_stepped_discount(account_id, sku, country, environment, range_list, operation, deal_id):
             logger.error(log(Message.CREATE_DEALS_ERROR, {'deal_id': deal_id, 'account_id': account_id}))
 
 
@@ -99,3 +110,33 @@ def populate_free_good(country, environment, account_id, deal_id, sku, proportio
                 if 'false' == create_free_good(account_id, sku_list, country, environment, proportion, quantity,
                                                partial_free_good, need_to_buy_product, operation, deal_id):
                     logger.error(log(Message.CREATE_DEALS_ERROR, {'deal_id': deal_id, 'account_id': account_id}))
+
+
+def populate_stepped_free_good_base(country, environment, dataframe_deals):
+    if dataframe_deals is not None:
+        dataframe_deals.apply(apply_populate_stepped_free_good, args=(country, environment), axis=1)
+
+
+def apply_populate_stepped_free_good(row, country, environment):
+    populate_stepped_free_good(country, environment, str(row['account_id']), row['deal_id'], row['sku'],
+                               row['ranges'], row['operation'])
+
+
+def populate_stepped_free_good(country, environment, account_id, deal_id, sku, ranges, operation):
+    if 'false' == check_account_exists_microservice(account_id, country, environment):
+        logger.error(log(Message.RETRIEVE_ACCOUNT_ERROR, {'account_id': account_id}))
+    else:
+        range_list = list()
+        for i in range(len(ranges)):
+            range_values = ranges[i].split(',')
+            dict_values = {
+                'start': range_values[0],
+                'end': range_values[1],
+                'quantity': range_values[2],
+                'proportion': range_values[3]
+            }
+
+            range_list.append(dict_values)
+
+        if 'false' == create_stepped_free_good(account_id, sku, country, environment, range_list, operation, deal_id):
+            logger.error(log(Message.CREATE_DEALS_ERROR, {'deal_id': deal_id, 'account_id': account_id}))
