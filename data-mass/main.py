@@ -699,7 +699,7 @@ def input_combos_menu():
     selection_structure = print_combos_menu()
 
     if selection_structure == '3':
-        zone = print_zone_menu_for_combos('DT')
+        zone = print_zone_menu_for_ms()
     else:
         zone = print_zone_menu_for_combos()
 

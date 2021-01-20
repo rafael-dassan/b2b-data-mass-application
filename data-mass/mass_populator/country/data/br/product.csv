@@ -14,3 +14,6 @@ sku,name,brand_name,sub_brand_name,package_id,container_name,container_size,cont
 "0105WEB","QMWEB05","Journey","Journey","0105WEB","Garrafa",1000,False,"ML",3
 "0105ANDROID","QMANDROID05","Journey","Journey","0105ANDROID","Garrafa",1000,False,"ML",1
 "0105IOS","QMIOS05","Journey","Journey","0105IOS","Garrafa",1000,False,"ML",1
+"0106WEB","QMWEB06","Journey","Journey","0106WEB","Garrafa",1000,False,"ML",3
+"0106ANDROID","QMANDROID06","Journey","Journey","0106ANDROID","Garrafa",1000,False,"ML",1
+"0106IOS","QMIOS06","Journey","Journey","0106IOS","Garrafa",1000,False,"ML",1

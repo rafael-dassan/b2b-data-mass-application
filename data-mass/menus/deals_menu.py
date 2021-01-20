@@ -99,7 +99,8 @@ def print_free_good_quantity_menu():
 
     return quantity
 
-#Maximum and Mininum index for Interactive Combos v1
+
+# Maximum and Mininum index for Interactive Combos v1
 def print_interactive_combos_quantity_range_menu():
     index_list_min = list()
     index_list_max = list()
@@ -129,7 +130,8 @@ def print_interactive_combos_quantity_range_menu():
     index_dict['maximum'] = index_list_max
     return index_dict
 
-#Maximum and Mininum index for Interactive Combos v2
+
+# Maximum and Mininum index for Interactive Combos v2
 def print_interactive_combos_quantity_range_menu_v2():
     index_list_min = list()
     index_list_max = list()
@@ -158,6 +160,7 @@ def print_interactive_combos_quantity_range_menu_v2():
 
     index_dict['maximum'] = index_list_max
     return index_dict
+
 
 def print_partial_free_good_menu(zone):
     if zone != 'BR':
