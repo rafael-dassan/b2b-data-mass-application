@@ -95,11 +95,27 @@ def create_new_program(zone, environment):
                 'categories[0].description' : categories[2],
                 'categories[0].buttonLabel' : categories[3],
                 'categories[0].image' : categories[4],
+                'categories[0].title' : 'Premium',
+                'categories[0].subtitle' : categories[2],
+                'categories[0].headerImage' : "https://cdn-b2b-abi.global.ssl.fastly.net/sit/images/br/redesign/premium/img-premium-chopp-brahma-logo@2x.png",
+                'categories[0].brands' : [{
+                    "brandId": "123",
+                    "title": "premium brand",
+                    "image": "https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/premium/img_puntos_20.png"
+                }],
                 'categories[1].categoryId' : categories[5],
                 'categories[1].categoryIdWeb' : categories[6],
                 'categories[1].description' : categories[7],
                 'categories[1].buttonLabel' : categories[8],
                 'categories[1].image' : categories[9],
+                'categories[1].title' : 'Core',
+                'categories[1].subtitle' : categories[7],
+                'categories[1].headerImage' : "https://cdn-b2b-abi.global.ssl.fastly.net/sit/images/br/redesign/core/img-core-brahmachopp-logo@2x.png",
+                'categories[1].brands' : [{
+                    "brandId": "321",
+                    "title": "core brand",
+                    "image": "https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/core/img_punto_1.png"
+                }],
                 'termsAndConditions[0].documentURL' : terms[0],
                 'termsAndConditions[0].changeLog' : terms[1]
             }
@@ -968,10 +984,9 @@ def generate_combos_information(deals_list):
 # Generates the SKUs for the rules for Rewards program
 def generate_skus_for_rules(zone, environment):
     products = request_get_products_microservice(zone, environment)
-
     sku_rules = list()
     for i in range(len(products)):
-        sku_rules.append(products[i]['sku']['sku'])
+        sku_rules.append(products[i]['sku'])
 
     return sku_rules
 
