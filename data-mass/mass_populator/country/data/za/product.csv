@@ -11,3 +11,6 @@ sku,name,brand_name,sub_brand_name,package_id,container_name,container_size,cont
 "0104WEB","QMWEB04","Journey","Journey","0104WEB","Bottle",1000,False,"ML",3
 "0104ANDROID","QMANDROID04","Journey","Journey","0104ANDROID","Bottle",1000,False,"ML",1
 "0104IOS","QMIOS04","Journey","Journey","0104IOS","Bottle",1000,False,"ML",1
+"0105WEB","QMWEB05","Journey","Journey","0105WEB","Bottle",1000,False,"ML",3
+"0105ANDROID","QMANDROID05","Journey","Journey","0105ANDROID","Bottle",1000,False,"ML",1
+"0105IOS","QMIOS05","Journey","Journey","0105IOS","Bottle",1000,False,"ML",1

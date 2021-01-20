@@ -1,6 +1,7 @@
 from common import block_print
 from mass_populator.country.populate_category import associate_products_to_category_magento
-from mass_populator.country.populate_deal import populate_stepped_discount_with_limit
+from mass_populator.country.populate_deal import populate_stepped_discount_with_limit, populate_discount, \
+    populate_stepped_discount
 from mass_populator.country.populate_invoice import populate_invoice
 from mass_populator.country.populate_order import populate_order
 from mass_populator.country.populate_product import enable_product_magento, populate_product
@@ -19,7 +20,9 @@ def execute_test(country, environment):
     user_params = get_user_params(country)
     product_params = get_product_params()
     category_params = get_category_params()
-    deals_params = get_deals_params(country)
+    discount_params = get_deals_params(country, 'DISCOUNT')
+    stepped_discount_params = get_deals_params(country, 'STEPPED_DISCOUNT')
+    stepped_discount_limit_params = get_deals_params(country, 'STEPPED_DISCOUNT_LIMIT')
     order_database_params = get_database_params(country, environment, 'order-service-ms')
     order_params = get_order_params(country)
     invoice_params = get_invoice_params(country)
@@ -34,8 +37,8 @@ def execute_test(country, environment):
     delete_recommendation(account_params.get('id'), country, environment, 'FORGOTTEN_ITEMS')
     delete_recommendation(account_params.get('id'), country, environment, 'CROSS_SELL_UP_SELL')
 
-    logger.info("delete_deals for account %s", deals_params.get('account_id'))
-    delete_deal(deals_params.get('account_id'), country, environment)
+    logger.info("delete_deals for account %s", account_params.get('id'))
+    delete_deal(account_params.get('id'), country, environment)
 
     logger.info("delete_orders for %s/%s", country, environment)
     delete_from_database(order_database_params.get('client'), order_database_params.get('db_name'),
@@ -66,10 +69,19 @@ def execute_test(country, environment):
     populate_recommendation(country, environment, account_params.get('id'))
 
     logger.info("populate_deals for %s/%s", country, environment)
-    populate_stepped_discount_with_limit(country, environment, deals_params.get('account_id'),
-                                         deals_params.get('deal_id'), deals_params.get('sku'),
-                                         deals_params.get('discount_value'), deals_params.get('max_quantity'),
-                                         deals_params.get('operation'))
+    populate_discount(country, environment, discount_params.get('account_id'), discount_params.get('deal_id'),
+                      discount_params.get('sku'), discount_params.get('discount_value'),
+                      discount_params.get('min_quantity'), discount_params.get('operation'))
+    populate_stepped_discount(country, environment, stepped_discount_params.get('account_id'),
+                              stepped_discount_params.get('deal_id'), stepped_discount_params.get('sku'),
+                              stepped_discount_params.get('index_range'), stepped_discount_params.get('discount_range'),
+                              stepped_discount_params.get('operation'))
+    populate_stepped_discount_with_limit(country, environment, stepped_discount_limit_params.get('account_id'),
+                                         stepped_discount_limit_params.get('deal_id'),
+                                         stepped_discount_limit_params.get('sku'),
+                                         stepped_discount_limit_params.get('discount_value'),
+                                         stepped_discount_limit_params.get('max_quantity'),
+                                         stepped_discount_limit_params.get('operation'))
 
     logger.info("populate_orders for %s/%s", country, environment)
     populate_order(country, environment, order_params.get('account_id'), order_params.get('allow_order_cancel'),
@@ -152,17 +164,35 @@ def get_category_params():
     return params
 
 
-def get_deals_params(country):
+def get_deals_params(country, deal_type):
     params = {
-        'account_id': get_account_params(country).get('id'),
-        'deal_id': 'QM-{country}-TEST-0101'.format(country=country),
-        'sku': get_product_params().get('sku'),
-        'discount_value': 10,
-        'max_quantity': 10,
-        'operation': '3'
+        'DISCOUNT': {
+            'account_id': get_account_params(country).get('id'),
+            'deal_id': 'DMA-{country}-TEST-0102'.format(country=country),
+            'sku': get_product_params().get('sku'),
+            'discount_value': 15,
+            'min_quantity': 1,
+            'operation': '1'
+        },
+        'STEPPED_DISCOUNT': {
+            'account_id': get_account_params(country).get('id'),
+            'deal_id': 'DMA-{country}-TEST-0103'.format(country=country),
+            'sku': get_product_params().get('sku'),
+            'index_range': ['1', '10', '11', '9999'],
+            'discount_range': ['10', '20'],
+            'operation': '2'
+        },
+        'STEPPED_DISCOUNT_LIMIT': {
+            'account_id': get_account_params(country).get('id'),
+            'deal_id': 'DMA-{country}-TEST-0101'.format(country=country),
+            'sku': get_product_params().get('sku'),
+            'discount_value': 10,
+            'max_quantity': 10,
+            'operation': '3'
+        }
     }
 
-    return params
+    return params[deal_type]
 
 
 def get_order_params(country):

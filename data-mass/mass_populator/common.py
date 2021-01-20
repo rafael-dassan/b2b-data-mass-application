@@ -1,5 +1,6 @@
 from common import block_print
-from mass_populator.country.populate_deal import populate_stepped_discount_with_limit_base, populate_discount_base
+from mass_populator.country.populate_deal import populate_stepped_discount_with_limit_base, populate_discount_base, \
+    populate_stepped_discount_base
 from mass_populator.country.populate_invoice import populate_invoices_base
 from mass_populator.country.populate_order import populate_orders_base
 from mass_populator.helpers.csv_helper import search_data_by
@@ -45,6 +46,7 @@ def populate_recommendations(country, environment):
 def populate_deals(country, environment):
     logger.info("populate_deals for %s/%s", country, environment)
     populate_discount_base(country, environment, search_data_by(country, 'discount'))
+    populate_stepped_discount_base(country, environment, search_data_by(country, 'stepped_discount'))
     populate_stepped_discount_with_limit_base(country, environment, search_data_by(country, 'discount_with_limit'))
 
 
