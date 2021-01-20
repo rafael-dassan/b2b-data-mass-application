@@ -29,6 +29,7 @@
   "initialBalance": 0,
   "calculationType": "SUBTOTAL",
   "freeGoodEnabled": true,
+  "redeemLimit": 10,
   "categories": [
     {
       "categoryId": "string",
@@ -36,7 +37,11 @@
       "description": "string",
       "buttonLabel": "string",
       "buttonName": "Premium-product-button",
-      "image": "string"
+      "image": "string",
+      "title": "string",
+      "subtitle": "string",
+      "headerImage": "string",
+      "brands": []
     },
     {
       "categoryId": "string",
@@ -44,7 +49,11 @@
       "description": "string",
       "buttonLabel": "string",
       "buttonName": "Core-product-button",
-      "image": "string"
+      "image": "string",
+      "title": "string",
+      "subtitle": "string",
+      "headerImage": "string",
+      "brands": []
     }
   ],
   "termsAndConditions": [
