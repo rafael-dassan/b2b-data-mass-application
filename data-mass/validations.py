@@ -200,7 +200,7 @@ def validate_structure(option):
 
 
 def validate_rewards(option):
-    options = ['1', '2', '3', '4', '5', '6', '7']
+    options = ['1', '2', '3', '4', '5', '6', '7', '8']
     if option in options:
         return True
     else:

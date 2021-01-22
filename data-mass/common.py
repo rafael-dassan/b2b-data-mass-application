@@ -409,6 +409,7 @@ def print_rewards_menu():
     print(text.default_text_color + str(5), text.Yellow + 'Input Challenges to zone')
     print(text.default_text_color + str(6), text.Yellow + 'Input Redeem Products to account')
     print(text.default_text_color + str(7), text.Yellow + 'Unenroll a POC from a program')
+    print(text.default_text_color + str(8), text.Yellow + 'Input Transactions to a POC')
     structure = input(text.default_text_color + '\nPlease select: ')
     while validate_rewards(structure) is False:
         print(text.Red + '\n- Invalid option')
@@ -419,6 +420,7 @@ def print_rewards_menu():
         print(text.default_text_color + str(5), text.Yellow + 'Input Challenges to zone')
         print(text.default_text_color + str(6), text.Yellow + 'Input Redeem Products to account')
         print(text.default_text_color + str(7), text.Yellow + 'Unenroll a POC from a program')
+        print(text.default_text_color + str(8), text.Yellow + 'Input Transactions to a POC')
         structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure
