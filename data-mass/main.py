@@ -193,6 +193,7 @@ def create_rewards_to_account():
         '5': 'ADD_CHALLENGE',
         '6': 'ADD_REDEEM',
         '7': 'DELETE_ENROLL_POC',
+        '8': 'ADD_TRANSACTIONS',
     }
 
     reward_option = switcher.get(selection_structure, 'false')
@@ -302,6 +303,27 @@ def create_rewards_to_account():
             print(text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "Create new program" to create it')
         elif delete_enroll_poc == 204:
             print(text.Green + '\n- [Rewards] The enrollment has been deleted for this account from the rewards program')
+
+        print_finish_application_menu()
+    
+     # Option to ADD a Transaction to a POC
+    elif reward_option == 'ADD_TRANSACTIONS':
+        abi_id = print_account_id_menu(zone)
+
+        # Call check account exists function
+        account = check_account_exists_microservice(abi_id, zone, environment)
+
+        if account == 'false':
+            print_finish_application_menu()
+
+        input_transactions = input_transactions_to_account(abi_id, zone, environment)
+
+        if input_transactions == 'pgm_not_found':
+            print(text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "Create new program" to create it')
+        elif input_transactions == 'post_error':
+            print(text.Red + '\n- [Rewards] Failure when input a transaction to account')
+        elif input_transactions == 201:
+            print(text.Green + '\n- [Rewards] The transactions has been included for this account from the rewards program')
 
         print_finish_application_menu()
 
