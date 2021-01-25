@@ -39,8 +39,8 @@ def create_quick_order_payload(abi_id, zone, environment, product_list):
 
     if zone in countries_es:
         language = 'es'
-        text = 'Pedido Facil'
-        text_description = 'Productos que ordenaste anteriormente <link>Anadir todo al camion</link>'
+        text = 'Pedido Fácil'
+        text_description = 'Productos que ordenaste anteriormente <link>Añadir todo al camión</link>'
     elif zone == 'BR':
         language = 'pt'
         text = 'Pedido Facil'
