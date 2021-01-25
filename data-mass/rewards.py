@@ -305,8 +305,10 @@ def input_transactions_to_account(account_id, zone, environment):
     # Check if the zone already have a reward program created
     program_found = locate_program_for_zone(zone, environment, request_headers)
 
-    if program_found != 'false':
-        # Define url request
+    if program_found == 'false':
+        return 'pgm_not_found'
+    else:
+         # Define url request
         request_url_offer = get_microservice_base_url(environment) + '/rewards-service/rewards/' + account_id + '/transaction/rewards-offer'
         request_url_redemption = get_microservice_base_url(environment) + '/rewards-service/rewards/' + account_id + '/transaction/redemption'
 
@@ -342,9 +344,6 @@ def input_transactions_to_account(account_id, zone, environment):
                             + str(response_redemption.status_code) + '. Response message ' + response_redemption.text)   
         
         return 201 if response_offer.status_code == 201 and response_redemption.status_code == 200 else 'post_error'
-    else:
-        return 'pgm_not_found'
-
 
 # Add Redeem products to account
 def input_redeem_products(account_id, zone, environment):
