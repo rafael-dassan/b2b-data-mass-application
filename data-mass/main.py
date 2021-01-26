@@ -579,18 +579,13 @@ def deals_menu():
         print_finish_application_menu()
 
     sku_list = list()
-    flag = 0
-    # Interactive combos: Validation of SKU to be different.
-    if operation == 4:
-        while len(sku_list) <= 3 and flag == 1:
+    # Interactive combos:
+    if operation == '6' or operation == '7':
+        while len(sku_list) <= 3:
             index_offers = randint(0, (len(product_offers) - 1))
             product_data = product_offers[index_offers]
             sku_list.append(product_data)
-            if len(sku_list) <=3:
-               if sku_list[0] != sku_list[1]:
-                   if sku_list[1] != sku_list[2]:
-                       if sku_list[2] != sku_list[0]:
-                           flag = 1
+
 
     else:
         while len(sku_list) <= 2:
@@ -599,16 +594,37 @@ def deals_menu():
             sku_list.append(product_data)
 
     if option_sku == '1':
-        sku = input(text.default_text_color + 'SKU: ')
-        sku_id = sku.strip()
-        sku_list.clear()
-        for i in range(len(product_offers)):
-            if product_offers[i]['sku'] == sku_id:
-                sku_list.append(product_offers[i])
-        if len(sku_list) == 0:
-            print(text.Red + '\n- The SKU {sku_id} is not associated with the account {account_id} or it doesn`t exist'
-                  .format(sku_id=sku_id, account_id=account_id))
-            print_finish_application_menu()
+        if operation == '6' or operation == '7':
+            sku_list.clear()
+            for y in range(3):
+                sku = input(text.default_text_color + 'SKU: ')
+                sku_id = sku.strip()
+                for i in range(len(product_offers)):
+                    if product_offers[i]['sku'] == sku_id:
+                        sku_list.append(product_offers[i])
+
+                if len(sku_list) == 0:
+                    print(text.Red + '\n- The SKU {sku_id} is not associated with the account {account_id} or it doesn`t exist'
+                          .format(sku_id=sku_id, account_id=account_id))
+                    print_finish_application_menu()
+
+
+            if len(sku_list) == 3:
+                if sku_list[0] == sku_list[1] or sku_list[1] == sku_list[2] or sku_list[2] == sku_list[0]:
+                            print(text.Red + '\n It is not possible to insert interactive combos using the same SKU')
+                            print_finish_application_menu()
+        else:
+            sku = input(text.default_text_color + 'SKU: ')
+            sku_id = sku.strip()
+            sku_list.clear()
+            for i in range(len(product_offers)):
+                if product_offers[i]['sku'] == sku_id:
+                    sku_list.append(product_offers[i])
+            if len(sku_list) == 0:
+                print(text.Red + '\n- The SKU {sku_id} is not associated with the account {account_id} or it doesn`t exist'
+                      .format(sku_id=sku_id, account_id=account_id))
+                print_finish_application_menu()
+
     else:
         sku = sku_list[0]['sku']
 
