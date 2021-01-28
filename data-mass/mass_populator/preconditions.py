@@ -11,11 +11,6 @@ logger = logging.getLogger(__name__)
 def run_preconditions(dataframe_account, country, environment):
     logger.info("Running pre-conditions for %s/%s", country, environment)
 
-    logger.info("delete_orders for %s/%s", country, environment)
-    order_database_params = get_database_params(country, environment, 'order-service-ms')
-    delete_from_database(order_database_params.get('client'), order_database_params.get('db_name'),
-                         order_database_params.get('collection_name'), order_database_params.get('prefix'))
-
     if dataframe_account is not None:
         dataframe_account.apply(apply_run_preconditions, args=(country, environment), axis=1)
 

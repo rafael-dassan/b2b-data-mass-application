@@ -388,7 +388,7 @@ def request_get_account_product_assortment(account_id, zone, environment, delive
     headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Get base URL
-    request_url = get_microservice_base_url(environment) + '/product-assortment/?accountId=accountId' + account_id \
+    request_url = get_microservice_base_url(environment) + '/product-assortment/?accountId=' + account_id \
                   + '&deliveryCenterId=' + delivery_center_id
 
     # Place request
