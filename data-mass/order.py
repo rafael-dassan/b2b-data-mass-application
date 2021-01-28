@@ -206,7 +206,7 @@ def get_order_prefix_params(zone):
         },
         'MX': {
             'order_number_size': 7,
-            'prefix': 'UAT'
+            'prefix': '5'
         },
         'PE': {
             'order_number_size': 7,
