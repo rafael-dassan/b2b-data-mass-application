@@ -1,5 +1,8 @@
 {
   "accountId": "string",
+  "challengeIds": [
+      "string"
+  ],
   "channel": null,
   "deliveryAddress": {
       "address": "TEST DELIVERY ADDRESS",
