@@ -8,7 +8,7 @@ from tabulate import tabulate
 
 # Local application imports
 from common import get_header_request, get_microservice_base_url, place_request, update_value_to_json, create_list, \
-    convert_json_to_string
+    convert_json_to_string, set_to_dictionary
 from classes.text import text
 from menus.account_menu import print_minimum_order_type_menu, print_minimum_order_value_menu
 
@@ -42,39 +42,27 @@ def create_account_ms(account_id, name, payment_method, minimum_order, zone, env
     if zone == 'BR' and 'BANK_SLIP' in payment_method:
         payment_term = return_payment_term_bank_slip()
 
+    dict_values = {
+        'accountId': account_id,
+        'challengeIds': [account_id],
+        'deliveryCenterId': account_id,
+        'deliveryScheduleId': account_id,
+        'liquorLicense[0].number': account_id,
+        'priceListId': account_id,
+        'taxId': account_id,
+        'name': name,
+        'paymentMethods': payment_method,
+        'deliveryAddress.state': state,
+        'paymentTerms': payment_term,
+        'status': account_status,
+        'hasEmptiesLoan': enable_empties_loan
+    }
+
     if minimum_order is not None:
-        dict_values = {
-            'accountId': account_id,
-            'deliveryCenterId': account_id,
-            'deliveryScheduleId': account_id,
-            'liquorLicense[0].number': account_id,
-            'minimumOrder.type': minimum_order[0],
-            'minimumOrder.value': int(minimum_order[1]),
-            'priceListId': account_id,
-            'taxId': account_id,
-            'name': name,
-            'paymentMethods': payment_method,
-            'deliveryAddress.state': state,
-            'paymentTerms': payment_term,
-            'status': account_status,
-            'hasEmptiesLoan': enable_empties_loan
-        }
+        set_to_dictionary(dict_values, 'minimumOrder.type', minimum_order[0])
+        set_to_dictionary(dict_values, 'minimumOrder.value', int(minimum_order[1]))
     else:
-        dict_values = {
-            'accountId': account_id,
-            'deliveryCenterId': account_id,
-            'deliveryScheduleId': account_id,
-            'liquorLicense[0].number': account_id,
-            'minimumOrder': minimum_order,
-            'priceListId': account_id,
-            'taxId': account_id,
-            'name': name,
-            'paymentMethods': payment_method,
-            'deliveryAddress.state': state,
-            'paymentTerms': payment_term,
-            'status': account_status,
-            'hasEmptiesLoan': enable_empties_loan
-        }
+        set_to_dictionary(dict_values, 'minimumOrder', minimum_order)
 
     # Get header request
     request_headers = get_header_request(zone, 'false', 'true', 'false', 'false')
