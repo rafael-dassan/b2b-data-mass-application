@@ -367,7 +367,7 @@ def create_stepped_discount_with_limit(account_id, sku, zone, environment, index
         return 'false'
 
 
-def create_stepped_discount(account_id, sku, zone, environment, index_range, discount_range, operation, deal_id=None,
+def create_stepped_discount(account_id, sku, zone, environment, ranges, operation, deal_id=None,
                             discount_type='percentOff', deal_type='STEPPED_DISCOUNT'):
     """
     Input a deal type stepped discount to a specific POC by calling the Promotion Relay Service and
@@ -378,8 +378,7 @@ def create_stepped_discount(account_id, sku, zone, environment, index_range, dis
         sku: product unique identifier
         zone: e.g., AR, BR, CO, DO, MX, ZA
         environment: e.g, DEV, SIT, UAT
-        index_range: range of quantity for the discount to be applied (e.g., from 1 to 50)
-        discount_range: range of discount values to be applied (e.g., 10% for the range 0 e 20% for the range 1)
+        ranges: range of SKU quantities and discount values to be applied
         discount_type: percentOff
         deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
         operation: deals operations, e.g., discount creation, free good creation, etc
@@ -388,7 +387,7 @@ def create_stepped_discount(account_id, sku, zone, environment, index_range, dis
     promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, operation, deal_id)
 
     cart_response = request_create_stepped_discount_cart_calculation(account_id, promotion_response, zone, environment,
-                                                                     sku, discount_type, index_range, discount_range)
+                                                                     sku, discount_type, ranges)
 
     if promotion_response != 'false' and cart_response == 'success':
         return promotion_response
@@ -428,26 +427,26 @@ def create_free_good(account_id, sku_list, zone, environment, proportion, quanti
         return 'false'
 
 
-def create_stepped_free_good(account_id, sku, zone, environment, index_range, quantity_range,
-                             operation, deal_type='STEPPED_FREE_GOOD'):
+def create_stepped_free_good(account_id, sku, zone, environment, ranges, operation, deal_id=None,
+                             deal_type='STEPPED_FREE_GOOD'):
     """
     Input a deal type stepped free good to a specific POC by calling the Promotion Relay Service and Pricing Engine
     Relay Service
     Args:
         account_id: POC unique identifier
+        deal_id: deal unique identifier
         sku: product unique identifier
         deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
         zone: e.g., AR, BR, CO, DO, MX, ZA
         environment: e.g, DEV, SIT, UAT
-        index_range: range of quantity for the free good to be applied (e.g., from 1 to 50)
-        quantity_range: range of quantity values to be applied (e.g., 1 for the range 0 e 2 for the range 1)
+        ranges: range of SKU quantities and free good values to be applied
         operation: deals operations, e.g., discount creation, free good creation, etc
     Returns: `promotion_response` if success
     """
-    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, operation)
+    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, operation, deal_id)
 
     cart_response = request_create_stepped_free_good_cart_calculation(account_id, promotion_response, zone, environment,
-                                                                      sku, index_range, quantity_range)
+                                                                      sku, ranges)
 
     if promotion_response != 'false' and cart_response == 'success':
         return promotion_response
@@ -456,9 +455,11 @@ def create_stepped_free_good(account_id, sku, zone, environment, index_range, qu
 
 
 # Create Interactive Combos v1 List
-def create_interactive_combos(account_id, sku, zone, environment, index_range, operation, deal_type='FLEXIBLE_DISCOUNT'):
+def create_interactive_combos(account_id, sku, zone, environment, index_range, operation,
+                              deal_type='FLEXIBLE_DISCOUNT'):
     """
-    Input a deal type interactive combos to a specific POC by calling the Promotion Relay Service and Pricing Engine Relay Service
+    Input a deal type interactive combos to a specific POC by calling the Promotion Relay Service and Pricing Engine
+    Relay Service
     Args:
         account_id: POC unique identifier
         sku: product unique identifier
@@ -480,17 +481,20 @@ def create_interactive_combos(account_id, sku, zone, environment, index_range, o
     else:
         return 'false'
 
+
 # Create Interactive Combos v2 List
-def create_interactive_combos_v2(account_id, sku, zone, environment, index_range, operation, deal_type='FLEXIBLE_DISCOUNT'):
+def create_interactive_combos_v2(account_id, sku, zone, environment, index_range, operation,
+                                 deal_type='FLEXIBLE_DISCOUNT'):
     """
-    Input a deal type interactive combos to a specific POC by calling the Promotion Relay Service and Pricing Engine Relay Service
+    Input a deal type interactive combos to a specific POC by calling the Promotion Relay Service and Pricing Engine
+    Relay Service
     Args:
         account_id: POC unique identifier
         sku: product unique identifier
         zone: e.g., BR, CO, AR
         environment: e.g, DEV, SIT, UAT
-        min_quantity: minimum quantity for the for each sku to be applied
-        max_quantity: maximum quantity for the for each sku to be applied
+        index_range: range for the free good rule to be applied
+        operation: deals operations, e.g., discount creation, free good creation, etc
         deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD, FLEXIBLE_DISCOUNT
     Returns: `promotion_response` if success
     """
@@ -606,8 +610,7 @@ def request_create_free_good_cart_calculation(account_id, deal_id, zone, environ
         return 'false'
 
 
-def request_create_stepped_free_good_cart_calculation(account_id, deal_id, zone, environment, sku, index_range,
-                                                      quantity_range):
+def request_create_stepped_free_good_cart_calculation(account_id, deal_id, zone, environment, sku, ranges):
     """
     Input deal type stepped free good rules (API version 2) to the Pricing Engine Relay Service
     Args:
@@ -616,8 +619,7 @@ def request_create_stepped_free_good_cart_calculation(account_id, deal_id, zone,
         zone: e.g., BR, DO, CO
         environment: e.g., DEV, SIT, UAT
         sku: product unique identifier
-        index_range: range of SKU quantities that the free good is valid to be applied
-        quantity_range: different free good values to be applied according to the index_range parameter
+        ranges: range of SKU quantities and free good values to be applied
     Returns: Success if the request went ok and the status code if there's a problem
     """
 
@@ -642,16 +644,16 @@ def request_create_stepped_free_good_cart_calculation(account_id, deal_id, zone,
         'deals[0].conditions.simulationDateTime[0].startDate': dates_payload['startDate'],
         'deals[0].conditions.simulationDateTime[0].endDate': dates_payload['endDate'],
         'deals[0].conditions.scaledLineItem.skus': [sku],
-        'deals[0].conditions.scaledLineItem.ranges[0].from': index_range[0],
-        'deals[0].conditions.scaledLineItem.ranges[0].to': index_range[1],
-        'deals[0].conditions.scaledLineItem.ranges[1].from': index_range[2],
-        'deals[0].conditions.scaledLineItem.ranges[1].to': index_range[3],
+        'deals[0].conditions.scaledLineItem.ranges[0].from': ranges[0]['start'],
+        'deals[0].conditions.scaledLineItem.ranges[0].to': ranges[0]['end'],
+        'deals[0].conditions.scaledLineItem.ranges[1].from': ranges[1]['start'],
+        'deals[0].conditions.scaledLineItem.ranges[1].to': ranges[1]['end'],
         'deals[0].output.scaledFreeGoods.ranges[0].freeGoods[0].skus[0].sku': sku,
-        'deals[0].output.scaledFreeGoods.ranges[0].freeGoods[0].quantity': quantity_range[0],
-        'deals[0].output.scaledFreeGoods.ranges[0].proportion': quantity_range[0],
+        'deals[0].output.scaledFreeGoods.ranges[0].freeGoods[0].quantity': ranges[0]['quantity'],
+        'deals[0].output.scaledFreeGoods.ranges[0].proportion': ranges[0]['proportion'],
         'deals[0].output.scaledFreeGoods.ranges[1].freeGoods[0].skus[0].sku': sku,
-        'deals[0].output.scaledFreeGoods.ranges[1].freeGoods[0].quantity': quantity_range[1],
-        'deals[0].output.scaledFreeGoods.ranges[1].proportion': quantity_range[1]
+        'deals[0].output.scaledFreeGoods.ranges[1].freeGoods[0].quantity': ranges[1]['quantity'],
+        'deals[0].output.scaledFreeGoods.ranges[1].proportion': ranges[1]['proportion']
     }
 
     # Create file path
@@ -762,7 +764,7 @@ def request_create_discount_cart_calculation(account_id, deal_id, zone, environm
 
 
 def request_create_stepped_discount_cart_calculation(account_id, deal_id, zone, environment, deal_sku, discount_type,
-                                                     index_range, discount_range):
+                                                     ranges):
     """
     Input deal type stepped discount rules (API version 2) to the Pricing Engine Relay Service
     Args:
@@ -772,8 +774,7 @@ def request_create_stepped_discount_cart_calculation(account_id, deal_id, zone, 
         environment: e.g., DEV, SIT, UAT
         deal_sku: SKU that will have discount applied
         discount_type: type of discount being applied (percent or amount)
-        index_range: range of SKU quantities that the discount is valid to be applied
-        discount_range: different discount values to be applied according to the index_range parameter
+        ranges: range of SKU quantities and discount values to be applied
     Returns: Success if the request went ok and the status code if there's a problem
     """
 
@@ -802,16 +803,16 @@ def request_create_stepped_discount_cart_calculation(account_id, deal_id, zone, 
         'deals[0].conditions.simulationDateTime[0].startDate': dates_payload['startDate'],
         'deals[0].conditions.simulationDateTime[0].endDate': dates_payload['endDate'],
         'deals[0].conditions.scaledLineItem.skus': [deal_sku],
-        'deals[0].conditions.scaledLineItem.ranges[0].from': index_range[0],
-        'deals[0].conditions.scaledLineItem.ranges[0].to': index_range[1],
-        'deals[0].conditions.scaledLineItem.ranges[1].from': index_range[2],
-        'deals[0].conditions.scaledLineItem.ranges[1].to': index_range[3],
+        'deals[0].conditions.scaledLineItem.ranges[0].from': ranges[0]['start'],
+        'deals[0].conditions.scaledLineItem.ranges[0].to': ranges[0]['end'],
+        'deals[0].conditions.scaledLineItem.ranges[1].from': ranges[1]['start'],
+        'deals[0].conditions.scaledLineItem.ranges[1].to': ranges[1]['end'],
         'deals[0].output.lineItemScaledDiscount.ranges[0].skus': [deal_sku],
         'deals[0].output.lineItemScaledDiscount.ranges[0].type': discount_type,
-        'deals[0].output.lineItemScaledDiscount.ranges[0].discount': discount_range[0],
+        'deals[0].output.lineItemScaledDiscount.ranges[0].discount': ranges[0]['discount'],
         'deals[0].output.lineItemScaledDiscount.ranges[1].skus': [deal_sku],
         'deals[0].output.lineItemScaledDiscount.ranges[1].type': discount_type,
-        'deals[0].output.lineItemScaledDiscount.ranges[1].discount': discount_range[1]
+        'deals[0].output.lineItemScaledDiscount.ranges[1].discount': ranges[1]['discount']
     }
 
     # Create file path
@@ -995,6 +996,7 @@ def request_create_interactive_combos_cart_calculation(account_id, deal_id, zone
               .format(response_status=response.status_code, response_message=response.text))
         return 'false'
 
+
 # Request Cart Interactive Combos v2
 def request_create_interactive_combos_cart_calculation_v2(account_id, deal_id, zone, environment, sku, index_range):
     """
@@ -1005,8 +1007,7 @@ def request_create_interactive_combos_cart_calculation_v2(account_id, deal_id, z
         zone: e.g., BR, AR, CO
         environment: e.g., DEV, SIT, UAT
         sku: product unique identifier
-        maxquantity: maximum quantity for each SKU to be applied
-        minquantity: minimum quantity for each SKU to be applied
+        index_range: quantity ranges for each SKU to be applied
 
     Returns: Success if the request went ok and the status code if there's a problem
     """

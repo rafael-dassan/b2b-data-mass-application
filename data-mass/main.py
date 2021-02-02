@@ -13,9 +13,10 @@ from menus.account_menu import print_account_operations_menu, print_minimum_orde
     print_get_account_operations_menu, delivery_window_menu
 from menus.algo_selling_menu import print_recommender_type_menu
 from menus.deals_menu import print_deals_operations_menu, print_discount_percentage_menu, print_minimum_quantity_menu, \
-    print_max_quantity_menu, print_free_good_quantity_range_menu, print_option_sku_menu, print_partial_free_good_menu, \
-    print_free_good_redemption_menu, print_free_good_quantity_menu, print_index_range_menu, print_discount_range_menu, \
-    print_interactive_combos_quantity_range_menu, print_interactive_combos_quantity_range_menu_v2
+    print_max_quantity_menu, print_option_sku_menu, print_partial_free_good_menu, \
+    print_free_good_redemption_menu, print_free_good_quantity_menu, print_interactive_combos_quantity_range_menu, \
+    print_interactive_combos_quantity_range_menu_v2, print_stepped_free_good_ranges_menu, \
+    print_stepped_discount_ranges_menu, print_discount_range_menu
 from menus.invoice_menu import print_invoice_operations_menu, print_invoice_status_menu, print_invoice_id_menu, \
     print_invoice_payment_method_menu, print_invoice_status_menu_retriever
 from menus.order_menu import print_order_operations_menu, print_allow_cancellable_order_menu, print_get_order_menu, \
@@ -635,10 +636,9 @@ def flow_create_discount(zone, environment, account_id, sku, operation):
 
 
 def flow_create_stepped_discount(zone, environment, account_id, sku, operation):
-    index_range = print_index_range_menu()
-    discount_range = print_discount_range_menu()
+    ranges = print_stepped_discount_ranges_menu()
 
-    response = create_stepped_discount(account_id, sku, zone, environment, index_range, discount_range, operation)
+    response = create_stepped_discount(account_id, sku, zone, environment, ranges, operation)
     if response != 'false':
         print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
     else:
@@ -680,10 +680,9 @@ def flow_create_free_good(zone, environment, account_id, sku_list, operation):
 
 
 def flow_create_stepped_free_good(zone, environment, account_id, sku, operation):
-    index_range = print_index_range_menu()
-    quantity_range = print_free_good_quantity_range_menu()
+    ranges = print_stepped_free_good_ranges_menu()
 
-    response = create_stepped_free_good(account_id, sku, zone, environment, index_range, quantity_range, operation)
+    response = create_stepped_free_good(account_id, sku, zone, environment, ranges, operation)
     if response != 'false':
         print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
     else:
@@ -692,7 +691,6 @@ def flow_create_stepped_free_good(zone, environment, account_id, sku, operation)
 
 # Interactive combos v1
 def flow_create_interactive_combos(zone, environment, account_id, sku, operation):
-
     index_range = print_interactive_combos_quantity_range_menu()
 
     response = create_interactive_combos(account_id, sku, zone, environment, index_range, operation)
@@ -705,7 +703,6 @@ def flow_create_interactive_combos(zone, environment, account_id, sku, operation
 
 # Interactive combos v2
 def flow_create_interactive_combos_v2(zone, environment, account_id, sku, operation):
-
     index_range = print_interactive_combos_quantity_range_menu_v2()
 
     response = create_interactive_combos_v2(account_id, sku, zone, environment, index_range, operation)
