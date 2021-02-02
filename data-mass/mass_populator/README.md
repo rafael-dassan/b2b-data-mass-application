@@ -21,10 +21,10 @@ Example #1:
 - Executing Mass Populator for:
   - Country: Dominican Republic
   - Environment: UAT
-  - Execution type to populate data for tests that are available for all countries: `all`
+  - Execution type to populate data for GATEWAY tests: `gateway`
 
 ```sh
-python3 populate.py DO UAT all
+python3 populate.py DO UAT gateway
 ```
 
 Example #2:
@@ -32,10 +32,10 @@ Example #2:
 - Executing Mass Populator for:
   - Country: Argentina
   - Environment: DEV
-  - Execution type to populate data for tests that are common for all countries: `common`
+  - Execution type to populate data for REGRESSION tests: `regression`
 
 ```sh
-python3 populate.py AR DEV common
+python3 populate.py AR DEV regression
 ```
 
 Example #3:
@@ -46,7 +46,7 @@ Example #3:
   - Execution type to validate the populator script: `test`
 
 ```sh
-python3 populate.py DO SIT test
+python3 populate.py DO UAT test
 ```
 
 Example #4:
@@ -99,6 +99,7 @@ Example:
  ┃ ┣ 📜recommendation.csv
  ┃ ┣ 📜rewards.csv
  ┃ ┣ 📜stepped_discount.csv
+ ┃ ┣ 📜stepped_free_good.csv
  ┃ ┗ 📜user.csv
  ┣ 📂br
  ┃ ┣ 📜account.csv
@@ -111,6 +112,7 @@ Example:
  ┃ ┣ 📜recommendation.csv
  ┃ ┣ 📜rewards.csv
  ┃ ┣ 📜stepped_discount.csv
+ ┃ ┣ 📜stepped_free_good.csv
  ┃ ┗ 📜user.csv
  ┣ 📂co
  ┃ ┣ 📜account.csv
@@ -123,6 +125,7 @@ Example:
  ┃ ┣ 📜recommendation.csv
  ┃ ┣ 📜rewards.csv
  ┃ ┣ 📜stepped_discount.csv
+ ┃ ┣ 📜stepped_free_good.csv
  ┃ ┗ 📜user.csv
  ┣ 📂do
  ┃ ┣ 📜account.csv
@@ -135,6 +138,7 @@ Example:
  ┃ ┣ 📜recommendation.csv
  ┃ ┣ 📜rewards.csv
  ┃ ┣ 📜stepped_discount.csv
+ ┃ ┣ 📜stepped_free_good.csv
  ┃ ┗ 📜user.csv
  ┣ 📂ec
  ┃ ┣ 📜account.csv
@@ -146,6 +150,7 @@ Example:
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
  ┃ ┣ 📜stepped_discount.csv
+ ┃ ┣ 📜stepped_free_good.csv
  ┃ ┗ 📜user.csv
  ┣ 📂mx
  ┃ ┣ 📜account.csv
@@ -158,6 +163,7 @@ Example:
  ┃ ┣ 📜recommendation.csv
  ┃ ┣ 📜rewards.csv
  ┃ ┣ 📜stepped_discount.csv
+ ┃ ┣ 📜stepped_free_good.csv
  ┃ ┗ 📜user.csv
  ┣ 📂pe
  ┃ ┣ 📜account.csv
@@ -169,6 +175,7 @@ Example:
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
  ┃ ┣ 📜stepped_discount.csv
+ ┃ ┣ 📜stepped_free_good.csv
  ┃ ┗ 📜user.csv
  ┣ 📂za
  ┃ ┣ 📜account.csv
@@ -181,16 +188,14 @@ Example:
  ┃ ┣ 📜recommendation.csv
  ┃ ┣ 📜rewards.csv
  ┃ ┣ 📜stepped_discount.csv
+ ┃ ┣ 📜stepped_free_good.csv
  ┃ ┗ 📜user.csv
  ┗ 📜category.csv
 ```
 
-Notes: 
+Notes:
 
-1) It's important to check file data-mass/mass-populator/common.py if country you want to populate some data has permissions to do that.
-
-2) To associate product to category, the algorithm uses substring from the product name to determine which category it belongs to. So, for a product to be associated to a category, when creating it on file product.csv the column 'name' should contain as substring one of the following: [ANDROID, IOS or WEB]
-This is not required, but it's needed to associate products to mobile or web categories properly.
+1) To associate product to category, the algorithm uses substring from the product name to determine which category it belongs to. So, for a product to be associated to a category, when creating it on file product.csv the column 'name' should contain as substring one of the following: [ANDROID, IOS or WEB]. This is not required, but it's needed to associate products to mobile or web categories properly.
 
 Examples: 0101WEB, 0101ANDROID, 0101IOS
 
