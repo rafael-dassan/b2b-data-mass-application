@@ -26,6 +26,7 @@ def execute_test(country, environment):
     stepped_free_good_params = get_deals_params(country, 'STEPPED_FREE_GOOD')
     order_params = get_order_params(country)
     invoice_params = get_invoice_params(country)
+    algo_selling_params = get_algo_selling_params(country)
 
     # Overwrite standard output (stdout) - disable `print`
     block_print()
@@ -62,7 +63,8 @@ def execute_test(country, environment):
                               [account_params.get('id')])
 
     logger.info("populate_recommendations for %s/%s", country, environment)
-    populate_recommendation(country, environment, account_params.get('id'))
+    populate_recommendation(country, environment, algo_selling_params.get('account_id'),
+                            algo_selling_params.get('products'))
 
     logger.info("populate_deals for %s/%s", country, environment)
     populate_discount(country, environment, discount_params.get('account_id'), discount_params.get('deal_id'),
@@ -232,6 +234,15 @@ def get_invoice_params(country):
         'invoice_status': 'CLOSED',
         'order_prefix': 'DMA-TEST-{0}-'.format(country),
         'invoice_prefix': 'DMA-TEST'
+    }
+
+    return params
+
+
+def get_algo_selling_params(country):
+    params = {
+        'account_id': get_account_params(country).get('id'),
+        'products': ['0101TEST']
     }
 
     return params

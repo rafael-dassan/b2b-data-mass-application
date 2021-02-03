@@ -21,14 +21,4 @@ def print_recommender_type_menu():
         print(text.default_text_color + str(5), text.Yellow + 'Input combos for Quick order')
         option = input(text.default_text_color + '\nPlease select: ')
 
-    switcher = {
-        '1': 'QUICK_ORDER',
-        '2': 'CROSS_SELL_UP_SELL',
-        '3': 'FORGOTTEN_ITEMS',
-        '4': 'ALL',
-        '5': 'COMBOS_QUICKORDER'
-    }
-
-    recommender_type = switcher.get(option, 'false')
-
-    return recommender_type
+    return option
