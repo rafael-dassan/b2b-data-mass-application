@@ -3,7 +3,7 @@ from common import *
 from credit import add_credit_to_account_microservice
 from deals import *
 from delivery_window import *
-from beer_recommender import *
+from algo_selling import *
 from files import create_file_api
 from inventory import *
 from invoice import *
@@ -893,17 +893,13 @@ def flow_input_inventory_to_product(zone, environment):
 
 def flow_input_recommended_products_to_account(zone, environment):
     account_id = print_account_id_menu(zone)
-
     if account_id == 'false':
         print_finish_application_menu()
 
     # Call check account exists function
     account = check_account_exists_microservice(account_id, zone, environment)
-
     if account == 'false':
         print_finish_application_menu()
-
-    recommender_type = print_recommender_type_menu()
 
     product_offers = request_get_offers_microservice(account_id, zone, environment)
     if product_offers == 'false':
@@ -913,48 +909,59 @@ def flow_input_recommended_products_to_account(zone, environment):
               .format(account_id=account_id))
         print_finish_application_menu()
 
-    enabled_skus = list()
-    aux_index = 0
-    while aux_index < len(product_offers):
-        sku = product_offers[aux_index]['sku']
-        enabled_skus.append(sku)
-        aux_index = aux_index + 1
+    items = list()
+    index = 0
+    while index <= 9:
+        sku = product_offers[index]['sku']
+        items.append(sku)
+        index = index + 1
 
-    if len(enabled_skus) < 25:
-        print(text.Red + '\n- The account must have at least 25 enabled products to proceed')
+    operation = print_recommender_type_menu()
+
+    return {
+        '1': lambda: flow_input_products_quick_order(zone, environment, account_id, items),
+        '2': lambda: flow_input_products_up_sell(zone, environment, account_id, items),
+        '3': lambda: flow_input_products_forgotten_items(zone, environment, account_id, items),
+        '4': lambda: flow_input_all_recommendation_use_cases(zone, environment, account_id, items),
+        '5': lambda: flow_input_combo_quick_order(zone, environment, account_id)
+    }.get(operation, lambda: None)()
+
+
+def flow_input_products_quick_order(zone, environment, account_id, items):
+    if 'success' == request_quick_order(zone, environment, account_id, items):
+        print(text.Green + '\n- Quick order items added successfully')
+    else:
         print_finish_application_menu()
 
-    if recommender_type == 'QUICK_ORDER':
-        quick_order_response = request_quick_order(zone, environment, account_id, enabled_skus)
-        if quick_order_response == 'success':
-            print(text.Green + '\n- Quick order items added successfully')
-        else:
-            print_finish_application_menu()
-    elif recommender_type == 'CROSS_SELL_UP_SELL':
-        sell_up_response = request_sell_up(zone, environment, account_id, enabled_skus)
-        if sell_up_response == 'success':
-            print(text.Green + '\n- Up sell items added successfully')
-            print(text.Yellow + '- Up sell trigger: Add 3 of any products to the cart / Cart viewed with a product '
-                                'inside')
-        else:
-            print_finish_application_menu()
-    elif recommender_type == 'FORGOTTEN_ITEMS':
-        forgotten_items_response = request_forgotten_items(zone, environment, account_id, enabled_skus)
-        if forgotten_items_response == 'success':
-            print(text.Green + '\n- Forgotten items added successfully')
-        else:
-            print_finish_application_menu()
-    elif recommender_type == 'COMBOS_QUICKORDER':
-        combos_quick_order_response = input_combos_quickorder(zone, environment, account_id)
-        if combos_quick_order_response == 'success':
-            print(text.Green + '\n- Combos for quick order added successfully')
-        else:
-            print_finish_application_menu()
+
+def flow_input_products_up_sell(zone, environment, account_id, items):
+    if 'success' == request_sell_up(zone, environment, account_id, items):
+        print(text.Green + '\n- Up sell items added successfully')
+        print(text.Yellow + '- Up sell trigger: Add 3 of any products to the cart / Cart viewed with a product inside')
     else:
-        if 'success' == create_all_recommendations(zone, environment, account_id, enabled_skus):
-            print(text.Green + '\n- All recommendation use cases were added (quick order, up sell and forgotten items)')
-            print(text.Yellow + '- Up sell trigger: Add 3 of any products to the cart / Cart viewed with a product '
-                                'inside')
+        print_finish_application_menu()
+
+
+def flow_input_products_forgotten_items(zone, environment, account_id, items):
+    if 'success' == request_forgotten_items(zone, environment, account_id, items):
+        print(text.Green + '\n- Forgotten items added successfully')
+    else:
+        print_finish_application_menu()
+
+
+def flow_input_all_recommendation_use_cases(zone, environment, account_id, items):
+    if 'success' == create_all_recommendations(zone, environment, account_id, items):
+        print(text.Green + '\n- All recommendation use cases were added (quick order, up sell and forgotten items)')
+        print(text.Yellow + '- Up sell trigger: Add 3 of any products to the cart / Cart viewed with a product inside')
+    else:
+        print_finish_application_menu()
+
+
+def flow_input_combo_quick_order(zone, environment, account_id):
+    if 'success' == input_combos_quick_order(zone, environment, account_id):
+        print(text.Green + '\n- Combos for quick order added successfully')
+    else:
+        print_finish_application_menu()
 
 
 def flow_input_empties_discounts(zone, environment):
@@ -1049,48 +1056,47 @@ def flow_create_account(zone, environment, account_id):
 
 
 def flow_create_delivery_window(zone, environment, account_id, option):
-        allow_flexible_delivery_dates = ['BR', 'ZA', 'MX']
-        allow_delivery_cost = ['BR', 'MX']
+    allow_flexible_delivery_dates = ['BR', 'ZA', 'MX']
+    allow_delivery_cost = ['BR', 'MX']
 
-        # Call check account exists function
-        account = check_account_exists_microservice(account_id, zone, environment)
-        if account == 'false':
-            print_finish_application_menu()
-        account_data = account[0]
+    # Call check account exists function
+    account = check_account_exists_microservice(account_id, zone, environment)
+    if account == 'false':
+        print_finish_application_menu()
+    account_data = account[0]
 
-        is_alternative_delivery_date = 'false'
-        if zone in allow_flexible_delivery_dates:
-            # Validate if is alternative delivery window
-            is_alternative_delivery_date = print_alternative_delivery_date_menu()
+    is_alternative_delivery_date = 'false'
+    if zone in allow_flexible_delivery_dates:
+        # Validate if is alternative delivery window
+        is_alternative_delivery_date = print_alternative_delivery_date_menu()
 
-            if is_alternative_delivery_date.upper() == 'Y':
-                is_alternative_delivery_date = 'true'
-            else:
-                is_alternative_delivery_date = 'false'
+        if is_alternative_delivery_date.upper() == 'Y':
+            is_alternative_delivery_date = 'true'
+        else:
+            is_alternative_delivery_date = 'false'
 
-        # Call add delivery window to account function
-        delivery_window = create_delivery_window_microservice(zone, environment, account_data,
+    # Call add delivery window to account function
+    delivery_window = create_delivery_window_microservice(zone, environment, account_data,
                                                               is_alternative_delivery_date, option)
 
-        if delivery_window == 'success':
-            print(text.Green + '\n- Delivery window created successfully for the account {account_id}'
-                  .format(account_id=account_id))
+    if delivery_window == 'success':
+        print(text.Green + '\n- Delivery window created successfully for the account {account_id}'
+              .format(account_id=account_id))
 
-            # Check if delivery cost (interest) should be included
-            if is_alternative_delivery_date == 'true' and zone in allow_delivery_cost:
-                option_include_delivery_cost = print_include_delivery_cost_menu()
-                if option_include_delivery_cost.upper() == 'Y':
-                    delivery_cost_values = get_delivery_cost_values(option_include_delivery_cost)
-                    delivery_cost = create_delivery_fee_microservice(zone, environment, account_data,
-                                                                     delivery_cost_values)
-                    if delivery_cost == 'success':
-                        print(
-                            text.Green + '\n- Delivery cost (interest) added successfully for the account {account_id}'
-                            .format(account_id=account_id))
-                else:
-                    print_finish_application_menu()
-        else:
-            print_finish_application_menu()
+        # Check if delivery cost (interest) should be included
+        if is_alternative_delivery_date == 'true' and zone in allow_delivery_cost:
+            option_include_delivery_cost = print_include_delivery_cost_menu()
+            if option_include_delivery_cost.upper() == 'Y':
+                delivery_cost_values = get_delivery_cost_values(option_include_delivery_cost)
+                delivery_cost = create_delivery_fee_microservice(zone, environment, account_data,
+                                                                 delivery_cost_values)
+                if delivery_cost == 'success':
+                    print(text.Green + '\n- Delivery cost (interest) added successfully for the account {account_id}'
+                          .format(account_id=account_id))
+            else:
+                print_finish_application_menu()
+    else:
+        print_finish_application_menu()
 
 
 def flow_create_credit_information(zone, environment, account_id):

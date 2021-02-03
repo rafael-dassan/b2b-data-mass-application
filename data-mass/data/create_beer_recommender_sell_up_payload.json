@@ -20,33 +20,7 @@
             "value": "https://b2bfilemgmtsagbprod.blob.core.windows.net/global-recommender/do/Presidente_Reg_Caja_NEW.jpeg"
         }
     ],
-    "items": [
-        {
-            "sku": "string",
-            "quantity": 10,
-            "score": 1
-        },
-        {
-            "sku": "string",
-            "quantity": 10,
-            "score": 2
-        },
-        {
-            "sku": "string",
-            "quantity": 10,
-            "score": 3
-        },
-        {
-            "sku": "string",
-            "quantity": 10,
-            "score": 4
-        },
-        {
-            "sku": "string",
-            "quantity": 10,
-            "score": 5
-        }
-    ],
+    "items": [],
     "exclusiveTriggers": [
         {
             "event": "PRODUCT_ADDED",

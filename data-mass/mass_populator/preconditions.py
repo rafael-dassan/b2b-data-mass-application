@@ -1,4 +1,4 @@
-from beer_recommender import get_recommendation_by_account, delete_recommendation_by_id
+from algo_selling import get_recommendation_by_account, delete_recommendation_by_id
 from deals import request_get_deals_promotion_service, request_delete_deal_by_id, request_get_deals_pricing_service, \
     request_delete_deals_pricing_service, request_delete_deal_by_id_v1
 from invoice import get_invoices, delete_invoice_by_id
@@ -19,6 +19,8 @@ def apply_run_preconditions(row, country, environment):
 
     logger.info("delete_recommendations for account %s", account_id)
     delete_recommendation(account_id, country, environment, 'CROSS_SELL_UP_SELL')
+    delete_recommendation(account_id, country, environment, 'FORGOTTEN_ITEMS')
+    delete_recommendation(account_id, country, environment, 'QUICK_ORDER')
 
     logger.info("delete_deals for account %s", account_id)
     delete_deal(account_id, country, environment)
@@ -76,14 +78,14 @@ def delete_recommendation(account_id, country, environment, use_case):
         environment: e.g., SIT, UAT
         use_case: e.g., QUICK_ORDER, CROSS_SELL_UP_SELL, FORGOTTEN_ITEMS
     """
-    up_sell_data = get_recommendation_by_account(account_id, country, environment, use_case)
-    if up_sell_data == 'not_found':
+    data = get_recommendation_by_account(account_id, country, environment, use_case)
+    if data == 'not_found':
         logger.debug("[Global Recommendation Service] Recommendation type {use_case_type} not found for account "
                      "{account_id}. Skipping...".format(use_case_type=use_case, account_id=account_id))
-    elif up_sell_data == 'false':
+    elif data == 'false':
         logger.error(log(Message.RETRIEVE_RECOMMENDER_ERROR, {'use_case_type': use_case, 'account_id': account_id}))
     else:
-        if 'success' != delete_recommendation_by_id(environment, up_sell_data):
+        if 'success' != delete_recommendation_by_id(environment, data):
             logger.error(log(Message.DELETE_RECOMMENDER_ERROR, {'use_case_type': use_case, 'account_id': account_id}))
 
 

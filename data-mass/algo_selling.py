@@ -11,15 +11,15 @@ from tabulate import tabulate
 
 # Local application imports
 from common import update_value_to_json, create_list, convert_json_to_string, get_microservice_base_url, \
-    place_request, get_header_request
+    place_request, get_header_request, set_to_dictionary
 from classes.text import text
 
 
-def create_all_recommendations(zone, environment, abi_id, products):
+def create_all_recommendations(zone, environment, account_id, products):
     # Get responses
-    quick_order_response = request_quick_order(zone, environment, abi_id, products)
-    sell_up_response = request_sell_up(zone, environment, abi_id, products)
-    forgotten_items_response = request_forgotten_items(zone, environment, abi_id, products)
+    quick_order_response = request_quick_order(zone, environment, account_id, products)
+    sell_up_response = request_sell_up(zone, environment, account_id, products)
+    forgotten_items_response = request_forgotten_items(zone, environment, account_id, products)
 
     if quick_order_response == 'success' and sell_up_response == 'success' and forgotten_items_response == 'success':
         return 'success'
@@ -29,12 +29,13 @@ def create_all_recommendations(zone, environment, abi_id, products):
         for x in range(len(responses_list)):
             if responses_list[x].status_code != 202:
                 print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendations. Response Status: '
-                      + str(responses_list[x].status_code) + '. Response message ' + responses_list[x].text)
+                                 '{0}. Response message: {1}'.format(str(responses_list[x].status_code),
+                                                                     responses_list[x].text))
         return 'false'
 
 
-# Define JSON to submmit QUICK ORDER recommendation type
-def create_quick_order_payload(abi_id, zone, environment, product_list):
+# Define JSON to submit QUICK ORDER recommendation type
+def create_quick_order_payload(account_id, zone, product_list):
     countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PE']
 
     if zone in countries_es:
@@ -50,12 +51,29 @@ def create_quick_order_payload(abi_id, zone, environment, product_list):
         text = 'Quick Order'
         text_description = 'Products ordered before <link>Add all items to cart</link>'
 
-    # Retrieve the first ten SKUs of the account
-    sku = list()
-    aux_index = 0
-    while aux_index <= 9:
-        sku.append(product_list[aux_index])
-        aux_index = aux_index + 1
+    items = list()
+    index = 0
+    while index < len(product_list):
+        items_values = {
+            "sku": product_list[index],
+            "quantity": randint(1, 10),
+            "score": index + 1,
+            "type": "clustering",
+            "discount": 0
+        }
+        items.append(items_values)
+        index = index + 1
+
+    dict_values = {
+        'recommendationId': 'DM-{0}-{1}'.format(zone, str(randint(1, 100000))),
+        'useCase': 'QUICK_ORDER',
+        'useCaseId': account_id,
+        'descriptions[0].language': language,
+        'descriptions[0].text': text,
+        'descriptions[0].description': text_description,
+        'combos': None
+    }
+    set_to_dictionary(dict_values, 'items', items)
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
@@ -64,26 +82,6 @@ def create_quick_order_payload(abi_id, zone, environment, product_list):
     # Load JSON file
     with open(file_path) as file:
         json_data = json.load(file)
-
-    dict_values  = {
-        'recommendationId': 'DM-' + str(randint(1, 100000)),
-        'useCase': 'QUICK_ORDER',
-        'useCaseId': abi_id,
-        'items[0].sku': sku[0],
-        'items[1].sku': sku[1],
-        'items[2].sku': sku[2],
-        'items[3].sku': sku[3],
-        'items[4].sku': sku[4],
-        'items[5].sku': sku[5],
-        'items[6].sku': sku[6],
-        'items[7].sku': sku[7],
-        'items[8].sku': sku[8],
-        'items[9].sku': sku[9],
-        'descriptions[0].language': language,
-        'descriptions[0].text': text,
-        'descriptions[0].description': text_description,
-        'combos': None
-    }
 
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
@@ -95,8 +93,8 @@ def create_quick_order_payload(abi_id, zone, environment, product_list):
     return request_body
 
 
-# Define JSON to submmit FORGOTTEN ITEMS recommendation type
-def create_forgotten_items_payload(abi_id, zone, product_list):
+# Define JSON to submit FORGOTTEN ITEMS recommendation type
+def create_forgotten_items_payload(account_id, zone, product_list):
     countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PE']
 
     if zone in countries_es:
@@ -112,13 +110,30 @@ def create_forgotten_items_payload(abi_id, zone, product_list):
         text = 'Popular Products for Businesses like yours'
         text_description = ''
 
-    # Retrieve the first ten SKUs after the eleven one of the account
-    sku = list()
-    aux_index = 10
-    while aux_index <= 19:
-        sku.append(product_list[aux_index])
-        aux_index = aux_index + 1
-    
+    items = list()
+    index = 0
+    while index < len(product_list):
+        items_values = {
+            "sku": product_list[index],
+            "quantity": randint(1, 10),
+            "score":  index + 1,
+            "type": "clustering",
+            "discount": 0
+        }
+        items.append(items_values)
+        index = index + 1
+
+    dict_values = {
+        'recommendationId': 'DM-{0}-{1}'.format(zone, str(randint(1, 100000))),
+        'useCase': 'FORGOTTEN_ITEMS',
+        'useCaseId': account_id,
+        'descriptions[0].language': language,
+        'descriptions[0].text': text,
+        'descriptions[0].description': text_description,
+        'combos': None
+    }
+    set_to_dictionary(dict_values, 'items', items)
+
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
     file_path = os.path.join(path, 'data/create_beer_recommender_payload.json')
@@ -126,26 +141,6 @@ def create_forgotten_items_payload(abi_id, zone, product_list):
     # Load JSON file
     with open(file_path) as file:
         json_data = json.load(file)
-
-    dict_values  = {
-        'recommendationId': 'DM-' + str(randint(1, 100000)),
-        'useCase': 'FORGOTTEN_ITEMS',
-        'useCaseId': abi_id,
-        'items[0].sku': sku[0],
-        'items[1].sku': sku[1],
-        'items[2].sku': sku[2],
-        'items[3].sku': sku[3],
-        'items[4].sku': sku[4],
-        'items[5].sku': sku[5],
-        'items[6].sku': sku[6],
-        'items[7].sku': sku[7],
-        'items[8].sku': sku[8],
-        'items[9].sku': sku[9],
-        'descriptions[0].language': language,
-        'descriptions[0].text': text,
-        'descriptions[0].description': text_description,
-        'combos': None
-    }
 
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
@@ -157,8 +152,8 @@ def create_forgotten_items_payload(abi_id, zone, product_list):
     return request_body
 
 
-# Define JSON to submmit UP SELL recommendation type
-def create_upsell_payload(abi_id, zone, product_list):
+# Define JSON to submit UP SELL recommendation type
+def create_upsell_payload(account_id, zone, product_list):
     countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PE']
 
     if zone in countries_es:
@@ -173,13 +168,28 @@ def create_upsell_payload(abi_id, zone, product_list):
         language = 'en'
         text = 'Popular Products for Businesses like yours'
         text_description = 'The Best Selling Products in your zone'
-    
-    # Retrieve the first five SKUs after the twenty one of the account
-    sku = list()
-    aux_index = 20
-    while aux_index <= 24:
-        sku.append(product_list[aux_index])
-        aux_index = aux_index + 1
+
+    items = list()
+    index = 0
+    while index < len(product_list):
+        items_values = {
+            "sku": product_list[index],
+            "quantity": randint(1, 10),
+            "score": index + 1,
+            "type": "clustering",
+            "discount": 0
+        }
+        items.append(items_values)
+        index = index + 1
+
+    dict_values = {
+        'recommendationId': 'DM-{0}-{1}'.format(zone, str(randint(1, 100000))),
+        'descriptions[0].language': language,
+        'descriptions[0].text': text,
+        'descriptions[0].description': text_description,
+        'useCaseId': account_id
+    }
+    set_to_dictionary(dict_values, 'items', items)
     
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
@@ -188,19 +198,6 @@ def create_upsell_payload(abi_id, zone, product_list):
     # Load JSON file
     with open(file_path) as file:
         json_data = json.load(file)
-
-    dict_values  = {
-        'recommendationId': 'DM-' + str(randint(1, 100000)),
-        'descriptions[0].language': language,
-        'descriptions[0].text': text,
-        'descriptions[0].description': text_description,
-        'useCaseId': abi_id,
-        'items[0].sku': sku[0],
-        'items[1].sku': sku[1],
-        'items[2].sku': sku[2],
-        'items[3].sku': sku[3],
-        'items[4].sku': sku[4]
-    }
 
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
@@ -212,7 +209,7 @@ def create_upsell_payload(abi_id, zone, product_list):
     return request_body
 
 
-def request_quick_order(zone, environment, abi_id, products):
+def request_quick_order(zone, environment, account_id, products):
     # Define headers
     request_headers = get_header_request_recommender(zone, environment)
 
@@ -220,7 +217,7 @@ def request_quick_order(zone, environment, abi_id, products):
     request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
 
     # Get body
-    request_body = create_quick_order_payload(abi_id, zone, environment, products)
+    request_body = create_quick_order_payload(account_id, zone, products)
 
     # Send request
     response = place_request('POST', request_url, request_body, request_headers)
@@ -228,12 +225,12 @@ def request_quick_order(zone, environment, abi_id, products):
     if response.status_code == 202:
         return 'success'
     else:
-        print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
+        print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: {0}. '
+                         'Response message: {1}'.format(response.status_code, response.text))
         return 'false'
 
 
-def request_forgotten_items(zone, environment, abi_id, products):
+def request_forgotten_items(zone, environment, account_id, products):
     # Define headers
     request_headers = get_header_request_recommender(zone, environment)
 
@@ -241,7 +238,7 @@ def request_forgotten_items(zone, environment, abi_id, products):
     request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
 
     # Get body
-    request_body = create_forgotten_items_payload(abi_id, zone, products)
+    request_body = create_forgotten_items_payload(account_id, zone, products)
 
     # Send request
     response = place_request('POST', request_url, request_body, request_headers)
@@ -249,12 +246,12 @@ def request_forgotten_items(zone, environment, abi_id, products):
     if response.status_code == 202:
         return 'success'
     else:
-        print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
+        print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: {0}. '
+                         'Response message: {1}'.format(response.status_code, response.text))
         return 'false'
 
 
-def request_sell_up(zone, environment, abi_id, products):
+def request_sell_up(zone, environment, account_id, products):
     # Define headers
     request_headers = get_header_request_recommender(zone, environment)
 
@@ -262,7 +259,7 @@ def request_sell_up(zone, environment, abi_id, products):
     request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
 
     # Get body
-    request_body = create_upsell_payload(abi_id, zone, products)
+    request_body = create_upsell_payload(account_id, zone, products)
 
     # Send request
     response = place_request('POST', request_url, request_body, request_headers)
@@ -270,8 +267,8 @@ def request_sell_up(zone, environment, abi_id, products):
     if response.status_code == 202:
         return 'success'
     else:
-        print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
+        print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: {0}. '
+                         'Response message: {1}'.format(response.status_code, response.text))
         return 'false'
 
 
@@ -311,8 +308,8 @@ def get_header_request_recommender(zone, environment):
 def get_recommendation_by_account(account_id, zone, environment, use_case):
     headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
-    request_url = get_microservice_base_url(environment, 'true') + '/global-recommendation/?useCase=' + use_case + \
-                  '&useCaseId=' + account_id + '&useCaseType=ACCOUNT'
+    request_url = get_microservice_base_url(environment, 'true') + '/global-recommendation/?useCase={0}&useCaseId=' \
+                                                                   '{1}&useCaseType=ACCOUNT'.format(use_case, account_id)
 
     response = place_request('GET', request_url, '', headers)
 
@@ -323,12 +320,12 @@ def get_recommendation_by_account(account_id, zone, environment, use_case):
         if len(content) != 0:
             return recommendation_data
         elif len(content) == 0:
-            print(text.Yellow + '\n- [Global Recommendation Service] The account ' + account_id
-                  + ' does not have recommendation type ' + use_case)
+            print(text.Yellow + '\n- [Global Recommendation Service] The account {0} does not have recommendation type'
+                                ' {1}'.format(account_id, use_case))
             return 'not_found'
     else:
-        print(text.Red + '\n- [Global Recommendation Service] Failure to retrieve a recommendation. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
+        print(text.Red + '\n- [Global Recommendation Service] Failure to retrieve recommendation. Response Status: {0}.'
+                         ' Response message: {1}'.format(response.status_code, response.text))
         return 'false'
 
 
@@ -343,21 +340,21 @@ def delete_recommendation_by_id(environment, recommendation_data):
                          'OIl19.Hpthi-Joez6m2lNiOpC6y1hfPOT5nvMtYdNnp5NqVTM'
     }
 
-    request_url = get_microservice_base_url(environment, 'true') + '/global-recommendation/' + recommendation_id
+    request_url = get_microservice_base_url(environment, 'true') + '/global-recommendation/{0}'.format(recommendation_id)
 
     response = place_request('DELETE', request_url, '', headers)
 
     if response.status_code == 202:
         return 'success'
     else:
-        print(text.Red + '\n- [Global Recommendation Service] Failure to delete a recommendation. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
+        print(text.Red + '\n- [Global Recommendation Service] Failure to delete recommendation. Response Status: {0}.'
+                         ' Response message: {1}'.format(response.status_code, response.text))
         return 'false'
 
 
-def display_recommendations_by_account(zone, environment, abi_id):
+def display_recommendations_by_account(zone, environment, account_id):
     case_id = 'QUICK_ORDER&useCase=FORGOTTEN_ITEMS&useCase=CROSS_SELL_UP_SELL'
-    data = get_recommendation_by_account(abi_id, zone, environment, case_id)
+    data = get_recommendation_by_account(account_id, zone, environment, case_id)
     recommender_list = list()
     if data == 'false' or data == 'not_found':
         dict_value = {
@@ -424,18 +421,18 @@ def display_recommendations_by_account(zone, environment, abi_id):
         print(tabulate(combo_list, headers='keys', tablefmt='grid'))
 
 
-def input_combos_quickorder(zone, environment, account_id):
-
+def input_combos_quick_order(zone, environment, account_id):
     # Retrieve quick order recommendation of the account
     account_recommendation = get_recommendation_by_account(account_id, zone, environment, 'QUICK_ORDER')
     
     if account_recommendation == 'not_found' or account_recommendation == 'false':
         return 'false'
     else: 
-        # Retrieve combos type Discount of the account
+        # Retrieve combos type discount of the account
         request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
-        request_url = get_microservice_base_url(environment, 'true') + '/combos/?accountID=' + account_id + '&types=D&includeDeleted=false&includeDisabled=false'
+        request_url = get_microservice_base_url(environment, 'true') + '/combos/?accountID={0}&types=D&includeDeleted' \
+                                                                       '=false&includeDisabled=false'.format(account_id)
 
         response = place_request('GET', request_url, '', request_headers)
 
@@ -444,24 +441,20 @@ def input_combos_quickorder(zone, environment, account_id):
             combos_discount = combos_data['combos']
             combos_id = list()
 
-            i = 0
             for i in range(len(combos_discount)):
-                
                 dict_combos = {
-                    'id' : combos_discount[i]['id'],
-                    'quantity' : 1,
-                    'score' : 100,
-                    'type' : 'HISTORICAL'
+                    'id': combos_discount[i]['id'],
+                    'quantity': 1,
+                    'score': 100,
+                    'type': 'HISTORICAL'
                 }
-
                 combos_id.append(dict_combos)
         else:
-            print(text.Red + '\n- [Combos Service] Failure to retrieve combos. Response Status: '
-                + str(response.status_code) + '. Response message ' + response.text)
+            print(text.Red + '\n- [Combos Service] Failure to retrieve combos. Response Status: {0}. Response message:'
+                             ' {1}'.format(response.status_code, response.text))
             return 'false'
 
         updated_recommendation = update_value_to_json(account_recommendation, 'content[0].combos', combos_id)
-
         updated_recommendation = convert_json_to_string(updated_recommendation['content'])
 
         # Define headers
@@ -470,12 +463,12 @@ def input_combos_quickorder(zone, environment, account_id):
         # Define url request 
         request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
 
-        # Send request to update Quick Order recommendation with Combos
+        # Send request
         response = place_request('POST', request_url, updated_recommendation, request_headers)
 
         if response.status_code == 202:
             return 'success'
         else:
-            print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: '
-                + str(response.status_code) + '. Response message ' + response.text)
+            print(text.Red + '\n- [Recommendation Relay Service] Failure to retrieve combos. Response Status: {0}. '
+                             'Response message: {1}'.format(response.status_code, response.text))
             return 'false'

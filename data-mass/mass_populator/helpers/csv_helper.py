@@ -17,7 +17,8 @@ def converters_by_entity(entity):
         'category': ['products'],
         'user': ['account_ids'],
         'stepped_discount': ['ranges'],
-        'stepped_free_good': ['ranges']
+        'stepped_free_good': ['ranges'],
+        'recommendation': ['products']
     }
     converter = entities_converters_switcher.get(entity)
     return converter if converter is not None else {}
