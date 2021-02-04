@@ -18,6 +18,7 @@ def disenroll_accounts(country, environment):
     disenroll_pocs(country, environment, search_data_by(country, 'rewards'))
     return True
 
+
 def add_challenges_to_accounts(country, environment):
     logger.info("Starting to add challenges...")
     populate_challenges(country, environment, search_data_by(country, 'rewards'))

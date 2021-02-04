@@ -1,31 +1,17 @@
-from common import block_print
-from mass_populator.country.populate_deal import populate_stepped_discount_with_limit_base, populate_discount_base, \
-    populate_stepped_discount_base, populate_free_good_base, populate_stepped_free_good_base
+from mass_populator.country.populate_account import populate_pocs
+from mass_populator.country.populate_deal import populate_discount_base, populate_stepped_discount_base, \
+    populate_stepped_discount_with_limit_base, populate_free_good_base, populate_stepped_free_good_base
 from mass_populator.country.populate_invoice import populate_invoices_base
 from mass_populator.country.populate_order import populate_orders_base
-from mass_populator.helpers.csv_helper import search_data_by
-from mass_populator.log import *
-from mass_populator.country.populate_account import populate_pocs
+from mass_populator.country.populate_user_v3 import populate_users_iam_b2c
 from mass_populator.country.populate_recomendation import populate_recommendations as populate_recommendations_base
 from mass_populator.country.populate_category import associate_products_to_category_magento_base
 from mass_populator.country.populate_product import enable_products_magento as enable_products_magento_base
-from mass_populator.country.populate_user_v3 import populate_users_iam_b2c
-from mass_populator.preconditions import run_preconditions
+from mass_populator.helpers.csv_helper import search_data_by
+from mass_populator.log import *
+
 
 logger = logging.getLogger(__name__)
-
-
-def execute_common(country, environment):
-    block_print()
-    run_preconditions(search_data_by(country, 'account'), country, environment)
-    populate_accounts(country, environment)
-    populate_recommendations(country, environment)
-    populate_deals(country, environment)
-    populate_orders(country, environment)
-    populate_invoices(country, environment)
-    populate_users_magento(country, environment)
-    categorize_and_enable_products_magento(country, environment)
-    return True
 
 
 def populate_accounts(country, environment):
