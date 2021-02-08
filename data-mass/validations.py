@@ -192,7 +192,7 @@ def validate_get_products(option):
 
 
 def validate_structure(option):
-    options = ['1', '2', '3', '4', '5']
+    options = ['1', '2', '3', '4', '5', '6']
     if option in options:
         return True
     else:
@@ -265,3 +265,31 @@ def validate_delivery_window_structure(option):
         return True
     else:
         return False
+
+
+def validate_supplier_menu_structure(selection):
+    switcher = {
+       '0': 'true',
+       '1': 'true'
+    }
+
+    value = switcher.get(selection, 'false')
+    return value
+
+
+def validate_option_att(option):
+    options = ['1', '2']
+    if option in options:
+        return True
+    else:
+        return False
+
+
+def validate_attribute_menu_structure(selection):
+    option = ['1', '2', '3']
+    if selection in option:
+        return True
+    else:
+        return False
+
+

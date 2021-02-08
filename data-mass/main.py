@@ -1,4 +1,6 @@
 from account import *
+from attribute_supplier import create_attribute_enum, check_if_attribute_exist, create_attribute_group, \
+    create_attribute_primitive_type
 from common import *
 from credit import add_credit_to_account_microservice
 from deals import *
@@ -76,6 +78,12 @@ def show_menu():
             '1': registration_user_iam,
             '2': delete_user_iam
         }
+    elif selection_structure == '5':
+        switcher = {
+            '0': finish_application,
+            '1': create_attribute_menu,
+        }
+
     else:
         finish_application()
 
@@ -1589,6 +1597,103 @@ def create_credit_statement_menu():
         print(text.Green + '\n- Credit Statement created for the account {account_id}'.format(account_id=account_id))
     else:
         print_finish_application_menu()
+
+
+def create_attribute_menu():
+
+    selection_structure = print_create_attribute_menu()
+
+    switcher = {
+        '1': 'PRIMITIVE',
+        '2': 'ENUM',
+        '3': 'GROUP'
+    }
+
+    supplier_option = switcher.get(selection_structure, 'false')
+
+    # Option to create a new program
+    if supplier_option == 'PRIMITIVE':
+
+        type_att = print_attribute_primitive()
+        environment = print_environment_menu()
+
+        switcher_type = {
+            '1': 'NUMERIC',
+            '2': 'TEXT',
+            '3': 'DATE'
+        }
+
+        type_option = switcher_type.get(type_att, 'false')
+
+        create_enum = create_attribute_primitive_type(environment, type_option)
+
+        if create_enum != 'false':
+            print(text.Green + '\n- [Attribute] The new {attribute_type} has been successfully created. '
+                              'ID: {attribute}'.format(attribute_type=str(type_option),
+                                                       attribute=create_enum))
+            print_finish_application_menu()
+        else:
+            print_finish_application_menu()
+    elif supplier_option == 'ENUM':
+        type_att = print_attribute_primitive()
+        environment = print_environment_menu()
+
+        switcher_type = {
+            '1': 'NUMERIC',
+            '2': 'TEXT',
+            '3': 'DATE'
+        }
+
+        type_option = switcher_type.get(type_att, 'false')
+        create_primitive_attribute = create_attribute_enum(environment, type_option)
+
+        if create_primitive_attribute != 'false':
+            print(text.Green + '\n- [Attribute] The new {attribute_type} has been successfully created. '
+                               'ID: {attribute}'.format(attribute_type=str(type_option),
+                                                        attribute=create_primitive_attribute))
+            print_finish_application_menu()
+        else:
+            print_finish_application_menu()
+    elif supplier_option == 'GROUP':
+        environment = print_environment_menu()
+        list_att = insert_sub_attribute_group(environment)
+
+        create_group = create_attribute_group(environment, list_att)
+
+        if create_group != 'false':
+            print(text.Green + '\n- [Attribute] The new {attribute_type} has been successfully created. '
+                               'ID: {attribute}'.format(attribute_type=str(supplier_option),
+                                                        attribute=create_group))
+            print_finish_application_menu()
+        else:
+            print_finish_application_menu()
+
+
+def insert_sub_attribute_group(environment):
+    list_att = list()
+    sub_att1 = input(text.default_text_color + 'Inform the first attribute in the group: ')
+    valid_att = check_if_attribute_exist(environment, sub_att1)
+    if valid_att == 'false':
+        print_finish_application_menu()
+    else:
+        list_att.append(sub_att1)
+    sub_att2 = input(text.default_text_color + 'Inform the second attribute in the group: ')
+    valid_att2 = check_if_attribute_exist(environment, sub_att2)
+    if valid_att2 == 'false':
+        print_finish_application_menu()
+    else:
+        list_att.append(sub_att2)
+    new_att = print_new_attribute()
+    while new_att == '1':
+        sub_att = input(text.default_text_color + 'Inform the another attribute in the group: ')
+        valid_att = check_if_attribute_exist(environment, sub_att)
+        if valid_att2 == 'false':
+            new_att == '2'
+            print_finish_application_menu()
+        else:
+            list_att.append(sub_att)
+            new_att = print_new_attribute()
+    return list_att
 
 
 # Init
