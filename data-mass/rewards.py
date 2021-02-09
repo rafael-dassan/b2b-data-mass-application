@@ -4,6 +4,7 @@ from json import loads
 import os
 from random import randint
 from datetime import timedelta, datetime
+from time import time
 
 # Third party imports
 from tabulate import tabulate
@@ -546,6 +547,15 @@ def update_program_balance(zone, environment):
     else:
         return 'no_program'
 
+def generate_id():
+    # Generates an sequential number based on Epoch time using seconds and the first two chars milliseconds
+    # time() return an Epoch time with milliseconds separeted with a dot (.)
+
+    parsed_time = str(time()).replace('.', '')
+    epoch_id = parsed_time[:11]
+
+    return epoch_id
+
 
 # Add Reward challenges to a zone
 def input_challenge_to_zone(abi_id, zone, environment):
@@ -564,7 +574,8 @@ def input_challenge_to_zone(abi_id, zone, environment):
     error_flag = 'false'
     while i <= 8:
         # Generates the new Program ID
-        challenge_id = 'DM-CHALLENGE-100' + str(i)
+
+        challenge_id = 'DM-CHALLENGE-' + generate_id()
 
         # Getting all the basic information to create the challenges
         if i == 1:
@@ -608,7 +619,7 @@ def input_challenge_to_zone(abi_id, zone, environment):
                 'goodPhotoSample' : generated_challenges[14],
                 'badPhotoSample' : generated_challenges[15]
             }
-        elif i == 5 or i == 7 and offers_flag == 'true':
+        elif (i == 5 or i == 7) and offers_flag == 'true':
             dict_values  = {
                 'title' : challenge_id,
                 'description' : generated_challenges[0],
@@ -621,7 +632,7 @@ def input_challenge_to_zone(abi_id, zone, environment):
                 'badPhotoSample' : generated_challenges[7],
                 'skus' : generated_challenges[8]
             }
-        elif i == 6 or i == 8 and offers_flag == 'true':
+        elif (i == 6 or i == 8) and offers_flag == 'true':
             dict_values  = {
                 'title' : challenge_id,
                 'description' : generated_challenges[9],
@@ -675,8 +686,8 @@ def challenge_details(challenge_type, products = None):
     start_date = start_date.strftime('%Y-%m-%dT%H:%M:%S')
     start_date = start_date + 'Z'
 
-    # Sets the format of the challenge's end date with expiration within 30 days
-    end_date_one = datetime.now() + timedelta(days=30)
+    # Sets the format of the challenge's end date with expiration within 5 days
+    end_date_one = datetime.now() + timedelta(days=1)
     end_date_one = end_date_one.strftime('%Y-%m-%dT%H:%M:%S')
     end_date_one = end_date_one + 'Z'
 
