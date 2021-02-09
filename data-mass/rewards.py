@@ -351,15 +351,17 @@ def input_redeem_products(account_id, zone, environment):
     # Define headers
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
-    # Check if the zone already have a reward program created
-    program_found = locate_program_for_zone(zone, environment, request_headers)
-
-    if program_found != 'false':
+    # Get the reward information for the account
+    reward_found = get_rewards_info(account_id, request_headers, environment)
+    
+    if reward_found != 'false':
 
         print(text.default_text_color + '\nAdding redeem products, please wait...')
 
+        program_id = reward_found['programId']
+
         # Define url request to read the Rewards program of the zone
-        request_url = get_microservice_base_url(environment) + '/rewards-service/programs/' + program_found
+        request_url = get_microservice_base_url(environment) + '/rewards-service/programs/' +  + '?projection=COMBOS'
 
         # Send request
         response = place_request('GET', request_url, '', request_headers)
@@ -991,7 +993,7 @@ def request_get_dt_combos(environment, header_request):
 def locate_program_for_zone(zone, environment, header_request):
 
     # Define url request
-    request_url = get_microservice_base_url(environment) + '/rewards-service/programs/'
+    request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/programs/'
     
     # Send request
     response = place_request('GET', request_url, '', header_request)
@@ -1238,3 +1240,13 @@ def get_sku_rewards(program_id, header_request, environment):
         return loads(response.text)
     else:
         return 'false ' + str(response.status_code)
+
+
+def get_rewards_info(account_id, header_request, environment):
+    request_url = get_microservice_base_url(environment,'false') + '/rewards-service/rewards/' + account_id + '?projection=DEFAULT'
+    response = place_request('GET', request_url, '', header_request)
+
+    if response.status_code == 200:
+        return loads(response.text)
+    else:
+        return 'false'
