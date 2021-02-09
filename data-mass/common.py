@@ -19,7 +19,8 @@ from classes.text import text
 from logs.log import log_to_file
 from validations import is_number, validate_zone_for_ms, validate_environment, \
     validate_structure, validate_rewards, validate_zone_for_interactive_combos_ms, \
-    validate_option_request_selection
+    validate_option_request_selection, validate_supplier_menu_structure, validate_option_att, \
+    validate_attribute_menu_structure
 
 
 # Validate option menu selection
@@ -363,6 +364,15 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(1), text.Yellow + 'Create User')
             print(text.default_text_color + str(2), text.Yellow + 'Delete User')
             selection = input(text.default_text_color + '\nPlease select: ')
+    elif selection_structure == '5':
+        print(text.default_text_color + str(0), text.Yellow + 'Close application')
+        print(text.default_text_color + str(1), text.Yellow + 'Create Attribute')
+        selection = input(text.default_text_color + '\nPlease select: ')
+        while validate_supplier_menu_structure(selection) == 'false':
+            print(text.Red + '\n- Invalid option\n')
+            print(text.default_text_color + str(0), text.Yellow + 'Close application')
+            print(text.default_text_color + str(1), text.Yellow + 'Create Attribute')
+            selection = input(text.default_text_color + '\nPlease select: ')
     else:
         finish_application()
 
@@ -386,7 +396,8 @@ def print_structure_menu():
     print(text.default_text_color + str(2), text.Yellow + 'Data searching - Microservice')
     print(text.default_text_color + str(3), text.Yellow + 'Data creation - Magento')
     print(text.default_text_color + str(4), text.Yellow + 'Data creation - IAM')
-    print(text.default_text_color + str(5), text.Yellow + 'Close application')
+    print(text.default_text_color + str(5), text.Yellow + 'Data creation - Supplier/PIM')
+    print(text.default_text_color + str(6), text.Yellow + 'Close application')
     structure = input(text.default_text_color + '\nPlease choose an option: ')
     while validate_structure(structure) is False:
         print(text.Red + '\n- Invalid option\n')
@@ -394,7 +405,8 @@ def print_structure_menu():
         print(text.default_text_color + str(2), text.Yellow + 'Data searching - Microservice')
         print(text.default_text_color + str(3), text.Yellow + 'Data creation - Magento')
         print(text.default_text_color + str(4), text.Yellow + 'Data creation - IAM')
-        print(text.default_text_color + str(5), text.Yellow + 'Close application')
+        print(text.default_text_color + str(5), text.Yellow + 'Data creation - Supplier/PIM')
+        print(text.default_text_color + str(6), text.Yellow + 'Close application')
         structure = input(text.default_text_color + '\nPlease choose an option: ')
 
     return structure
@@ -976,3 +988,89 @@ def generate_erp_token(expire_months=1):
 
     encoded = jwt.encode(json_object, '20735d31-46b5-411d-af02-47897a01c0c9', algorithm='HS256')
     return 'Bearer {0}'.format(encoded)
+
+
+# Return base URL for Supplier
+def get_supplier_base_url(environment):
+    return 'https://services-' + environment.lower()+'.bees-platform.dev/api/product-taxonomy-service/graphql'
+
+
+def get_header_request_supplier():
+    header = {
+       'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYi1pbmJldiIsImF1ZCI6ImFiaS'
+                        '1taWNyb3NlcnZpY2VzIiwiZXhwIjoxNjE2MjM5MDIyLCJpYXQiOjE1MTYyMzkwMjIsInVwZGF0ZWRfYXQiO'
+                        'jExMTExMTEsIm5hbWUiOiJ1c2VyQGFiLWluYmV2LmNvbSIsImFjY291bnRJRCI6IjAwMTAwMDEwMDEiLCJ1'
+                        'c2VySUQiOiIyMTE4Iiwicm9sZXMiOlsiUk9MRV9DVVNUT01FUiJdfQ.09CPxmskqvERwhJSvTXb8RJeiwGGM'
+                        '4aEpMTBiBd72_M'
+    }
+
+    return header
+
+
+def print_create_attribute_menu():
+    print(text.default_text_color + str(1), text.Yellow + 'Create attribute primitive type')
+    print(text.default_text_color + str(2), text.Yellow + 'Create attribute ENUM type')
+    print(text.default_text_color + str(3), text.Yellow + 'Create attribute GROUP type')
+    structure = input(text.default_text_color + '\nPlease select: ')
+    while validate_attribute_menu_structure(structure) is False:
+        print(text.Red + '\n- Invalid option')
+        print(text.default_text_color + str(1), text.Yellow + 'Create attribute primitive type')
+        print(text.default_text_color + str(2), text.Yellow + 'Create attribute ENUM type')
+        print(text.default_text_color + str(3), text.Yellow + 'Create attribute GROUP type')
+        structure = input(text.default_text_color + '\nPlease select: ')
+
+    return structure
+
+
+def print_attribute_primitive():
+    print(text.default_text_color + str(1), text.Yellow + 'Create NUMERIC attribute')
+    print(text.default_text_color + str(2), text.Yellow + 'Create TEXT attribute')
+    print(text.default_text_color + str(3), text.Yellow + 'Create DATE attribute')
+    structure = input(text.default_text_color + '\nPlease select: ')
+    while validate_attribute_menu_structure(structure) is False:
+        print(text.Red + '\n- Invalid option')
+        print(text.default_text_color + str(1), text.Yellow + 'Create NUMERIC attribute')
+        print(text.default_text_color + str(2), text.Yellow + 'Create TEXT attribute')
+        print(text.default_text_color + str(3), text.Yellow + 'Create DATE attribute')
+        structure = input(text.default_text_color + '\nPlease select: ')
+
+    return structure
+
+
+def print_attribute_enum():
+    print(text.default_text_color + str(1), text.Yellow + 'Create ENUM NUMERIC')
+    print(text.default_text_color + str(2), text.Yellow + 'Create ENUM TEXT')
+    print(text.default_text_color + str(3), text.Yellow + 'Create ENUM DATE')
+    structure = input(text.default_text_color + '\nPlease select: ')
+    while validate_attribute_menu_structure(structure) is False:
+        print(text.Red + '\n- Invalid option')
+        print(text.default_text_color + str(1), text.Yellow + 'Create ENUM NUMERIC')
+        print(text.default_text_color + str(2), text.Yellow + 'Create ENUM TEXT')
+        print(text.default_text_color + str(3), text.Yellow + 'Create ENUM DATE')
+        structure = input(text.default_text_color + '\nPlease select: ')
+
+    return structure
+
+
+def print_new_attribute():
+    option = input(text.default_text_color + 'Do you want to input another attribute in this group? (1. Yes / 2. No): ')
+    while validate_option_att(option) is False:
+        print(text.Red + '\n- Invalid option')
+        option = input(text.default_text_color + '\nDo you want to input another attribute in this group? '
+                                                '(1. Yes / 2. No): ')
+
+    return option
+
+# Place generic request
+def place_graphql(request_method, request_url, request_body, request_headers):
+    # Send request
+    response = request(
+        request_method,
+        request_url,
+        data=request_body,
+        headers=request_headers
+    )
+
+    log_to_file(request_method, request_url, request_body, request_headers, response.status_code, response.text)
+
+    return response
