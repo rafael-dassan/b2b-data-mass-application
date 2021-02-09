@@ -356,136 +356,152 @@ def input_redeem_products(account_id, zone, environment):
     
     if reward_found != 'false':
 
-        print(text.default_text_color + '\nAdding redeem products, please wait...')
-
         program_id = reward_found['programId']
 
+        print(text.default_text_color + '\n- [Rewards] The account "' + account_id + '" is enrolled to the rewards program "' + program_id + '".')
+        
         # Define url request to read the Rewards program of the zone
-        request_url = get_microservice_base_url(environment) + '/rewards-service/programs/' +  + '?projection=COMBOS'
+        request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/programs/' + program_id + '?projection=COMBOS'
 
         # Send request
         response = place_request('GET', request_url, '', request_headers)
-        json_program = loads(response.text)
 
-        combos_dt_program = json_program['combos']
-        len_combos_program = len(combos_dt_program)
-        if len_combos_program > 50:
-            len_combos_program = 50
+        if response.status_code == 200:
+            
+            json_program_combos = loads(response.text)
 
-        # Get all the combo IDs that are added to the reward program
-        i = 0
-        combos_id_program = list()
-        while i < len_combos_program:
-            combos_id_program.append(combos_dt_program[i]['comboId'])
-            i += 1
+            # Getting the DT combos configured in the rewards program
+            combos_dt_program = json_program_combos['combos']
+            len_combos_program = len(combos_dt_program)
+            
+            print(text.default_text_color + '\n- Found "' + str(len_combos_program) + '" redeem products for rewards program "' + program_id + '".')
 
-        # Define url request to get all the combos of the specified zone
-        request_url = get_microservice_base_url(environment) + '/combos/?types=DT&comboIds=&includeDeleted=false&includeDisabled=false'
+            if len_combos_program > 50:
+                len_combos_program = 50
 
-        # Send request
-        response = place_request('GET', request_url, '', request_headers)
-        json_combos = loads(response.text)
-        
-        combos_dt_zone = json_combos['combos']
-        len_combos_zone = len(combos_dt_zone)
+            # Get all the combo IDs that are added to the reward program
+            i = 0
+            combos_id_program = list()
+            while i < len_combos_program:
+                combos_id_program.append(combos_dt_program[i]['comboId'])
+                i += 1
 
-        # Get all the combos that exists on the specified zone
-        i = 0
-        combos_zone = list()
-        while i < len_combos_zone:
-            combos_zone.append(combos_dt_zone[i])
-            i += 1
+            # Define url request to get all the DT combos of the specified zone
+            request_url = get_microservice_base_url(environment) + '/combos/?types=DT&comboIds=&includeDeleted=false&includeDisabled=false&page=0&pageSize=9999'
 
-        # Verify which combos of the zone matchs with the ones added to the rewards program
-        x = 0
-        y = 0
-        combos_match = list()
-        while x < len(combos_id_program):
+            # Send request
+            response = place_request('GET', request_url, '', request_headers)
+            json_combos = loads(response.text)
+            
+            combos_dt_zone = json_combos['combos']
+            len_combos_zone = len(combos_dt_zone)
+
+            print(text.default_text_color + '\n- Found "' + str(len_combos_zone) + '" redeem products for the zone "' + zone + '".')
+
+            # Get all the combos that exists on the specified zone
+            i = 0
+            combos_zone = list()
+            while i < len_combos_zone:
+                combos_zone.append(combos_dt_zone[i])
+                i += 1
+
+            # Verify which combos of the zone matchs with the ones added to the rewards program
+            x = 0
             y = 0
-            while y < len(combos_zone):
-                if combos_zone[y]['id'] == combos_id_program[x]:
-                    combos_match.append(combos_zone[y])
-                    break
-                y += 1
-            x += 1
+            combos_match = list()
+            while x < len(combos_id_program):
+                y = 0
+                while y < len(combos_zone):
+                    if combos_zone[y]['id'] == combos_id_program[x]:
+                        combos_match.append(combos_zone[y])
+                        break
+                    y += 1
+                x += 1
 
-        len_combos_match = len(combos_match)
+            len_combos_match = len(combos_match)
 
-        # Get a SKU to be used on FreeGood's list below
-        product_offers = request_get_offers_microservice(account_id, zone, environment)
-        
-        if product_offers == 'false':
-            return 'false'
-        elif product_offers == 'not_found':
-            print(text.Red + '\n- [Catalog Service] There is no product associated with the account ' + account_id)
-            return 'false'
+            print(text.default_text_color + '\n- Found "' + str(len_combos_match) + '" redeem products matching the program and the zone configuration.')
 
-        index_offers = randint(0, (len(product_offers) - 1))
-        sku = product_offers[index_offers]['sku']
+            # Get a SKU to be used on FreeGood's list below
+            product_offers = request_get_offers_microservice(account_id, zone, environment)
+            
+            if product_offers == 'false':
+                return 'false'
+            elif product_offers == 'not_found':
+                print(text.Red + '\n- [Catalog Service] There is no product associated with the account ' + account_id)
+                return 'false'
 
-        # Define headers to post the association
-        request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+            index_offers = randint(0, (len(product_offers) - 1))
+            sku = product_offers[index_offers]['sku']
 
-        # Define url request to post the association
-        request_url = get_microservice_base_url(environment) + '/combo-relay/accounts'
+            # Define headers to post the association
+            request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
 
-        # Define the list of Limits for the main payload 
-        dict_values_limit  = {
-            'daily': 200,
-            'monthly': 200,
-        }
+            # Define url request to post the association
+            request_url = get_microservice_base_url(environment) + '/combo-relay/accounts'
 
-        # Define the list of FreeGoods for the main payload 
-        dict_values_freegoods  = {
-            'quantity': 5,
-            'skus': create_list(sku),
-        }
-
-        # Define the entire list of Combos for the main payload
-        i = 0
-        combos_list = list()
-        while i < len_combos_match:
-
-            dict_values_combos  = {
-                'id': combos_match[i]['id'],
-                'externalId': combos_match[i]['id'],
-                'title': combos_match[i]['title'],
-                'description': combos_match[i]['id'],
-                'startDate': combos_match[i]['startDate'],
-                'endDate': combos_match[i]['endDate'],
-                'updatedAt': combos_match[i]['updatedAt'],
-                'type': 'DT',
-                'image': 'https://test-conv-micerveceria.abi-sandbox.net/media/catalog/product/c/o/combo-icon_11.png',
-                'freeGoods': dict_values_freegoods,
-                'limit': dict_values_limit,
-                'originalPrice': 0,
-                'price': 0,
-                'score': 0,
+            # Define the list of Limits for the main payload 
+            dict_values_limit  = {
+                'daily': 200,
+                'monthly': 200,
             }
 
-            combos_list.append(dict_values_combos)
-            i += 1
+            # Define the list of FreeGoods for the main payload 
+            dict_values_freegoods  = {
+                'quantity': 5,
+                'skus': create_list(sku),
+            }
 
-        # Creates the main payload based on the lists created above
-        dict_values_account = {
-            'accounts': create_list(account_id),
-            'combos': combos_list
-        }
+            # Define the entire list of Combos for the main payload
+            i = 0
+            combos_list = list()
+            while i < len_combos_match:
 
-        #Create body to associate the combos to account
-        request_body = convert_json_to_string(dict_values_account)
- 
-        # Send request to associate the combos to account
-        response = place_request('POST', request_url, request_body, request_headers)
+                dict_values_combos  = {
+                    'id': combos_match[i]['id'],
+                    'externalId': combos_match[i]['id'],
+                    'title': combos_match[i]['title'],
+                    'description': combos_match[i]['id'],
+                    'startDate': combos_match[i]['startDate'],
+                    'endDate': combos_match[i]['endDate'],
+                    'updatedAt': combos_match[i]['updatedAt'],
+                    'type': 'DT',
+                    'image': 'https://test-conv-micerveceria.abi-sandbox.net/media/catalog/product/c/o/combo-icon_11.png',
+                    'freeGoods': dict_values_freegoods,
+                    'limit': dict_values_limit,
+                    'originalPrice': 0,
+                    'price': 0,
+                    'score': 0,
+                }
 
-        if response.status_code == 201:
-            print(text.Green + '\n- [Rewards] Total of ' + str(i) + ' combos added successfully')
+                combos_list.append(dict_values_combos)
+                i += 1
+
+            # Creates the main payload based on the lists created above
+            dict_values_account = {
+                'accounts': create_list(account_id),
+                'combos': combos_list
+            }
+
+            print(text.default_text_color + '\n- Associating matched redeem products, please wait...')
+
+            #Create body to associate the combos to account
+            request_body = convert_json_to_string(dict_values_account)
+    
+            # Send request to associate the combos to account
+            response = place_request('POST', request_url, request_body, request_headers)
+
+            if response.status_code == 201:
+                print(text.Green + '\n- [Combo Relay Service] Total of ' + str(i) + ' combos associated successfully to account "' + account_id + '".')
+            else:
+                print(text.Red + '\n- [Combo Relay Service] Failure when associating combos to the account. Response Status: '
+                                        + str(response.status_code) + '. Response message: ' + response.text)
+
         else:
-            print(text.Red + '\n- [Combo Relay Service] Failure when associating combos to the account. Response Status: '
-                                    + str(response.status_code) + '. Response message: ' + response.text)
+            print(text.Red + '\n- [Rewards] The program "' + program_id + '" does not exist. \nPlease use the menu option "Unenroll a POC from a program" to disenroll this account and the option "Enroll POC to a program" to enroll this account to an existing rewards program.')
 
     else:
-        print(text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "Create new program" to create it')
+        print(text.Red + '\n- [Rewards] The account "' + account_id + '" is not enrolled to any rewards program. \nPlease use the menu option "Enroll POC to a program" to enroll this account to a rewards program.')
 
     return
 
@@ -1202,7 +1218,6 @@ def display_sku_rewards(zone, environment, abi_id):
             return program_data
     else:
         return program_id
-
 
 
 def get_id_rewards(abi_id, header_request, environment):
