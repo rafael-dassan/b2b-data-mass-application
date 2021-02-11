@@ -19,9 +19,7 @@ from classes.text import text
 from logs.log import log_to_file
 from validations import is_number, validate_zone_for_ms, validate_environment, \
     validate_structure, validate_zone_for_interactive_combos_ms, \
-    validate_option_request_selection, validate_supplier_menu_structure, validate_option_att, \
-    validate_attribute_menu_structure, validate_supplier_category_menu_structure, \
-    validate_supplier_search_menu_structure
+    validate_option_request_selection, validate_supplier_menu_structure, validate_supplier_search_menu_structure
 
 
 # Validate option menu selection
@@ -178,6 +176,7 @@ def get_magento_base_url(environment, country):
             'DO': 'https://do.sit.bees-platform.dev',
             'EC': 'https://ec.sit.bees-platform.dev',
             'MX': 'https://mx.sit.bees-platform.dev',
+            'PA': 'https://pa.sit.bees-platform.dev',
             'PE': 'https://pe.sit.bees-platform.dev',
             'ZA': 'https://za.sit.bees-platform.dev'
         },
@@ -189,6 +188,7 @@ def get_magento_base_url(environment, country):
             'DO': 'https://do.uat.bees-platform.dev',
             'EC': 'https://ec.uat.bees-platform.dev',
             'MX': 'https://mx.uat.bees-platform.dev',
+            'PA': 'https://pa.uat.bees-platform.dev',
             'PE': 'https://pe.uat.bees-platform.dev',
             'ZA': 'https://za.uat.bees-platform.dev'
         }
@@ -454,7 +454,7 @@ def validate_combo_structure(option):
 # Print zone menu for Microservice
 def print_zone_menu_for_ms():
     zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
-    while validate_zone_for_ms(zone.upper()) == 'false':
+    while validate_zone_for_ms(zone.upper()) is False:
         print(text.Red + '\n- {0} is not a valid zone\n'.format(zone.upper()))
         zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
 
@@ -642,7 +642,8 @@ def validate_country_menu_in_user_create_iam(zone):
         'PE': 'true',
         'ZA': 'true',
         'AR': 'true',
-        'CA': 'true'
+        'CA': 'true',
+        'PA': 'true'
     }
     return switcher.get(zone, 'false')
 
@@ -667,6 +668,7 @@ def print_country_menu_in_user_create_iam():
         - ZA
         - AR
         - CA
+        - PA
     """
     zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
     while validate_country_menu_in_user_create_iam(zone.upper()) == 'false':

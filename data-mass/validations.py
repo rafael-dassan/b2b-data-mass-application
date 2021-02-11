@@ -112,22 +112,24 @@ def validate_zone_for_interactive_combos_ms(zone):
         'BR': 'true',
         'CO': 'true',
         'AR': 'true',
-        'CA': 'true'
+        'CA': 'true',
+        'PA': 'true'
     }.get(zone, 'false')
 
 
 def validate_zone_for_ms(zone):
     return {
-        'BR': 'true',
-        'DO': 'true',
-        'ZA': 'true',
-        'CO': 'true',
-        'MX': 'true',
         'AR': 'true',
-        'PE': 'true',
+        'BR': 'true',
+        'CA': 'true',
+        'CO': 'true',
+        'DO': 'true',
         'EC': 'true',
-        'CA': 'true'
-    }.get(zone, 'false')
+        'MX': 'true',
+        'PA': 'true',
+        'PE': 'true',
+        'ZA': 'true'
+    }.get(zone, False)
 
 
 def validate_environment(environment):
