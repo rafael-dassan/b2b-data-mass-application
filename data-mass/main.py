@@ -27,7 +27,10 @@ from menus.product_menu import print_product_operations_menu, print_get_products
 from order import *
 from combos import *
 from products import *
-from rewards import *
+from rewards.rewards import enroll_poc_to_program, delete_enroll_poc_to_program, input_redeem_products, \
+    input_transactions_to_account, display_sku_rewards
+from rewards.rewards_programs import create_new_program, patch_program_root_field, update_dt_combos_rewards
+from rewards.rewards_challenges import input_challenge_to_zone
 from category_magento import *
 from products_magento import *
 import user_creation_v3 as user_v3
@@ -224,7 +227,7 @@ def create_rewards_to_account():
             print(text.Green + '\n- [Rewards] The new program has been successfully created. ID: ' + create_pgm)
             print_finish_application_menu()
 
-    # Option to enroll POC to a program
+    # Option to enroll a POC to a rewards program
     elif reward_option == 'ENROLL_POC':
 
         abi_id = print_account_id_menu(zone)
@@ -232,20 +235,8 @@ def create_rewards_to_account():
         # Call check account exists function
         account = check_account_exists_microservice(abi_id, zone, environment)
 
-        if account == 'false':
-            print_finish_application_menu()
-
-        enroll_poc = enroll_poc_to_program(abi_id, zone, environment)
-
-        if enroll_poc == 'pgm_not_found':
-            print(
-                text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "Create new program" to create it')
-        elif enroll_poc == 406:
-            print(text.Red + '\n- [Rewards] There are no Reward programs available for this account')
-        elif enroll_poc == 409:
-            print(text.Red + '\n- [Rewards] This account already have a Reward program enrolled to it')
-        elif enroll_poc == 201:
-            print(text.Green + '\n- [Rewards] The account has been successfully enrolled to a rewards program')
+        if account != 'false':
+            enroll_poc_to_program(abi_id, zone, environment, account)
 
         print_finish_application_menu()
 
@@ -270,15 +261,7 @@ def create_rewards_to_account():
     # Option to update initial balance of a program
     elif reward_option == 'UPDATE_BALANCE':
 
-        update_balance = update_program_balance(zone, environment)
-
-        if update_balance == 'no_confirm' or update_balance == 'error':
-            print_finish_application_menu()
-        elif update_balance == 'no_program':
-            print(text.Red + '\n- [Rewards] There is no rewards program available for this zone')
-        else:
-            print(text.Green + '\n- [Rewards] The program ' + update_balance + ' has been successfully updated.')
-
+        patch_program_root_field(zone, environment, 'initial_balance')
         print_finish_application_menu()
 
     # Option to input redeem products to an account
@@ -303,16 +286,9 @@ def create_rewards_to_account():
         # Call check account exists function
         account = check_account_exists_microservice(abi_id, zone, environment)
 
-        if account == 'false':
-            print_finish_application_menu()
-       
-        delete_enroll_poc = delete_enroll_poc_to_program(abi_id, zone, environment)
-
-        if delete_enroll_poc == 'pgm_not_found':
-            print(text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "Create new program" to create it')
-        elif delete_enroll_poc == 204:
-            print(text.Green + '\n- [Rewards] The enrollment has been deleted for this account from the rewards program')
-
+        if account != 'false':
+            delete_enroll_poc_to_program(abi_id, zone, environment)
+            
         print_finish_application_menu()
     
      # Option to ADD a Transaction to a POC
