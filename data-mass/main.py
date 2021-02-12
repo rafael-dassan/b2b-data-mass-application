@@ -28,7 +28,7 @@ from order import *
 from combos import *
 from products import *
 from rewards.rewards import enroll_poc_to_program, delete_enroll_poc_to_program, input_redeem_products, \
-    input_transactions_to_account, display_sku_rewards
+    input_transactions_to_account, display_program_rules_skus
 from rewards.rewards_programs import create_new_program, patch_program_root_field, update_dt_combos_rewards
 from rewards.rewards_challenges import input_challenge_to_zone
 from category_magento import *
@@ -1541,15 +1541,11 @@ def retriever_sku_menu():
         print_finish_application_menu()
 
     account = check_account_exists_microservice(account_id, zone, environment)
-    if account == 'false':
-        print_finish_application_menu()
-
-    response = display_sku_rewards(zone, environment, account_id)
-    if response == '200':
-        print_finish_application_menu()
-    else:
-        print('\nError: ' + response.lstrip("false "))
-        print_finish_application_menu()
+    
+    if account != 'false':
+        display_program_rules_skus(zone, environment, account_id)
+        
+    print_finish_application_menu()
 
 
 def create_credit_statement_menu():

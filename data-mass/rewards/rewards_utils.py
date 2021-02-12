@@ -10,7 +10,8 @@ from time import time
 from tabulate import tabulate
 
 # Local application imports
-from common import get_header_request, get_microservice_base_url, place_request, update_value_to_json, convert_json_to_string
+from common import get_header_request, get_microservice_base_url, place_request, update_value_to_json, \
+    convert_json_to_string
 from classes.text import text
 
 
@@ -37,12 +38,12 @@ def get_dt_combos_from_zone(zone, environment):
     if response.status_code == 200:
         return loads(response.text)
     elif response.status_code == 404:
-        print(text.Red + '\n- [Combo Service] There is no combo type digital trade registered. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
+        print(text.Red + '\n- [Combo Service] There is no combo type digital trade registered. \n- Response Status: "{}". \n- Response message "{}".'
+                .format(str(response.status_code), response.text))
         return 'false'
     else:
-        print(text.Red + '\n- [Combo Service] Failure to retrieve combo type digital trade. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
+        print(text.Red + '\n- [Combo Service] Failure to retrieve combo type digital trade. \n- Response Status: "{}". \n- Response message "{}".'
+                .format(str(response.status_code), response.text))
         return 'false'
 
 
@@ -56,7 +57,7 @@ def get_id_rewards(abi_id, header_request, environment):
 
 
 # Displays all programs information
-def display_programs_info(list_all_programs, show_initial_balance=False, show_redeem_limit=False):
+def display_all_programs_info(list_all_programs, show_initial_balance=False, show_redeem_limit=False):
     all_programs_dictionary = dict()
     
     print(text.Yellow + '\nExisting Reward programs:')
@@ -95,3 +96,17 @@ def make_account_eligible(account_info, zone, environment):
         return True
     else:
         return False
+
+
+def build_request_url_with_projection_query(request_url, projections):
+    if len(projections) > 0:
+        i = 0
+        for projection in projections:
+            if i == 0:
+                projection_query = '?projection=' + str(projection).upper()
+            else:
+                projection_query += '&projection=' + str(projection).upper()
+            i += 1
+        request_url += projection_query
+    
+    return request_url

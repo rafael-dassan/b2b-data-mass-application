@@ -12,10 +12,9 @@ from tabulate import tabulate
 # Local application imports
 from common import get_header_request, get_microservice_base_url, update_value_to_json, convert_json_to_string, \
     place_request, create_list, print_input_number, print_input_text, set_to_dictionary
-from validations import is_number
 from products import request_get_products_microservice
 from classes.text import text
-from rewards.rewards_utils import display_programs_info, get_dt_combos_from_zone, get_id_rewards
+from rewards.rewards_utils import display_all_programs_info, build_request_url_with_projection_query, get_dt_combos_from_zone, get_id_rewards
 
 
 # Create Rewards Program
@@ -29,7 +28,7 @@ def create_new_program(zone, environment):
 
     if DM_program != None:
         program_id = DM_program['id']
-        print(text.Yellow + '\n- [Rewards] This zone already have a reward program created - ID: "{programId}"'.format(programId=program_id))
+        print(text.Yellow + '\n- [Rewards] This zone already have a reward program created - ID: "{}"'.format(program_id))
         return 'error_found'
 
     balance = input(text.Yellow + '\nDo you want to create the program with initial balance (20.000)? y/N: ')
@@ -226,7 +225,7 @@ def patch_program_root_field(zone, environment, field):
     # Define headers
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
 
-    all_programs = get_all_programs(zone, environment)
+    all_programs = get_all_programs(zone, environment, set(["DEFAULT"]))
 
     if all_programs != None:
 
@@ -234,7 +233,7 @@ def patch_program_root_field(zone, environment, field):
         redeem_limit = True if field == 'redeem_limit' else False
 
         json_all_programs = loads(all_programs.text)
-        display_programs_info(json_all_programs, initial_balance, redeem_limit)
+        display_all_programs_info(json_all_programs, initial_balance, redeem_limit)
 
         program_id = print_input_text('\nPlease inform the Program ID')
 
@@ -433,7 +432,7 @@ def get_DM_program_for_zone(zone, environment):
     DM_program = None
 
     # Send request
-    response = get_all_programs(zone, environment)
+    response = get_all_programs(zone, environment, set(["DEFAULT"]))
     
     if response != None:
 
@@ -449,51 +448,57 @@ def get_DM_program_for_zone(zone, environment):
     return DM_program
 
 
-def get_sku_rewards(program_id, header_request, environment):
-    request_url = get_microservice_base_url(environment,'true') + '/rewards-service/programs/' + program_id
-    response = place_request('GET', request_url, '', header_request)
-    if response.status_code == 200:
-        return loads(response.text)
-    else:
-        return 'false ' + str(response.status_code)
-
 # Get all reward program for the zone
-def get_all_programs(zone, environment):
+def get_all_programs(zone, environment, projections=set()):
 
     header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
     
     # Define url request
     request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/programs'
+
+    request_url = build_request_url_with_projection_query(request_url, projections)
     
     # Send request
     response = place_request('GET', request_url, '', header_request)
-    json_data = loads(response.text)
 
-    if response.status_code == 200 and len(json_data) > 0:
-        return response
-    elif response.status_code == 200 and len(json_data) == 0:
-        print(text.Red + '\n- [Rewards] There are no Reward programs available in "{zone}" zone.'.format(zone=zone))
+    if response.status_code == 200:
+        json_data = loads(response.text)
+        if len(json_data) > 0:
+            return response
+        else:
+            print(text.Red + '\n- [Rewards] There are no Reward programs available in "{}" zone.'.format(zone))
+
     else:
-        print(text.Red + '\n- [Rewards] Failure when getting all programs in "{zone}" zone. \n- Response Status: "{statusCode}". \n- Response message "{message}".'
-                .format(zone=zone, statusCode=str(response.status_code), message=response.text))
+        print(text.Red + '\n- [Rewards] Failure when getting all programs in "{}" zone. \n- Response Status: "{}". \n- Response message "{}".'
+                .format(zone, str(response.status_code), response.text))
     
     return None
 
 # Get an specific reward program for the zone
-def get_specific_program(program_id, zone, environment):
+def get_specific_program(program_id, zone, environment, projections=set()):
 
     header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
     
     # Define url request
     request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/programs/' + program_id
+
+    request_url = build_request_url_with_projection_query(request_url, projections)
     
     # Send request
     response = place_request('GET', request_url, '', header_request)
 
     if response.status_code == 200:
         return response
+    
+    elif response.status_code == 404:
+        print(text.Red + '\n- [Rewards] The Rewards program "{}" does not exist.'.format(program_id))
+
     else:
-        return None
+        print(text.Red + '\n- [Rewards] Failure when getting the program "{}" information. \n- Response Status: "{}". \n- Response message "{}".'
+                .format(program_id, str(response.status_code), response.text))
+
+    return None
+
 
 def patch_program(program_id, zone, environment, request_body):
 
@@ -506,13 +511,13 @@ def patch_program(program_id, zone, environment, request_body):
     response = place_request('PATCH', request_url, request_body, request_headers)
 
     if response.status_code == 200:
-        print(text.Green + '\n- [Rewards] The Rewards program "{programId}" has been successfully updated.'.format(programId=program_id))
+        print(text.Green + '\n- [Rewards] The Rewards program "{}" has been successfully updated.'.format(program_id))
 
     elif response.status_code == 404:
-        print(text.Red + '\n- [Rewards] The Rewards program "{programId}" does not exist.'.format(programId=program_id))
+        print(text.Red + '\n- [Rewards] The Rewards program "{}" does not exist.'.format(program_id))
 
     else:
-        print(text.Red + '\n- [Rewards] Failure when updating the program "{programId}" configuration. \n- Response Status: "{statusCode}". \n- Response message "{message}".'
-                .format(programId=program_id, statusCode=str(response.status_code), message=response.text))
+        print(text.Red + '\n- [Rewards] Failure when updating the program "{}" configuration. \n- Response Status: "{}". \n- Response message "{}".'
+                .format(program_id, str(response.status_code), response.text))
 
     return response
