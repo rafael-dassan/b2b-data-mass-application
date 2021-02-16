@@ -15,7 +15,7 @@ from common import get_header_request, get_microservice_base_url, update_value_t
 from products import request_get_offers_microservice, get_sku_name
 from classes.text import text
 from rewards.rewards_programs import get_DM_program_for_zone, get_specific_program
-from rewards.rewards_utils import make_account_eligible
+from rewards.rewards_utils import make_account_eligible, get_dt_combos_from_zone, post_combo_relay_account
 
 
 # Enroll POC to a zone's reward program
@@ -74,213 +74,86 @@ def delete_enroll_poc_to_program(account_id, zone, environment):
     return response    
 
 
-# Input transactions to a account
-def input_transactions_to_account(account_id, zone, environment):
-
-    # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
-
-    # Check if the zone already have a reward program created
-    program_found = get_DM_program_for_zone(zone, environment)
-
-    if program_found == 'false':
-        return 'pgm_not_found'
-    else:
-         # Define url request
-        request_url_offer = get_microservice_base_url(environment) + '/rewards-service/rewards/' + account_id + '/transaction/rewards-offer'
-        request_url_redemption = get_microservice_base_url(environment) + '/rewards-service/rewards/' + account_id + '/transaction/redemption'
-
-        body_offer = {
-            "points": 1500,
-            "campaignId": "BRZ8635",
-            "description": "Bonus for customers signing up to Rewards Program from 5/1 to 31/1; Braze campaign ID BRZ8635"          
-        }
-
-        body_redemption = {
-            "combos": [
-                        {
-                            "comboId": "DT_01",
-                            "quantity": 5
-                        }
-                    ],
-            "orderId": "546A456"
-        }
-
-        #Create bodys
-        request_body_offer = convert_json_to_string(body_offer)
-        request_body_redemption = convert_json_to_string(body_redemption)
-
-        response_offer = place_request('POST', request_url_offer, request_body_offer, request_headers)
-        response_redemption = place_request('POST', request_url_redemption, request_body_redemption, request_headers)
-
-        if response_offer.status_code != 201:
-             print(text.Red + '\n- [Rewards Service] Failure when input a offer transaction to account. Response Status: '
-                            + str(response_offer.status_code) + '. Response message ' + response_offer.text)
-
-        if response_redemption.status_code != 200:
-             print(text.Red + '\n- [Rewards Service] Failure when input a redemption transaction to account. Response Status: '
-                            + str(response_redemption.status_code) + '. Response message ' + response_redemption.text)   
-        
-        return 201 if response_offer.status_code == 201 and response_redemption.status_code == 200 else 'post_error'
-
-
 # Add Redeem products to account
 def input_redeem_products(account_id, zone, environment):
-
-    # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Get the reward information for the account
     reward_response = get_rewards(account_id, zone, environment)
     
-    if reward_response != None:
+    if reward_response == None: return None 
 
-        json_reward_response = loads(reward_response.text)
+    json_reward_response = loads(reward_response.text)
 
-        program_id = json_reward_response['programId']
+    program_id = json_reward_response['programId']
 
-        print(text.Yellow + '\n- [Rewards] The account "{}" is enrolled to the rewards program "{}".'
-                .format(account_id, program_id))
-        
-        # Define url request to read the Rewards program of the zone
-        request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/programs/' + program_id + '?projection=COMBOS'
-
-        # Send request
-        response = place_request('GET', request_url, '', request_headers)
-
-        if response.status_code == 200:
-            
-            json_program_combos = loads(response.text)
-
-            # Getting the DT combos configured in the rewards program
-            combos_dt_program = json_program_combos['combos']
-            len_combos_program = len(combos_dt_program)
-            
-            print(text.Yellow + '\n- Found "' + str(len_combos_program) + '" redeem products for rewards program "' + program_id + '".')
-
-            if len_combos_program > 50:
-                len_combos_program = 50
-
-            # Get all the combo IDs that are added to the reward program
-            i = 0
-            combos_id_program = list()
-            while i < len_combos_program:
-                combos_id_program.append(combos_dt_program[i]['comboId'])
-                i += 1
-
-            # Define url request to get all the DT combos of the specified zone
-            request_url = get_microservice_base_url(environment) + '/combos/?types=DT&comboIds=&includeDeleted=false&includeDisabled=false&page=0&pageSize=9999'
-
-            # Send request
-            response = place_request('GET', request_url, '', request_headers)
-            json_combos = loads(response.text)
-            
-            combos_dt_zone = json_combos['combos']
-            len_combos_zone = len(combos_dt_zone)
-
-            print(text.Yellow + '\n- Found "' + str(len_combos_zone) + '" redeem products for the zone "' + zone + '".')
-
-            # Get all the combos that exists on the specified zone
-            i = 0
-            combos_zone = list()
-            while i < len_combos_zone:
-                combos_zone.append(combos_dt_zone[i])
-                i += 1
-
-            # Verify which combos of the zone matchs with the ones added to the rewards program
-            x = 0
-            y = 0
-            combos_match = list()
-            while x < len(combos_id_program):
-                y = 0
-                while y < len(combos_zone):
-                    if combos_zone[y]['id'] == combos_id_program[x]:
-                        combos_match.append(combos_zone[y])
-                        break
-                    y += 1
-                x += 1
-
-            len_combos_match = len(combos_match)
-
-            print(text.Yellow + '\n- Found "' + str(len_combos_match) + '" redeem products matching the program and the zone configuration.')
-
-            # Get a SKU to be used on FreeGood's list below
-            product_offers = request_get_offers_microservice(account_id, zone, environment)
-            
-            if product_offers == 'not_found':
-                print(text.Red + '\n- [Catalog Service] There is no product associated with the account ' + account_id)
-                return
-
-            index_offers = randint(0, (len(product_offers) - 1))
-            sku = product_offers[index_offers]['sku']
-
-            # Define headers to post the association
-            request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
-
-            # Define url request to post the association
-            request_url = get_microservice_base_url(environment) + '/combo-relay/accounts'
-
-            # Define the list of Limits for the main payload 
-            dict_values_limit  = {
-                'daily': 200,
-                'monthly': 200,
-            }
-
-            # Define the list of FreeGoods for the main payload 
-            dict_values_freegoods  = {
-                'quantity': 5,
-                'skus': create_list(sku),
-            }
-
-            # Define the entire list of Combos for the main payload
-            i = 0
-            combos_list = list()
-            while i < len_combos_match:
-
-                dict_values_combos  = {
-                    'id': combos_match[i]['id'],
-                    'externalId': combos_match[i]['id'],
-                    'title': combos_match[i]['title'],
-                    'description': combos_match[i]['id'],
-                    'startDate': combos_match[i]['startDate'],
-                    'endDate': combos_match[i]['endDate'],
-                    'updatedAt': combos_match[i]['updatedAt'],
-                    'type': 'DT',
-                    'image': 'https://test-conv-micerveceria.abi-sandbox.net/media/catalog/product/c/o/combo-icon_11.png',
-                    'freeGoods': dict_values_freegoods,
-                    'limit': dict_values_limit,
-                    'originalPrice': 0,
-                    'price': 0,
-                    'score': 0,
-                }
-
-                combos_list.append(dict_values_combos)
-                i += 1
-
-            # Creates the main payload based on the lists created above
-            dict_values_account = {
-                'accounts': create_list(account_id),
-                'combos': combos_list
-            }
-
-            print(text.Yellow + '\n- Associating matched redeem products, please wait...')
-
-            #Create body to associate the combos to account
-            request_body = convert_json_to_string(dict_values_account)
+    print(text.Yellow + '\n- [Rewards] The account "{}" is enrolled to the rewards program "{}".'
+            .format(account_id, program_id))
     
-            # Send request to associate the combos to account
-            response = place_request('POST', request_url, request_body, request_headers)
+    # Get the account's rewards program information
+    response_program = get_specific_program(program_id, zone, environment, set(["COMBOS"]))
 
-            if response.status_code == 201:
-                print(text.Green + '\n- [Combo Relay Service] Total of ' + str(i) + ' combos associated successfully to account "' + account_id + '".')
-            else:
-                print(text.Red + '\n- [Combo Relay Service] Failure when associating combos to the account. Response Status: '
-                                        + str(response.status_code) + '. Response message: ' + response.text)
+    if response_program == None:
+        print(text.Red + '- Please use the menu option "Unenroll a POC from a program" to disenroll this account and the option "Enroll POC to a program" to enroll this account to an existing rewards program.')
+        return None
+            
+    # Getting the DT combos configured in the rewards program
+    json_program_combos = loads(response_program.text)
+    program_dt_combos = json_program_combos['combos']
 
-        else:
-            print(text.Red + '- Please use the menu option "Unenroll a POC from a program" to disenroll this account and the option "Enroll POC to a program" to enroll this account to an existing rewards program.')
+    if len(program_dt_combos) == 0:
+        print(text.Red + '\n- [Rewards] There are no combos configured for rewards program "{}".'.format(program_id))
+        return None
 
-    return
+    # Get all the DT combos of the specified zone
+    response_combos_from_zone = get_dt_combos_from_zone(zone, environment)
+
+    if response_combos_from_zone == None: return None
+
+    # Get all the combos that exists on the specified zone
+    json_combos_from_zone = loads(response_combos_from_zone.text)
+    zone_dt_combos = json_combos_from_zone['combos']
+
+    # Get a SKU to be used on FreeGood's list below
+    response_product_offers = request_get_offers_microservice(account_id, zone, environment)
+    
+    if response_product_offers == 'not_found':
+        print(text.Red + '\n- [Catalog Service] There are no products associated with the account "{}"'.format(account_id))
+        return None
+    elif response_product_offers == 'false': return None
+
+    # Define the list of FreeGoods for the main payload 
+    index_offers = randint(0, (len(response_product_offers) - 1))
+    sku = response_product_offers[index_offers]['sku']
+    
+    dt_combos_to_associate = match_dt_combos_to_associate(program_dt_combos, zone_dt_combos)
+
+    print(text.Yellow + '\n- Associating matched redeem products, please wait...')
+
+    return post_combo_relay_account(zone, environment, account_id, dt_combos_to_associate, sku)
+
+
+def match_dt_combos_to_associate(program_dt_combos, zone_dt_combos):
+
+    print(text.Yellow + '\n- Found "{}" redeem products for rewards program.'.format(str(len(program_dt_combos))))
+
+    print(text.Yellow + '\n- Found "{}" redeem products for the zone.'.format(str(len(zone_dt_combos))))
+
+    # Verify which combos of the zone matchs with the ones added to the rewards program
+    x = 0
+    y = 0
+    dt_combos_matched = list()
+    while x < len(program_dt_combos):
+        y = 0
+        while y < len(zone_dt_combos):
+            if zone_dt_combos[y]['id'] == program_dt_combos[x]['comboId']:
+                dt_combos_matched.append(zone_dt_combos[y])
+                break
+            y += 1
+        x += 1
+    
+    print(text.Yellow + '\n- Found "{}" redeem products matching the program and the zone configuration.'.format(str(len(dt_combos_matched))))
+
+    return dt_combos_matched
 
 
 # Displays the SKU's for rewards shopping
@@ -345,7 +218,7 @@ def get_rewards(account_id, zone, environment):
     if response.status_code == 200:
         return response
     elif response.status_code == 404 or response.status_code == 406:
-        print(text.Red + '\n- [Rewards] The account "{}" is not enrolled to any rewards program. \nPlease use the menu option "Enroll POC to a program" to enroll this account to a rewards program.'
+        print(text.Red + '\n- [Rewards] The account "{}" is not enrolled to any rewards program. \n- Please use the menu option "Enroll POC to a program" to enroll this account to a rewards program.'
             .format(account_id))
     else:
         print(text.Red + '\n- [Rewards] Failure when getting enrollment information for account "{}". \n- Response Status: "{}". \n- Response message "{}".'

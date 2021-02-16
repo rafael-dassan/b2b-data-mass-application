@@ -28,9 +28,10 @@ from order import *
 from combos import *
 from products import *
 from rewards.rewards import enroll_poc_to_program, delete_enroll_poc_to_program, input_redeem_products, \
-    input_transactions_to_account, display_program_rules_skus
+    display_program_rules_skus
 from rewards.rewards_programs import create_new_program, patch_program_root_field, update_dt_combos_rewards
 from rewards.rewards_challenges import input_challenge_to_zone
+from rewards.rewards_transactions import input_transactions_to_account
 from category_magento import *
 from products_magento import *
 import user_creation_v3 as user_v3
@@ -213,19 +214,9 @@ def create_rewards_to_account():
     # Option to create a new program
     if reward_option == 'NEW_PROGRAM':
 
-        create_pgm = create_new_program(zone, environment)
-
-        if create_pgm == 'error_len_sku':
-            print(text.Red + '\n- [Rewards] The zone must have at least 20 products to proceed')
-            print_finish_application_menu()
-        elif create_pgm == 'error_len_combo':
-            print(text.Red + '\n- [Rewards] The zone must have combos available to proceed')
-            print_finish_application_menu()
-        elif create_pgm == 'error_found' or create_pgm == 'false':
-            print_finish_application_menu()
-        else:
-            print(text.Green + '\n- [Rewards] The new program has been successfully created. ID: ' + create_pgm)
-            print_finish_application_menu()
+        create_new_program(zone, environment)
+            
+        print_finish_application_menu()
 
     # Option to enroll a POC to a rewards program
     elif reward_option == 'ENROLL_POC':
@@ -274,9 +265,8 @@ def create_rewards_to_account():
 
         if account != 'false':
             input_redeem_products(abi_id, zone, environment)
-            print_finish_application_menu()
-        else:
-            print_finish_application_menu()
+        
+        print_finish_application_menu()
 
     # Option to delete a POC enrollment
     elif reward_option == 'DELETE_ENROLL_POC':
@@ -313,24 +303,8 @@ def create_rewards_to_account():
         print_finish_application_menu()
 
     elif reward_option == 'UPDATE_COMBOS':
-        abi_id = print_account_id_menu(zone)
 
-        # Call check account exists function
-        account = check_account_exists_microservice(abi_id, zone, environment)
-        if account == 'false':
-            print_finish_application_menu()
-
-        update_dt_combos = update_dt_combos_rewards(zone, environment, abi_id)
-
-        if update_dt_combos == 201:
-            print(text.Green + '\n- [Rewards] The program has been successfully updated.')
-        elif update_dt_combos == 'no_program':
-            print(text.Red + '\n-Error: POC not enrolled at a program')
-        elif update_dt_combos == 'none':
-            print("\nThere is nothing to update, please insert a DT combo first")
-        else:
-            print(text.Red + '\n-Error: ' + str(update_dt_combos))
-
+        update_dt_combos = update_dt_combos_rewards(zone, environment)
         print_finish_application_menu()
 
 
