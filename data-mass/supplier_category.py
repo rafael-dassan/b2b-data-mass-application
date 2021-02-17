@@ -1,10 +1,8 @@
 import json
-from datetime import datetime, timedelta
 from random import randint
 from gql import gql, Client
 from gql.transport.exceptions import TransportQueryError
 from gql.transport.requests import RequestsHTTPTransport
-import string
 
 from classes.text import text
 from common import get_supplier_base_url, get_header_request_supplier
@@ -33,8 +31,8 @@ def create_root_category(environment):
             json_split = json_data.rsplit()
             id_cat = json_split[2]
             return id_cat
-    except:
-        raise TypeError(text.Red + '\n- [Product Taxonomy Service] Failure to add category.')
+    except TransportQueryError as e:
+        print(text.Red + str(e))
         return 'false'
 
 
@@ -61,8 +59,8 @@ def create_sub_category_supplier(environment, parent):
             json_split = json_data.rsplit()
             id_cat = json_split[2]
             return id_cat
-    except:
-        raise TypeError(text.Red + '\n- [Product Taxonomy Service] Failure to add category.')
+    except TransportQueryError as e:
+        print(text.Red + str(e))
         return 'false'
 
 
@@ -147,3 +145,61 @@ def check_if_supplier_category_exist(environment, category):
         print(text.Red + str(e))
         return 'false'
 
+
+def create_association_attribute_with_category(environment, attribute_id, category_id, min_cardinality,
+                                               max_cardinality):
+    # Select your transport with a defined url endpoint
+    base_url = get_supplier_base_url(environment)
+    base_header = get_header_request_supplier()
+    transport = RequestsHTTPTransport(url=base_url, headers=base_header)
+
+    # Create a GraphQL client using the defined transport
+    client = Client(transport=transport, fetch_schema_from_transport=False)
+
+    mut = create_association_payload()
+
+    params = {"attribute_id": attribute_id, "category_id": category_id, "min_cardinality": min_cardinality,
+              "max_cardinality": max_cardinality}
+    try:
+        response = client.execute(mut, variable_values=params)
+        json_data = json.dumps(response)
+        if len(json_data) != 0:
+            json_split = json_data.rsplit()
+            id_cat = json_split[2]
+            return id_cat
+    except TransportQueryError as e:
+        print(text.Red + str(e))
+        return 'false'
+
+
+def create_association_payload():
+    return gql(
+        """
+               mutation associateAttribute($attribute_id: ID!, $category_id: ID!, $min_cardinality: NonNegativeInt!, $max_cardinality: NonNegativeInt!) { 
+                  associateAttribute(
+                    input: {
+                      attributeModelId: $attribute_id
+                      taxonomyNodeId: $category_id
+                      minCardinality: $min_cardinality
+                      maxCardinality: $max_cardinality
+                    }
+                  ) {
+                    id
+                    minCardinality
+                    maxCardinality
+                    taxonomyNode {
+                      id
+                      name
+                      children{
+                            id
+                            name
+                        }
+                    }
+                    attributeModel {
+                      id
+                      name
+                    }
+                  }
+                }
+    """
+    )
