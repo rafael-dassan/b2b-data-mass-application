@@ -20,7 +20,7 @@ from logs.log import log_to_file
 from validations import is_number, validate_zone_for_ms, validate_environment, \
     validate_structure, validate_rewards, validate_zone_for_interactive_combos_ms, \
     validate_option_request_selection, validate_supplier_menu_structure, validate_option_att, \
-    validate_attribute_menu_structure
+    validate_attribute_menu_structure, validate_supplier_category_menu_structure
 
 
 # Validate option menu selection
@@ -367,11 +367,13 @@ def print_available_options(selection_structure):
     elif selection_structure == '5':
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
         print(text.default_text_color + str(1), text.Yellow + 'Create Attribute')
+        print(text.default_text_color + str(2), text.Yellow + 'Create Category')
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_supplier_menu_structure(selection) == 'false':
             print(text.Red + '\n- Invalid option\n')
             print(text.default_text_color + str(0), text.Yellow + 'Close application')
             print(text.default_text_color + str(1), text.Yellow + 'Create Attribute')
+            print(text.default_text_color + str(2), text.Yellow + 'Create Category')
             selection = input(text.default_text_color + '\nPlease select: ')
     else:
         finish_application()
@@ -1061,6 +1063,7 @@ def print_new_attribute():
 
     return option
 
+
 # Place generic request
 def place_graphql(request_method, request_url, request_body, request_headers):
     # Send request
@@ -1074,3 +1077,16 @@ def place_graphql(request_method, request_url, request_body, request_headers):
     log_to_file(request_method, request_url, request_body, request_headers, response.status_code, response.text)
 
     return response
+
+
+def print_create_supplier_category_menu():
+    print(text.default_text_color + str(1), text.Yellow + 'Create category root')
+    print(text.default_text_color + str(2), text.Yellow + 'Create subCategory')
+    structure = input(text.default_text_color + '\nPlease select: ')
+    while validate_supplier_category_menu_structure(structure) is False:
+        print(text.Red + '\n- Invalid option')
+        print(text.default_text_color + str(1), text.Yellow + 'Create category root')
+        print(text.default_text_color + str(2), text.Yellow + 'Create subCategory')
+        structure = input(text.default_text_color + '\nPlease select: ')
+
+    return structure
