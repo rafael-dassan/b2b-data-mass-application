@@ -279,26 +279,24 @@ def validate_delivery_window_structure(option):
 def validate_supplier_menu_structure(selection):
     switcher = {
        '0': 'true',
-       '1': 'true'
+       '1': 'true',
+       '2': 'true'
     }
 
     value = switcher.get(selection, 'false')
     return value
 
 
-def validate_option_att(option):
+def validate_option_att(selection):
     options = ['1', '2']
-    if option in options:
-        return True
-    else:
-        return False
+    return selection in options
 
 
 def validate_attribute_menu_structure(selection):
     option = ['1', '2', '3']
-    if selection in option:
-        return True
-    else:
-        return False
+    return selection in option
 
 
+def validate_supplier_category_menu_structure(selection):
+    option = ['1', '2']
+    return selection in option
