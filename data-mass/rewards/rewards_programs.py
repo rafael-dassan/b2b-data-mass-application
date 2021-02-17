@@ -229,6 +229,9 @@ def patch_program_root_field(zone, environment, field):
 
         return patch_program(program_id, zone, environment, request_body)
 
+    else:
+        return None
+
 
 # Check if DM Rewards program exists for the zone
 def get_DM_program_for_zone(zone, environment):

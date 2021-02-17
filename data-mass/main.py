@@ -26,7 +26,7 @@ from menus.order_menu import print_order_operations_menu, print_allow_cancellabl
 from menus.product_menu import print_product_operations_menu, print_get_products_menu
 from menus.supplier_menu import print_create_supplier_category_menu, print_new_attribute, print_attribute_primitive, \
     print_create_attribute_menu
-from menus.rewards_menu import print_rewards_menu, print_rewards_transactions_menu    
+from menus.rewards_menu import print_rewards_menu, print_rewards_transactions_menu, print_rewards_program_menu    
 from order import *
 from combos import *
 from products import *
@@ -201,7 +201,14 @@ def flow_get_account(zone, environment):
 def create_rewards_to_account():
     selection_structure = print_rewards_menu()
     
-    if selection_structure == '8':
+    if selection_structure == '2':
+        selection_structure = print_rewards_program_menu()
+        switcher = {
+            '1': 'UPDATE_COMBOS',
+            '2': 'UPDATE_BALANCE',
+            '3': 'UPDATE_REDEEM_LIMIT',
+        }
+    elif selection_structure == '6':
         selection_structure = print_rewards_transactions_menu()
         switcher = {
             '1': 'CREATE_REDEMPTION',
@@ -211,19 +218,14 @@ def create_rewards_to_account():
     else:
         switcher = {
             '1': 'NEW_PROGRAM',
-            '2': 'UPDATE_COMBOS',
-            '3': 'UPDATE_BALANCE',
-            '4': 'UPDATE_REDEEM_LIMIT',
-            '5': 'ENROLL_POC',
-            '6': 'DISENROLL_POC',
-            '7': 'ADD_REDEEM',
-            '9': 'ADD_CHALLENGE'
+            '3': 'ENROLL_POC',
+            '4': 'DISENROLL_POC',
+            '5': 'ADD_REDEEM',
+            '7': 'ADD_CHALLENGE'
         }
 
     reward_option = switcher.get(selection_structure, 'false')
  
-    print(text.Red + '\n- ' + reward_option)
-
     zone = print_zone_menu_for_ms()
     environment = print_environment_menu()
 
@@ -231,13 +233,12 @@ def create_rewards_to_account():
     if reward_option == 'NEW_PROGRAM':
 
         create_new_program(zone, environment)
-            
         print_finish_application_menu()
     
     # Option to update a program DT combos according to the DT combos from the zone
     elif reward_option == 'UPDATE_COMBOS':
 
-        update_dt_combos = update_dt_combos_rewards(zone, environment)
+        update_dt_combos_rewards(zone, environment)
         print_finish_application_menu()
 
     # Option to update initial balance of a program

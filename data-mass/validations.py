@@ -199,20 +199,18 @@ def validate_structure(option):
         return False
 
 
-def validate_rewards(option):
-    options = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-    if option in options:
-        return True
-    else:
-        return False
+def validate_rewards(selection):
+    options = ['1', '2', '3', '4', '5', '6', '7']
+    return selection in options
 
 
-def validate_rewards_transactions(option):
+def validate_rewards_transactions(selection):
     options = ['1', '2', '3']
-    if option in options:
-        return True
-    else:
-        return False
+    return selection in options
+
+def validate_rewards_programs(selection):
+    options = ['1', '2', '3']
+    return selection in options
 
 
 def validade_challenge_type(type):
