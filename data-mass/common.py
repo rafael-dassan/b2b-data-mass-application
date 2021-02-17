@@ -20,7 +20,7 @@ from logs.log import log_to_file
 from validations import is_number, validate_zone_for_ms, validate_environment, \
     validate_structure, validate_rewards, validate_zone_for_interactive_combos_ms, \
     validate_option_request_selection, validate_supplier_menu_structure, validate_option_att, \
-    validate_attribute_menu_structure
+    validate_attribute_menu_structure, validate_supplier_category_menu_structure
 
 
 # Validate option menu selection
@@ -367,11 +367,13 @@ def print_available_options(selection_structure):
     elif selection_structure == '5':
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
         print(text.default_text_color + str(1), text.Yellow + 'Create Attribute')
+        print(text.default_text_color + str(2), text.Yellow + 'Create Category')
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_supplier_menu_structure(selection) == 'false':
             print(text.Red + '\n- Invalid option\n')
             print(text.default_text_color + str(0), text.Yellow + 'Close application')
             print(text.default_text_color + str(1), text.Yellow + 'Create Attribute')
+            print(text.default_text_color + str(2), text.Yellow + 'Create Category')
             selection = input(text.default_text_color + '\nPlease select: ')
     else:
         finish_application()
@@ -1005,61 +1007,6 @@ def get_header_request_supplier():
     }
 
     return header
-
-
-def print_create_attribute_menu():
-    print(text.default_text_color + str(1), text.Yellow + 'Create attribute primitive type')
-    print(text.default_text_color + str(2), text.Yellow + 'Create attribute ENUM type')
-    print(text.default_text_color + str(3), text.Yellow + 'Create attribute GROUP type')
-    structure = input(text.default_text_color + '\nPlease select: ')
-    while validate_attribute_menu_structure(structure) is False:
-        print(text.Red + '\n- Invalid option')
-        print(text.default_text_color + str(1), text.Yellow + 'Create attribute primitive type')
-        print(text.default_text_color + str(2), text.Yellow + 'Create attribute ENUM type')
-        print(text.default_text_color + str(3), text.Yellow + 'Create attribute GROUP type')
-        structure = input(text.default_text_color + '\nPlease select: ')
-
-    return structure
-
-
-def print_attribute_primitive():
-    print(text.default_text_color + str(1), text.Yellow + 'Create NUMERIC attribute')
-    print(text.default_text_color + str(2), text.Yellow + 'Create TEXT attribute')
-    print(text.default_text_color + str(3), text.Yellow + 'Create DATE attribute')
-    structure = input(text.default_text_color + '\nPlease select: ')
-    while validate_attribute_menu_structure(structure) is False:
-        print(text.Red + '\n- Invalid option')
-        print(text.default_text_color + str(1), text.Yellow + 'Create NUMERIC attribute')
-        print(text.default_text_color + str(2), text.Yellow + 'Create TEXT attribute')
-        print(text.default_text_color + str(3), text.Yellow + 'Create DATE attribute')
-        structure = input(text.default_text_color + '\nPlease select: ')
-
-    return structure
-
-
-def print_attribute_enum():
-    print(text.default_text_color + str(1), text.Yellow + 'Create ENUM NUMERIC')
-    print(text.default_text_color + str(2), text.Yellow + 'Create ENUM TEXT')
-    print(text.default_text_color + str(3), text.Yellow + 'Create ENUM DATE')
-    structure = input(text.default_text_color + '\nPlease select: ')
-    while validate_attribute_menu_structure(structure) is False:
-        print(text.Red + '\n- Invalid option')
-        print(text.default_text_color + str(1), text.Yellow + 'Create ENUM NUMERIC')
-        print(text.default_text_color + str(2), text.Yellow + 'Create ENUM TEXT')
-        print(text.default_text_color + str(3), text.Yellow + 'Create ENUM DATE')
-        structure = input(text.default_text_color + '\nPlease select: ')
-
-    return structure
-
-
-def print_new_attribute():
-    option = input(text.default_text_color + 'Do you want to input another attribute in this group? (1. Yes / 2. No): ')
-    while validate_option_att(option) is False:
-        print(text.Red + '\n- Invalid option')
-        option = input(text.default_text_color + '\nDo you want to input another attribute in this group? '
-                                                '(1. Yes / 2. No): ')
-
-    return option
 
 # Place generic request
 def place_graphql(request_method, request_url, request_body, request_headers):
