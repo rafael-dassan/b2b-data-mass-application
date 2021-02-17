@@ -24,6 +24,8 @@ from menus.invoice_menu import print_invoice_operations_menu, print_invoice_stat
 from menus.order_menu import print_order_operations_menu, print_allow_cancellable_order_menu, print_get_order_menu, \
     print_order_id_menu, print_order_status_menu
 from menus.product_menu import print_product_operations_menu, print_get_products_menu
+from menus.supplier_menu import print_create_supplier_category_menu, print_new_attribute, print_attribute_primitive, \
+    print_create_attribute_menu
 from order import *
 from combos import *
 from products import *
