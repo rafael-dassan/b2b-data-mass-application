@@ -10,12 +10,12 @@ from time import time
 from tabulate import tabulate
 
 # Local application imports
-from common import get_header_request, get_microservice_base_url, update_value_to_json, convert_json_to_string, \
-    place_request, create_list
+from common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request
 from products import request_get_offers_microservice, get_sku_name
 from classes.text import text
 from rewards.rewards_programs import get_DM_program_for_zone, get_specific_program
-from rewards.rewards_utils import make_account_eligible, get_dt_combos_from_zone, post_combo_relay_account
+from rewards.rewards_utils import print_make_account_eligible, make_account_eligible, get_dt_combos_from_zone, \
+    post_combo_relay_account
 
 
 # Enroll POC to a zone's reward program
@@ -36,11 +36,7 @@ def enroll_poc_to_program(account_id, zone, environment, account_info):
             potential_account = account_info[0]['potential']
 
             if seg_account != 'DM-SEG' or subseg_account != 'DM-SUBSEG' or potential_account != 'DM-POTENT':
-                turn_eligible = input(text.Yellow + '\n- Do you want to make it eligible now? y/N: ')
-
-                while turn_eligible.upper() != 'Y' and turn_eligible.upper() != 'N':
-                    print(text.Red + '\n- Invalid option\n')
-                    turn_eligible = input(text.Yellow + '\n- Do you want to make it eligible now? y/N: ')
+                turn_eligible = print_make_account_eligible()
 
                 if turn_eligible.upper() == 'Y':
                     is_account_eligible = make_account_eligible(account_info, zone, environment)
@@ -51,7 +47,7 @@ def enroll_poc_to_program(account_id, zone, environment, account_info):
            
 
 # Disenroll a POC from the rewards program
-def delete_enroll_poc_to_program(account_id, zone, environment):
+def disenroll_poc_from_program(account_id, zone, environment):
 
     # Define headers
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
@@ -75,7 +71,7 @@ def delete_enroll_poc_to_program(account_id, zone, environment):
 
 
 # Add Redeem products to account
-def input_redeem_products(account_id, zone, environment):
+def associate_poc_to_dt_combos(account_id, zone, environment):
 
     # Get the reward information for the account
     reward_response = get_rewards(account_id, zone, environment)

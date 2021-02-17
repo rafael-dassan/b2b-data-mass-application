@@ -14,6 +14,7 @@ from common import get_header_request, get_microservice_base_url, place_request,
     convert_json_to_string, create_list
 from products import request_get_products_microservice
 from classes.text import text
+from validations import validate_yes_no_option
 
 
 def generate_id():
@@ -48,6 +49,30 @@ def get_dt_combos_from_zone(zone, environment, page_size=9999):
     
     return None
 
+
+def get_rewards_combos_by_account(account_id, zone, environment):
+    header_request = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+
+    request_url = get_microservice_base_url(environment, 'false') + '/loyalty-business-service/programs/accounts/' + account_id + '/combos'
+
+    response = place_request('GET', request_url, '', header_request)
+
+    if response.status_code == 200:
+        json_data = loads(response.text)
+        if len(json_data['combos']) > 0:
+            return response
+        else:
+            print(text.Red + '\n- [Rewards] There are no DT combos available for the account "{}". \n- Please use the menu option "" to associate DT combos to this account.'
+                .format(account_id))    
+    elif response.status_code == 404:
+        print(text.Red + '\n- [Rewards] The account "{}" is not enrolled to any rewards program. \n- Please use the menu option "Enroll POC to a program" to enroll this account to a rewards program.'
+            .format(account_id))
+    else:
+        print(text.Red + '\n- [Rewards] Failure when getting rewards combos for account "{}". \n- Response Status: "{}". \n- Response message "{}".'
+                .format(account_id, str(response.status_code), response.text))
+    
+    return None
+    
 
 def post_combo_relay_account(zone, environment, account_id, dt_combos_to_associate, sku):
     # Define headers to post the association
@@ -150,6 +175,16 @@ def display_all_programs_info(list_all_programs, show_initial_balance=False, sho
             all_programs_dictionary.setdefault('Current redeem limit', []).append(program['redeemLimit'])
 
     print(text.default_text_color + tabulate(all_programs_dictionary, headers='keys', tablefmt='grid'))
+
+
+def print_make_account_eligible():
+    option = input(text.Yellow + '\n- Do you want to make the account eligible now? y/N: ')
+
+    while validate_yes_no_option(option.upper()) is False:
+        print(text.Red + '\n- Invalid option\n')
+        option = input(text.Yellow + '\n- Do you want to make the account eligible now: ')
+    
+    return option.upper()
 
 
 # Make an account eligible to DM Rewards program

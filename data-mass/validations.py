@@ -200,11 +200,20 @@ def validate_structure(option):
 
 
 def validate_rewards(option):
-    options = ['1', '2', '3', '4', '5', '6', '7', '8']
+    options = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
     if option in options:
         return True
     else:
         return False
+
+
+def validate_rewards_transactions(option):
+    options = ['1', '2', '3']
+    if option in options:
+        return True
+    else:
+        return False
+
 
 def validade_challenge_type(type):
     types = ['1', '2', '3', '4']

@@ -24,14 +24,15 @@ from menus.invoice_menu import print_invoice_operations_menu, print_invoice_stat
 from menus.order_menu import print_order_operations_menu, print_allow_cancellable_order_menu, print_get_order_menu, \
     print_order_id_menu, print_order_status_menu
 from menus.product_menu import print_product_operations_menu, print_get_products_menu
+from menus.rewards_menu import print_rewards_menu, print_rewards_transactions_menu
 from order import *
 from combos import *
 from products import *
-from rewards.rewards import enroll_poc_to_program, delete_enroll_poc_to_program, input_redeem_products, \
+from rewards.rewards import enroll_poc_to_program, disenroll_poc_from_program, associate_poc_to_dt_combos, \
     display_program_rules_skus
 from rewards.rewards_programs import create_new_program, patch_program_root_field, update_dt_combos_rewards
 from rewards.rewards_challenges import input_challenge_to_zone
-from rewards.rewards_transactions import input_transactions_to_account
+from rewards.rewards_transactions import create_redemption, create_rewards_offer, create_points_removal
 from category_magento import *
 from products_magento import *
 import user_creation_v3 as user_v3
@@ -195,27 +196,56 @@ def flow_get_account(zone, environment):
 # Input Rewards to account
 def create_rewards_to_account():
     selection_structure = print_rewards_menu()
-    zone = print_zone_menu_for_ms()
-    environment = print_environment_menu()
-
-    switcher = {
-        '1': 'NEW_PROGRAM',
-        '2': 'UPDATE_BALANCE',
-        '3': 'UPDATE_COMBOS',
-        '4': 'ENROLL_POC',
-        '5': 'ADD_CHALLENGE',
-        '6': 'ADD_REDEEM',
-        '7': 'DELETE_ENROLL_POC',
-        '8': 'ADD_TRANSACTIONS',
-    }
+    
+    if selection_structure == '8':
+        selection_structure = print_rewards_transactions_menu()
+        switcher = {
+            '1': 'CREATE_REDEMPTION',
+            '2': 'CREATE_REWARDS_OFFER',
+            '3': 'CREATE_POINTS_REMOVAL'
+        }
+    else:
+        switcher = {
+            '1': 'NEW_PROGRAM',
+            '2': 'UPDATE_COMBOS',
+            '3': 'UPDATE_BALANCE',
+            '4': 'UPDATE_REDEEM_LIMIT',
+            '5': 'ENROLL_POC',
+            '6': 'DISENROLL_POC',
+            '7': 'ADD_REDEEM',
+            '9': 'ADD_CHALLENGE'
+        }
 
     reward_option = switcher.get(selection_structure, 'false')
+ 
+    print(text.Red + '\n- ' + reward_option)
+
+    zone = print_zone_menu_for_ms()
+    environment = print_environment_menu()
 
     # Option to create a new program
     if reward_option == 'NEW_PROGRAM':
 
         create_new_program(zone, environment)
             
+        print_finish_application_menu()
+    
+    # Option to update a program DT combos according to the DT combos from the zone
+    elif reward_option == 'UPDATE_COMBOS':
+
+        update_dt_combos = update_dt_combos_rewards(zone, environment)
+        print_finish_application_menu()
+
+    # Option to update initial balance of a program
+    elif reward_option == 'UPDATE_BALANCE':
+
+        patch_program_root_field(zone, environment, 'initial_balance')
+        print_finish_application_menu()
+
+    # Option to update the program redeem limit
+    elif reward_option == 'UPDATE_REDEEM_LIMIT':
+
+        patch_program_root_field(zone, environment, 'redeem_limit')
         print_finish_application_menu()
 
     # Option to enroll a POC to a rewards program
@@ -231,31 +261,20 @@ def create_rewards_to_account():
 
         print_finish_application_menu()
 
-    # Option to input challenges to a specific zone
-    elif reward_option == 'ADD_CHALLENGE':
+    # Option to disenroll a POC from a program
+    elif reward_option == 'DISENROLL_POC':
 
         abi_id = print_account_id_menu(zone)
 
         # Call check account exists function
         account = check_account_exists_microservice(abi_id, zone, environment)
 
-        if account == 'false':
-            print_finish_application_menu()
-
-        add_challenge = input_challenge_to_zone(abi_id, zone, environment)
-
-        if add_challenge == 'false':
-            print(text.Red + '\n- [Rewards] Something went wrong, please try again')
-
+        if account != 'false':
+            disenroll_poc_from_program(abi_id, zone, environment)
+            
         print_finish_application_menu()
 
-    # Option to update initial balance of a program
-    elif reward_option == 'UPDATE_BALANCE':
-
-        patch_program_root_field(zone, environment, 'initial_balance')
-        print_finish_application_menu()
-
-    # Option to input redeem products to an account
+    # Option to associate redeem products to an account
     elif reward_option == 'ADD_REDEEM':
 
         abi_id = print_account_id_menu(zone)
@@ -264,12 +283,48 @@ def create_rewards_to_account():
         account = check_account_exists_microservice(abi_id, zone, environment)
 
         if account != 'false':
-            input_redeem_products(abi_id, zone, environment)
+            associate_poc_to_dt_combos(abi_id, zone, environment)
         
         print_finish_application_menu()
+    
+    # Option to create a REDEMPTION transaction to a POC
+    elif reward_option == 'CREATE_REDEMPTION':
+        abi_id = print_account_id_menu(zone)
 
-    # Option to delete a POC enrollment
-    elif reward_option == 'DELETE_ENROLL_POC':
+        # Call check account exists function
+        account = check_account_exists_microservice(abi_id, zone, environment)
+
+        if account != 'false':
+            create_redemption(abi_id, zone, environment)
+            
+        print_finish_application_menu()
+    
+    # Option to create a REWARDS_OFFER transaction to a POC
+    elif reward_option == 'CREATE_REWARDS_OFFER':
+        abi_id = print_account_id_menu(zone)
+
+        # Call check account exists function
+        account = check_account_exists_microservice(abi_id, zone, environment)
+
+        if account != 'false':
+            create_rewards_offer(abi_id, zone, environment)
+            
+        print_finish_application_menu()
+
+    # Option to create a POINTS_REMOVAL transaction to a POC
+    elif reward_option == 'CREATE_POINTS_REMOVAL':
+        abi_id = print_account_id_menu(zone)
+
+        # Call check account exists function
+        account = check_account_exists_microservice(abi_id, zone, environment)
+
+        if account != 'false':
+            create_points_removal(abi_id, zone, environment)
+            
+        print_finish_application_menu()
+
+    # Option to input challenges to a specific zone
+    elif reward_option == 'ADD_CHALLENGE':
 
         abi_id = print_account_id_menu(zone)
 
@@ -277,34 +332,10 @@ def create_rewards_to_account():
         account = check_account_exists_microservice(abi_id, zone, environment)
 
         if account != 'false':
-            delete_enroll_poc_to_program(abi_id, zone, environment)
-            
-        print_finish_application_menu()
-    
-     # Option to ADD a Transaction to a POC
-    elif reward_option == 'ADD_TRANSACTIONS':
-        abi_id = print_account_id_menu(zone)
+            add_challenge = input_challenge_to_zone(abi_id, zone, environment)
+            if add_challenge == 'false':
+                print(text.Red + '\n- [Rewards] Something went wrong, please try again')
 
-        # Call check account exists function
-        account = check_account_exists_microservice(abi_id, zone, environment)
-
-        if account == 'false':
-            print_finish_application_menu()
-
-        input_transactions = input_transactions_to_account(abi_id, zone, environment)
-
-        if input_transactions == 'pgm_not_found':
-            print(text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "Create new program" to create it')
-        elif input_transactions == 'post_error':
-            print(text.Red + '\n- [Rewards] Failure when input a transaction to account')
-        elif input_transactions == 201:
-            print(text.Green + '\n- [Rewards] The transactions has been included for this account from the rewards program')
-
-        print_finish_application_menu()
-
-    elif reward_option == 'UPDATE_COMBOS':
-
-        update_dt_combos = update_dt_combos_rewards(zone, environment)
         print_finish_application_menu()
 
 

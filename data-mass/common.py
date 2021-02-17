@@ -18,7 +18,7 @@ import jwt
 from classes.text import text
 from logs.log import log_to_file
 from validations import is_number, validate_zone_for_ms, validate_environment, \
-    validate_structure, validate_rewards, validate_zone_for_interactive_combos_ms, \
+    validate_structure, validate_zone_for_interactive_combos_ms, \
     validate_option_request_selection, validate_supplier_menu_structure, validate_option_att, \
     validate_attribute_menu_structure
 
@@ -411,31 +411,6 @@ def print_structure_menu():
 
     return structure
 
-
-# Print rewards menu
-def print_rewards_menu():
-    print(text.default_text_color + str(1), text.Yellow + 'Create new program')
-    print(text.default_text_color + str(2), text.Yellow + 'Update Initial Balance of a program')
-    print(text.default_text_color + str(3), text.Yellow + 'Update DT Combos')
-    print(text.default_text_color + str(4), text.Yellow + 'Enroll POC to a program')
-    print(text.default_text_color + str(5), text.Yellow + 'Input Challenges to zone')
-    print(text.default_text_color + str(6), text.Yellow + 'Input Redeem Products to account')
-    print(text.default_text_color + str(7), text.Yellow + 'Unenroll a POC from a program')
-    print(text.default_text_color + str(8), text.Yellow + 'Input Transactions to a POC')
-    structure = input(text.default_text_color + '\nPlease select: ')
-    while validate_rewards(structure) is False:
-        print(text.Red + '\n- Invalid option')
-        print(text.default_text_color + str(1), text.Yellow + 'Create new program')
-        print(text.default_text_color + str(2), text.Yellow + 'Update Initial Balance of a program')
-        print(text.default_text_color + str(3), text.Yellow + 'Update DT Combos')
-        print(text.default_text_color + str(4), text.Yellow + 'Enroll POC to a program')
-        print(text.default_text_color + str(5), text.Yellow + 'Input Challenges to zone')
-        print(text.default_text_color + str(6), text.Yellow + 'Input Redeem Products to account')
-        print(text.default_text_color + str(7), text.Yellow + 'Unenroll a POC from a program')
-        print(text.default_text_color + str(8), text.Yellow + 'Input Transactions to a POC')
-        structure = input(text.default_text_color + '\nPlease select: ')
-
-    return structure
 
 # Print combos menu
 def print_combos_menu():
