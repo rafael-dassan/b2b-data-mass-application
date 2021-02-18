@@ -368,12 +368,14 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
         print(text.default_text_color + str(1), text.Yellow + 'Create Attribute')
         print(text.default_text_color + str(2), text.Yellow + 'Create Category')
+        print(text.default_text_color + str(3), text.Yellow + 'Create association between attribute and category')
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_supplier_menu_structure(selection) == 'false':
             print(text.Red + '\n- Invalid option\n')
             print(text.default_text_color + str(0), text.Yellow + 'Close application')
             print(text.default_text_color + str(1), text.Yellow + 'Create Attribute')
             print(text.default_text_color + str(2), text.Yellow + 'Create Category')
+            print(text.default_text_color + str(3), text.Yellow + 'Create association between attribute and category')
             selection = input(text.default_text_color + '\nPlease select: ')
     else:
         finish_application()

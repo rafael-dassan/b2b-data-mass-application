@@ -40,8 +40,8 @@ def create_attribute_primitive_type(environment, type_attribute):
             json_split = json_data.rsplit()
             id_att = json_split[2]
             return id_att
-    except:
-        raise TypeError(text.Red + '\n- [Product Taxonomy Service] Failure to add attribute.')
+    except TransportQueryError as e:
+        print(text.Red + str(e))
         return 'false'
 
 

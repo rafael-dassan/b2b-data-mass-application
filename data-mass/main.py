@@ -25,7 +25,7 @@ from menus.order_menu import print_order_operations_menu, print_allow_cancellabl
     print_order_id_menu, print_order_status_menu
 from menus.product_menu import print_product_operations_menu, print_get_products_menu
 from menus.supplier_menu import print_create_supplier_category_menu, print_new_attribute, print_attribute_primitive, \
-    print_create_attribute_menu
+    print_create_attribute_menu, print_min_cardinality, print_max_cardinality
 from menus.rewards_menu import print_rewards_menu, print_rewards_transactions_menu, print_rewards_program_menu    
 from order import *
 from combos import *
@@ -40,7 +40,8 @@ from products_magento import *
 import user_creation_v3 as user_v3
 import user_delete_v3 as user_delete_v3
 from simulation import process_simulation_microservice, request_order_simulation
-from supplier_category import check_if_supplier_category_exist, create_root_category, create_sub_category_supplier
+from supplier_category import check_if_supplier_category_exist, create_root_category, create_sub_category_supplier, \
+    create_association_attribute_with_category
 from validations import validate_yes_no_option, validate_state, is_number
 
 
@@ -90,7 +91,8 @@ def show_menu():
         switcher = {
             '0': finish_application,
             '1': create_attribute_menu,
-            '2': create_category_supplier_menu
+            '2': create_category_supplier_menu,
+            '3': attribute_associated_category_menu
         }
 
     else:
@@ -1066,8 +1068,8 @@ def flow_create_account(zone, environment, account_id):
 
 
 def flow_create_delivery_window(zone, environment, account_id, option):
-    allow_flexible_delivery_dates = ['BR', 'ZA', 'MX']
-    allow_delivery_cost = ['BR', 'MX']
+    allow_flexible_delivery_dates = ['BR', 'ZA', 'MX', 'DO']
+    allow_delivery_cost = ['BR', 'MX', 'DO']
 
     # Call check account exists function
     account = check_account_exists_microservice(account_id, zone, environment)
@@ -1721,6 +1723,28 @@ def create_category_supplier_menu():
         else:
             print_finish_application_menu()
 
+
+def attribute_associated_category_menu():
+    environment = print_environment_menu()
+    attribute_id = input(text.default_text_color + 'Inform the attribute id: ')
+    valid_att = check_if_attribute_exist(environment, attribute_id)
+    if valid_att == 'false':
+        print_finish_application_menu()
+    else:
+        category_id = input(text.default_text_color + 'Inform the category id: ')
+        check_cat = check_if_supplier_category_exist(environment, category_id)
+        if check_cat != 'false':
+            min_cardinality = print_min_cardinality()
+            max_cardinality = print_max_cardinality()
+            association = create_association_attribute_with_category(environment, attribute_id, category_id, min_cardinality, max_cardinality)
+            if association != 'false':
+                print(text.Green + '\n- [Association] The new association between attribute and categoty has been successfully created. '
+                                   'ID: {association}'.format(association=association))
+                print_finish_application_menu()
+            else:
+                print_finish_application_menu()
+        else:
+            print_finish_application_menu()
 
 
 # Init

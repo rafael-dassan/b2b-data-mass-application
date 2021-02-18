@@ -69,3 +69,19 @@ def print_new_attribute():
                                                 '(1. Yes / 2. No): ')
 
     return option
+
+
+def print_min_cardinality():
+    option = int(input(text.default_text_color + 'Min cardinality: '))
+    while option < 0:
+        print(text.Red + '\n- Invalid option')
+        option = int(input(text.default_text_color + 'Min cardinality: '))
+    return str(option)
+
+
+def print_max_cardinality():
+    option = int(input(text.default_text_color + 'Max cardinality: '))
+    while option < 1:
+        print(text.Red + '\n- Invalid option')
+        option = int(input(text.default_text_color + 'Max cardinality: '))
+    return str(option)
