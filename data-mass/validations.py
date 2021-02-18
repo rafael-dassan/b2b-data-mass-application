@@ -272,7 +272,7 @@ def validate_supplier_menu_structure(selection):
        '0': 'true',
        '1': 'true',
        '2': 'true',
-       '3': 'true',
+       '3': 'true'
     }
 
     value = switcher.get(selection, 'false')
