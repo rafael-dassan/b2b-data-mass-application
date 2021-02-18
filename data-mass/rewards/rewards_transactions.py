@@ -3,11 +3,6 @@ import json
 from json import loads
 import os
 from random import randint
-from datetime import timedelta, datetime
-from time import time
-
-# Third party imports
-from tabulate import tabulate
 
 # Local application imports
 from common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request, \
@@ -54,8 +49,8 @@ def create_rewards_offer(account_id, zone, environment):
     
     dict_rewards_offer = {
         'points': int(points_amount),
-        'campaignId': 'BRZ8635',
-        'description': 'Bonus for customers signing up to Rewards Program from 5/1 to 31/1; Braze campaign ID BRZ8635'
+        'campaignId': 'DM-' + str(randint(100,900)),
+        'description': 'DM-Bonus for customers signing up to Rewards Program'
     }
 
     request_body_rewards_offer = convert_json_to_string(dict_rewards_offer)
@@ -74,7 +69,7 @@ def create_points_removal(account_id, zone, environment):
     
     dict_points_removal = {
         'points': int(points_amount),
-        'description': 'Transaction to remove the balance from a POC.'
+        'description': 'DM Transaction to remove the balance from a POC.'
     }
 
     request_body_points_removal = convert_json_to_string(dict_points_removal)

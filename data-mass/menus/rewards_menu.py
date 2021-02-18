@@ -42,13 +42,13 @@ def print_rewards_transactions_menu():
 
 # Print rewards transactions menu
 def print_rewards_program_menu():
-    print(text.default_text_color + str(1), text.Yellow + 'Update an existing program - DT Combos from zone configuration')
+    print(text.default_text_color + str(1), text.Yellow + 'Update an existing program - Add DT Combos from zone')
     print(text.default_text_color + str(2), text.Yellow + 'Update an existing program - Initial Balance')
     print(text.default_text_color + str(3), text.Yellow + 'Update an existing program - Redeem Limit')
     structure = input(text.default_text_color + '\nPlease select: ')
     while validate_rewards_programs(structure) is False:
         print(text.Red + '\n- Invalid option')
-        print(text.default_text_color + str(1), text.Yellow + 'Update an existing program - DT Combos from zone configuration')
+        print(text.default_text_color + str(1), text.Yellow + 'Update an existing program - Add DT Combos from zone')
         print(text.default_text_color + str(2), text.Yellow + 'Update an existing program - Initial Balance')
         print(text.default_text_color + str(3), text.Yellow + 'Update an existing program - Redeem Limit')
         structure = input(text.default_text_color + '\nPlease select: ')

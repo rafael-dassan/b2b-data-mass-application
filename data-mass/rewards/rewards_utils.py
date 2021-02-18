@@ -2,7 +2,6 @@
 import json
 from json import loads
 import os
-from random import randint
 from datetime import timedelta, datetime
 from time import time
 
@@ -27,7 +26,7 @@ def generate_id():
     return epoch_id
 
 
-# Retrieve Digital Trade combos (DT Combos) for the specified zone
+# Get the DT Combos for the specified zone from Combos MS
 def get_dt_combos_from_zone(zone, environment, page_size=9999):
     
     header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
@@ -41,10 +40,10 @@ def get_dt_combos_from_zone(zone, environment, page_size=9999):
     if response.status_code == 200:
         return response
     elif response.status_code == 404:
-        print(text.Red + '\n- [Combo Service] There is no combo type digital trade registered. \n- Response Status: "{}". \n- Response message "{}".'
+        print(text.Red + '\n- [Combo Service] There are no DT combos registered. \n- Response Status: "{}". \n- Response message "{}".'
                 .format(str(response.status_code), response.text))
     else:
-        print(text.Red + '\n- [Combo Service] Failure to retrieve combo type digital trade. \n- Response Status: "{}". \n- Response message "{}".'
+        print(text.Red + '\n- [Combo Service] Failure to retrieve DT combos. \n- Response Status: "{}". \n- Response message "{}".'
                 .format(str(response.status_code), response.text))
     
     return None
@@ -68,7 +67,7 @@ def get_rewards_combos_by_account(account_id, zone, environment):
         print(text.Red + '\n- [Rewards] The account "{}" is not enrolled to any rewards program. \n- Please use the menu option "Enroll POC to a program" to enroll this account to a rewards program.'
             .format(account_id))
     else:
-        print(text.Red + '\n- [Rewards] Failure when getting rewards combos for account "{}". \n- Response Status: "{}". \n- Response message "{}".'
+        print(text.Red + '\n- [Rewards] Failure when getting DT combos for account "{}". \n- Response Status: "{}". \n- Response message "{}".'
                 .format(account_id, str(response.status_code), response.text))
     
     return None
@@ -87,6 +86,12 @@ def post_combo_relay_account(zone, environment, account_id, dt_combos_to_associa
         'monthly': 200,
     }
 
+    # Define the list of ConsumedLimits for the main payload 
+    dict_values_consumed_limit = {
+        "daily": 0,
+        "monthly": 0
+    }
+
     dict_values_freegoods  = {
         'quantity': 5,
         'skus': create_list(sku),
@@ -101,16 +106,18 @@ def post_combo_relay_account(zone, environment, account_id, dt_combos_to_associa
             'id': dt_combos_to_associate[i]['id'],
             'externalId': dt_combos_to_associate[i]['id'],
             'title': dt_combos_to_associate[i]['title'],
-            'description': dt_combos_to_associate[i]['id'],
+            'description': dt_combos_to_associate[i]['description'],
             'startDate': dt_combos_to_associate[i]['startDate'],
             'endDate': dt_combos_to_associate[i]['endDate'],
-            'updatedAt': dt_combos_to_associate[i]['updatedAt'],
             'type': 'DT',
             'image': 'https://test-conv-micerveceria.abi-sandbox.net/media/catalog/product/c/o/combo-icon_11.png',
+            'items': None,
             'freeGoods': dict_values_freegoods,
             'limit': dict_values_limit,
+            'consumedLimit': dict_values_consumed_limit,
             'originalPrice': 0,
             'price': 0,
+            'discountPercentOff': 0,
             'score': 0,
         }
 
@@ -130,10 +137,10 @@ def post_combo_relay_account(zone, environment, account_id, dt_combos_to_associa
     response = place_request('POST', request_url, request_body, request_headers)
 
     if response.status_code == 201:
-        print(text.Green + '\n- [Combo Relay Service] Total of "{}" combos associated successfully to account "{}".'
+        print(text.Green + '\n- [Combo Relay Service] Total of "{}" DT combos associated successfully to account "{}".'
             .format(str(len(dt_combos_to_associate)), account_id))
     else:
-        print(text.Red + '\n- [Combo Relay Service] Failure when associating combos to the account. \n- Response Status: "{}". \n- Response message: "{}"'
+        print(text.Red + '\n- [Combo Relay Service] Failure when associating DT combos to the account. \n- Response Status: "{}". \n- Response message: "{}"'
             .format(str(response.status_code), response.text))
 
     return response
@@ -150,15 +157,6 @@ def create_product_list_from_zone(zone, environment):
             sku_rules.append(response_products[i]['sku'])
 
     return sku_rules
-
-
-def get_id_rewards(abi_id, header_request, environment):
-    request_url = get_microservice_base_url(environment,'true') + '/rewards-service/rewards/' + abi_id
-    response = place_request('GET', request_url, '', header_request)
-    if response.status_code == 200:
-        return loads(response.text).get("programId")
-    else:
-        return 'false ' + str(response.status_code)
 
 
 # Displays all programs information
@@ -225,159 +223,3 @@ def build_request_url_with_projection_query(request_url, projections):
         request_url += projection_query
     
     return request_url
-
-
-# Generates the Combos for Rewards program
-def generate_combos_information(zone_dt_combos):
-    zone_dt_combos = zone_dt_combos['combos']
-    combos_list = list()
-
-    for i in range(len(zone_dt_combos)):
-        points = i + 1
-
-        dic_combos  = {
-            'comboId' : zone_dt_combos[i]['id'],
-            'points' : points * 250
-        }
-
-        combos_list.append(dic_combos)
-
-    return combos_list
-
-
-# Generates the Categories for Rewards program
-def generate_categories_information(zone):
-    category_info = list()
-    
-    if zone == 'DO':
-        # Premium category
-        category_info.append('96')
-        category_info.append('94')
-        category_info.append('Gana 100 puntos por cada RD $1000 pesos de compra en estos productos')
-        category_info.append('COMPRA AHORA')
-        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/core/img_punto_1.png')
-        
-        # Core category
-        category_info.append('95')
-        category_info.append('93')
-        category_info.append('Gana 50 puntos por cada RD $1000 pesos de compra en estos productos')
-        category_info.append('COMPRA AHORA')
-        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/core/img_punto_1.png')
-    elif zone == 'CO':
-        # Premium category
-        category_info.append('124')
-        category_info.append('304')
-        category_info.append('Gana 100 puntos por cada RD $1000 pesos de compra en estos productos')
-        category_info.append('COMPRA AHORA')
-        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/core/img_punto_1.png')
-    
-        # Core category
-        category_info.append('123')
-        category_info.append('261')
-        category_info.append('Gana 50 puntos por cada RD $1000 pesos de compra en estos productos')
-        category_info.append('COMPRA AHORA')
-        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/core/img_punto_1.png')
-    elif zone == 'AR':
-        # Premium category
-        category_info.append('582')
-        category_info.append('494')
-        category_info.append('Gana 100 puntos por cada RD $1000 pesos de compra en estos productos')
-        category_info.append('COMPRA AHORA')
-        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/core/img_punto_1.png')
-
-        # Core category
-        category_info.append('581')
-        category_info.append('493')
-        category_info.append('Gana 50 puntos por cada RD $1000 pesos de compra en estos productos')
-        category_info.append('COMPRA AHORA')
-        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/core/img_punto_1.png')
-    elif zone == 'BR':
-        # Premium category
-        category_info.append('262')
-        category_info.append('226')
-        category_info.append('Ganhe 100 pontos para cada R$1000,00 gastos em compras e troque por produtos gratis.')
-        category_info.append('COMPRAR AGORA')
-        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/br/premium/img-premium-br-rules-2.png')
-
-        # Core category
-        category_info.append('272')
-        category_info.append('236')
-        category_info.append('Ganhe 50 pontos para cada R$1000,00 gastos em compras e troque por produtos gratis.')
-        category_info.append('COMPRAR AGORA')
-        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/br/premium/img-premium-br-rules-2.png')
-    elif zone == 'ZA':
-        # Premium category
-        category_info.append('217')
-        category_info.append('214')
-        category_info.append('Earn 1 point for each R100 spent on quarts products.')
-        category_info.append('BUY NOW')
-        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/za/quarts-brands.png')
-
-        # Core category
-        category_info.append('219')
-        category_info.append('216')
-        category_info.append('Earn 10 points for each R100 spent on bonus products.')
-        category_info.append('BUY NOW')
-        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/za/bonus-brands.png')
-    elif zone == 'MX':
-        # Premium category
-        category_info.append('9')
-        category_info.append('1')
-        category_info.append('Gana 1 punto por cada $10 de compra en estos productos')
-        category_info.append('COMPRA AHORA')
-        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/mx/core-brands.png')
-
-        # Core category
-        category_info.append('12')
-        category_info.append('2')
-        category_info.append('Gana 3 puntos por cada $10 de compra en estos productos')
-        category_info.append('COMPRA AHORA')
-        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/mx/premium-brands.png')
-    elif zone == 'EC':
-        # Premium category
-        category_info.append('129')
-        category_info.append('115')
-        category_info.append('Gana 4 puntos por cada $1 de compra en estos productos')
-        category_info.append('COMPRA AHORA')
-        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/sit/images/ec/premium-brands.png')
-
-        # Core category
-        category_info.append('127')
-        category_info.append('113')
-        category_info.append('Gana 1 punto por cada $1 de compra en estos productos')
-        category_info.append('COMPRA AHORA')
-        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/ec/core-brands.png')
-    elif zone == 'PE':
-        # Premium category
-        category_info.append('premium')
-        category_info.append('premium')
-        category_info.append('Gana 2 puntos por cada S/ 1.00 de compra en estos productos')
-        category_info.append('COMPRA AHORA')
-        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/pe/premium-brands.png')
-
-        # Core category
-        category_info.append('core')
-        category_info.append('core')
-        category_info.append('Gana 1 punto por cada S/ 1.00 de compra en estos productos')
-        category_info.append('COMPRA AHORA')
-        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/pe/core-brands.png')
-
-
-    return category_info
-
-
-# Generates the Terms and Conditions for Rewards program
-def generate_terms_information(zone):
-    terms_info = list()
-    
-    if zone == 'DO' or zone == 'CO' or zone == 'AR' or zone == 'MX' or zone == 'EC' or zone == 'PE':
-        terms_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/terms/terms-co.html')
-        terms_info.append('Términos iniciales introducidos al programa')
-    elif zone == 'BR':
-        terms_info.append('https://b2bstaticwebsagbdev.blob.core.windows.net/digitaltrade/terms/terms-br.html')
-        terms_info.append('Termos iniciais introduzidos ao programa')
-    elif zone == 'ZA':
-        terms_info.append('https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/terms/terms-za.html')
-        terms_info.append('Initial terms added to the program')
-
-    return terms_info

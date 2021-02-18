@@ -2,12 +2,8 @@
 import json
 from json import loads
 import os
-from random import randint
 from datetime import timedelta, datetime
 from time import time
-
-# Third party imports
-from tabulate import tabulate
 
 # Local application imports
 from common import get_header_request, get_microservice_base_url, update_value_to_json, convert_json_to_string, \

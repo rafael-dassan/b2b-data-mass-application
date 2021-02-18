@@ -30,7 +30,7 @@ from menus.rewards_menu import print_rewards_menu, print_rewards_transactions_me
 from order import *
 from combos import *
 from products import *
-from rewards.rewards import enroll_poc_to_program, disenroll_poc_from_program, associate_poc_to_dt_combos, \
+from rewards.rewards import enroll_poc_to_program, disenroll_poc_from_program, associate_dt_combos_to_poc, \
     display_program_rules_skus
 from rewards.rewards_programs import create_new_program, patch_program_root_field, update_dt_combos_rewards
 from rewards.rewards_challenges import input_challenge_to_zone
@@ -288,7 +288,7 @@ def create_rewards_to_account():
         account = check_account_exists_microservice(abi_id, zone, environment)
 
         if account != 'false':
-            associate_poc_to_dt_combos(abi_id, zone, environment)
+            associate_dt_combos_to_poc(abi_id, zone, environment)
         
         print_finish_application_menu()
     

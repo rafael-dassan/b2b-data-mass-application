@@ -3,8 +3,6 @@ import json
 from json import loads
 import os
 from random import randint
-from datetime import timedelta, datetime
-from time import time
 
 # Third party imports
 from tabulate import tabulate
@@ -44,6 +42,8 @@ def enroll_poc_to_program(account_id, zone, environment, account_info):
                     if is_account_eligible:
                         print(text.Green + '\n- [Rewards] The account "{}" is now eligible. Back to menu option "Enroll POC" to resume the enrollment process'
                                 .format(account_id))
+    
+    return enroll_response
            
 
 # Disenroll a POC from the rewards program
@@ -71,7 +71,7 @@ def disenroll_poc_from_program(account_id, zone, environment):
 
 
 # Add Redeem products to account
-def associate_poc_to_dt_combos(account_id, zone, environment):
+def associate_dt_combos_to_poc(account_id, zone, environment):
 
     # Get the reward information for the account
     reward_response = get_rewards(account_id, zone, environment)
@@ -123,16 +123,16 @@ def associate_poc_to_dt_combos(account_id, zone, environment):
     
     dt_combos_to_associate = match_dt_combos_to_associate(program_dt_combos, zone_dt_combos)
 
-    print(text.Yellow + '\n- Associating matched redeem products, please wait...')
+    print(text.Yellow + '\n- Associating matched DT combos, please wait...')
 
     return post_combo_relay_account(zone, environment, account_id, dt_combos_to_associate, sku)
 
 
 def match_dt_combos_to_associate(program_dt_combos, zone_dt_combos):
 
-    print(text.Yellow + '\n- Found "{}" redeem products for rewards program.'.format(str(len(program_dt_combos))))
+    print(text.Yellow + '\n- Found "{}" DT combos configured for the program.'.format(str(len(program_dt_combos))))
 
-    print(text.Yellow + '\n- Found "{}" redeem products for the zone.'.format(str(len(zone_dt_combos))))
+    print(text.Yellow + '\n- Found "{}" DT combos configured for the zone.'.format(str(len(zone_dt_combos))))
 
     # Verify which combos of the zone matchs with the ones added to the rewards program
     x = 0
@@ -147,7 +147,7 @@ def match_dt_combos_to_associate(program_dt_combos, zone_dt_combos):
             y += 1
         x += 1
     
-    print(text.Yellow + '\n- Found "{}" redeem products matching the program and the zone configuration.'.format(str(len(dt_combos_matched))))
+    print(text.Yellow + '\n- Found "{}" DT combos matching the program and the zone configuration.'.format(str(len(dt_combos_matched))))
 
     return dt_combos_matched
 
@@ -182,26 +182,6 @@ def display_program_rules_skus(zone, environment, abi_id):
                     program_rules_skus.setdefault('SKU name', []).append(sku_name)
 
                 print(text.default_text_color + tabulate(program_rules_skus, headers='keys', tablefmt='grid'))
-
-
-def get_rewards_status(account_id, zone, environment):
-    """
-        Returns the enrollment status of an account_id..
-
-        Parameters:
-            account_id  (str): AccountId (POC number)
-            country     (str): Country code
-            environment (str): Environment code
-
-        Returns:
-            str: 200 enrolled, 404 unenrolled, 406 ineligible
-    """
-
-    header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
-    request_url = get_microservice_base_url(environment,'true') + '/rewards-service/rewards/' + account_id
-    response = place_request('GET', request_url, '', header_request)
-
-    return response.status_code
 
 
 def get_rewards(account_id, zone, environment):
