@@ -1,6 +1,7 @@
 # Local application imports
 from mass_populator.log import logging
-from rewards import delete_enroll_poc_to_program, input_challenge_to_zone,get_rewards_status
+from rewards.rewards import disenroll_poc_from_program, get_rewards
+from rewards.rewards_challenges import input_challenge_to_zone
 
 logger = logging.getLogger(__name__)
 
@@ -16,10 +17,8 @@ def disenroll_pocs(country, environment, dataframe_products):
 def exec_disenroll_poc(row, country, environment):
     account_id = str(row['account_id_unenroll'])
 
-    rewards_status = get_rewards_status(account_id, country, environment)
-    if rewards_status == 200:
-        delete_enroll_poc_to_program(account_id, country, environment)
-    else:
+    disenroll_response = disenroll_poc_from_program(account_id, country, environment)
+    if disenroll_response.status_code == 404:
         logger.info("The account %s is already unenrolled. Skipping...", account_id)
 
 def populate_challenges(country, environment, dataframe_products):

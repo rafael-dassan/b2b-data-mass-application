@@ -26,10 +26,15 @@ from menus.order_menu import print_order_operations_menu, print_allow_cancellabl
 from menus.product_menu import print_product_operations_menu, print_get_products_menu
 from menus.supplier_menu import print_create_supplier_category_menu, print_new_attribute, print_attribute_primitive, \
     print_create_attribute_menu, print_min_cardinality, print_max_cardinality
+from menus.rewards_menu import print_rewards_menu, print_rewards_transactions_menu, print_rewards_program_menu    
 from order import *
 from combos import *
 from products import *
-from rewards import *
+from rewards.rewards import enroll_poc_to_program, disenroll_poc_from_program, associate_dt_combos_to_poc, \
+    display_program_rules_skus
+from rewards.rewards_programs import create_new_program, patch_program_root_field, update_dt_combos_rewards
+from rewards.rewards_challenges import input_challenge_to_zone
+from rewards.rewards_transactions import create_redemption, create_rewards_offer, create_points_removal
 from category_magento import *
 from products_magento import *
 import user_creation_v3 as user_v3
@@ -197,40 +202,60 @@ def flow_get_account(zone, environment):
 # Input Rewards to account
 def create_rewards_to_account():
     selection_structure = print_rewards_menu()
-    zone = print_zone_menu_for_ms()
-    environment = print_environment_menu()
-
-    switcher = {
-        '1': 'NEW_PROGRAM',
-        '2': 'UPDATE_BALANCE',
-        '3': 'UPDATE_COMBOS',
-        '4': 'ENROLL_POC',
-        '5': 'ADD_CHALLENGE',
-        '6': 'ADD_REDEEM',
-        '7': 'DELETE_ENROLL_POC',
-        '8': 'ADD_TRANSACTIONS',
-    }
+    
+    if selection_structure == '2':
+        selection_structure = print_rewards_program_menu()
+        switcher = {
+            '1': 'UPDATE_COMBOS',
+            '2': 'UPDATE_BALANCE',
+            '3': 'UPDATE_REDEEM_LIMIT',
+        }
+    elif selection_structure == '6':
+        selection_structure = print_rewards_transactions_menu()
+        switcher = {
+            '1': 'CREATE_REDEMPTION',
+            '2': 'CREATE_REWARDS_OFFER',
+            '3': 'CREATE_POINTS_REMOVAL'
+        }
+    else:
+        switcher = {
+            '1': 'NEW_PROGRAM',
+            '3': 'ENROLL_POC',
+            '4': 'DISENROLL_POC',
+            '5': 'ADD_REDEEM',
+            '7': 'ADD_CHALLENGE'
+        }
 
     reward_option = switcher.get(selection_structure, 'false')
+ 
+    zone = print_zone_menu_for_ms()
+    environment = print_environment_menu()
 
     # Option to create a new program
     if reward_option == 'NEW_PROGRAM':
 
-        create_pgm = create_new_program(zone, environment)
+        create_new_program(zone, environment)
+        print_finish_application_menu()
+    
+    # Option to update a program DT combos according to the DT combos from the zone
+    elif reward_option == 'UPDATE_COMBOS':
 
-        if create_pgm == 'error_len_sku':
-            print(text.Red + '\n- [Rewards] The zone must have at least 20 products to proceed')
-            print_finish_application_menu()
-        elif create_pgm == 'error_len_combo':
-            print(text.Red + '\n- [Rewards] The zone must have combos available to proceed')
-            print_finish_application_menu()
-        elif create_pgm == 'error_found' or create_pgm == 'false':
-            print_finish_application_menu()
-        else:
-            print(text.Green + '\n- [Rewards] The new program has been successfully created. ID: ' + create_pgm)
-            print_finish_application_menu()
+        update_dt_combos_rewards(zone, environment)
+        print_finish_application_menu()
 
-    # Option to enroll POC to a program
+    # Option to update initial balance of a program
+    elif reward_option == 'UPDATE_BALANCE':
+
+        patch_program_root_field(zone, environment, 'initial_balance')
+        print_finish_application_menu()
+
+    # Option to update the program redeem limit
+    elif reward_option == 'UPDATE_REDEEM_LIMIT':
+
+        patch_program_root_field(zone, environment, 'redeem_limit')
+        print_finish_application_menu()
+
+    # Option to enroll a POC to a rewards program
     elif reward_option == 'ENROLL_POC':
 
         abi_id = print_account_id_menu(zone)
@@ -238,21 +263,71 @@ def create_rewards_to_account():
         # Call check account exists function
         account = check_account_exists_microservice(abi_id, zone, environment)
 
-        if account == 'false':
-            print_finish_application_menu()
+        if account != 'false':
+            enroll_poc_to_program(abi_id, zone, environment, account)
 
-        enroll_poc = enroll_poc_to_program(abi_id, zone, environment)
+        print_finish_application_menu()
 
-        if enroll_poc == 'pgm_not_found':
-            print(
-                text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "Create new program" to create it')
-        elif enroll_poc == 406:
-            print(text.Red + '\n- [Rewards] There are no Reward programs available for this account')
-        elif enroll_poc == 409:
-            print(text.Red + '\n- [Rewards] This account already have a Reward program enrolled to it')
-        elif enroll_poc == 201:
-            print(text.Green + '\n- [Rewards] The account has been successfully enrolled to a rewards program')
+    # Option to disenroll a POC from a program
+    elif reward_option == 'DISENROLL_POC':
 
+        abi_id = print_account_id_menu(zone)
+
+        # Call check account exists function
+        account = check_account_exists_microservice(abi_id, zone, environment)
+
+        if account != 'false':
+            disenroll_poc_from_program(abi_id, zone, environment)
+            
+        print_finish_application_menu()
+
+    # Option to associate redeem products to an account
+    elif reward_option == 'ADD_REDEEM':
+
+        abi_id = print_account_id_menu(zone)
+
+        # Call check account exists function
+        account = check_account_exists_microservice(abi_id, zone, environment)
+
+        if account != 'false':
+            associate_dt_combos_to_poc(abi_id, zone, environment)
+        
+        print_finish_application_menu()
+    
+    # Option to create a REDEMPTION transaction to a POC
+    elif reward_option == 'CREATE_REDEMPTION':
+        abi_id = print_account_id_menu(zone)
+
+        # Call check account exists function
+        account = check_account_exists_microservice(abi_id, zone, environment)
+
+        if account != 'false':
+            create_redemption(abi_id, zone, environment)
+            
+        print_finish_application_menu()
+    
+    # Option to create a REWARDS_OFFER transaction to a POC
+    elif reward_option == 'CREATE_REWARDS_OFFER':
+        abi_id = print_account_id_menu(zone)
+
+        # Call check account exists function
+        account = check_account_exists_microservice(abi_id, zone, environment)
+
+        if account != 'false':
+            create_rewards_offer(abi_id, zone, environment)
+            
+        print_finish_application_menu()
+
+    # Option to create a POINTS_REMOVAL transaction to a POC
+    elif reward_option == 'CREATE_POINTS_REMOVAL':
+        abi_id = print_account_id_menu(zone)
+
+        # Call check account exists function
+        account = check_account_exists_microservice(abi_id, zone, environment)
+
+        if account != 'false':
+            create_points_removal(abi_id, zone, environment)
+            
         print_finish_application_menu()
 
     # Option to input challenges to a specific zone
@@ -263,103 +338,10 @@ def create_rewards_to_account():
         # Call check account exists function
         account = check_account_exists_microservice(abi_id, zone, environment)
 
-        if account == 'false':
-            print_finish_application_menu()
-
-        add_challenge = input_challenge_to_zone(abi_id, zone, environment)
-
-        if add_challenge == 'false':
-            print(text.Red + '\n- [Rewards] Something went wrong, please try again')
-
-        print_finish_application_menu()
-
-    # Option to update initial balance of a program
-    elif reward_option == 'UPDATE_BALANCE':
-
-        update_balance = update_program_balance(zone, environment)
-
-        if update_balance == 'no_confirm' or update_balance == 'error':
-            print_finish_application_menu()
-        elif update_balance == 'no_program':
-            print(text.Red + '\n- [Rewards] There is no rewards program available for this zone')
-        else:
-            print(text.Green + '\n- [Rewards] The program ' + update_balance + ' has been successfully updated.')
-
-        print_finish_application_menu()
-
-    # Option to input redeem products to an account
-    elif reward_option == 'ADD_REDEEM':
-
-        abi_id = print_account_id_menu(zone)
-
-        # Call check account exists function
-        account = check_account_exists_microservice(abi_id, zone, environment)
-
         if account != 'false':
-            input_redeem_products(abi_id, zone, environment)
-            print_finish_application_menu()
-        else:
-            print_finish_application_menu()
-
-    # Option to delete a POC enrollment
-    elif reward_option == 'DELETE_ENROLL_POC':
-
-        abi_id = print_account_id_menu(zone)
-
-        # Call check account exists function
-        account = check_account_exists_microservice(abi_id, zone, environment)
-
-        if account == 'false':
-            print_finish_application_menu()
-       
-        delete_enroll_poc = delete_enroll_poc_to_program(abi_id, zone, environment)
-
-        if delete_enroll_poc == 'pgm_not_found':
-            print(text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "Create new program" to create it')
-        elif delete_enroll_poc == 204:
-            print(text.Green + '\n- [Rewards] The enrollment has been deleted for this account from the rewards program')
-
-        print_finish_application_menu()
-    
-     # Option to ADD a Transaction to a POC
-    elif reward_option == 'ADD_TRANSACTIONS':
-        abi_id = print_account_id_menu(zone)
-
-        # Call check account exists function
-        account = check_account_exists_microservice(abi_id, zone, environment)
-
-        if account == 'false':
-            print_finish_application_menu()
-
-        input_transactions = input_transactions_to_account(abi_id, zone, environment)
-
-        if input_transactions == 'pgm_not_found':
-            print(text.Red + '\n- [Rewards] This zone does not have a program created. Please use the menu option "Create new program" to create it')
-        elif input_transactions == 'post_error':
-            print(text.Red + '\n- [Rewards] Failure when input a transaction to account')
-        elif input_transactions == 201:
-            print(text.Green + '\n- [Rewards] The transactions has been included for this account from the rewards program')
-
-        print_finish_application_menu()
-
-    elif reward_option == 'UPDATE_COMBOS':
-        abi_id = print_account_id_menu(zone)
-
-        # Call check account exists function
-        account = check_account_exists_microservice(abi_id, zone, environment)
-        if account == 'false':
-            print_finish_application_menu()
-
-        update_dt_combos = update_dt_combos_rewards(zone, environment, abi_id)
-
-        if update_dt_combos == 201:
-            print(text.Green + '\n- [Rewards] The program has been successfully updated.')
-        elif update_dt_combos == 'no_program':
-            print(text.Red + '\n-Error: POC not enrolled at a program')
-        elif update_dt_combos == 'none':
-            print("\nThere is nothing to update, please insert a DT combo first")
-        else:
-            print(text.Red + '\n-Error: ' + str(update_dt_combos))
+            add_challenge = input_challenge_to_zone(abi_id, zone, environment)
+            if add_challenge == 'false':
+                print(text.Red + '\n- [Rewards] Something went wrong, please try again')
 
         print_finish_application_menu()
 
@@ -1571,15 +1553,11 @@ def retriever_sku_menu():
         print_finish_application_menu()
 
     account = check_account_exists_microservice(account_id, zone, environment)
-    if account == 'false':
-        print_finish_application_menu()
-
-    response = display_sku_rewards(zone, environment, account_id)
-    if response == '200':
-        print_finish_application_menu()
-    else:
-        print('\nError: ' + response.lstrip("false "))
-        print_finish_application_menu()
+    
+    if account != 'false':
+        display_program_rules_skus(zone, environment, account_id)
+        
+    print_finish_application_menu()
 
 
 def create_credit_statement_menu():
