@@ -45,7 +45,7 @@ def input_challenge_to_zone(abi_id, zone, environment):
 
         # Create file path
         path = os.path.abspath(os.path.dirname(__file__))
-        file_path = os.path.join(path, 'data/create_rewards_challenges_payload.json')
+        file_path = os.path.join(path, '../data/create_rewards_challenges_payload.json')
 
         # Load JSON file
         with open(file_path) as file:
