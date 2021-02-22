@@ -192,7 +192,7 @@ def validate_get_products(option):
 
 
 def validate_structure(option):
-    options = ['1', '2', '3', '4', '5', '6']
+    options = ['1', '2', '3', '4', '5', '6', '7']
     if option in options:
         return True
     else:
@@ -300,3 +300,13 @@ def validate_attribute_menu_structure(selection):
 def validate_supplier_category_menu_structure(selection):
     option = ['1', '2']
     return selection in option
+
+
+def validate_supplier_search_menu_structure(selection):
+    switcher = {
+       '0': 'true',
+       '1': 'true'
+    }
+
+    value = switcher.get(selection, 'false')
+    return value

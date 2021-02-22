@@ -1,6 +1,6 @@
 from account import *
 from attribute_supplier import create_attribute_enum, check_if_attribute_exist, create_attribute_group, \
-    create_attribute_primitive_type, delete_attribute_supplier
+    create_attribute_primitive_type, delete_attribute_supplier, search_specific_attribute, display_specific_attribute
 from common import *
 from credit import add_credit_to_account_microservice
 from deals import *
@@ -95,7 +95,11 @@ def show_menu():
             '3': attribute_associated_category_menu,
             '4': delete_attribute_menu
         }
-
+    elif selection_structure == '6':
+        switcher = {
+            '0': finish_application,
+            '1': search_specific_attribute_menu
+        }
     else:
         finish_application()
 
@@ -1763,6 +1767,17 @@ def delete_attribute_menu():
             print_finish_application_menu()
         else:
             print_finish_application_menu()
+
+
+def search_specific_attribute_menu():
+    environment = print_environment_menu()
+    attribute_id = input(text.default_text_color + 'Inform the attribute id: ')
+    result = search_specific_attribute(environment, attribute_id)
+    if result == 'false':
+        print_finish_application_menu()
+    else:
+        display_specific_attribute(result)
+
 
 # Init
 try:
