@@ -360,12 +360,12 @@ def display_specific_attribute(attribute):
         metadata.append(metadata_info)
     elif info['attributeType'] == 'GROUP':
         for i in range(len(metadata_att)):
-            sub_attribute = metadata_att['subAttributes']
-            for x in range(len(sub_attribute)):
+            sub_attributes = metadata_att['subAttributes']
+            for sub_attribute in sub_attributes:
                 metadata_info = {
-                    'Attribute ID': sub_attribute[x]['id'],
-                    'Attribute Name': sub_attribute[x]['name'],
-                    'Attribute Type': sub_attribute[x]['attributeType']
+                    'Attribute ID': sub_attribute['id'],
+                    'Attribute Name': sub_attribute['name'],
+                    'Attribute Type': sub_attribute['attributeType']
                 }
                 metadata.append(metadata_info)
 
