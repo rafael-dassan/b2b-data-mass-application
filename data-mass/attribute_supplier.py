@@ -290,3 +290,26 @@ def check_if_attribute_exist(environment, attribute):
         print(text.Red + str(e))
         return 'false'
 
+
+def delete_attribute_supplier(environment, attribute):
+    base_url = get_supplier_base_url(environment)
+    base_header = get_header_request_supplier()
+    transport = RequestsHTTPTransport(url=base_url, headers=base_header)
+
+    # Create a GraphQL client using the defined transport
+    client = Client(transport=transport, fetch_schema_from_transport=False)
+
+    mut = gql("""
+            mutation deleteAttributeModel($id: ID!){
+            deleteAttributeModel(id: $id)
+          }
+        """)
+
+    params = {"id": attribute}
+    try:
+        response = client.execute(mut, variable_values=params)
+        json_data = json.dumps(response)
+        return json_data
+    except TransportQueryError as e:
+        print(text.Red + str(e))
+        return 'false'
