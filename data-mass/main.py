@@ -1,6 +1,6 @@
 from account import *
 from attribute_supplier import create_attribute_enum, check_if_attribute_exist, create_attribute_group, \
-    create_attribute_primitive_type
+    create_attribute_primitive_type, delete_attribute_supplier
 from common import *
 from credit import add_credit_to_account_microservice
 from deals import *
@@ -92,7 +92,8 @@ def show_menu():
             '0': finish_application,
             '1': create_attribute_menu,
             '2': create_category_supplier_menu,
-            '3': attribute_associated_category_menu
+            '3': attribute_associated_category_menu,
+            '4': delete_attribute_menu
         }
 
     else:
@@ -1746,6 +1747,22 @@ def attribute_associated_category_menu():
         else:
             print_finish_application_menu()
 
+
+def delete_attribute_menu():
+    environment = print_environment_menu()
+    attribute_id = input(text.default_text_color + 'Inform the attribute id: ')
+    valid_att = check_if_attribute_exist(environment, attribute_id)
+    if valid_att == 'false':
+        print_finish_application_menu()
+    else:
+        delete = delete_attribute_supplier(environment, attribute_id)
+        if delete != 'false':
+            print(
+                text.Green + '\n- [Delete Attribute] The attribute: {attribute} has been successfully deleted. '
+                .format(attribute=delete))
+            print_finish_application_menu()
+        else:
+            print_finish_application_menu()
 
 # Init
 try:
