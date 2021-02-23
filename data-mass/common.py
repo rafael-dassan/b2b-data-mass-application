@@ -20,7 +20,8 @@ from logs.log import log_to_file
 from validations import is_number, validate_zone_for_ms, validate_environment, \
     validate_structure, validate_zone_for_interactive_combos_ms, \
     validate_option_request_selection, validate_supplier_menu_structure, validate_option_att, \
-    validate_attribute_menu_structure, validate_supplier_category_menu_structure
+    validate_attribute_menu_structure, validate_supplier_category_menu_structure, \
+    validate_supplier_search_menu_structure
 
 
 # Validate option menu selection
@@ -379,6 +380,15 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(3), text.Yellow + 'Create association between attribute and category')
             print(text.default_text_color + str(4), text.Yellow + 'Delete Attribute')
             selection = input(text.default_text_color + '\nPlease select: ')
+    elif selection_structure == '6':
+        print(text.default_text_color + str(0), text.Yellow + 'Close application')
+        print(text.default_text_color + str(1), text.Yellow + 'Search a specific attribute')
+        selection = input(text.default_text_color + '\nPlease select: ')
+        while validate_supplier_search_menu_structure(selection) == 'false':
+            print(text.Red + '\n- Invalid option\n')
+            print(text.default_text_color + str(0), text.Yellow + 'Close application')
+            print(text.default_text_color + str(1), text.Yellow + 'Search a specific attribute')
+            selection = input(text.default_text_color + '\nPlease select: ')
     else:
         finish_application()
 
@@ -403,7 +413,8 @@ def print_structure_menu():
     print(text.default_text_color + str(3), text.Yellow + 'Data creation - Magento')
     print(text.default_text_color + str(4), text.Yellow + 'Data creation - IAM')
     print(text.default_text_color + str(5), text.Yellow + 'Data creation - Supplier/PIM')
-    print(text.default_text_color + str(6), text.Yellow + 'Close application')
+    print(text.default_text_color + str(6), text.Yellow + 'Data searching - Supplier/PIM')
+    print(text.default_text_color + str(7), text.Yellow + 'Close application')
     structure = input(text.default_text_color + '\nPlease choose an option: ')
     while validate_structure(structure) is False:
         print(text.Red + '\n- Invalid option\n')
@@ -412,7 +423,8 @@ def print_structure_menu():
         print(text.default_text_color + str(3), text.Yellow + 'Data creation - Magento')
         print(text.default_text_color + str(4), text.Yellow + 'Data creation - IAM')
         print(text.default_text_color + str(5), text.Yellow + 'Data creation - Supplier/PIM')
-        print(text.default_text_color + str(6), text.Yellow + 'Close application')
+        print(text.default_text_color + str(6), text.Yellow + 'Data searching - Supplier/PIM')
+        print(text.default_text_color + str(7), text.Yellow + 'Close application')
         structure = input(text.default_text_color + '\nPlease choose an option: ')
 
     return structure

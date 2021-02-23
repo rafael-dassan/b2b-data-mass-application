@@ -6,6 +6,8 @@ from gql.transport.exceptions import TransportQueryError
 from gql.transport.requests import RequestsHTTPTransport
 import string
 
+from tabulate import tabulate
+
 from classes.text import text
 from common import get_supplier_base_url, get_header_request_supplier
 
@@ -75,7 +77,6 @@ def create_attribute_enum(environment, type_attribute):
         values.append(string.ascii_lowercase + 'c')
 
     params = {'name': name, 'description': description, 'values': values}
-
 
     # Execute the query on the transport
     try:
@@ -313,3 +314,100 @@ def delete_attribute_supplier(environment, attribute):
     except TransportQueryError as e:
         print(text.Red + str(e))
         return 'false'
+
+
+def search_specific_attribute(environment, attribute):
+    base_url = get_supplier_base_url(environment)
+    base_header = get_header_request_supplier()
+    transport = RequestsHTTPTransport(url=base_url, headers=base_header)
+
+    # Create a GraphQL client using the defined transport
+    client = Client(transport=transport, fetch_schema_from_transport=False)
+
+    mut = create_search_specific_attribute_payload()
+
+    params = {"id": attribute}
+    try:
+        response = client.execute(mut, variable_values=params)
+        json_data = json.dumps(response)
+        return json_data
+    except TransportQueryError as e:
+        print(text.Red + str(e))
+        return 'false'
+
+
+def display_specific_attribute(attribute):
+    attribute_model = json.loads(attribute)
+    info = attribute_model['attributeModel']
+    info_attribute = {
+        'Name': info['name'],
+        'Description': info['description'],
+        'Attribute Type': info['attributeType']
+    }
+
+    metadata_att = info['metadata']
+    metadata = list()
+    if metadata_att is None:
+        metadata_info = {
+            'Metadata': 'None'
+        }
+        metadata.append(metadata_info)
+    elif info['attributeType'] == 'ENUM':
+        metadata_info = {
+            'Type': metadata_att['primitiveType'],
+            'Value': metadata_att['values']
+        }
+        metadata.append(metadata_info)
+    elif info['attributeType'] == 'GROUP':
+        for i in range(len(metadata_att)):
+            sub_attributes = metadata_att['subAttributes']
+            for sub_attribute in sub_attributes:
+                metadata_info = {
+                    'Attribute ID': sub_attribute['id'],
+                    'Attribute Name': sub_attribute['name'],
+                    'Attribute Type': sub_attribute['attributeType']
+                }
+                metadata.append(metadata_info)
+
+    print(text.default_text_color + '\nAttribute - General Information')
+    print(tabulate([info_attribute], headers='keys', tablefmt='grid'))
+
+    print(text.default_text_color + '\nAttribute - Metadata Information')
+    print(tabulate(metadata, headers='keys', tablefmt='grid'))
+
+
+def create_search_specific_attribute_payload():
+    return gql(
+        """
+        query attributeModel($id: ID!){  
+            attributeModel(id: $id) {
+                id
+                name
+                semanticId
+                description
+                attributeType
+                metadata {
+                    ... on EnumAttributeModelNumericMetadata {
+                        primitiveType
+                        values
+                    }
+                    ... on EnumAttributeModelStringMetadata {
+                        primitiveType
+                        values
+                    }
+                    ... on EnumAttributeModelDateMetadata {
+                        primitiveType
+                        values
+                    }
+                    ... on GroupAttributeModelMetadata {
+                        subAttributes{
+                            id
+                            name
+                            attributeType
+                        }
+                    }
+                }
+            }
+        }
+    """
+    )
