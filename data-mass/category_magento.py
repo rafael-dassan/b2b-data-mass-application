@@ -2,6 +2,7 @@
 from json import loads
 
 # Local application imports
+from classes.text import text
 from common import get_magento_base_url, get_magento_datamass_access_token, place_request, convert_json_to_string
 
 
@@ -17,6 +18,10 @@ def get_categories(country, environment, parent_id):
     if response.status_code == 200:
         arr = loads(response.text)
         return arr['items']
+    else:
+        print('\n{0}- Error when retrieving categories. Response status: {1}. Response message: {2}'.format(text.Red, response.status_code,
+                                                                                                            response.text))
+        return 'false'
 
 
 def associate_product_to_category(country, environment, product_sku, category_id):

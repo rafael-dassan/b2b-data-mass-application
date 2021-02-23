@@ -9,6 +9,7 @@ import logging
 import pyotp
 
 # Local application imports
+from classes.text import text
 from common import place_request
 from user_v3 import get_iam_b2c_params
 
@@ -109,8 +110,7 @@ def self_asserted_logon_request(user_name, password, params, authorize_response)
         response=response))
 
     if response.status_code != 200:
-        print("- Fail on user logon v3 [logon_selfasserted_request]: status_code {0}.".format(
-            response.status_code))
+        print("\n{0}- Fail on user logon v3 [logon_selfasserted_request]: status_code {1}.".format(text.Red, response.status_code))
         return "fail"
 
     response_text = response.text

@@ -72,6 +72,10 @@ def get_iam_b2c_country_params_uat(country):
         "AR": {
             "REDIRECT_URL": "com.abi.Quilmes://oauth/redirect",
             "CLIENT_ID": "f7e20a58-35a2-47f8-bb73-1735dd354d20"
+        },
+        "CA": {
+            "REDIRECT_URL": "com.abi.bees.canada://oauth/redirect",
+            "CLIENT_ID": "db2c51ee-28c6-42c7-b73f-9dde1a3a172b"
         }
     }
     return params[country]
@@ -110,6 +114,10 @@ def get_iam_b2c_country_params_sit(country):
         "AR": {
             "REDIRECT_URL": "com.abi.Quilmes://oauth/redirect",
             "CLIENT_ID": "2ff1221e-a82d-49c5-8d22-b48db8bc07f6"
+        },
+        "CA": {
+            "REDIRECT_URL": "com.abi.bees.canada://oauth/redirect",
+            "CLIENT_ID": "ca40d468-d8d7-443b-bd68-abaf13217b11"
         }
     }
     return params[country]

@@ -11,7 +11,7 @@ from tabulate import tabulate
 from common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request
 from products import request_get_offers_microservice, get_sku_name
 from classes.text import text
-from rewards.rewards_programs import get_DM_program_for_zone, get_specific_program
+from rewards.rewards_programs import get_rewards_program_for_zone, get_specific_program
 from rewards.rewards_utils import print_make_account_eligible, make_account_eligible, get_dt_combos_from_zone, \
     post_combo_relay_account
 
@@ -24,7 +24,7 @@ def enroll_poc_to_program(account_id, zone, environment, account_info):
     if enroll_response.status_code == 406:
 
         # Check if the zone has a DM reward program created
-        DM_program = get_DM_program_for_zone(zone, environment)
+        DM_program = get_rewards_program_for_zone(zone, environment)
 
         if DM_program != None:
 

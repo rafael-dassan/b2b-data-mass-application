@@ -3,6 +3,7 @@ import re
 import logging
 
 # Local application imports
+from classes.text import text
 from common import place_request, get_magento_base_url, get_magento_user_registration_access_token, \
     convert_json_to_string
 from user_v3 import get_iam_b2c_params
@@ -65,8 +66,7 @@ def get_user_id_magento(magento_url, magento_token, user_name):
         response=response))
 
     if response.status_code != 200:
-        print("- Fail on get user Magento [get_user_id_magento]: status_code {0}.".format(
-            response.status_code))
+        print("\n{0}- Fail on get user Magento [get_user_id_magento]: status_code {1}.".format(text.Red, response.status_code))
         return "fail"
 
     response_text = response.text
@@ -197,8 +197,7 @@ def get_user_id_azure(environment, user_name, iam_b2c_params, token):
     value_response = azure_response["value"]
 
     if len(value_response) == 0 or not value_response[0]["id"]:
-        print(
-            "- User Azure not found [get_user_id_azure]: {0}".format(user_name))
+        print("\n{0}- User Azure not found [get_user_id_azure]: {1}".format(text.Red, user_name))
         return "fail"
 
     return value_response[0]["id"]
