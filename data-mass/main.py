@@ -1783,7 +1783,7 @@ def search_specific_attribute_menu():
 
 def search_all_attribute_menu():
     environment = print_environment_menu()
-    page_number = int(input(text.default_text_color + 'Wich page do you want: '))
+    page_number = input(text.default_text_color + 'Wich page do you want: ')
     result = search_all_attribute(environment, page_number)
     if result == 'false':
         print_finish_application_menu()
