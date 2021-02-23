@@ -305,7 +305,8 @@ def validate_supplier_category_menu_structure(selection):
 def validate_supplier_search_menu_structure(selection):
     switcher = {
        '0': 'true',
-       '1': 'true'
+       '1': 'true',
+       '2': 'true'
     }
 
     value = switcher.get(selection, 'false')

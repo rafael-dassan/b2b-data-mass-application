@@ -1,6 +1,7 @@
 from account import *
 from attribute_supplier import create_attribute_enum, check_if_attribute_exist, create_attribute_group, \
-    create_attribute_primitive_type, delete_attribute_supplier, search_specific_attribute, display_specific_attribute
+    create_attribute_primitive_type, delete_attribute_supplier, search_specific_attribute, display_specific_attribute, \
+    display_all_attribute, search_all_attribute
 from common import *
 from credit import add_credit_to_account_microservice
 from deals import *
@@ -25,7 +26,7 @@ from menus.order_menu import print_order_operations_menu, print_allow_cancellabl
     print_order_id_menu, print_order_status_menu
 from menus.product_menu import print_product_operations_menu, print_get_products_menu
 from menus.supplier_menu import print_create_supplier_category_menu, print_new_attribute, print_attribute_primitive, \
-    print_create_attribute_menu, print_min_cardinality, print_max_cardinality
+    print_create_attribute_menu, print_min_cardinality, print_max_cardinality, print_new_page
 from menus.rewards_menu import print_rewards_menu, print_rewards_transactions_menu, print_rewards_program_menu    
 from order import *
 from combos import *
@@ -98,7 +99,8 @@ def show_menu():
     elif selection_structure == '6':
         switcher = {
             '0': finish_application,
-            '1': search_specific_attribute_menu
+            '1': search_specific_attribute_menu,
+            '2': search_all_attribute_menu
         }
     else:
         finish_application()
@@ -1777,6 +1779,24 @@ def search_specific_attribute_menu():
         print_finish_application_menu()
     else:
         display_specific_attribute(result)
+
+
+def search_all_attribute_menu():
+    environment = print_environment_menu()
+    page_number = input(text.default_text_color + 'Wich page do you want: ')
+    result = search_all_attribute(environment, page_number)
+    if result == 'false':
+        print_finish_application_menu()
+    else:
+        display_all_attribute(result)
+        is_new_page = print_new_page()
+        while is_new_page == '1':
+            page_number = int(input(text.default_text_color + 'Wich page do you want: '))
+            result = search_all_attribute(environment, page_number)
+            display_all_attribute(result)
+            is_new_page = print_new_page()
+            if is_new_page == '2':
+                print_finish_application_menu()
 
 
 # Init

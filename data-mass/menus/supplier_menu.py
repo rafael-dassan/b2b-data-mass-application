@@ -85,3 +85,12 @@ def print_max_cardinality():
         print(text.Red + '\n- Invalid option')
         option = int(input(text.default_text_color + 'Max cardinality: '))
     return str(option)
+
+
+def print_new_page():
+    option = input(text.default_text_color + 'Do you want to go to another page? (1. Yes / 2. No): ')
+    while validate_option_att(option) is False:
+        print(text.Red + '\n- Invalid option')
+        option = input(text.default_text_color + '\nDo you want to go to another page? '
+                                                '(1. Yes / 2. No): ')
+    return option
