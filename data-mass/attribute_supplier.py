@@ -336,6 +336,25 @@ def search_specific_attribute(environment, attribute):
         return 'false'
 
 
+def search_all_attribute(environment, page_number):
+    base_url = get_supplier_base_url(environment)
+    base_header = get_header_request_supplier()
+    transport = RequestsHTTPTransport(url=base_url, headers=base_header)
+
+    # Create a GraphQL client using the defined transport
+    client = Client(transport=transport, fetch_schema_from_transport=False)
+
+    mut = create_search_all_attribute_payload()
+    params = {"page": page_number}
+    try:
+        response = client.execute(mut, variable_values=params)
+        json_data = json.dumps(response)
+        return json_data
+    except TransportQueryError as e:
+        print(text.Red + str(e))
+        return 'false'
+
+
 def display_specific_attribute(attribute):
     attribute_model = json.loads(attribute)
     info = attribute_model['attributeModel']
@@ -376,6 +395,51 @@ def display_specific_attribute(attribute):
     print(tabulate(metadata, headers='keys', tablefmt='grid'))
 
 
+def display_all_attribute(attributes):
+    attribute_model = json.loads(attributes)
+    info = attribute_model['attributeModels']
+    print(len(info))
+    information_att = list()
+
+    if len(info) == 0:
+        info_attribute = {
+            'Attribute Info': 'None'
+        }
+        information_att.append(info_attribute)
+    else:
+        for i in range(len(info)):
+            metadata_att = info[i]['metadata']
+            if metadata_att is None:
+                metadata_info = {
+                    'None'
+                }
+            elif info[i]['attributeType'] == 'ENUM':
+                metadata_info = {
+                    'Type': metadata_att['primitiveType'],
+                    'Value': metadata_att['values']
+                }
+            elif info[i]['attributeType'] == 'GROUP':
+                for x in range(len(metadata_att)):
+                    sub_attributes = metadata_att['subAttributes']
+                    for sub_attribute in sub_attributes:
+                        metadata_info = {
+                            'Attribute ID': sub_attribute['id'],
+                            'Attribute Name': sub_attribute['name'],
+                            'Attribute Type': sub_attribute['attributeType']
+                        }
+            metadata = metadata_info
+            info_attribute = {
+                'ID': info[i]['id'],
+                'Name': info[i]['name'],
+                'Attribute Type': info[i]['attributeType'],
+                'Metadata': metadata
+            }
+            information_att.append(info_attribute)
+
+    print(text.default_text_color + '\nAttribute - General Information')
+    print(tabulate(information_att, headers='keys', tablefmt='grid'))
+
+
 def create_search_specific_attribute_payload():
     return gql(
         """
@@ -410,4 +474,46 @@ def create_search_specific_attribute_payload():
             }
         }
     """
+    )
+
+
+def create_search_all_attribute_payload():
+    return gql(
+        '''
+        query attributeModels($page: NonNegativeInt) {
+            attributeModels(input:  {
+                page: $page
+                size: 50
+                }){
+                    id
+                    name
+                    semanticId
+                    description
+                    helpText
+                    attributeType 
+                    createdAt 
+                    metadata {
+                        ... on EnumAttributeModelNumericMetadata {
+                            primitiveType
+                            values
+                        }
+                        ... on EnumAttributeModelStringMetadata {
+                            primitiveType
+                            values
+                        }
+                        ... on EnumAttributeModelDateMetadata {
+                            primitiveType
+                            values
+                        }
+                        ... on GroupAttributeModelMetadata {
+                            subAttributes{
+                                id
+                                name
+                                attributeType
+                            }
+                        }
+                    }   
+                }
+        }
+        '''
     )

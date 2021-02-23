@@ -383,11 +383,13 @@ def print_available_options(selection_structure):
     elif selection_structure == '6':
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
         print(text.default_text_color + str(1), text.Yellow + 'Search a specific attribute')
+        print(text.default_text_color + str(2), text.Yellow + 'Search all attributes')
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_supplier_search_menu_structure(selection) == 'false':
             print(text.Red + '\n- Invalid option\n')
             print(text.default_text_color + str(0), text.Yellow + 'Close application')
             print(text.default_text_color + str(1), text.Yellow + 'Search a specific attribute')
+            print(text.default_text_color + str(2), text.Yellow + 'Search all attributes')
             selection = input(text.default_text_color + '\nPlease select: ')
     else:
         finish_application()
