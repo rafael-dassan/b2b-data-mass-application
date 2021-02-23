@@ -240,13 +240,11 @@ def create_rewards_to_account():
 
     # Option to create a new program
     if reward_option == 'NEW_PROGRAM':
-
         create_new_program(zone, environment)
         print_finish_application_menu()
     
     # Option to update a program DT combos according to the DT combos from the zone
     elif reward_option == 'UPDATE_COMBOS':
-
         update_dt_combos_rewards(zone, environment)
         print_finish_application_menu()
 
@@ -612,7 +610,6 @@ def deals_menu():
                           .format(sku_id=sku_id, account_id=account_id))
                     print_finish_application_menu()
 
-
             if len(sku_list) == 3:
                 if sku_list[0] == sku_list[1] or sku_list[1] == sku_list[2] or sku_list[2] == sku_list[0]:
                             print(text.Red + '\n It is not possible to insert interactive combos using the same SKU')
@@ -633,38 +630,38 @@ def deals_menu():
         sku = sku_list[0]['sku']
 
     return {
-        '1': lambda: flow_create_discount(zone, environment, account_id, sku, operation),
-        '2': lambda: flow_create_stepped_discount(zone, environment, account_id, sku, operation),
-        '3': lambda: flow_create_stepped_discount_with_limit(zone, environment, account_id, sku, operation),
-        '4': lambda: flow_create_free_good(zone, environment, account_id, sku_list, operation),
-        '5': lambda: flow_create_stepped_free_good(zone, environment, account_id, sku, operation),
-        '6': lambda: flow_create_interactive_combos(zone, environment, account_id, sku_list, operation),
-        '7': lambda: flow_create_interactive_combos_v2(zone, environment, account_id, sku_list, operation)
+        '1': lambda: flow_create_discount(zone, environment, account_id, sku),
+        '2': lambda: flow_create_stepped_discount(zone, environment, account_id, sku),
+        '3': lambda: flow_create_stepped_discount_with_limit(zone, environment, account_id, sku),
+        '4': lambda: flow_create_free_good(zone, environment, account_id, sku_list),
+        '5': lambda: flow_create_stepped_free_good(zone, environment, account_id, sku),
+        '6': lambda: flow_create_interactive_combos(zone, environment, account_id, sku_list),
+        '7': lambda: flow_create_interactive_combos_v2(zone, environment, account_id, sku_list)
     }.get(operation, lambda: None)()
 
 
-def flow_create_discount(zone, environment, account_id, sku, operation):
+def flow_create_discount(zone, environment, account_id, sku):
     minimum_quantity = print_minimum_quantity_menu()
     discount_value = print_discount_percentage_menu()
 
-    response = create_discount(account_id, sku, zone, environment, discount_value, minimum_quantity, operation)
+    response = create_discount(account_id, sku, zone, environment, discount_value, minimum_quantity)
     if response != 'false':
         print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
     else:
         print_finish_application_menu()
 
 
-def flow_create_stepped_discount(zone, environment, account_id, sku, operation):
+def flow_create_stepped_discount(zone, environment, account_id, sku):
     ranges = print_stepped_discount_ranges_menu()
 
-    response = create_stepped_discount(account_id, sku, zone, environment, ranges, operation)
+    response = create_stepped_discount(account_id, sku, zone, environment, ranges)
     if response != 'false':
         print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
     else:
         print_finish_application_menu()
 
 
-def flow_create_stepped_discount_with_limit(zone, environment, account_id, sku, operation):
+def flow_create_stepped_discount_with_limit(zone, environment, account_id, sku):
     # Default index range (from 1 to 9999 products)
     default_index_range = [1, 9999]
 
@@ -672,14 +669,14 @@ def flow_create_stepped_discount_with_limit(zone, environment, account_id, sku, 
     max_quantity = print_max_quantity_menu(default_index_range)
 
     response = create_stepped_discount_with_limit(account_id, sku, zone, environment, default_index_range,
-                                                  discount_range, max_quantity, operation)
+                                                  discount_range, max_quantity)
     if response != 'false':
         print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
     else:
         print_finish_application_menu()
 
 
-def flow_create_free_good(zone, environment, account_id, sku_list, operation):
+def flow_create_free_good(zone, environment, account_id, sku_list):
     partial_free_good = print_partial_free_good_menu(zone)
     need_to_buy_product = print_free_good_redemption_menu(partial_free_good)
 
@@ -691,17 +688,17 @@ def flow_create_free_good(zone, environment, account_id, sku_list, operation):
         quantity = print_free_good_quantity_menu()
 
     response = create_free_good(account_id, sku_list, zone, environment, minimum_quantity, quantity,
-                                partial_free_good, need_to_buy_product, operation)
+                                partial_free_good, need_to_buy_product)
     if response != 'false':
         print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
     else:
         print_finish_application_menu()
 
 
-def flow_create_stepped_free_good(zone, environment, account_id, sku, operation):
+def flow_create_stepped_free_good(zone, environment, account_id, sku):
     ranges = print_stepped_free_good_ranges_menu()
 
-    response = create_stepped_free_good(account_id, sku, zone, environment, ranges, operation)
+    response = create_stepped_free_good(account_id, sku, zone, environment, ranges)
     if response != 'false':
         print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
     else:
@@ -709,10 +706,10 @@ def flow_create_stepped_free_good(zone, environment, account_id, sku, operation)
 
 
 # Interactive combos v1
-def flow_create_interactive_combos(zone, environment, account_id, sku, operation):
+def flow_create_interactive_combos(zone, environment, account_id, sku):
     index_range = print_interactive_combos_quantity_range_menu()
 
-    response = create_interactive_combos(account_id, sku, zone, environment, index_range, operation)
+    response = create_interactive_combos(account_id, sku, zone, environment, index_range)
 
     if response != 'false':
         print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
@@ -721,10 +718,10 @@ def flow_create_interactive_combos(zone, environment, account_id, sku, operation
 
 
 # Interactive combos v2
-def flow_create_interactive_combos_v2(zone, environment, account_id, sku, operation):
+def flow_create_interactive_combos_v2(zone, environment, account_id, sku):
     index_range = print_interactive_combos_quantity_range_menu_v2()
 
-    response = create_interactive_combos_v2(account_id, sku, zone, environment, index_range, operation)
+    response = create_interactive_combos_v2(account_id, sku, zone, environment, index_range)
 
     if response != 'false':
         print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
@@ -1277,8 +1274,7 @@ def registration_user_iam():
         print(text.Green + "\n- The user already exists, but the password is wrong.")
         print_finish_application_menu()
 
-    if authenticate_response != "fail":
-        print(text.Green + "\n- The user already exists.")
+    if authenticate_response == "fail":
         print_finish_application_menu()
 
     account_id = print_account_id_menu(country)
@@ -1321,7 +1317,7 @@ def delete_user_iam():
     elif status_response == "partial":
         print(text.Magenta + "\n- User IAM deleted partially")
     else:
-        print(text.Red + "\n- [Delete] Something went wrong, please try again")
+        print(text.Red + "\n- Something went wrong, please try again")
         print_finish_application_menu()
 
 
@@ -1415,7 +1411,7 @@ def get_categories_menu():
         - Parent id (default: 0)
     """
     country = print_zone_menu_for_ms()
-    environment = printEnvironmentMenuInUserCreation()
+    environment = print_environment_menu_user_creation()
     parent_id = print_input_number_with_default('Parent id')
 
     # Get categories
@@ -1425,7 +1421,7 @@ def get_categories_menu():
         for category in categories:
             print("- {id}, {name}".format(id=category['id'], name=category['name']))
     else:
-        print("{text_red}{not_found}".format(text_red=text.Red, not_found="Categories not found"))
+        print("\n{text_red}{not_found}".format(text_red=text.Red, not_found="Categories not found"))
         print_finish_application_menu()
 
 
@@ -1438,24 +1434,24 @@ def associate_product_to_category_menu():
         - Category ID
     """
     country = print_zone_menu_for_ms()
-    environment = printEnvironmentMenuInUserCreation()
+    environment = print_environment_menu_user_creation()
     product_sku = print_input_text('Product SKU')
     category_id = print_input_number('Category ID')
 
     # Enable product
     enable_product_response = request_enable_product(country, environment, product_sku)
     if enable_product_response == 'false':
-        print("{text_red}{fail}".format(text_red=text.Red, fail="Fail to enable product"))
+        print("\n{text_red}{fail}".format(text_red=text.Red, fail="Fail to enable product"))
         print_finish_application_menu()
     else:
         # Associate product to category
         response_associate_product_to_category = associate_product_to_category(country, environment, product_sku,
                                                                                category_id)
         if response_associate_product_to_category == 'false':
-            print("{text_red}{fail}".format(text_red=text.Red, fail="Fail to associate product to category"))
+            print("\n{text_red}{fail}".format(text_red=text.Red, fail="Fail to associate product to category"))
             print_finish_application_menu()
 
-    print("{text_green}{success}".format(text_green=text.Green,
+    print("\n{text_green}{success}".format(text_green=text.Green,
                                          success="Success to enable and to associate product to category"))
 
 
@@ -1468,12 +1464,15 @@ def create_categories_menu():
         - Parent id (default: 0)
     """
     country = print_zone_menu_for_ms()
-    environment = printEnvironmentMenuInUserCreation()
+    environment = print_environment_menu_user_creation()
     category_name = print_input_text('Category name')
     parent_id = print_input_number_with_default('Parent id')
 
     # Get categories
     categories = get_categories(country, environment, parent_id)
+    if categories == 'false':
+        print_finish_application_menu()
+
     category = [category for category in categories if category['name'] == category_name]
     if category:
         category = category[0]
@@ -1505,22 +1504,13 @@ def order_information_menu():
     if selection_structure == '1':
         order_id = print_order_id_menu()
         orders = check_if_order_exists(abi_id, zone, environment, order_id)
-        if orders == 'false':
-            print_finish_application_menu()
-        elif orders == 'empty':
-            print(text.Red + '\n- [Order Service] The account ' + abi_id + ' does not have orders')
-            print_finish_application_menu()
-        elif orders == 'not_found':
-            print(text.Red + '\n- [Order Service] The order ' + order_id + ' does not exist')
+        if orders == 'false' or orders == 'not_found':
             print_finish_application_menu()
 
         display_specific_order_information(orders)
     else:
         orders = check_if_order_exists(abi_id, zone, environment, '')
-        if orders == 'false':
-            print_finish_application_menu()
-        elif orders == 'empty':
-            print(text.Red + '\n- [Order Service] The account ' + abi_id + ' does not have orders')
+        if orders == 'false' or orders == 'not_found':
             print_finish_application_menu()
 
         display_all_order_information(orders)
@@ -1529,11 +1519,16 @@ def order_information_menu():
 def recommender_information_menu():
     zone = print_zone_menu_for_ms()
     environment = print_environment_menu()
-    abi_id = print_account_id_menu(zone)
-    if abi_id == 'false':
+    account_id = print_account_id_menu(zone)
+    if account_id == 'false':
         print_finish_application_menu()
 
-    display_recommendations_by_account(zone, environment, abi_id)
+    case_id = 'QUICK_ORDER&useCase=FORGOTTEN_ITEMS&useCase=CROSS_SELL_UP_SELL'
+    data = get_recommendation_by_account(account_id, zone, environment, case_id)
+    if data == 'false' or data == 'not_found':
+        print_finish_application_menu()
+
+    display_recommendations_by_account(data)
 
 
 def retrieve_available_invoices_menu():

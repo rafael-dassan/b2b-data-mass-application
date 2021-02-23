@@ -13,17 +13,16 @@ from common import get_microservice_base_url, get_header_request, place_request,
 from classes.text import text
 
 
-def request_create_deal(account_id, sku, deal_type, zone, environment, operation, deal_id=None):
+def request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id=None):
     """
-    Input deal to a specific POC. The deal is created by calling the Promotion Relay Service
+    Input deal to a specific POC. The deal is created by calling the Promotion Relay Service V1
     Args:
         deal_id: deal unique identifier
         account_id: POC unique identifier
         sku: Product unique identifier that will have discount/free good associated with it
         deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
-        zone: e.g., AR, BR, CO, DO, MX, ZA
+        zone: e.g., ZA
         environment: e.g., DEV, SIT, UAT
-        operation: deals operations, e.g., discount creation, free good creation, etc
     Returns: `deal_id` if success and error message in case of failure
     """
 
@@ -31,31 +30,56 @@ def request_create_deal(account_id, sku, deal_type, zone, environment, operation
         # Deal unique identifier
         deal_id = 'DM-' + str(randint(1, 100000))
 
-    if operation != '6' and operation != '7':
-        # Assign an account group unique identifier
-        account_group_id = create_account_group(account_id, zone, environment)
-        # Assign a SKU group unique identifier
-        sku_group_id = create_sku_group(sku, zone, environment)
-        # Assign a free good group unique identifier when needed
-        free_good_group_id = list()
-
+    # Assign an account group unique identifier
+    account_group_id = create_account_group(account_id, zone, environment)
+    # Assign a SKU group unique identifier
+    sku_group_id = create_sku_group(sku, zone, environment)
+    # Assign a free good group unique identifier when needed
     if deal_type == 'FREE_GOOD' or deal_type == 'STEPPED_FREE_GOOD':
+        free_good_group_id = list()
         free_good = create_free_good_group(sku, zone, environment)
         free_good_group_id.append(free_good)
 
-    deals_v2_zones = ['AR', 'BR', 'CO', 'DO', 'EC', 'MX', 'PE']
-    if zone in deals_v2_zones:
-        # Get body
-        request_body = get_deals_payload_v2(deal_id, deal_type)
+    # Get body
+    request_body = get_deals_payload_v1(deal_id, deal_type, account_group_id, sku_group_id, free_good_group_id)
 
-        # Get base URL
-        request_url = get_microservice_base_url(environment) + '/promotion-relay/v2'
+    # Get base URL
+    request_url = get_microservice_base_url(environment) + '/promotion-relay/'
+
+    # Get headers
+    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+
+    # Send request
+    response = place_request('POST', request_url, request_body, request_headers)
+
+    if response.status_code == 202 or response.status_code == 200:
+        return deal_id
     else:
-        # Get body
-        request_body = get_deals_payload_v1(deal_id, deal_type, account_group_id, sku_group_id, free_good_group_id)
+        print(text.Red + '\n- [Promotion Relay Service] Failure create deal. Response Status: {response_status}. '
+                         'Response message: {response_message}'
+              .format(response_status=response.status_code, response_message=response.text))
 
-        # Get base URL
-        request_url = get_microservice_base_url(environment) + '/promotion-relay/'
+
+def request_create_deal_v2(deal_type, zone, environment, deal_id=None):
+    """
+    Input deal to a specific POC. The deal is created by calling the Promotion Relay Service V2
+    Args:
+        deal_id: deal unique identifier
+        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
+        zone: e.g., AR, BR, CO, DO, MX
+        environment: e.g., DEV, SIT, UAT
+    Returns: `deal_id` if success and error message in case of failure
+    """
+
+    if deal_id is None:
+        # Deal unique identifier
+        deal_id = 'DM-' + str(randint(1, 100000))
+
+    # Get body
+    request_body = get_deals_payload_v2(deal_id, deal_type)
+
+    # Get base URL
+    request_url = get_microservice_base_url(environment) + '/promotion-relay/v2'
 
     # Get headers
     request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
@@ -305,8 +329,8 @@ def create_free_good_group(sku, zone, environment):
         return 'false'
 
 
-def create_discount(account_id, sku, zone, environment, discount_value, minimum_quantity,
-                    operation, deal_id=None, discount_type='percentOff', deal_type='DISCOUNT'):
+def create_discount(account_id, sku, zone, environment, discount_value, minimum_quantity, deal_id=None, discount_type='percentOff',
+                    deal_type='DISCOUNT'):
     """
     Input a deal type discount to a specific POC by calling the Promotion Relay Service and Pricing Engine Relay Service
     Args:
@@ -318,11 +342,14 @@ def create_discount(account_id, sku, zone, environment, discount_value, minimum_
         minimum_quantity: minimum quantity for the discount to be applied
         discount_type: percentOff
         deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
-        operation: deals operations, e.g., discount creation, free good creation, etc
         deal_id: deal unique identifier
     Returns: `promotion_response` if success
     """
-    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, operation, deal_id)
+
+    if zone == 'ZA':
+        promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id)
+    else:
+        promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
 
     cart_response = request_create_discount_cart_calculation(account_id, promotion_response, zone, environment, sku,
                                                              discount_type, discount_value, minimum_quantity)
@@ -334,7 +361,7 @@ def create_discount(account_id, sku, zone, environment, discount_value, minimum_
 
 
 def create_stepped_discount_with_limit(account_id, sku, zone, environment, index_range, discount_range,
-                                       max_quantity, operation, deal_id=None, discount_type='percentOff',
+                                       max_quantity, deal_id=None, discount_type='percentOff',
                                        deal_type='STEPPED_DISCOUNT'):
     """
     Input a deal type stepped discount with max quantity to a specific POC by calling the Promotion Relay Service and
@@ -350,11 +377,13 @@ def create_stepped_discount_with_limit(account_id, sku, zone, environment, index
         discount_type: percentOff
         deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
         deal_id: deal unique identifier
-        operation: deals operations, e.g., discount creation, free good creation, etc
     Returns: `promotion_response` if success
     """
 
-    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, operation, deal_id)
+    if zone == 'ZA':
+        promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id)
+    else:
+        promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
 
     cart_response = request_create_stepped_discount_with_limit_cart_calculation(account_id, promotion_response, zone,
                                                                                 environment, sku, max_quantity,
@@ -367,7 +396,7 @@ def create_stepped_discount_with_limit(account_id, sku, zone, environment, index
         return 'false'
 
 
-def create_stepped_discount(account_id, sku, zone, environment, ranges, operation, deal_id=None,
+def create_stepped_discount(account_id, sku, zone, environment, ranges, deal_id=None,
                             discount_type='percentOff', deal_type='STEPPED_DISCOUNT'):
     """
     Input a deal type stepped discount to a specific POC by calling the Promotion Relay Service and
@@ -381,10 +410,13 @@ def create_stepped_discount(account_id, sku, zone, environment, ranges, operatio
         ranges: range of SKU quantities and discount values to be applied
         discount_type: percentOff
         deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
-        operation: deals operations, e.g., discount creation, free good creation, etc
     Returns: `promotion_response` if success
     """
-    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, operation, deal_id)
+
+    if zone == 'ZA':
+        promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id)
+    else:
+        promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
 
     cart_response = request_create_stepped_discount_cart_calculation(account_id, promotion_response, zone, environment,
                                                                      sku, discount_type, ranges)
@@ -396,7 +428,7 @@ def create_stepped_discount(account_id, sku, zone, environment, ranges, operatio
 
 
 def create_free_good(account_id, sku_list, zone, environment, proportion, quantity, partial_free_good,
-                     need_to_buy_product, operation, deal_id=None, deal_type='FREE_GOOD'):
+                     need_to_buy_product, deal_id=None, deal_type='FREE_GOOD'):
     """
     Input a deal type free good to a specific POC by calling the Promotion Relay Service and Pricing Engine Relay
     Service
@@ -411,11 +443,13 @@ def create_free_good(account_id, sku_list, zone, environment, proportion, quanti
         quantity: quantity of SKUs to offer as free goods
         partial_free_good: partial SKU to be rescued
         need_to_buy_product: e.g., `Y` or `N`
-        operation: deals operations, e.g., discount creation, free good creation, etc
     Returns: `promotion_response` if success
     """
-    promotion_response = request_create_deal(account_id, sku_list[0]['sku'], deal_type, zone, environment, operation,
-                                             deal_id)
+
+    if zone == 'ZA':
+        promotion_response = request_create_deal_v1(account_id, sku_list[0]['sku'], deal_type, zone, environment, deal_id)
+    else:
+        promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
 
     cart_response = request_create_free_good_cart_calculation(account_id, promotion_response, zone, environment,
                                                               sku_list, proportion, quantity, partial_free_good,
@@ -427,7 +461,7 @@ def create_free_good(account_id, sku_list, zone, environment, proportion, quanti
         return 'false'
 
 
-def create_stepped_free_good(account_id, sku, zone, environment, ranges, operation, deal_id=None,
+def create_stepped_free_good(account_id, sku, zone, environment, ranges, deal_id=None,
                              deal_type='STEPPED_FREE_GOOD'):
     """
     Input a deal type stepped free good to a specific POC by calling the Promotion Relay Service and Pricing Engine
@@ -440,10 +474,13 @@ def create_stepped_free_good(account_id, sku, zone, environment, ranges, operati
         zone: e.g., AR, BR, CO, DO, MX, ZA
         environment: e.g, DEV, SIT, UAT
         ranges: range of SKU quantities and free good values to be applied
-        operation: deals operations, e.g., discount creation, free good creation, etc
     Returns: `promotion_response` if success
     """
-    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, operation, deal_id)
+
+    if zone == 'ZA':
+        promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id)
+    else:
+        promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
 
     cart_response = request_create_stepped_free_good_cart_calculation(account_id, promotion_response, zone, environment,
                                                                       sku, ranges)
@@ -455,8 +492,7 @@ def create_stepped_free_good(account_id, sku, zone, environment, ranges, operati
 
 
 # Create Interactive Combos v1 List
-def create_interactive_combos(account_id, sku, zone, environment, index_range, operation,
-                              deal_type='FLEXIBLE_DISCOUNT'):
+def create_interactive_combos(account_id, sku, zone, environment, index_range, deal_type='FLEXIBLE_DISCOUNT'):
     """
     Input a deal type interactive combos to a specific POC by calling the Promotion Relay Service and Pricing Engine
     Relay Service
@@ -467,11 +503,13 @@ def create_interactive_combos(account_id, sku, zone, environment, index_range, o
         environment: e.g, DEV, SIT, UAT
         index_range: SKU quantity range for the discount to be applied
         deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD, FLEXIBLE_DISCOUNT
-        operation: deals operations, e.g., discount creation, free good creation, etc
     Returns: `promotion_response` if success
     """
 
-    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, operation)
+    if zone == 'ZA':
+        promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment)
+    else:
+        promotion_response = request_create_deal_v2(deal_type, zone, environment)
 
     cart_response = request_create_interactive_combos_cart_calculation(account_id, promotion_response, zone,
                                                                        environment, sku, index_range)
@@ -483,8 +521,7 @@ def create_interactive_combos(account_id, sku, zone, environment, index_range, o
 
 
 # Create Interactive Combos v2 List
-def create_interactive_combos_v2(account_id, sku, zone, environment, index_range, operation,
-                                 deal_type='FLEXIBLE_DISCOUNT'):
+def create_interactive_combos_v2(account_id, sku, zone, environment, index_range, deal_type='FLEXIBLE_DISCOUNT'):
     """
     Input a deal type interactive combos to a specific POC by calling the Promotion Relay Service and Pricing Engine
     Relay Service
@@ -494,15 +531,17 @@ def create_interactive_combos_v2(account_id, sku, zone, environment, index_range
         zone: e.g., BR, CO, AR
         environment: e.g, DEV, SIT, UAT
         index_range: range for the free good rule to be applied
-        operation: deals operations, e.g., discount creation, free good creation, etc
         deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD, FLEXIBLE_DISCOUNT
     Returns: `promotion_response` if success
     """
 
-    promotion_response = request_create_deal(account_id, sku, deal_type, zone, environment, operation)
+    if zone == 'ZA':
+        promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment)
+    else:
+        promotion_response = request_create_deal_v2(deal_type, zone, environment)
 
-    cart_response = request_create_interactive_combos_cart_calculation_v2(account_id, promotion_response, zone,
-                                                                       environment, sku, index_range)
+    cart_response = request_create_interactive_combos_cart_calculation_v2(account_id, promotion_response, zone, environment, sku,
+                                                                          index_range)
 
     if promotion_response != 'false' and cart_response == 'success':
         return promotion_response

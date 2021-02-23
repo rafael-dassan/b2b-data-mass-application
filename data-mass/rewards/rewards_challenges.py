@@ -10,11 +10,16 @@ from common import get_header_request, get_microservice_base_url, update_value_t
     place_request
 from products import request_get_products_by_account_microservice
 from classes.text import text
+from rewards.rewards_programs import get_rewards_program_for_zone
 from rewards.rewards_utils import generate_id
 
 
 # Add Reward challenges to a zone
 def input_challenge_to_zone(abi_id, zone, environment):
+    # Verify if the zone already have a reward program created
+    rewards_program = get_rewards_program_for_zone(zone, environment)
+    if rewards_program is None:
+        return None
 
     # Gets the account's SKUs to use only for challenge type = PURCHASE
     product_offers = request_get_products_by_account_microservice(abi_id, zone, environment)

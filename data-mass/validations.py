@@ -106,13 +106,15 @@ def validate_option_sku(option):
     else:
         return False
 
-#Zones for Interactive Combos
+
 def validate_zone_for_interactive_combos_ms(zone):
     return {
         'BR': 'true',
         'CO': 'true',
-        'AR': 'true'
+        'AR': 'true',
+        'CA': 'true'
     }.get(zone, 'false')
+
 
 def validate_zone_for_ms(zone):
     return {
@@ -123,7 +125,8 @@ def validate_zone_for_ms(zone):
         'MX': 'true',
         'AR': 'true',
         'PE': 'true',
-        'EC': 'true'
+        'EC': 'true',
+        'CA': 'true'
     }.get(zone, 'false')
 
 
@@ -207,6 +210,7 @@ def validate_rewards(selection):
 def validate_rewards_transactions(selection):
     options = ['1', '2', '3']
     return selection in options
+
 
 def validate_rewards_programs(selection):
     options = ['1', '2', '3']

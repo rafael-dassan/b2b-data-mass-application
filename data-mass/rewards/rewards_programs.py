@@ -14,19 +14,20 @@ from rewards.rewards_utils import display_all_programs_info, build_request_url_w
 
 # Create Rewards Program
 def create_new_program(zone, environment):
-
     # Verify if the zone already have a reward program created
-    DM_program = get_DM_program_for_zone(zone, environment)
+    rewards_program = get_rewards_program_for_zone(zone, environment)
 
-    if DM_program != None:
-        program_id = DM_program['id']
+    if rewards_program is not None:
+        program_id = rewards_program['id']
         print(text.Yellow + '\n- [Rewards] This zone already have a reward program created - Program ID: "{}"'.format(program_id))
+    else:
         return None
 
     response_zone_dt_combos = get_dt_combos_from_zone(zone, environment)
 
     # Verify if the zone has combos available
-    if response_zone_dt_combos == None: return None
+    if response_zone_dt_combos is None:
+        return None
         
     product_list_from_zone = create_product_list_from_zone(zone, environment)
 
@@ -75,46 +76,46 @@ def create_new_program(zone, environment):
     with open(file_path) as file:
         json_data = json.load(file)
 
-    dict_values  = {
-        'name' : new_program_id,
-        'rules[0].moneySpentSkuRule.skus' : premium_rule_skus,
-        'rules[1].moneySpentSkuRule.skus' : core_rule_skus,
-        'combos' : generated_combos,
-        'initialBalance' : initial_balance,
-        'categories[0].categoryId' : categories[0],
-        'categories[0].categoryIdWeb' : categories[1],
-        'categories[0].description' : categories[2],
-        'categories[0].buttonLabel' : categories[3],
-        'categories[0].image' : categories[4],
-        'categories[0].title' : 'Premium',
-        'categories[0].subtitle' : categories[2],
-        'categories[0].headerImage' : "https://cdn-b2b-abi.global.ssl.fastly.net/sit/images/br/redesign/premium/img-premium-chopp-brahma-logo@2x.png",
-        'categories[0].brands' : [{
+    dict_values = {
+        'name': new_program_id,
+        'rules[0].moneySpentSkuRule.skus': premium_rule_skus,
+        'rules[1].moneySpentSkuRule.skus': core_rule_skus,
+        'combos': generated_combos,
+        'initialBalance': initial_balance,
+        'categories[0].categoryId': categories[0],
+        'categories[0].categoryIdWeb': categories[1],
+        'categories[0].description': categories[2],
+        'categories[0].buttonLabel': categories[3],
+        'categories[0].image': categories[4],
+        'categories[0].title': 'Premium',
+        'categories[0].subtitle': categories[2],
+        'categories[0].headerImage': "https://cdn-b2b-abi.global.ssl.fastly.net/sit/images/br/redesign/premium/img-premium-chopp-brahma-logo@2x.png",
+        'categories[0].brands': [{
             "brandId": "123",
             "title": "premium brand",
             "image": "https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/premium/img_puntos_20.png"
         }],
-        'categories[1].categoryId' : categories[5],
-        'categories[1].categoryIdWeb' : categories[6],
-        'categories[1].description' : categories[7],
-        'categories[1].buttonLabel' : categories[8],
-        'categories[1].image' : categories[9],
-        'categories[1].title' : 'Core',
-        'categories[1].subtitle' : categories[7],
-        'categories[1].headerImage' : "https://cdn-b2b-abi.global.ssl.fastly.net/sit/images/br/redesign/core/img-core-brahmachopp-logo@2x.png",
-        'categories[1].brands' : [{
+        'categories[1].categoryId': categories[5],
+        'categories[1].categoryIdWeb': categories[6],
+        'categories[1].description': categories[7],
+        'categories[1].buttonLabel': categories[8],
+        'categories[1].image': categories[9],
+        'categories[1].title': 'Core',
+        'categories[1].subtitle': categories[7],
+        'categories[1].headerImage': "https://cdn-b2b-abi.global.ssl.fastly.net/sit/images/br/redesign/core/img-core-brahmachopp-logo@2x.png",
+        'categories[1].brands': [{
             "brandId": "321",
             "title": "core brand",
             "image": "https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/core/img_punto_1.png"
         }],
-        'termsAndConditions[0].documentURL' : terms[0],
-        'termsAndConditions[0].changeLog' : terms[1]
+        'termsAndConditions[0].documentURL': terms[0],
+        'termsAndConditions[0].changeLog': terms[1]
     }
 
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
-    #Create body
+    # Create body
     request_body = convert_json_to_string(json_object)
 
     # Send request
@@ -122,17 +123,15 @@ def create_new_program(zone, environment):
 
 
 def update_dt_combos_rewards(zone, environment):
-
     all_programs = get_all_programs(zone, environment, set(["COMBOS"]))
-
-    if all_programs == None: return None
+    if all_programs is None:
+        return None
 
     json_all_programs = loads(all_programs.text)
     display_all_programs_info(json_all_programs)
 
     selected_program = None
-    while selected_program == None:
-    
+    while selected_program is None:
         program_id = print_input_text('\nPlease inform the Program ID')
 
         for program in json_all_programs:
@@ -140,12 +139,14 @@ def update_dt_combos_rewards(zone, environment):
                 selected_program = program
                 break
         
-        if selected_program == None: print(text.Red + '\n- Program "{}" not found!!'.format(program_id))
+        if selected_program is None:
+            print(text.Red + '\n- Program "{}" not found!!'.format(program_id))
 
     # Get all the DT combos of the specified zone
     response_combos_from_zone = get_dt_combos_from_zone(zone, environment)
 
-    if response_combos_from_zone == None: return None
+    if response_combos_from_zone is None:
+        return None
 
     json_combos_from_zone = loads(response_combos_from_zone.text)
     zone_dt_combos = json_combos_from_zone['combos']
@@ -229,35 +230,30 @@ def patch_program_root_field(zone, environment, field):
 
 
 # Check if DM Rewards program exists for the zone
-def get_DM_program_for_zone(zone, environment):
-
-    DM_program = None
+def get_rewards_program_for_zone(zone, environment):
+    rewards_program = None
 
     # Send request
     response = get_all_programs(zone, environment, set(["DEFAULT"]))
-    
-    if response != None:
-
+    if response is not None:
         program_list = loads(response.text)
         for i in range(len(program_list)):
             program_id = program_list[i]['id']
-            preffix_program_id = program_id[0:9]
+            prefix_program_id = program_id[0:9]
 
-            if preffix_program_id == 'DM-REWARD':
-                DM_program = program_list[i]
+            if prefix_program_id == 'DM-REWARD':
+                rewards_program = program_list[i]
                 break
     
-    return DM_program
+    return rewards_program
 
 
 # Get all reward program for the zone
 def get_all_programs(zone, environment, projections=set()):
-
     header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
     
     # Define url request
     request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/programs'
-
     request_url = build_request_url_with_projection_query(request_url, projections)
     
     # Send request
@@ -271,8 +267,8 @@ def get_all_programs(zone, environment, projections=set()):
             print(text.Red + '\n- [Rewards] There are no Reward programs available in "{}" zone.'.format(zone))
 
     else:
-        print(text.Red + '\n- [Rewards] Failure when getting all programs in "{}" zone. \n- Response Status: "{}". \n- Response message "{}".'
-                .format(zone, str(response.status_code), response.text))
+        print(text.Red + '\n- [Rewards] Failure when getting all programs in "{}" zone. \n- Response Status: "{}". \n- Response message '
+                         '"{}".'.format(zone, str(response.status_code), response.text))
     
     return None
 
