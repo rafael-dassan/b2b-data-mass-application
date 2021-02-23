@@ -732,13 +732,9 @@ def flow_create_interactive_combos_v2(zone, environment, account_id, sku):
 # Input combos to an account
 def input_combos_menu():
     selection_structure = print_combos_menu()
-
-    if selection_structure == '3':
-        zone = print_zone_menu_for_ms()
-    else:
-        zone = print_zone_menu_for_combos()
-
+    zone = print_zone_menu_for_ms()
     environment = print_environment_menu()
+
     abi_id = print_account_id_menu(zone)
     if abi_id == 'false':
         print_finish_application_menu()
@@ -1416,6 +1412,9 @@ def get_categories_menu():
 
     # Get categories
     categories = get_categories(country, environment, parent_id)
+    if categories == 'false':
+        print_finish_application_menu()
+
     if categories:
         print("Categories: [id, name]")
         for category in categories:
@@ -1448,7 +1447,7 @@ def associate_product_to_category_menu():
         response_associate_product_to_category = associate_product_to_category(country, environment, product_sku,
                                                                                category_id)
         if response_associate_product_to_category == 'false':
-            print("\n{text_red}{fail}".format(text_red=text.Red, fail="Fail to associate product to category"))
+            print("\n{text_red}- {fail}".format(text_red=text.Red, fail="Fail to associate product to category"))
             print_finish_application_menu()
 
     print("\n{text_green}{success}".format(text_green=text.Green,

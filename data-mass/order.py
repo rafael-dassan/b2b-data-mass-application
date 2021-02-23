@@ -212,6 +212,10 @@ def get_order_prefix_params(zone):
             'order_number_size': 7,
             'prefix': '5'
         },
+        'PA': {
+            'order_number_size': 7,
+            'prefix': 'UAT'
+        },
         'PE': {
             'order_number_size': 7,
             'prefix': 'UAT'
