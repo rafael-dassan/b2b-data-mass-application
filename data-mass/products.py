@@ -499,7 +499,7 @@ def get_item_input_data():
         'name': name,
         'brandName': brand_name,
         'subBrandName': brand_name,
-        'package.id': sku_identifier,
+        'package.id': str(randint(1, 1000)),
         'container.name': container_name,
         'container.size': container_size,
         'container.returnable': is_returnable,
@@ -535,7 +535,6 @@ def set_item_enabled(zone, environment, product_data):
         json_data = json.load(file)
 
     dict_values = {
-        'sku': product_data.get('sku'),
         'itemName': product_data.get('name'),
         'package.packageId': product_data.get('package.id'),
         'container.name': product_data.get('container.name'),
