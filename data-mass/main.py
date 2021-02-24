@@ -42,7 +42,7 @@ import user_creation_v3 as user_v3
 import user_delete_v3 as user_delete_v3
 from simulation import process_simulation_microservice, request_order_simulation
 from supplier_category import check_if_supplier_category_exist, create_root_category, create_sub_category_supplier, \
-    create_association_attribute_with_category
+    create_association_attribute_with_category, search_specific_category, display_specific_category
 from validations import validate_yes_no_option, validate_state, is_number
 
 
@@ -100,7 +100,8 @@ def show_menu():
         switcher = {
             '0': finish_application,
             '1': search_specific_attribute_menu,
-            '2': search_all_attribute_menu
+            '2': search_all_attribute_menu,
+            '3': search_specific_category_menu
         }
     else:
         finish_application()
@@ -1791,6 +1792,16 @@ def search_all_attribute_menu():
             is_new_page = print_new_page()
             if is_new_page == '2':
                 print_finish_application_menu()
+
+
+def search_specific_category_menu():
+    environment = print_environment_menu()
+    category_id = input(text.default_text_color + 'Inform the category id: ')
+    result = search_specific_category(environment, category_id)
+    if result == 'false':
+        print_finish_application_menu()
+    else:
+        display_specific_category(result)
 
 
 # Init

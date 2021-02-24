@@ -3,6 +3,7 @@ from random import randint
 from gql import gql, Client
 from gql.transport.exceptions import TransportQueryError
 from gql.transport.requests import RequestsHTTPTransport
+from tabulate import tabulate
 
 from classes.text import text
 from common import get_supplier_base_url, get_header_request_supplier
@@ -203,3 +204,135 @@ def create_association_payload():
                 }
     """
     )
+
+
+def search_specific_category(environment, category):
+    base_url = get_supplier_base_url(environment)
+    base_header = get_header_request_supplier()
+    transport = RequestsHTTPTransport(url=base_url, headers=base_header)
+
+    # Create a GraphQL client using the defined transport
+    client = Client(transport=transport, fetch_schema_from_transport=False)
+
+    mut = create_search_specific_category_payload()
+
+    params = {"id": category}
+    try:
+        response = client.execute(mut, variable_values=params)
+        json_data = json.dumps(response)
+        return json_data
+    except TransportQueryError as e:
+        print(text.Red + str(e))
+        return 'false'
+
+
+def create_search_specific_category_payload():
+    return gql(
+        '''
+             query category($id: ID!){
+              category(id: $id) {
+                name
+                description
+                parent {
+                  id
+                  name
+                }
+                children {
+                  id
+                  name
+                }
+                ancestors {
+                  id
+                  name
+                }
+               attributes {
+                        ... on AbstractAttribute {
+                            id
+                            minCardinality
+              	            maxCardinality
+                            __typename
+                        }
+                        ... on ConcreteAttribute {
+                            id
+                            values
+                            __typename
+                        }
+                    }
+                createdAt
+              }
+            }
+        '''
+
+    )
+
+
+def display_specific_category(category):
+    category_model = json.loads(category)
+    info = category_model['category']
+    info_category = {
+        'Name': info['name'],
+        'Description': info['description'],
+    }
+
+    parent = info['parent']
+    if parent is None:
+        parent_info = {
+            'Parent': 'None'
+        }
+    else:
+        parent_info = {
+            'Parent Id': parent['id'],
+            'Parent Name': parent['name']
+        }
+
+    ancestors = info['ancestors']
+    ancestors_list = list()
+    if len(ancestors) == 0:
+        ancestors_info = {
+            'Ancestors': 'None'
+        }
+        ancestors_list.append(ancestors_info)
+    else:
+        for i in range(len(ancestors)):
+            ancestors_info = {
+                'Ancestor Id': ancestors[i]['id'],
+                'Ancestor Name': ancestors[i]['name']
+            }
+            ancestors_list.append(ancestors_info)
+
+    attributes = info['attributes']
+    attributes_list = list()
+    if len(attributes) == 0:
+        attributes_info = {
+            'Attributes': 'None'
+        }
+        attributes_list.append(attributes_info)
+    for a in range(len(attributes)):
+        if attributes[a]['__typename'] == 'AbstractAttribute':
+            attributes_info = {
+                'Attribute Type': 'AbstractAttribute',
+                'Attribute Id': attributes[a]['id'],
+                'Attribute Min. Cardinality': attributes[a]['minCardinality'],
+                'Attribute Max. Cardinality': attributes[a]['maxCardinality']
+            }
+            attributes_list.append(attributes_info)
+        elif attributes[a]['__typename'] == 'ConcreteAttribute':
+            attributes_info = {
+                'Attribute Type': 'ConcreteAttribute',
+                'Attribute Id': attributes[a]['id'],
+                'Attribute Values': attributes[a]['values'],
+
+            }
+            attributes_list.append(attributes_info)
+
+    print(text.default_text_color + '\nCategory - General Information')
+    print(tabulate([info_category], headers='keys', tablefmt='grid'))
+
+    print(text.default_text_color + '\nCategory - Parent Information')
+    print(tabulate([parent_info], headers='keys', tablefmt='grid'))
+
+    print(text.default_text_color + '\nCategory - Ancestor Information')
+    print(tabulate(ancestors_list, headers='keys', tablefmt='grid'))
+
+    print(text.default_text_color + '\nCategory - Attribute Information')
+    print(tabulate(attributes_list, headers='keys', tablefmt='grid'))
