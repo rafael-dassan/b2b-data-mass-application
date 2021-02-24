@@ -35,8 +35,8 @@ def request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_i
     # Assign a SKU group unique identifier
     sku_group_id = create_sku_group(sku, zone, environment)
     # Assign a free good group unique identifier when needed
+    free_good_group_id = list()
     if deal_type == 'FREE_GOOD' or deal_type == 'STEPPED_FREE_GOOD':
-        free_good_group_id = list()
         free_good = create_free_good_group(sku, zone, environment)
         free_good_group_id.append(free_good)
 

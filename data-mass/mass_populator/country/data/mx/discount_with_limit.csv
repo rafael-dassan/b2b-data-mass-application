@@ -1,4 +1,4 @@
-account_id,deal_id,sku,discount_value,max_quantity,operation
-"1932469950","QM-MX-WEB-0101","0103WEB",10,10,"3"
-"1002406140","DMA-MX-ANDROID-0101","0103ANDROID",10,10,"3"
-"1802367400","DMA-MX-IOS-0101","0103IOS",10,10,"3"
+account_id,deal_id,sku,discount_value,max_quantity
+"1932469950","QM-MX-WEB-0101","0103WEB",10,10
+"1002406140","DMA-MX-ANDROID-0101","0103ANDROID",10,10
+"1802367400","DMA-MX-IOS-0101","0103IOS",10,10

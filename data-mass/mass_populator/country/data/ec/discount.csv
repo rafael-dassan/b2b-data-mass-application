@@ -1,4 +1,4 @@
-account_id,deal_id,sku,discount_value,min_quantity,operation
-"2736327921","DMA-EC-WEB-0102","0104WEB",15,1,"1"
-"2987757411","DMA-EC-ANDROID-0102","0104ANDROID",15,1,"1"
-"2058034151","DMA-EC-IOS-0102","0104IOS",15,1,"1"
+account_id,deal_id,sku,discount_value,min_quantity
+"2736327921","DMA-EC-WEB-0102","0104WEB",15,1
+"2987757411","DMA-EC-ANDROID-0102","0104ANDROID",15,1
+"2058034151","DMA-EC-IOS-0102","0104IOS",15,1
