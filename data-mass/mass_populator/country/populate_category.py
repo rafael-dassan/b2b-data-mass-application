@@ -8,8 +8,7 @@ logger = logging.getLogger(__name__)
 
 def associate_products_to_category_magento_base(country, environment, dataframe_products):
     if dataframe_products is not None:
-        dataframe_products.apply(apply_associate_products_to_category_magento_base,
-        args=(country, environment), axis=1)
+        dataframe_products.apply(apply_associate_products_to_category_magento_base, args=(country, environment), axis=1)
 
 
 def apply_associate_products_to_category_magento_base(row, country, environment):
@@ -49,31 +48,36 @@ def get_categories_magento_web(country, environment, category_name):
         - Category Name
     """
     nodes = request_get_categories(country, environment, {'level': 2})
-    nodes_obj = json.loads(nodes.text)
-    categories = []
-    nodes_items = nodes_obj['items']
+    if nodes.status_code != 200:
+        logger.error(log(Message.RETRIEVE_CATEGORY_ERROR, {"category": category_name}))
+    else:
+        nodes_obj = json.loads(nodes.text)
+        categories = []
+        nodes_items = nodes_obj['items']
 
-    if nodes_obj and nodes_items:
-        for node in nodes_items:        
-            parent_id = node['id']
-            parent_name = node['name']
+        if nodes_obj and nodes_items:
+            for node in nodes_items:
+                parent_id = node['id']
+                parent_name = node['name']
 
-            if 'mobile' not in parent_name.lower():
-                node_children = request_get_categories(country, environment,
-                                                       {'parent_id': parent_id, 'name': category_name})
-                node_children_obj = json.loads(node_children.text)
-                nodes_items_children = node_children_obj['items']
+                if 'mobile' not in parent_name.lower():
+                    node_children = request_get_categories(country, environment, {'parent_id': parent_id, 'name': category_name})
+                    if node_children.status_code != 200:
+                        logger.error(log(Message.RETRIEVE_CATEGORY_ERROR, {"category": category_name}))
+                    else:
+                        node_children_obj = json.loads(node_children.text)
+                        nodes_items_children = node_children_obj['items']
 
-                if node_children_obj and not nodes_items_children:
-                    category_id = _create_category(country, environment, category_name, parent_id)
-                else:
-                    category_id = nodes_items_children[0]['id']
+                        if node_children_obj and not nodes_items_children:
+                            category_id = _create_category(country, environment, category_name, parent_id)
+                        else:
+                            category_id = nodes_items_children[0]['id']
 
-                if category_id is not None:
-                    categories.append(category_id)
-                else:
-                    logger.error(log(Message.SUBCATEGORY_CREATION_ERROR,
-                                     {"subcategory_name": str(category_name), "parent_id": str(parent_id)}))
+                        if category_id is not None:
+                            categories.append(category_id)
+                        else:
+                            logger.error(log(Message.SUBCATEGORY_CREATION_ERROR, {"subcategory_name": str(category_name),
+                                                                                  "parent_id": str(parent_id)}))
 
     return categories
 
@@ -96,50 +100,54 @@ def get_categories_magento_mobile(country, environment, sub_category_name):
     }
 
     nodes = request_get_categories(country, environment, {'level': 2})
-    nodes_obj = json.loads(nodes.text)
-    categories = []
-    nodes_items = nodes_obj['items']
+    if nodes.status_code != 200:
+        logger.error(log(Message.RETRIEVE_CATEGORY_ERROR, {"category": sub_category_name}))
+    else:
+        nodes_obj = json.loads(nodes.text)
+        categories = []
+        nodes_items = nodes_obj['items']
 
-    if nodes_obj and nodes_items:
-        for node in nodes_items:
-            parent_id = node['id']
-            parent_name = node['name']
+        if nodes_obj and nodes_items:
+            for node in nodes_items:
+                parent_id = node['id']
+                parent_name = node['name']
 
-            if 'mobile' in parent_name.lower():
-                node_parent_category = request_get_categories(country, environment,
-                                                              {'parent_id': parent_id, 'name': parent_category_name})
-                node_parent_category_obj = json.loads(node_parent_category.text)
-                nodes_items_parent_category = node_parent_category_obj['items']
+                if 'mobile' in parent_name.lower():
+                    node_parent_category = request_get_categories(country, environment, {'parent_id': parent_id,
+                                                                                         'name': parent_category_name})
+                    if node_parent_category.status_code != 200:
+                        logger.error(log(Message.RETRIEVE_CATEGORY_ERROR, {"category": parent_category_name}))
+                    else:
+                        node_parent_category_obj = json.loads(node_parent_category.text)
+                        nodes_items_parent_category = node_parent_category_obj['items']
 
-                if node_parent_category_obj and not nodes_items_parent_category:
-                    custom_attributes["brand_id"] = sub_category_name + str(parent_id)
-                    parent_category_id = _create_category(country, environment, parent_category_name, parent_id,
-                                                          custom_attributes)
-                else:
-                    parent_category_id = nodes_items_parent_category[0]['id']
+                        if node_parent_category_obj and not nodes_items_parent_category:
+                            custom_attributes["brand_id"] = sub_category_name + str(parent_id)
+                            parent_category_id = _create_category(country, environment, parent_category_name, parent_id, custom_attributes)
+                        else:
+                            parent_category_id = nodes_items_parent_category[0]['id']
 
-                if parent_category_id is None:
-                    logger.error(log(Message.SUBCATEGORY_CREATION_ERROR,
-                                     {"subcategory_name": str(parent_category_name), "parent_id": str(parent_id)}))
+                        if parent_category_id is None:
+                            logger.error(log(Message.SUBCATEGORY_CREATION_ERROR, {"subcategory_name": str(parent_category_name),
+                                                                                  "parent_id": str(parent_id)}))
 
-                node_sub_category = request_get_categories(country, environment,
-                                                           {'parent_id': parent_category_id, 'name': sub_category_name})
-                node_sub_category_obj = json.loads(node_sub_category.text)
-                nodes_items_sub_category = node_sub_category_obj['items']
+                        node_sub_category = request_get_categories(country, environment, {'parent_id': parent_category_id,
+                                                                                          'name': sub_category_name})
+                        node_sub_category_obj = json.loads(node_sub_category.text)
+                        nodes_items_sub_category = node_sub_category_obj['items']
 
-                if node_sub_category_obj and not nodes_items_sub_category:
-                    custom_attributes["brand_id"] = sub_category_name + str(parent_category_id)
-                    sub_category_id = _create_category(country, environment, sub_category_name, parent_category_id,
-                                                       custom_attributes)
-                else:
-                    sub_category_id = nodes_items_sub_category[0]['id']
+                        if node_sub_category_obj and not nodes_items_sub_category:
+                            custom_attributes["brand_id"] = sub_category_name + str(parent_category_id)
+                            sub_category_id = _create_category(country, environment, sub_category_name, parent_category_id,
+                                                               custom_attributes)
+                        else:
+                            sub_category_id = nodes_items_sub_category[0]['id']
 
-                if sub_category_id is not None:
-                    categories.append(sub_category_id)
-                else:
-                    logger.error(log(Message.SUBCATEGORY_CREATION_ERROR,
-                                     {"subcategory_name": str(sub_category_name),
-                                      "parent_id": str(parent_category_id)}))
+                        if sub_category_id is not None:
+                            categories.append(sub_category_id)
+                        else:
+                            logger.error(log(Message.SUBCATEGORY_CREATION_ERROR, {"subcategory_name": str(sub_category_name),
+                                                                                  "parent_id": str(parent_category_id)}))
 
     return categories
 
@@ -149,7 +157,7 @@ def _create_category(country, environment, category_name, parent_id, custom_attr
     category = create_category(country, environment, category_name, parent_id, custom_attributes)
 
     if category == 'false':
-        logger.error(log(Message.CATEGORY_CREATE_ERROR,{"category": category_name}))
+        logger.error(log(Message.CATEGORY_CREATE_ERROR, {"category": category_name}))
     else:
         category_id = category['id']
 

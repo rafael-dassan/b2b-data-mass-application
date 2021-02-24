@@ -69,23 +69,22 @@ def execute_test(country, environment):
     logger.info("populate_deals for %s/%s", country, environment)
     populate_discount(country, environment, discount_params.get('account_id'), discount_params.get('deal_id'),
                       discount_params.get('sku'), discount_params.get('discount_value'),
-                      discount_params.get('min_quantity'), discount_params.get('operation'))
+                      discount_params.get('min_quantity'))
     populate_stepped_discount(country, environment, stepped_discount_params.get('account_id'),
                               stepped_discount_params.get('deal_id'), stepped_discount_params.get('sku'),
-                              stepped_discount_params.get('ranges'), stepped_discount_params.get('operation'))
+                              stepped_discount_params.get('ranges'))
     populate_stepped_discount_with_limit(country, environment, stepped_discount_limit_params.get('account_id'),
                                          stepped_discount_limit_params.get('deal_id'),
                                          stepped_discount_limit_params.get('sku'),
                                          stepped_discount_limit_params.get('discount_value'),
-                                         stepped_discount_limit_params.get('max_quantity'),
-                                         stepped_discount_limit_params.get('operation'))
+                                         stepped_discount_limit_params.get('max_quantity'))
     populate_free_good(country, environment, free_good_params.get('account_id'), free_good_params.get('deal_id'),
                        free_good_params.get('sku'), free_good_params.get('proportion'),
                        free_good_params.get('quantity'), free_good_params.get('partial_free_good'),
-                       free_good_params.get('need_to_buy_product'), free_good_params.get('operation'))
+                       free_good_params.get('need_to_buy_product'))
     populate_stepped_free_good(country, environment, stepped_free_good_params.get('account_id'),
                                stepped_free_good_params.get('deal_id'), stepped_free_good_params.get('sku'),
-                               stepped_free_good_params.get('ranges'), stepped_free_good_params.get('operation'))
+                               stepped_free_good_params.get('ranges'))
 
     logger.info("populate_orders for %s/%s", country, environment)
     populate_order(country, environment, order_params.get('account_id'), order_params.get('allow_order_cancel'),
@@ -175,23 +174,20 @@ def get_deals_params(country, deal_type):
             'deal_id': 'DMA-{country}-TEST-0102'.format(country=country),
             'sku': get_product_params().get('sku'),
             'discount_value': 15,
-            'min_quantity': 1,
-            'operation': '1'
+            'min_quantity': 1
         },
         'STEPPED_DISCOUNT': {
             'account_id': get_account_params(country).get('id'),
             'deal_id': 'DMA-{country}-TEST-0103'.format(country=country),
             'sku': get_product_params().get('sku'),
-            'ranges': ['1,10,10', '11,9999,15'],
-            'operation': '2'
+            'ranges': ['1,10,10', '11,9999,15']
         },
         'STEPPED_DISCOUNT_LIMIT': {
             'account_id': get_account_params(country).get('id'),
             'deal_id': 'DMA-{country}-TEST-0101'.format(country=country),
             'sku': get_product_params().get('sku'),
             'discount_value': 10,
-            'max_quantity': 10,
-            'operation': '3'
+            'max_quantity': 10
         },
         'FREE_GOOD': {
             'account_id': get_account_params(country).get('id'),
@@ -200,15 +196,13 @@ def get_deals_params(country, deal_type):
             'proportion': 10,
             'quantity': 1,
             'partial_free_good': 'N',
-            'need_to_buy_product': 'Y',
-            'operation': '4'
+            'need_to_buy_product': 'Y'
         },
         'STEPPED_FREE_GOOD': {
             'account_id': get_account_params(country).get('id'),
             'deal_id': 'DMA-{country}-TEST-0105'.format(country=country),
             'sku': get_product_params().get('sku'),
-            'ranges': ['1,10,1,2', '11,9999,2,2'],
-            'operation': '5'
+            'ranges': ['1,10,1,2', '11,9999,2,2']
         }
     }
 
