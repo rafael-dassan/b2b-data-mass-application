@@ -372,12 +372,14 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
         print(text.default_text_color + str(1), text.Yellow + 'Search a specific attribute')
         print(text.default_text_color + str(2), text.Yellow + 'Search all attributes')
+        print(text.default_text_color + str(3), text.Yellow + 'Search a specific category')
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_supplier_search_menu_structure(selection) == 'false':
             print(text.Red + '\n- Invalid option\n')
             print(text.default_text_color + str(0), text.Yellow + 'Close application')
             print(text.default_text_color + str(1), text.Yellow + 'Search a specific attribute')
             print(text.default_text_color + str(2), text.Yellow + 'Search all attributes')
+            print(text.default_text_color + str(3), text.Yellow + 'Search a specific category')
             selection = input(text.default_text_color + '\nPlease select: ')
     else:
         finish_application()
