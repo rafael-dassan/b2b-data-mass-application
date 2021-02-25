@@ -426,7 +426,7 @@ def validate_order_parameters(order):
     return order_values
 
 
-def check_if_order_exists(account_id, zone, environment, order_id):
+def check_if_order_exists(account_id, zone, environment, order_id, order_status=None):
     """
     Check if an order exists via Order Service
     Args:
@@ -434,6 +434,7 @@ def check_if_order_exists(account_id, zone, environment, order_id):
         zone: e.g., AR, BR, CO, DO, MX, ZA
         environment: e.g., DEV, SIT, UAT
         order_id: order unique identifier
+        order_status: order status, e.g., PLACED, DELIVERED
 
     Returns:
         empty: if an account does not have any order
@@ -443,9 +444,13 @@ def check_if_order_exists(account_id, zone, environment, order_id):
     # Get header request
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + '/order-service/v1?orderIds=' + order_id + '&accountId=' \
-                  + account_id
+    if order_status is not None:
+        # Get base URL
+        request_url = '{0}/order-service/v1?orderIds={1}&orderStatus={2}&accountId={3}'.format(get_microservice_base_url(environment),
+                                                                                               order_id, order_status, account_id)
+    else:
+        request_url = '{0}/order-service/v1?orderIds={1}&&accountId={2}'.format(get_microservice_base_url(environment), order_id,
+                                                                                account_id)
 
     # Place request
     response = place_request('GET', request_url, '', request_headers)

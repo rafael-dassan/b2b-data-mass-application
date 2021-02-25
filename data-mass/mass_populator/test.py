@@ -1,15 +1,16 @@
 from common import block_print
-from mass_populator.country.populate_category import associate_products_to_category_magento
-from mass_populator.country.populate_deal import populate_stepped_discount_with_limit, populate_discount, \
+from mass_populator.country.category import associate_products_to_category_magento
+from mass_populator.country.deal import populate_stepped_discount_with_limit, populate_discount, \
     populate_stepped_discount, populate_free_good, populate_stepped_free_good
-from mass_populator.country.populate_invoice import populate_invoice
-from mass_populator.country.populate_order import populate_order
-from mass_populator.country.populate_product import enable_product_magento, populate_product
-from mass_populator.country.populate_user_v3 import populate_user_iam_b2c
+from mass_populator.helpers.database_helper import delete_from_database_by_account, get_database_params
+from mass_populator.preconditions import delete_deal, delete_invoice, delete_recommendation
+from mass_populator.country.invoice import populate_invoice
+from mass_populator.country.order import populate_order
+from mass_populator.country.product import enable_product_magento, populate_product
+from mass_populator.country.user_iam import populate_user_iam_b2c
 from mass_populator.log import *
-from mass_populator.country.populate_account import populate_poc
-from mass_populator.country.populate_recomendation import populate_recommendation
-from mass_populator.preconditions import delete_recommendation, delete_deal, delete_invoice
+from mass_populator.country.account import populate_poc
+from mass_populator.country.recommendation import populate_recommendation
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +28,7 @@ def execute_test(country, environment):
     order_params = get_order_params(country)
     invoice_params = get_invoice_params(country)
     algo_selling_params = get_algo_selling_params(country)
+    order_database_params = get_database_params(country, environment, 'order-service-ms')
 
     # Overwrite standard output (stdout) - disable `print`
     block_print()
@@ -37,6 +39,10 @@ def execute_test(country, environment):
     delete_recommendation(account_params.get('id'), country, environment, 'QUICK_ORDER')
     delete_recommendation(account_params.get('id'), country, environment, 'FORGOTTEN_ITEMS')
     delete_recommendation(account_params.get('id'), country, environment, 'CROSS_SELL_UP_SELL')
+
+    logger.info("delete_orders for account %s/%s", country, environment)
+    delete_from_database_by_account(order_database_params.get('client'), order_database_params.get('db_name'),
+                                    order_database_params.get('collection_name'), order_database_params.get('prefix'))
 
     logger.info("delete_deals for account %s", account_params.get('id'))
     delete_deal(account_params.get('id'), country, environment)

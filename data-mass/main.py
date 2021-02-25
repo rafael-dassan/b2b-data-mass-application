@@ -1,4 +1,4 @@
-from account import *
+from accounts import *
 from attribute_supplier import create_attribute_enum, check_if_attribute_exist, create_attribute_group, \
     create_attribute_primitive_type, delete_attribute_supplier, search_specific_attribute, display_specific_attribute, \
     display_all_attribute, search_all_attribute
@@ -8,8 +8,8 @@ from deals import *
 from delivery_window import *
 from algo_selling import *
 from files import create_file_api
-from inventory import *
-from invoice import *
+from product_inventory import *
+from invoices import *
 from menus.account_menu import print_account_operations_menu, print_minimum_order_menu, print_account_status_menu, \
     print_account_name_menu, print_account_enable_empties_loan_menu, print_alternative_delivery_date_menu, \
     print_include_delivery_cost_menu, print_payment_method_menu, print_account_id_menu, \
@@ -28,7 +28,7 @@ from menus.product_menu import print_product_operations_menu, print_get_products
 from menus.supplier_menu import print_create_supplier_category_menu, print_new_attribute, print_attribute_primitive, \
     print_create_attribute_menu, print_min_cardinality, print_max_cardinality, print_new_page
 from menus.rewards_menu import print_rewards_menu, print_rewards_transactions_menu, print_rewards_program_menu    
-from order import *
+from orders import *
 from combos import *
 from products import *
 from rewards.rewards import enroll_poc_to_program, disenroll_poc_from_program, associate_dt_combos_to_poc, \

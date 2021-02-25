@@ -10,6 +10,7 @@ from uuid import uuid1
 # Third party imports
 from jsonpath_rw import Index, Fields
 from jsonpath_rw_ext import parse
+import requests
 from requests import request
 from tabulate import tabulate
 import jwt
@@ -89,13 +90,12 @@ def validate_environment_user_creation(environment):
 
 # Place generic request
 def place_request(request_method, request_url, request_body, request_headers):
-    # Send request
-    response = request(
-        request_method,
-        request_url,
-        data=request_body,
-        headers=request_headers
-    )
+    try:
+        # Send request
+        response = request(request_method, request_url, data=request_body, headers=request_headers)
+    except requests.exceptions.RequestException as e:
+        print('\n{0}{1}'.format(text.Red, str(e)))
+        finish_application()
 
     log_to_file(request_method, request_url, request_body, request_headers, response.status_code, response.text)
 

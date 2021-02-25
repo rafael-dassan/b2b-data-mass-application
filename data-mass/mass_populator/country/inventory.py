@@ -1,5 +1,5 @@
+from product_inventory import update_sku_inventory_microservice
 from products import request_get_account_product_assortment
-from inventory import update_sku_inventory_microservice
 from mass_populator.log import *
 
 logger = logging.getLogger(__name__)

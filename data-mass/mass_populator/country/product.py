@@ -7,8 +7,7 @@ logger = logging.getLogger(__name__)
 
 def populate_products(country, environment, dataframe_products):
     if dataframe_products is not None:
-        dataframe_products.apply(apply_populate_product, 
-        args=(country, environment), axis=1)
+        dataframe_products.apply(apply_populate_product, args=(country, environment), axis=1)
 
 
 def apply_populate_product(row, country, environment):

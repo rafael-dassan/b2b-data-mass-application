@@ -1,7 +1,7 @@
 from mass_populator.log import *
 from user_creation_v3 import create_user
 from user_creation_v3 import authenticate_user_iam
-from account import check_account_exists_microservice
+from accounts import check_account_exists_microservice
 
 logger = logging.getLogger(__name__)
 
