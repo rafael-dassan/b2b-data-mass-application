@@ -1,14 +1,11 @@
-from account import create_account_ms
+from accounts import create_account_ms
 from delivery_window import create_delivery_window_microservice
 from credit import add_credit_to_account_microservice
-from mass_populator.country.populate_product import check_product_associated_to_account
-from products import request_get_products_by_account_microservice
-from products import request_get_products_microservice
-from products import generate_random_price_ids
-from products import slice_array_products
-from products import request_post_products_account_microservice
+from mass_populator.country.product import check_product_associated_to_account
+from products import request_get_products_by_account_microservice, request_get_products_microservice, generate_random_price_ids, \
+    slice_array_products, request_post_products_account_microservice
 from validations import validate_state
-from mass_populator.country.populate_inventory import populate_default_inventory
+from mass_populator.country.inventory import populate_default_inventory
 from mass_populator.log import *
 
 logger = logging.getLogger(__name__)
@@ -17,8 +14,7 @@ logger = logging.getLogger(__name__)
 # Populate the POCS
 def populate_pocs(country, environment, dataframe_accounts):
     if dataframe_accounts is not None:
-        dataframe_accounts.apply(apply_populate_poc, 
-        args=(country, environment), axis=1)
+        dataframe_accounts.apply(apply_populate_poc, args=(country, environment), axis=1)
 
 
 def apply_populate_poc(row, country, environment):

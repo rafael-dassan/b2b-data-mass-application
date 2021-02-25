@@ -1,5 +1,4 @@
-from mass_populator.data_creation_engine import populate_deals, populate_orders, populate_invoices, \
-    populate_recommendations
+from mass_populator.data_creation_engine import populate_deals, populate_orders, populate_invoices, populate_recommendations
 from mass_populator.gateway import execute_gateway
 
 

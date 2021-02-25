@@ -1,7 +1,7 @@
 from common import block_print
 from mass_populator.log import logging
 from mass_populator.helpers.csv_helper import search_data_by
-from mass_populator.country.populate_rewards import disenroll_pocs, populate_challenges
+from mass_populator.country.rewards import disenroll_pocs, populate_challenges
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,7 @@
-from account import check_account_exists_microservice
-from mass_populator.country.populate_product import check_product_associated_to_account
+from accounts import check_account_exists_microservice
+from mass_populator.country.product import check_product_associated_to_account
 from mass_populator.log import *
-from order import configure_order_params, request_order_creation, get_order_prefix_params
+from orders import configure_order_params, request_order_creation, get_order_prefix_params
 from products import request_get_offers_microservice
 from simulation import request_order_simulation
 

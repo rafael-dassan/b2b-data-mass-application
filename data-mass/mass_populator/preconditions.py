@@ -1,20 +1,21 @@
 from algo_selling import get_recommendation_by_account, delete_recommendation_by_id
-from deals import request_get_deals_promotion_service, request_delete_deal_by_id, request_get_deals_pricing_service, \
-    request_delete_deals_pricing_service, request_delete_deal_by_id_v1
-from invoice import get_invoices, delete_invoice_by_id
+from deals import request_get_deals_pricing_service, request_delete_deals_pricing_service, request_get_deals_promotion_service, \
+    request_delete_deal_by_id_v1, request_delete_deal_by_id
+from invoices import get_invoices, delete_invoice_by_id
+from mass_populator.helpers.database_helper import get_database_params, delete_from_database_by_account
 from mass_populator.log import *
 
 logger = logging.getLogger(__name__)
 
 
 def run_preconditions(dataframe_account, country, environment):
-    logger.info("Running pre-conditions for %s/%s", country, environment)
-
     if dataframe_account is not None:
         dataframe_account.apply(apply_run_preconditions, args=(country, environment), axis=1)
 
 
 def apply_run_preconditions(row, country, environment):
+    logger.info("Running pre-conditions for %s/%s", country, environment)
+
     account_id = row['account_id']
 
     logger.info("delete_recommendations for account %s", account_id)
@@ -27,6 +28,11 @@ def apply_run_preconditions(row, country, environment):
 
     logger.info("delete_invoices for account %s", account_id)
     delete_invoice(account_id, country, environment)
+
+    logger.info("delete_orders for %s/%s", country, environment)
+    order_database_params = get_database_params(country, environment, 'order-service-ms')
+    delete_from_database_by_account(order_database_params.get('client'), order_database_params.get('db_name'),
+                                    order_database_params.get('collection_name'), account_id)
 
 
 def delete_deal(account_id, country, environment):
@@ -69,26 +75,6 @@ def delete_deal(account_id, country, environment):
                 logger.error(log(Message.DELETE_PROMOTION_ERROR, {'account_id': account_id}))
 
 
-def delete_recommendation(account_id, country, environment, use_case):
-    """
-    Delete recommendation
-    Args:
-        account_id: POC unique identifier
-        country: e.g., AR, BR, CO, DO, MX, ZA
-        environment: e.g., SIT, UAT
-        use_case: e.g., QUICK_ORDER, CROSS_SELL_UP_SELL, FORGOTTEN_ITEMS
-    """
-    data = get_recommendation_by_account(account_id, country, environment, use_case)
-    if data == 'not_found':
-        logger.debug("[Global Recommendation Service] Recommendation type {use_case_type} not found for account "
-                     "{account_id}. Skipping...".format(use_case_type=use_case, account_id=account_id))
-    elif data == 'false':
-        logger.error(log(Message.RETRIEVE_RECOMMENDER_ERROR, {'use_case_type': use_case, 'account_id': account_id}))
-    else:
-        if 'success' != delete_recommendation_by_id(environment, data):
-            logger.error(log(Message.DELETE_RECOMMENDER_ERROR, {'use_case_type': use_case, 'account_id': account_id}))
-
-
 def delete_invoice(account_id, country, environment):
     """
     Delete invoice
@@ -109,3 +95,23 @@ def delete_invoice(account_id, country, environment):
         for i in range(len(invoice_ids)):
             if 'false' == delete_invoice_by_id(country, environment, invoice_ids[i]):
                 logger.error(log(Message.DELETE_INVOICE_ERROR, {'account_id': account_id}))
+
+
+def delete_recommendation(account_id, country, environment, use_case):
+    """
+    Delete recommendation
+    Args:
+        account_id: POC unique identifier
+        country: e.g., AR, BR, CO, DO, MX, ZA
+        environment: e.g., SIT, UAT
+        use_case: e.g., QUICK_ORDER, CROSS_SELL_UP_SELL, FORGOTTEN_ITEMS
+    """
+    data = get_recommendation_by_account(account_id, country, environment, use_case)
+    if data == 'not_found':
+        logger.debug("[Global Recommendation Service] Recommendation type {use_case_type} not found for account "
+                     "{account_id}. Skipping...".format(use_case_type=use_case, account_id=account_id))
+    elif data == 'false':
+        logger.error(log(Message.RETRIEVE_RECOMMENDER_ERROR, {'use_case_type': use_case, 'account_id': account_id}))
+    else:
+        if 'success' != delete_recommendation_by_id(environment, data):
+            logger.error(log(Message.DELETE_RECOMMENDER_ERROR, {'use_case_type': use_case, 'account_id': account_id}))

@@ -1,12 +1,12 @@
-from mass_populator.country.populate_account import populate_pocs
-from mass_populator.country.populate_deal import populate_discount_base, populate_stepped_discount_base, \
+from mass_populator.country.account import populate_pocs
+from mass_populator.country.deal import populate_discount_base, populate_stepped_discount_base, \
     populate_stepped_discount_with_limit_base, populate_free_good_base, populate_stepped_free_good_base
-from mass_populator.country.populate_invoice import populate_invoices_base
-from mass_populator.country.populate_order import populate_orders_base
-from mass_populator.country.populate_user_v3 import populate_users_iam_b2c
-from mass_populator.country.populate_recomendation import populate_recommendations as populate_recommendations_base
-from mass_populator.country.populate_category import associate_products_to_category_magento_base
-from mass_populator.country.populate_product import enable_products_magento as enable_products_magento_base
+from mass_populator.country.invoice import populate_invoices_base
+from mass_populator.country.order import populate_orders_base
+from mass_populator.country.user_iam import populate_users_iam_b2c
+from mass_populator.country.recommendation import populate_recommendations as populate_recommendations_base
+from mass_populator.country.category import associate_products_to_category_magento_base
+from mass_populator.country.product import enable_products_magento as enable_products_magento_base
 from mass_populator.helpers.csv_helper import search_data_by
 from mass_populator.log import *
 
