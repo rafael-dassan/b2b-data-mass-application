@@ -1,0 +1,18 @@
+{
+  "accounts": ["string"],
+  "enforcements": [
+    {
+      "entity": "SKU",
+      "entityId": "string",
+      "type": "QUANTITY",
+      "startDate": "string",
+      "endDate": "string",
+      "limits": [
+        {
+          "renew": "WEEKLY",
+          "value": 0
+        }
+      ]
+    }
+  ]
+}

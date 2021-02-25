@@ -10,6 +10,7 @@ def print_product_operations_menu():
     print(text.default_text_color + str(3), text.Yellow + 'Input inventory to product')
     print(text.default_text_color + str(4), text.Yellow + 'Input recommendations to an account')
     print(text.default_text_color + str(5), text.Yellow + 'Input empties discounts')
+    print(text.default_text_color + str(6), text.Yellow + 'Input an SKU Limit to account')
     option = input(text.default_text_color + '\nPlease select: ')
     while validate_product_operations_structure(option) is False:
         print(text.Red + '\n- Invalid option')
@@ -19,6 +20,7 @@ def print_product_operations_menu():
         print(text.default_text_color + str(3), text.Yellow + 'Input inventory to product')
         print(text.default_text_color + str(4), text.Yellow + 'Input recommendations to an account')
         print(text.default_text_color + str(5), text.Yellow + 'Input empties discounts')
+        print(text.default_text_color + str(6), text.Yellow + 'Input an SKU Limit to account')
         option = input(text.default_text_color + '\nPlease select: ')
 
     return option
