@@ -35,21 +35,6 @@ def validate_option_request_selection_for_structure_2(option):
     return value
 
 
-# Validate Country in User creation
-def validate_country_user_creation(country):
-    switcher = {
-        "AR": "true",
-        "BR": "true",
-        "CO": "true",
-        "DO": "true",
-        "MX": "true",
-        "ZA": "true"
-    }
-
-    value = switcher.get(country, "false")
-    return value
-
-
 def validate_zone_for_combos(zone):
     switcher = {
         'AR': 'true',
@@ -178,6 +163,7 @@ def get_magento_base_url(environment, country):
             'MX': 'https://mx.sit.bees-platform.dev',
             'PA': 'https://pa.sit.bees-platform.dev',
             'PE': 'https://pe.sit.bees-platform.dev',
+            'PY': 'https://py.sit.bees-platform.dev',
             'ZA': 'https://za.sit.bees-platform.dev'
         },
         'UAT': {
@@ -190,6 +176,7 @@ def get_magento_base_url(environment, country):
             'MX': 'https://mx.uat.bees-platform.dev',
             'PA': 'https://pa.uat.bees-platform.dev',
             'PE': 'https://pe.uat.bees-platform.dev',
+            'PY': 'https://py.uat.bees-platform.dev',
             'ZA': 'https://za.uat.bees-platform.dev'
         }
     }
@@ -270,6 +257,7 @@ def get_magento_datamass_access_token(environment, country):
     }
 
     return access_token.get(environment).get(country)
+
 
 # Clear terminal
 def clear_terminal():
@@ -475,26 +463,6 @@ def print_zone_for_interactive_combos_menu_for_ms():
     return zone.upper()
 
 
-# Print zone menu for combos
-def print_zone_menu_for_combos():
-    zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
-    while validate_zone_for_combos(zone.upper()) == 'false':
-        print(text.Red + '\n- {0} is not a valid zone\n'.format(zone.upper()))
-        zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
-
-    return zone.upper()
-
-
-# Print country menu for User creation
-def print_country_menu_user_creation():
-    country = input(text.default_text_color + "Zone (e.g., AR, BR, CO): ")
-    while validate_country_user_creation(country.upper()) == "false":
-        print(text.Red + "\n- {0} is not a valid zone\n".format(country.upper()))
-        country = input(text.default_text_color + "Zone (e.g., AR, BR, CO): ")
-
-    return country.upper()
-
-
 # Print environment menu
 def print_environment_menu():
     environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
@@ -658,27 +626,6 @@ def validate_environment_menu_in_user_create_iam(environment):
         'UAT': 'true'
     }
     return switcher.get(environment, 'false')
-
-
-def print_country_menu_in_user_create_iam():
-    """Print Country Menu to Create User IAM
-    Requirements:
-        - BR
-        - CO
-        - DO
-        - MX
-        - EC
-        - PE
-        - ZA
-        - AR
-        - CA
-        - PA
-    """
-    zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
-    while validate_country_menu_in_user_create_iam(zone.upper()) == 'false':
-        print(text.Red + '\n- {0} is not a valid zone\n'.format(zone.upper()))
-        zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
-    return zone.upper()
 
 
 def print_environment_menu_in_user_create_iam():

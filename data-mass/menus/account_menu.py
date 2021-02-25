@@ -180,7 +180,7 @@ def print_payment_method_menu(zone):
         value = switcher.get(payment_method, 'false')
         return value
 
-    elif zone == 'DO' or zone == 'CO' or zone == 'EC' or zone == 'PE' or zone == 'CA' or zone == 'PA':
+    else:
         payment_method = input(
             text.default_text_color + 'Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ')
         while validate_payments_method(payment_method) != 'true':
@@ -208,9 +208,6 @@ def print_payment_method_menu(zone):
 
         value = switcher.get(payment_method, 'false')
         return value
-
-    else:
-        return payment_cash
 
 
 # Print Account ID menu
