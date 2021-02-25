@@ -398,7 +398,6 @@ def display_specific_attribute(attribute):
 def display_all_attribute(attributes):
     attribute_model = json.loads(attributes)
     info = attribute_model['attributeModels']
-    print(len(info))
     information_att = list()
 
     if len(info) == 0:
