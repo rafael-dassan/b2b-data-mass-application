@@ -10,6 +10,7 @@ from tabulate import tabulate
 
 from classes.text import text
 from common import get_supplier_base_url, get_header_request_supplier
+from menus.supplier_menu import print_primitive_type
 
 
 def create_attribute_primitive_type(environment, type_attribute):
@@ -513,6 +514,163 @@ def create_search_all_attribute_payload():
                         }
                     }   
                 }
+        }
+        '''
+    )
+
+
+def edit_attribute_type(environment, attribute_id, type, values):
+    base_url = get_supplier_base_url(environment)
+    base_header = get_header_request_supplier()
+    transport = RequestsHTTPTransport(url=base_url, headers=base_header)
+
+    # Create a GraphQL client using the defined transport
+    client = Client(transport=transport, fetch_schema_from_transport=False)
+
+    if type == '1':
+        primitive_type = print_primitive_type()
+        if primitive_type == '1':
+            type_prim = 'NUMERIC'
+        elif primitive_type == '2':
+            type_prim = 'TEXT'
+        elif primitive_type == '3':
+            type_prim = 'DATE'
+
+        mut = create_edit_primitive_attribute()
+        params = {"id": attribute_id, "type": type_prim}
+
+    elif type == '2':
+        primitive_type = print_primitive_type()
+        if primitive_type == '1':
+            type_prim = 'NUMERIC'
+            mut = create_edit_enum_attribute_numeric()
+        elif primitive_type == '2':
+            type_prim = 'TEXT'
+            mut = create_edit_enum_attribute_text()
+        elif primitive_type == '3':
+            type_prim = 'DATE'
+            mut = create_edit_enum_attribute_date()
+
+        values = list()
+        value1 = input(text.default_text_color + 'Insert the first value: ')
+        value2 = input(text.default_text_color + 'Insert the second value: ')
+        values.append(value1)
+        values.append(value2)
+
+        params = {"id": attribute_id, "values": values}
+
+    elif type == '3':
+        mut = create_edit_group_attribute()
+        params = {"id": attribute_id, "values": values}
+
+    try:
+        response = client.execute(mut, variable_values=params)
+        json_data = json.dumps(response)
+        return json_data
+    except TransportQueryError as e:
+        print(text.Red + str(e))
+        return 'false'
+
+
+def create_edit_primitive_attribute():
+    return gql(
+        '''
+        mutation updateAttribute($id: ID!, $type: AttributeType){
+            updateAttributeModel(id: $id,
+                input: {
+                    attributeType: $type
+                }
+            ) {
+                id
+                attributeType
+            }
+        }
+        '''
+    )
+
+
+def create_edit_enum_attribute_numeric():
+    return gql(
+        '''
+        mutation updateAttribute($id: ID!, $values: [String!]!) {
+    updateAttributeModel(id: $id,
+        input: {
+            attributeType: ENUM,
+            metadata: {
+                enumPrimitiveType: NUMERIC,
+                enumValues: $values
+            }
+        }
+    ) {
+        id
+        }
+    }
+        '''
+    )
+
+
+def create_edit_enum_attribute_text():
+    return gql(
+        '''
+        mutation updateAttribute($id: ID!, $values: [String!]!) {
+    updateAttributeModel(id: $id,
+        input: {
+            attributeType: ENUM,
+            metadata: {
+                enumPrimitiveType: TEXT,
+                enumValues: $values
+            }
+        }
+    ) {
+        id
+        }
+    }
+        '''
+    )
+
+
+def create_edit_enum_attribute_date():
+    return gql(
+        '''
+        mutation updateAttribute($id: ID!, $values: [String!]!) {
+    updateAttributeModel(id: $id,
+        input: {
+            attributeType: ENUM,
+            metadata: {
+                enumPrimitiveType: DATE,
+                enumValues: $values
+            }
+        }
+    ) {
+        id
+        }
+    }
+        '''
+    )
+
+
+def create_edit_group_attribute():
+    return gql(
+        '''
+        mutation updateAttribute($id: ID!, $values: [ID!] ){
+            updateAttributeModel(id: $id,
+                input: {
+                    attributeType: GROUP,
+                    metadata: {
+                        subAttributes: $values
+                }
+                }
+            ) {
+                id
+                attributeType
+                metadata {
+                    ... on GroupAttributeModelMetadata {
+                        subAttributes {
+                            id
+                        }
+                    }
+                }
+            }
         }
         '''
     )

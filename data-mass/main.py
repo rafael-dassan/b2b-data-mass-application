@@ -1,7 +1,7 @@
 from account import *
 from attribute_supplier import create_attribute_enum, check_if_attribute_exist, create_attribute_group, \
     create_attribute_primitive_type, delete_attribute_supplier, search_specific_attribute, display_specific_attribute, \
-    display_all_attribute, search_all_attribute
+    display_all_attribute, search_all_attribute, edit_attribute_type
 from common import *
 from credit import add_credit_to_account_microservice
 from deals import *
@@ -26,7 +26,8 @@ from menus.order_menu import print_order_operations_menu, print_allow_cancellabl
     print_order_id_menu, print_order_status_menu
 from menus.product_menu import print_product_operations_menu, print_get_products_menu
 from menus.supplier_menu import print_create_supplier_category_menu, print_new_attribute, print_attribute_primitive, \
-    print_create_attribute_menu, print_min_cardinality, print_max_cardinality, print_new_page
+    print_create_attribute_menu, print_min_cardinality, print_max_cardinality, print_new_page, print_attribute_type, \
+    print_primitive_type
 from menus.rewards_menu import print_rewards_menu, print_rewards_transactions_menu, print_rewards_program_menu    
 from order import *
 from combos import *
@@ -95,7 +96,8 @@ def show_menu():
             '1': create_attribute_menu,
             '2': create_category_supplier_menu,
             '3': attribute_associated_category_menu,
-            '4': delete_attribute_menu
+            '4': delete_attribute_menu,
+            '5': edit_attribute_type_menu
         }
     elif selection_structure == '6':
         switcher = {
@@ -1822,6 +1824,30 @@ def search_all_category_menu():
             is_new_page = print_new_page()
             if is_new_page == '2':
                 print_finish_application_menu()
+
+
+def edit_attribute_type_menu():
+    environment = print_environment_menu()
+    attribute_id = input(text.default_text_color + 'Inform the attribute id: ')
+    valid_att = check_if_attribute_exist(environment, attribute_id)
+    if valid_att == 'false':
+        print_finish_application_menu()
+    else:
+        attribute_type = print_attribute_type()
+
+        if attribute_type == '3':
+            values = insert_sub_attribute_group(environment)
+        else:
+            values = None
+
+    result = edit_attribute_type(environment, attribute_id, attribute_type, values)
+    if result != 'false':
+        print(
+            text.Green + '\n- [Edit Attribute] The attribute: {attribute} has been successfully edit to the new type. '
+            .format(attribute=attribute_id))
+        print_finish_application_menu()
+    else:
+        print_finish_application_menu()
 
 
 # Init

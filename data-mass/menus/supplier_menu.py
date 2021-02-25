@@ -1,6 +1,6 @@
 from classes.text import text
 from validations import validate_supplier_category_menu_structure, validate_attribute_menu_structure, \
-    validate_option_att
+    validate_option_att, validate_option_type
 
 
 def print_create_supplier_category_menu():
@@ -93,4 +93,25 @@ def print_new_page():
         print(text.Red + '\n- Invalid option')
         option = input(text.default_text_color + '\nDo you want to go to another page? '
                                                 '(1. Yes / 2. No): ')
+    return option
+
+
+def print_attribute_type():
+    option = input(text.default_text_color + 'Which type do you want to change the attribute? (1. PRIMITIVE TYPE / 2. '
+                                             'ENUM / 3. GROUP): ')
+    while validate_option_type(option) is False:
+        print(text.Red + '\n- Invalid option')
+        option = input(text.default_text_color + 'Which type do you want to change the attribute? (1. PRIMITIVE TYPE '
+                                                 '/ 2. ENUM / 3. GROUP): ')
+    return option
+
+
+def print_primitive_type():
+    option = input(text.default_text_color + 'Which Primitive type do you want to change the attribute? (1. NUMERIC / 2. '
+                                             'TEXT / 3. DATE): ')
+    while validate_option_type(option) is False:
+        print(text.Red + '\n- Invalid option')
+        option = input(
+            text.default_text_color + 'Which Primitive type do you want to change the attribute? (1. NUMERIC / 2. '
+                                      'TEXT / 3. DATE): ')
     return option
