@@ -1262,7 +1262,7 @@ def registration_user_iam():
         - Account ID
         - Tax ID
     """
-    country = print_country_menu_in_user_create_iam()
+    country = print_zone_menu_for_ms()
     environment = print_environment_menu_in_user_create_iam()
     email = print_input_email()
     password = print_input_password()
@@ -1306,7 +1306,7 @@ def delete_user_iam():
         - Environment
         - Email
     """
-    country = print_country_menu_in_user_create_iam()
+    country = print_zone_menu_for_ms()
     environment = print_environment_menu_in_user_create_iam()
     email = print_input_email()
 
