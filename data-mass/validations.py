@@ -288,7 +288,8 @@ def validate_supplier_menu_structure(selection):
        '1': 'true',
        '2': 'true',
        '3': 'true',
-       '4': 'true'
+       '4': 'true',
+       '5': 'true'
     }
 
     value = switcher.get(selection, 'false')
@@ -321,3 +322,8 @@ def validate_supplier_search_menu_structure(selection):
 
     value = switcher.get(selection, 'false')
     return value
+
+
+def validate_option_type(selection):
+    options = ['1', '2', '3']
+    return selection in options
