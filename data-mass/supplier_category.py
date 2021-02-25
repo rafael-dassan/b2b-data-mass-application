@@ -336,3 +336,97 @@ def display_specific_category(category):
 
     print(text.default_text_color + '\nCategory - Attribute Information')
     print(tabulate(attributes_list, headers='keys', tablefmt='grid'))
+
+
+def search_all_category(environment, page_number):
+    base_url = get_supplier_base_url(environment)
+    base_header = get_header_request_supplier()
+    transport = RequestsHTTPTransport(url=base_url, headers=base_header)
+
+    # Create a GraphQL client using the defined transport
+    client = Client(transport=transport, fetch_schema_from_transport=False)
+
+    mut = search_all_category_payload()
+    params = {"page": page_number}
+    try:
+        response = client.execute(mut, variable_values=params)
+        json_data = json.dumps(response)
+        return json_data
+    except TransportQueryError as e:
+        print(text.Red + str(e))
+        return 'false'
+
+
+def search_all_category_payload():
+    return gql(
+        '''
+            query categories($page: NonNegativeInt){
+                categories(input: { page: $page, size: 50 }) {
+                    id
+                    name
+                    description
+                    helpText
+                    parent {
+                      id
+                      name
+                    }
+                    children {
+                      id
+                      name
+                    }
+                    ancestors {
+                      id
+                      name
+                    }
+                    attributes {
+                      ... on AbstractAttribute {
+                        i
+                        minCardinality
+                        maxCardinality
+                        __typename
+                      }
+                      ... on ConcreteAttribute {
+                        id
+                        values
+                        __typename
+                      }
+                    }
+                    createdAt
+                    }
+                }
+        '''
+    )
+
+
+def display_all_category(category):
+    category_model = json.loads(category)
+    info = category_model['categories']
+    information_cat = list()
+
+    if len(info) == 0:
+        category_info = {
+            'Category Info': 'None'
+        }
+        information_cat.append(category_info)
+    else:
+        for a in range(len(info)):
+            parent = info[a]['parent']
+            if parent is None:
+                parent_info = {
+                    'None'
+                }
+            else:
+                parent_info = {
+                    'Id': parent['id'],
+                    'Parent Name': parent['name']
+                }
+
+            category_info = {
+                'Id': info[a]['id'],
+                'Name': info[a]['name'],
+                'Parent': parent_info
+            }
+            information_cat.append(category_info)
+
+    print(text.default_text_color + '\nCategory - General Information')
+    print(tabulate(information_cat, headers='keys', tablefmt='grid'))
