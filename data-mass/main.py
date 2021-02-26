@@ -1301,15 +1301,6 @@ def registration_user_iam():
     email = print_input_email()
     password = print_input_password()
 
-    authenticate_response = user_v3.authenticate_user_iam(environment, country, email, password)
-
-    if authenticate_response == "wrong_password":
-        print(text.Green + "\n- The user already exists, but the password is wrong.")
-        print_finish_application_menu()
-
-    if authenticate_response == "fail":
-        print_finish_application_menu()
-
     account_id = print_account_id_menu(country)
 
     if country == "BR":
