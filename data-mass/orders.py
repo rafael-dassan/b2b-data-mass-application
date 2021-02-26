@@ -11,6 +11,7 @@ from tabulate import tabulate
 from common import update_value_to_json, convert_json_to_string, get_header_request, get_microservice_base_url, \
     place_request, set_to_dictionary, find_values, generate_erp_token
 from classes.text import text
+from delivery_window import dates_selector
 
 
 def configure_order_params(zone, environment, account_id, number_size, prefix):
@@ -68,6 +69,7 @@ def request_order_creation(account_id, delivery_center_id, zone, environment, al
     """
     Create an order through the Order Service
     Args:
+        order_data: order information used only when the order delivery date will be changed
         account_id: POC unique identifier
         delivery_center_id: POC's delivery center
         zone: e.g., AR, BR, CO, DO, MX, ZA
@@ -250,6 +252,10 @@ def request_changed_order_creation(zone, environment, order_data):
     request_url = get_microservice_base_url(environment) + '/order-relay/'
 
     # Get body
+    #if delivery_center_id == 'false':
+    #    json_to_string = json.dumps(order_data)
+    #    request_body = json_to_string[1:len(json_to_string)-1]
+    #else:
     request_body = get_changed_order_payload(order_data)
 
     # Send request
@@ -581,3 +587,14 @@ def request_get_order_by_date_updated(zone, environment, account_id, order_prefi
                          '{response_status}. Response message: {response_message}'
                   .format(response_status=response.status_code, response_message=response.text))
         return 'false'
+
+
+def change_delivery_date(order_data, zone, environment, account_id):
+    current_date = order_data[0]['delivery']['date']
+    date_selected = dates_selector('date', current_date)
+    datetime_object = datetime.strptime(date_selected[0], "%B")
+    date_selected[0] = datetime_object.month
+    order_data[0]['delivery']['date'] = '{year}-{month}-{day}'.format(year=datetime.today().year, month=date_selected[0], day=date_selected[1])
+    response = request_changed_order_creation(zone, environment, order_data)
+    #response = request_order_creation(account_id, 'false', zone, environment, 'false', 'false', 'false', order_data)
+    return response

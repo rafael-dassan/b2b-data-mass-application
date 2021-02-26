@@ -8,7 +8,7 @@ from random import randint
 from common import get_header_request, get_microservice_base_url, update_value_to_json, convert_json_to_string, \
     place_request, print_input_number, print_input_text, set_to_dictionary
 from classes.text import text
-from rewards.rewards_utils import display_all_programs_info, build_request_url_with_projection_query, get_dt_combos_from_zone, \
+from rewards_utils import display_all_programs_info, build_request_url_with_projection_query, get_dt_combos_from_zone, \
     create_product_list_from_zone
 
 

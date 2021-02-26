@@ -54,7 +54,7 @@ def populate_order(country, environment, account_id, allow_order_cancel, items, 
                         logger.error(log(Message.ORDER_SIMULATION_ERROR, {'account_id': account_id}))
                     else:
                         if 'false' == request_order_creation(account_id, delivery_center_id, country, environment,
-                                                             allow_order_cancel, order_items, order_status):
+                                                             allow_order_cancel, order_items, order_status, 'false'):
                             logger.error(log(Message.CREATE_ORDER_ERROR, {'account_id': account_id}))
                         else:
                             # Call function to re-configure prefix and order number size according to the zone's format

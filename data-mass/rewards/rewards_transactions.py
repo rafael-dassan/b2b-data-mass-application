@@ -8,7 +8,7 @@ from random import randint
 from common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request, \
     print_input_number
 from classes.text import text
-from rewards.rewards_utils import get_rewards_combos_by_account
+from rewards_utils import get_rewards_combos_by_account
 
 
 # Create REDEMPTION transaction for an account

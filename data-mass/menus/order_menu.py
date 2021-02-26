@@ -7,12 +7,14 @@ def print_order_operations_menu():
     print(text.default_text_color + '\nOrder operations')
     print(text.default_text_color + str(1), text.Yellow + 'Create an order')
     print(text.default_text_color + str(2), text.Yellow + 'Create changed order')
+    print(text.default_text_color + str(3), text.Yellow + 'Update delivery date of an order')
     operation = input(text.default_text_color + '\nPlease select: ')
     while validate_orders(operation) is False:
         print(text.Red + '\n- Invalid option')
         print(text.default_text_color + '\nOrder operations')
         print(text.default_text_color + str(1), text.Yellow + 'Create an order')
         print(text.default_text_color + str(2), text.Yellow + 'Create changed order')
+        print(text.default_text_color + str(3), text.Yellow + 'Update delivery date of an order')
         operation = input(text.default_text_color + '\nPlease select: ')
 
     return operation

@@ -10,6 +10,7 @@ import calendar
 from common import update_value_to_json, get_header_request, get_microservice_base_url, place_request
 from classes.text import text
 from classes.window import window
+from classes.window_delivery_date import window_delivery_date
 
 
 # Create payload for delivery date
@@ -142,7 +143,7 @@ def return_dates_payload(option):
             initial_date = initial_date + timedelta(days=2)
         return list_delivery_dates
     else:
-        date_list = delivery_window_selector()
+        date_list = dates_selector('window', 'false')
         if date_list == "false":
             print("\nNo delivery window end date was selected.")
             return "false"
@@ -189,17 +190,34 @@ def create_delivery_fee_microservice(zone, environment, account_data, include_de
     return 'success'
 
 
-def delivery_window_selector():
+def dates_selector(time_frame, current_date):
 
-    # create pyqt5 app
-    app = QApplication(sys.argv)
+    if time_frame == 'window':
+        # create pyqt5 app
+        app = QApplication(sys.argv)
 
-    # create the instance of window
-    Window = window()
-    app.exec()
-    selected_dates = getattr(Window, 'dates')
-    sys.is_finalizing()
-    if selected_dates:
-        return selected_dates
+        # create the instance of window
+        window_delivery_window = window()
+        app.exec()
+        selected_dates = getattr(window_delivery_window, 'dates')
+        print(selected_dates)
+        sys.is_finalizing()
+        if selected_dates:
+            return selected_dates
+        else:
+            return 'false'
     else:
-        return 'false'
+        app = QApplication(sys.argv)
+        year = datetime.today().year
+        current_date = current_date[current_date.find('-')+1:len(current_date)]
+        month = current_date[0:current_date.find('-')]
+        day = current_date[current_date.find('-')+1:len(current_date)]
+        new_delivery_date = window_delivery_date(datetime(year=int(year), month=int(month), day=int(day)))
+        app.exec()
+        selected_dates = getattr(new_delivery_date, 'dates')
+        sys.is_finalizing()
+        if selected_dates:
+            return selected_dates
+        else:
+            return 'false'
+

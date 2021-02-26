@@ -32,11 +32,11 @@ from menus.rewards_menu import print_rewards_menu, print_rewards_transactions_me
 from orders import *
 from combos import *
 from products import *
-from rewards.rewards import enroll_poc_to_program, disenroll_poc_from_program, associate_dt_combos_to_poc, \
+from rewards import enroll_poc_to_program, disenroll_poc_from_program, associate_dt_combos_to_poc, \
     display_program_rules_skus
-from rewards.rewards_programs import create_new_program, patch_program_root_field, update_dt_combos_rewards
-from rewards.rewards_challenges import input_challenge_to_zone
-from rewards.rewards_transactions import create_redemption, create_rewards_offer, create_points_removal
+from rewards_programs import create_new_program, patch_program_root_field, update_dt_combos_rewards
+from rewards_challenges import input_challenge_to_zone
+from rewards_transactions import create_redemption, create_rewards_offer, create_points_removal
 from category_magento import *
 from products_magento import *
 import user_creation_v3 as user_v3
@@ -380,7 +380,7 @@ def order_menu():
               .format(account_id=account_id))
         print_finish_application_menu()
 
-    if operation != '2':
+    if operation == '1':
         order_status = print_order_status_menu()
 
         quantity = int(input(text.default_text_color + 'Quantity of products you want to include in this order: '))
@@ -397,6 +397,7 @@ def order_menu():
     return {
         '1': lambda: flow_create_order(zone, environment, account_id, delivery_center_id, order_status, item_list),
         '2': lambda: flow_create_changed_order(zone, environment, account_id),
+        '3': lambda: flow_update_delivery_date(zone, environment, account_id)
     }.get(operation, lambda: None)()
 
 
@@ -456,6 +457,34 @@ def flow_create_changed_order(zone, environment, account_id):
         print(text.Green + '\n- The order {order_id} was changed successfully'.format(order_id=order_id))
     else:
         print_finish_application_menu()
+
+
+def flow_update_delivery_date(zone, environment, account_id):
+    order_id = print_order_id_menu()
+    order_data = check_if_order_exists(account_id, zone, environment, order_id)
+    if order_data == 'false':
+        print_finish_application_menu()
+    elif order_data == 'empty':
+        print(text.Red + '\n- The account {account_id} does not have orders'.format(account_id=account_id))
+        print_finish_application_menu()
+    elif order_data == 'not_found':
+        print(text.Red + '\n- The order {order_id} does not exist'.format(order_id=order_id))
+        print_finish_application_menu()
+
+    statuses = ['DENIED', 'CANCELLED', 'DELIVERED', 'PARTIAL_DELIVERY', 'PENDING_CANCELLATION', 'INVOICED',
+                'IN_TRANSIT']
+
+    if order_data[0]['status'] in statuses:
+        print(text.Red + '\n- This order cannot be changed. Order status: {order_status}'
+              .format(order_status=order_data[0]['status']))
+        print_finish_application_menu()
+    else:
+        status = change_delivery_date(order_data, zone, environment, account_id)
+
+        if status != 'false':
+            print(text.Green + '\n- The order {order_id} was changed successfully'.format(order_id=order_id))
+        else:
+            print_finish_application_menu()
 
 
 # Place request for simulation service in microservice

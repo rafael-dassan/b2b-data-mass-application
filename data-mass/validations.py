@@ -230,7 +230,7 @@ def validade_challenge_type(type):
 
 
 def validate_orders(option):
-    options = ['1', '2']
+    options = ['1', '2', '3']
     if option in options:
         return True
     else:
