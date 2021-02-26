@@ -10,6 +10,9 @@ from algo_selling import *
 from files import create_file_api
 from product_inventory import *
 from invoices import *
+from inventory import *
+from enforcement import *
+from invoice import *
 from menus.account_menu import print_account_operations_menu, print_minimum_order_menu, print_account_status_menu, \
     print_account_name_menu, print_account_enable_empties_loan_menu, print_alternative_delivery_date_menu, \
     print_include_delivery_cost_menu, print_payment_method_menu, print_account_id_menu, \
@@ -808,7 +811,8 @@ def product_menu():
         '2': lambda: flow_associate_products_to_account(zone, environment),
         '3': lambda: flow_input_inventory_to_product(zone, environment),
         '4': lambda: flow_input_recommended_products_to_account(zone, environment),
-        '5': lambda: flow_input_empties_discounts(zone, environment)
+        '5': lambda: flow_input_empties_discounts(zone, environment),
+        '6': lambda: flow_input_sku_limit(zone, environment)
     }.get(operation, lambda: None)()
 
 
@@ -906,6 +910,34 @@ def flow_input_inventory_to_product(zone, environment):
         print_finish_application_menu()
     else:
         print_finish_application_menu()
+
+
+def flow_input_sku_limit(zone, environment):
+    account_id = print_account_id_menu(zone)
+
+    if account_id == 'false':
+        print_finish_application_menu()
+
+    # Call check account exists function
+    account = check_account_exists_microservice(account_id, zone, environment)
+
+    if account == 'false':
+        print_finish_application_menu()
+    delivery_center_id = account[0]['deliveryCenterId']
+
+    # Call function to display the SKUs on the screen
+    enforcement = display_available_products(account_id, zone, environment, delivery_center_id)
+    if enforcement == 'true':
+            print(text.Green + '\n- The SKU Limit has been added successfully for the account {account_id}'
+                .format(account_id=account_id))
+    elif enforcement == 'error_len':
+            print(text.Red + '\n- There are no products available for the account {account_id}'
+                .format(account_id=account_id))
+            print_finish_application_menu()
+    elif enforcement == 'false':
+            print_finish_application_menu()
+    else:
+            print_finish_application_menu()
 
 
 def flow_input_recommended_products_to_account(zone, environment):
