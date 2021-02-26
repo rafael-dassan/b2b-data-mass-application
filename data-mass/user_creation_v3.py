@@ -19,19 +19,18 @@ def authenticate_user_iam(environment, country, user_name, password):
 
     logging.debug("Calling logon_authorize_request...")
     authorize_iam_response = authorize_iam(params)
-    if authorize_iam_response == "fail":
-        return "fail"
+    if authorize_iam_response == "false":
+        return "false"
 
     logging.debug("Calling logon_selfasserted_request...")
-    self_asserted_response = self_asserted_logon_request(
-        user_name, password, params, authorize_iam_response)
-    if self_asserted_response == "fail" or self_asserted_response == "wrong_password":
+    self_asserted_response = self_asserted_logon_request(user_name, password, params, authorize_iam_response)
+    if self_asserted_response == "false" or self_asserted_response == "wrong_password":
         return self_asserted_response
 
     logging.debug("Calling logon_confirmed_request...")
     id_token = confirmed_logon_request(params, self_asserted_response)
-    if id_token == "fail":
-        return "fail"
+    if id_token == "false":
+        return "false"
 
     return id_token
 
@@ -48,32 +47,29 @@ def authorize_iam(params):
         "scope": "openid"
     }
 
-    authorize_response = place_request(
-        "POST", params["BASE_SIGNIN_URL"] + "/oauth2/authorize", payload, None)
+    url = params["BASE_SIGNIN_URL"] + "/oauth2/authorize"
 
-    logging.debug("  Logon :: authorize() :: Response................: {response}".format(
-        response=authorize_response))
+    authorize_response = place_request("POST", url, payload, None)
+
+    logging.debug("Logon :: authorize() :: Response................: {response}".format(response=authorize_response))
 
     if authorize_response.status_code != 200:
-        print("- Fail on user creation v3 [authorize_load_request]: status_code {0}.".format(
-            authorize_response.status_code))
-        return "fail"
+        print("\n{0}- Fail [authorize_load_request]. Response status: {1}. Response message: {2}".format(text.Red,
+                                                                                                         authorize_response.status_code,
+                                                                                                         authorize_response.text))
+        return "false"
 
     response_text = authorize_response.text
-
     csrf = re.search('\"csrf\":"([^"]+)', response_text).group(1)
     api = re.search('\"api\":"([^"]+)', response_text).group(1)
     trans_id = re.search('\"transId\":"([^"]+)', response_text).group(1)
 
-    logging.debug(
-        "  Logon :: authorize() :: CSRF....................: {csrf}".format(csrf=csrf))
-    logging.debug(
-        "  Logon :: authorize() :: API.....................: {api}".format(api=api))
-    logging.debug("  Logon :: authorize() :: TRANS_ID................: {trans_id}".format(
-        trans_id=trans_id))
+    logging.debug("Logon :: authorize() :: CSRF....................: {csrf}".format(csrf=csrf))
+    logging.debug("Logon :: authorize() :: API.....................: {api}".format(api=api))
+    logging.debug("Logon :: authorize() :: TRANS_ID................: {trans_id}".format(trans_id=trans_id))
 
     if len(csrf) == 0 | len(api) == 0 | len(trans_id) == 0:
-        return "fail"
+        return "false"
 
     data = {
         "CSRF": csrf,
@@ -97,27 +93,22 @@ def self_asserted_logon_request(user_name, password, params, authorize_response)
         "Cookie": get_cookies_header(authorize_response["COOKIES"])
     }
 
-    response = place_request(
-        "POST",
-        params["BASE_SIGNIN_URL"] + "/{0}?tx={1}&p={2}".format(
-            urllib.parse.quote(authorize_response["API"]),
-            urllib.parse.quote(authorize_response["TRANS_ID"]),
-            urllib.parse.quote(params["B2B_SIGNIN_POLICY"])),
-        payload,
-        headers)
+    url = params["BASE_SIGNIN_URL"] + "/{0}?tx={1}&p={2}".format(urllib.parse.quote(authorize_response["API"]),
+                                                                 urllib.parse.quote(authorize_response["TRANS_ID"]),
+                                                                 urllib.parse.quote(params["B2B_SIGNIN_POLICY"]))
 
-    logging.debug("  Logon :: self_asserted() :: Response................: {response}".format(
-        response=response))
+    response = place_request("POST", url, payload, headers)
+
+    logging.debug("Logon :: self_asserted() :: Response................: {response}".format(response=response))
 
     if response.status_code != 200:
-        print("\n{0}- Fail on user logon v3 [logon_selfasserted_request]: status_code {1}.".format(text.Red, response.status_code))
-        return "fail"
+        print("\n{0}- Fail [logon_selfasserted_request]. Response status: {1}. Response message: {2}".format(text.Red,
+                                                                                                             response.status_code,
+                                                                                                             response.text))
+        return "false"
 
     response_text = response.text
-
-    logging.debug("  Logon :: self_asserted() :: Response Text...........: {text}".format(
-        text=response_text))
-
+    logging.debug("Logon :: self_asserted() :: Response Text...........: {text}".format(text=response_text))
     data = response.json()
     status = data["status"]
 
@@ -125,12 +116,10 @@ def self_asserted_logon_request(user_name, password, params, authorize_response)
         if "@registration_link" in response_text:
             logging.debug("Alert: The user doesn't exist.")
         if "@reset_password_link" in response_text:
-            print(
-                "Alert: Fail on user logon v3 [logon_selfasserted_request]: The user exists - the password is wrong.")
+            print("\n{0}- Fail [logon_selfasserted_request]. The user exists but the password is wrong".format(text.Red))
             return "wrong_password"
 
-    logging.debug(
-        "  Logon :: self_asserted() :: JSON Status.............: {status}".format(status=status))
+    logging.debug("Logon :: self_asserted() :: JSON Status.............: {status}".format(status=status))
 
     data = {
         "CSRF": authorize_response["CSRF"],
@@ -143,8 +132,7 @@ def self_asserted_logon_request(user_name, password, params, authorize_response)
 
 
 def confirmed_logon_request(params, self_asserted_response):
-    url = params["BASE_SIGNIN_URL"] + "/api/" + \
-        self_asserted_response["API"] + "/confirmed"
+    url = params["BASE_SIGNIN_URL"] + "/api/" + self_asserted_response["API"] + "/confirmed"
 
     headers = {
         "csrf_token": self_asserted_response["CSRF"],
@@ -154,92 +142,83 @@ def confirmed_logon_request(params, self_asserted_response):
     }
 
     response = place_request("GET", url, None, headers)
-
-    logging.debug("  Logon :: confirmed() :: Response................: {response}".format(
-        response=response))
-
+    logging.debug("Logon :: confirmed() :: Response................: {response}".format(response=response))
     if response.status_code != 200:
-        print("- Fail on user logon v3 [logon_confirmed_request]: status_code {0}.".format(
-            response.status_code))
-        return "fail"
+        print("\n{0}- Fail [logon_confirmed_request]. Response status: {1}. Response message: {2}".format(text.Red, response.status_code,
+                                                                                                          response.text))
+        return "false"
 
     response_text = response.text
-
-    logging.debug("  Logon :: confirmed() :: Response Text...........: {text}".format(
-        text=response_text))
+    logging.debug("Logon :: confirmed() :: Response Text...........: {text}".format(text=response_text))
 
     if "id_token" in response_text:
-        id_token = re.search(
-            ' id=\'id_token\' value=\'([^\']+)', response_text).group(1)
-
-        logging.debug("  Logon :: confirmed() :: Response Text...........: {text}".format(
-            text=response_text))
-        logging.debug(
-            "  Logon :: confirmed() :: ID Token................: {value}".format(value=id_token))
-
+        id_token = re.search(' id=\'id_token\' value=\'([^\']+)', response_text).group(1)
+        logging.debug("Logon :: confirmed() :: Response Text...........: {text}".format(text=response_text))
+        logging.debug("Logon :: confirmed() :: ID Token................: {value}".format(value=id_token))
         return id_token
-
-    return "fail"
+    return "false"
 
 
 def create_user(environment, country, email, password, account_id, tax_id):
     params = get_iam_b2c_params(environment, country)
 
     authorize_load_response = authorize_load_request(params)
-    if authorize_load_response == "fail":
-        return "fail"
+    if authorize_load_response == "false":
+        return "false"
 
     self_asserted_email_response = self_asserted_email_request(
         email, params, authorize_load_response)
-    if self_asserted_email_response == "fail":
-        return "fail"
+    if self_asserted_email_response == "false" or self_asserted_email_response == "user_exists":
+        return "false"
 
     confirmed_email_response = confirmed_email_request(
         params, self_asserted_email_response)
-    if confirmed_email_response == "fail":
-        return "fail"
+    if confirmed_email_response == "false":
+        return "false"
 
     self_asserted_otp_response = self_asserted_otp_request(
         email, params, confirmed_email_response)
-    if self_asserted_otp_response == "fail":
-        return "fail"
+    if self_asserted_otp_response == "false":
+        return "false"
 
     confirmed_otp_response = confirmed_otp_request(
         params, self_asserted_otp_response)
-    if confirmed_otp_response == "fail":
-        return "fail"
+    if confirmed_otp_response == "false":
+        return "false"
 
     self_asserted_name_response = self_asserted_name_request(
         email, params, confirmed_otp_response)
-    if self_asserted_name_response == "fail":
-        return "fail"
+    if self_asserted_name_response == "false":
+        return "false"
 
     confirmed_name_response = confirmed_name_request(
         params, self_asserted_name_response)
-    if confirmed_name_response == "fail":
-        return "fail"
+    if confirmed_name_response == "false":
+        return "false"
 
     self_asserted_password_response = self_asserted_password_request(
         password, params, confirmed_name_response)
-    if self_asserted_password_response == "fail":
-        return "fail"
+    if self_asserted_password_response == "false":
+        return "false"
 
     confirmed_password_response = confirmed_password_request(
         params, self_asserted_password_response)
-    if confirmed_password_response == "fail":
-        return "fail"
+    if confirmed_password_response == "false":
+        return "false"
 
     authorize_account_response = authorize_account_request(
         params, confirmed_password_response)
-    if authorize_account_response == "fail":
-        return "fail"
+    if authorize_account_response == "false":
+        return "false"
 
     self_asserted_account_response = self_asserted_account_request(
         account_id, tax_id, params, authorize_account_response)
-    if self_asserted_account_response == "fail":
-        return "fail"
+    if self_asserted_account_response == "false":
+        return "false"
 
-    confirmed_account_request(params, self_asserted_account_response)
+    if "false" == confirmed_account_request(params, self_asserted_account_response):
+        return "false"
+
     return "success"
 
 
@@ -275,8 +254,7 @@ def self_assert_response_error(self_assert_response):
         status = re.search('\"status\":"([^"]+)', response_text).group(1)
         return int(status) != 200
     except AttributeError:
-        print(
-            "- Fail on user creation v3 [self_assert_response_body]. Invalid response.")
+        print("\n{0}- Fail [self_assert_response_body]. Invalid response.".format(text.Red))
         return False
 
 
@@ -296,27 +274,25 @@ def authorize_load_request(params):
         "scope": "openid"
     }
 
-    authorize_load_response = place_request(
-        "GET", params["BASE_SIGNUP_URL"] + "/oauth2/authorize", data, None)
-
-    if authorize_load_response.status_code != 200:
-        print("- Fail [authorize_load_request]: status_code {0}.".format(authorize_load_response.status_code))
-        return "fail"
-
+    authorize_load_response = place_request("GET", params["BASE_SIGNUP_URL"] + "/oauth2/authorize", data, None)
     response_text = authorize_load_response.text
+    if authorize_load_response.status_code != 200:
+        print("\n{0}- Fail [authorize_load_request]. Response code: {1}. Response message: {2}".format(text.Red,
+                                                                                                       authorize_load_response.status_code,
+                                                                                                       response_text))
+        return "false"
+
     try:
         csrf = re.search('\"csrf\":"([^"]+)', response_text).group(1)
         api = re.search('\"api\":"([^"]+)', response_text).group(1)
         trans_id = re.search('\"transId\":"([^"]+)', response_text).group(1)
-    except AttributeError:
-        print(
-            "- Fail [authorize_load_request]: Invalid response.")
-        return "fail"
+    except AttributeError as e:
+        print("\n{0}- Fail [authorize_load_request]. Exception: {1}".format(text.Red, str(e)))
+        return "false"
 
     if len(csrf) == 0 | len(api) == 0 | len(trans_id) == 0:
-        print(
-            "- Fail [authorize_load_request]: Invalid response.")
-        return "fail"
+        print("\n{0}- Fail [authorize_load_request]. Invalid response.".format(text.Red))
+        return "false"
     else:
         return {
             "CSRF": csrf,
@@ -332,6 +308,7 @@ def self_asserted_email_request(email, params, authorize_load_response):
     data = {
         "email": email,
         "phone": "",
+        "acceptTermsCheckOnSignup": "yes",
         "request_type": "RESPONSE"
     }
 
@@ -340,22 +317,22 @@ def self_asserted_email_request(email, params, authorize_load_response):
         "Cookie": get_cookies_header(authorize_load_response["COOKIES"])
     }
 
-    self_asserted_email_response = place_request(
-        "POST",
-        params["BASE_SIGNUP_URL"] + "/{0}?tx={1}&p={2}".format(
-            urllib.parse.quote(authorize_load_response["API"]),
-            urllib.parse.quote(authorize_load_response["TRANS_ID"]),
-            urllib.parse.quote(params["B2B_SIGNUP_POLICY"])),
-        data,
-        headers)
+    url = params["BASE_SIGNUP_URL"] + "/{0}?tx={1}&p={2}".format(urllib.parse.quote(authorize_load_response["API"]),
+                                                                 urllib.parse.quote(authorize_load_response["TRANS_ID"]),
+                                                                 urllib.parse.quote(params["B2B_SIGNUP_POLICY"]))
+
+    self_asserted_email_response = place_request("POST", url, data, headers)
 
     if self_assert_response_error(self_asserted_email_response):
-        print("- Fail [self_asserted_email_request]: status_code {0}. Body {1}.".format(self_asserted_email_response.status_code,
-                                                                                        self_asserted_email_response.text))
+        print("\n{0}- Fail [self_asserted_email_request]. Response status: {1}. Response message: {2}".format(text.Red,
+                                                                                                              self_asserted_email_response
+                                                                                                              .status_code,
+                                                                                                              self_asserted_email_response
+                                                                                                              .text))
         if "Esta cuenta ya existe" in self_asserted_email_response.text or "There is another user with this user name" in \
                 self_asserted_email_response.text:
             return "user_exists"
-        return "fail"
+        return "false"
     else:
         return {
             "CSRF": authorize_load_response["CSRF"],
@@ -366,49 +343,40 @@ def self_asserted_email_request(email, params, authorize_load_response):
 
 
 def confirmed_request(base_url, csrf, api, trans_id, b2b_signup_policy, cookies, csrf_response_required):
-    headers = {
-        "Cookie": get_cookies_header(cookies)
-    }
+    headers = {"Cookie": get_cookies_header(cookies)}
 
-    confirmed_response = place_request(
-        "GET",
-        base_url + "/api/{0}/confirmed?csrf_token={1}&tx={2}&p={3}".format(
-            urllib.parse.quote(api),
-            urllib.parse.quote(csrf),
-            urllib.parse.quote(trans_id),
-            urllib.parse.quote(b2b_signup_policy)),
-        None,
-        headers)
+    url = '{0}/api/{1}/confirmed?csrf_token={2}&tx={3}&p={4}'.format(base_url, urllib.parse.quote(api), urllib.parse.quote(csrf),
+                                                                     urllib.parse.quote(trans_id), urllib.parse.quote(b2b_signup_policy))
+
+    confirmed_response = place_request("GET", url, None, headers)
 
     if confirmed_response.status_code != 200:
-        return "fail"
+        return "false"
     else:
         new_cookies = get_cookies(confirmed_response)
-
         response_text = confirmed_response.text
+
         try:
             new_csrf = re.search('\"csrf\":"([^"]+)', response_text).group(1)
-        except AttributeError:
-            logging.debug(
-                "- Alert: csrf not found! Trying to get by header x-ms-cpim-csrf...")
+        except AttributeError as e:
+            logging.debug("Alert: csrf not found! Trying to get by header x-ms-cpim-csrf. Exception: {0}".format(str(e)))
             try:
                 new_csrf = new_cookies["x-ms-cpim-csrf"]
             except KeyError:
                 if csrf_response_required:
-                    return "fail"
+                    return "false"
                 new_csrf = None
 
         if new_csrf is None:
             if "id_token" in response_text:
-                id_token = re.search(
-                    ' id=\'id_token\' value=\'([^\']+)', response_text).group(1)
+                id_token = re.search(' id=\'id_token\' value=\'([^\']+)', response_text).group(1)
                 return {
                     "ID_TOKEN": id_token,
                     "COOKIES": new_cookies
                 }
             else:
-                logging.debug("Alert: Response_text: " + response_text)
-                return "fail"
+                logging.debug("Alert: Response_text: {0}".format(response_text))
+                return "false"
 
         return {
             "CSRF": new_csrf,
@@ -420,17 +388,12 @@ def confirmed_request(base_url, csrf, api, trans_id, b2b_signup_policy, cookies,
 
 def confirmed_email_request(params, last_response):
     logging.debug("Calling confirmed_email_request...")
-    confirmed_email_response = confirmed_request(
-        params["BASE_SIGNUP_URL"],
-        last_response["CSRF"],
-        last_response["API"],
-        last_response["TRANS_ID"],
-        params["B2B_SIGNUP_POLICY"],
-        last_response["COOKIES"], True)
+    confirmed_email_response = confirmed_request(params["BASE_SIGNUP_URL"], last_response["CSRF"], last_response["API"],
+                                                 last_response["TRANS_ID"], params["B2B_SIGNUP_POLICY"], last_response["COOKIES"], True)
 
-    if confirmed_email_response == "fail":
-        print("- Fail [confirmed_email_request]")
-        return "fail"
+    if confirmed_email_response == "false":
+        print("\n{0}- Fail [confirmed_email_request]".format(text.Red))
+        return "false"
     else:
         return confirmed_email_response
 
@@ -457,19 +420,16 @@ def self_asserted_otp_request(email, params, confirmed_email_response):
         "Cookie": get_cookies_header(confirmed_email_response["COOKIES"])
     }
 
-    self_asserted_otp_response = place_request(
-        "GET",
-        params["BASE_SIGNUP_URL"] + "/{0}?tx={1}&p={2}".format(
-            urllib.parse.quote(confirmed_email_response["API"]),
-            urllib.parse.quote(confirmed_email_response["TRANS_ID"]),
-            urllib.parse.quote(params["B2B_SIGNUP_POLICY"])),
-        data,
-        headers)
+    url = params["BASE_SIGNUP_URL"] + "/{0}?tx={1}&p={2}".format(urllib.parse.quote(confirmed_email_response["API"]),
+                                                                 urllib.parse.quote(confirmed_email_response["TRANS_ID"]),
+                                                                 urllib.parse.quote(params["B2B_SIGNUP_POLICY"]))
+
+    self_asserted_otp_response = place_request("GET", url, data, headers)
 
     if self_asserted_otp_response.status_code != 200:
-        print("- Fail on user creation v3 [self_asserted_otp_request]: status_code {0}.".format(
-            self_asserted_otp_response.status_code))
-        return "fail"
+        print("\n{0}- Fail [self_asserted_otp_request]. Response status: {1}. Response message: {2}".format(text.Red),
+              self_asserted_otp_response.status_code, self_asserted_otp_response.text)
+        return "false"
     else:
         return {
             "CSRF": confirmed_email_response["CSRF"],
@@ -481,17 +441,12 @@ def self_asserted_otp_request(email, params, confirmed_email_response):
 
 def confirmed_otp_request(params, last_response):
     logging.debug("Calling confirmed_otp_request...")
-    confirmed_opt_response = confirmed_request(
-        params["BASE_SIGNUP_URL"],
-        last_response["CSRF"],
-        last_response["API"],
-        last_response["TRANS_ID"],
-        params["B2B_SIGNUP_POLICY"],
-        last_response["COOKIES"], True)
+    confirmed_opt_response = confirmed_request(params["BASE_SIGNUP_URL"], last_response["CSRF"], last_response["API"],
+                                               last_response["TRANS_ID"], params["B2B_SIGNUP_POLICY"], last_response["COOKIES"], True)
 
-    if confirmed_opt_response == "fail":
-        print("- Fail on user creation v3 [confirmed_otp_request].")
-        return "fail"
+    if confirmed_opt_response == "false":
+        print("\n{0}- Fail [confirmed_otp_request]".format(text.Red))
+        return "false"
     else:
         return confirmed_opt_response
 
@@ -511,19 +466,19 @@ def self_asserted_name_request(email, params, confirmed_otp_response):
         "Cookie": get_cookies_header(confirmed_otp_response["COOKIES"])
     }
 
-    self_asserted_name_response = place_request(
-        "POST",
-        params["BASE_SIGNUP_URL"] + "/{0}?tx={1}&p={2}".format(
-            urllib.parse.quote(confirmed_otp_response["API"]),
-            urllib.parse.quote(confirmed_otp_response["TRANS_ID"]),
-            urllib.parse.quote(params["B2B_SIGNUP_POLICY"])),
-        data,
-        headers)
+    url = params["BASE_SIGNUP_URL"] + "/{0}?tx={1}&p={2}".format(urllib.parse.quote(confirmed_otp_response["API"]),
+                                                                 urllib.parse.quote(confirmed_otp_response["TRANS_ID"]),
+                                                                 urllib.parse.quote(params["B2B_SIGNUP_POLICY"]))
+
+    self_asserted_name_response = place_request("POST", url, data, headers)
 
     if self_assert_response_error(self_asserted_name_response):
-        print("- Fail on user creation v3 [self_asserted_name_request]: status_code {0}. Body {1}.".format(
-            self_asserted_name_response.status_code, self_asserted_name_response.text))
-        return "fail"
+        print("\n{0}- Fail [self_asserted_name_request]. Response status: {1}. Response message: {2}".format(text.Red,
+                                                                                                             self_asserted_name_response
+                                                                                                             .status_code,
+                                                                                                             self_asserted_name_response
+                                                                                                             .text))
+        return "false"
     else:
         return {
             "CSRF": confirmed_otp_response["CSRF"],
@@ -535,17 +490,12 @@ def self_asserted_name_request(email, params, confirmed_otp_response):
 
 def confirmed_name_request(params, last_response):
     logging.debug("Calling confirmed_name_request...")
-    confirmed_name_response = confirmed_request(
-        params["BASE_SIGNUP_URL"],
-        last_response["CSRF"],
-        last_response["API"],
-        last_response["TRANS_ID"],
-        params["B2B_SIGNUP_POLICY"],
-        last_response["COOKIES"], True)
+    confirmed_name_response = confirmed_request(params["BASE_SIGNUP_URL"], last_response["CSRF"], last_response["API"],
+                                                last_response["TRANS_ID"], params["B2B_SIGNUP_POLICY"], last_response["COOKIES"], True)
 
-    if confirmed_name_response == "fail":
-        print("- Fail on user creation v3 [confirmed_name_request].")
-        return "fail"
+    if confirmed_name_response == "false":
+        print("\n{0}- Fail [confirmed_name_request]".format(text.Red))
+        return "false"
     else:
         return confirmed_name_response
 
@@ -562,19 +512,17 @@ def self_asserted_password_request(password, params, confirmed_name_response):
         "Cookie": get_cookies_header(confirmed_name_response["COOKIES"])
     }
 
-    self_asserted_password_response = place_request(
-        "POST",
-        params["BASE_SIGNUP_URL"] + "/{0}?tx={1}&p={2}".format(
-            urllib.parse.quote(confirmed_name_response["API"]),
-            urllib.parse.quote(confirmed_name_response["TRANS_ID"]),
-            urllib.parse.quote(params["B2B_SIGNUP_POLICY"])),
-        data,
-        headers)
+    url = params["BASE_SIGNUP_URL"] + "/{0}?tx={1}&p={2}".format(urllib.parse.quote(confirmed_name_response["API"]),
+                                                                 urllib.parse.quote(confirmed_name_response["TRANS_ID"]),
+                                                                 urllib.parse.quote(params["B2B_SIGNUP_POLICY"]))
+
+    self_asserted_password_response = place_request("POST", url, data, headers)
 
     if self_assert_response_error(self_asserted_password_response):
-        print("- Fail on user creation v3 [self_asserted_password_request]: status_code {0}. Body {1}.".format(
-            self_asserted_password_response.status_code, self_asserted_password_response.text))
-        return "fail"
+        print("\n{0}- Fail [self_asserted_password_request]. Response status: {1}. Response message: {2}".format(text.Red,
+                                                                                            self_asserted_password_response.status_code,
+                                                                                            self_asserted_password_response.text))
+        return "false"
     else:
         return {
             "CSRF": confirmed_name_response["CSRF"],
@@ -586,17 +534,12 @@ def self_asserted_password_request(password, params, confirmed_name_response):
 
 def confirmed_password_request(params, last_response):
     logging.debug("Calling confirmed_password_request...")
-    confirmed_password_response = confirmed_request(
-        params["BASE_SIGNUP_URL"],
-        last_response["CSRF"],
-        last_response["API"],
-        last_response["TRANS_ID"],
-        params["B2B_SIGNUP_POLICY"],
-        last_response["COOKIES"], False)
+    confirmed_password_response = confirmed_request(params["BASE_SIGNUP_URL"], last_response["CSRF"], last_response["API"],
+                                                    last_response["TRANS_ID"], params["B2B_SIGNUP_POLICY"], last_response["COOKIES"], False)
 
-    if confirmed_password_response == "fail":
-        print("- Fail on user creation v3 [confirmed_password_request].")
-        return "fail"
+    if confirmed_password_response == "false":
+        print("\n{0}- Fail [confirmed_password_request]".format(text.Red))
+        return "false"
     else:
         return confirmed_password_response
 
@@ -618,21 +561,22 @@ def authorize_account_request(params, last_response):
         "Cookie": get_cookies_header(last_response["COOKIES"])
     }
 
-    authorize_account_response = place_request(
-        "GET", params["BASE_ONBOARDING_URL"] + "/oauth2/authorize", data, headers)
+    url = '{0}/oauth2/authorize'.format(params["BASE_ONBOARDING_URL"])
 
-    if authorize_account_response.status_code != 200:
-        print("- Fail on user creation v3 [authorize_account_request]: status_code {0}.".format(
-            authorize_account_response.status_code))
-        return "fail"
-
+    authorize_account_response = place_request("GET", url, data, headers)
     response_text = authorize_account_response.text
+    if authorize_account_response.status_code != 200:
+        print("\n{0}- Fail [authorize_account_request]. Response status: {1}. Response message: {2}".format(text.Red,
+                                                                                                            authorize_account_response
+                                                                                                            .status_code, response_text))
+        return "false"
+
     csrf = re.search('\"csrf\":"([^"]+)', response_text).group(1)
     api = re.search('\"api\":"([^"]+)', response_text).group(1)
     trans_id = re.search('\"transId\":"([^"]+)', response_text).group(1)
 
     if len(csrf) == 0 | len(api) == 0 | len(trans_id) == 0:
-        return "fail"
+        return "false"
     else:
         return {
             "CSRF": csrf,
@@ -655,19 +599,16 @@ def self_asserted_account_request(account_id, tax_id, params, authorize_account_
         "Cookie": get_cookies_header(authorize_account_response["COOKIES"])
     }
 
-    self_asserted_account_response = place_request(
-        "POST",
-        params["BASE_ONBOARDING_URL"] + "/{0}?tx={1}&p={2}".format(
-            urllib.parse.quote(authorize_account_response["API"]),
-            urllib.parse.quote(authorize_account_response["TRANS_ID"]),
-            urllib.parse.quote(params["B2B_ONBOARDING_POLICY"])),
-        data,
-        headers)
+    url = params["BASE_ONBOARDING_URL"] + "/{0}?tx={1}&p={2}".format(urllib.parse.quote(authorize_account_response["API"]),
+                                                                     urllib.parse.quote(authorize_account_response["TRANS_ID"]),
+                                                                     urllib.parse.quote(params["B2B_ONBOARDING_POLICY"]))
 
+    self_asserted_account_response = place_request("POST", url, data, headers)
     if self_assert_response_error(self_asserted_account_response):
-        print("- Fail on user creation v3 [self_asserted_account_request]: status_code {0}. Body {1}.".format(
-            self_asserted_account_response.status_code, self_asserted_account_response.text))
-        return "fail"
+        print("\n{0}- Fail [self_asserted_account_request]. Response status: {1}. Response message: {2}".format(text.Red,
+                                                                                                self_asserted_account_response.status_code,
+                                                                                                self_asserted_account_response.text))
+        return "false"
     else:
         return {
             "CSRF": authorize_account_response["CSRF"],
@@ -679,17 +620,12 @@ def self_asserted_account_request(account_id, tax_id, params, authorize_account_
 
 def confirmed_account_request(params, last_response):
     logging.debug("Calling confirmed_account_request...")
-    confirmed_account_response = confirmed_request(
-        params["BASE_ONBOARDING_URL"],
-        last_response["CSRF"],
-        last_response["API"],
-        last_response["TRANS_ID"],
-        params["B2B_ONBOARDING_POLICY"],
-        last_response["COOKIES"], False)
+    confirmed_account_response = confirmed_request(params["BASE_ONBOARDING_URL"], last_response["CSRF"], last_response["API"],
+                                                   last_response["TRANS_ID"], params["B2B_ONBOARDING_POLICY"], last_response["COOKIES"],
+                                                   False)
 
-    if confirmed_account_response == "fail":
-        logging.debug(
-            "Alert: Fail on user creation v3 [confirmed_account_request].")
-        return "fail"
+    if confirmed_account_response == "false":
+        logging.debug("Alert: Fail [confirmed_account_request].")
+        return "false"
     else:
         return confirmed_account_response

@@ -47,12 +47,12 @@ def get_categories_magento_web(country, environment, category_name):
         - Environment (UAT, SIT)
         - Category Name
     """
+    categories = []
     nodes = request_get_categories(country, environment, {'level': 2})
     if nodes.status_code != 200:
         logger.error(log(Message.RETRIEVE_CATEGORY_ERROR, {"category": category_name}))
     else:
         nodes_obj = json.loads(nodes.text)
-        categories = []
         nodes_items = nodes_obj['items']
 
         if nodes_obj and nodes_items:
@@ -99,12 +99,12 @@ def get_categories_magento_mobile(country, environment, sub_category_name):
         "custom_apply_to_products": "0"
     }
 
+    categories = []
     nodes = request_get_categories(country, environment, {'level': 2})
     if nodes.status_code != 200:
         logger.error(log(Message.RETRIEVE_CATEGORY_ERROR, {"category": sub_category_name}))
     else:
         nodes_obj = json.loads(nodes.text)
-        categories = []
         nodes_items = nodes_obj['items']
 
         if nodes_obj and nodes_items:

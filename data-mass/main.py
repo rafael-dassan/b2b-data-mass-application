@@ -10,9 +10,7 @@ from algo_selling import *
 from files import create_file_api
 from product_inventory import *
 from invoices import *
-from inventory import *
 from enforcement import *
-from invoice import *
 from menus.account_menu import print_account_operations_menu, print_minimum_order_menu, print_account_status_menu, \
     print_account_name_menu, print_account_enable_empties_loan_menu, print_alternative_delivery_date_menu, \
     print_include_delivery_cost_menu, print_payment_method_menu, print_account_id_menu, \
@@ -29,8 +27,7 @@ from menus.order_menu import print_order_operations_menu, print_allow_cancellabl
     print_order_id_menu, print_order_status_menu
 from menus.product_menu import print_product_operations_menu, print_get_products_menu
 from menus.supplier_menu import print_create_supplier_category_menu, print_new_attribute, print_attribute_primitive, \
-    print_create_attribute_menu, print_min_cardinality, print_max_cardinality, print_new_page, print_attribute_type, \
-    print_primitive_type
+    print_create_attribute_menu, print_min_cardinality, print_max_cardinality, print_new_page, print_attribute_type
 from menus.rewards_menu import print_rewards_menu, print_rewards_transactions_menu, print_rewards_program_menu    
 from orders import *
 from combos import *
@@ -1311,16 +1308,12 @@ def registration_user_iam():
     account_result = check_account_exists_microservice(account_id, country, environment)
     if account_result == "false":
         print_finish_application_menu()
-    else:
-        if account_result[0].get("status") != "ACTIVE":
-            print(text.Red + "\n- The account isn't ACTIVE.")
-            print_finish_application_menu()
 
     status_response = user_v3.create_user(environment, country, email, password, account_id, tax_id)
     if status_response == "success":
         print(text.Green + "\n- User IAM created successfully")
     else:
-        print(text.Red + "\n- [User] Something went wrong, please try again")
+        print(text.Red + "\n- Something went wrong when creating a new user, please try again")
         print_finish_application_menu()
 
 
@@ -1341,7 +1334,7 @@ def delete_user_iam():
     elif status_response == "partial":
         print(text.Magenta + "\n- User IAM deleted partially")
     else:
-        print(text.Red + "\n- Something went wrong, please try again")
+        print(text.Red + "\n- Something went wrong when deleting an user, please try again")
         print_finish_application_menu()
 
 
