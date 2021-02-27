@@ -9,18 +9,21 @@ from common import get_header_request, get_microservice_base_url, update_value_t
     place_request, print_input_number, print_input_text, set_to_dictionary
 from classes.text import text
 from rewards.rewards_utils import display_all_programs_info, build_request_url_with_projection_query, get_dt_combos_from_zone, \
-    create_product_list_from_zone
+    create_product_list_from_zone, get_payload
 
 
 # Create Rewards Program
 def create_new_program(zone, environment):
+    
     # Verify if the zone already have a reward program created
-    rewards_program = get_rewards_program_for_zone(zone, environment)
+    response_all_programs = get_all_programs(zone, environment, set(["DEFAULT"]))
+    if response_all_programs is None:
+        return None
 
-    if rewards_program is not None:
-        program_id = rewards_program['id']
-        print(text.Yellow + '\n- [Rewards] This zone already have a reward program created - Program ID: "{}"'.format(program_id))
-    else:
+    DM_program = get_DM_rewards_program_for_zone(loads(response_all_programs.text))
+    if DM_program is not None:
+        DM_program_id = DM_program['id']
+        print(text.Yellow + '\n- [Rewards] This zone already have a reward program created - Program ID: "{}"'.format(DM_program_id))
         return None
 
     response_zone_dt_combos = get_dt_combos_from_zone(zone, environment)
@@ -68,13 +71,7 @@ def create_new_program(zone, environment):
     categories = generate_categories_information(zone)
     terms = generate_terms_information(zone)
 
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, '../data/create_rewards_program_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    json_data = get_payload('../data/create_rewards_program_payload.json')
 
     dict_values = {
         'name': new_program_id,
@@ -193,7 +190,7 @@ def patch_program_root_field(zone, environment, field):
 
     all_programs = get_all_programs(zone, environment, set(["DEFAULT"]))
 
-    if all_programs != None:
+    if all_programs is not None:
 
         initial_balance = True if field == 'initial_balance' else False
         redeem_limit = True if field == 'redeem_limit' else False
@@ -230,22 +227,17 @@ def patch_program_root_field(zone, environment, field):
 
 
 # Check if DM Rewards program exists for the zone
-def get_rewards_program_for_zone(zone, environment):
-    rewards_program = None
+def get_DM_rewards_program_for_zone(zone_programs_list):
+    DM_rewards_program = None
 
-    # Send request
-    response = get_all_programs(zone, environment, set(["DEFAULT"]))
-    if response is not None:
-        program_list = loads(response.text)
-        for i in range(len(program_list)):
-            program_id = program_list[i]['id']
-            prefix_program_id = program_id[0:9]
+    for program in zone_programs_list:
+        prefix_program_id = program['id'][0:9]
 
-            if prefix_program_id == 'DM-REWARD':
-                rewards_program = program_list[i]
-                break
+        if prefix_program_id == 'DM-REWARD':
+            DM_rewards_program = program
+            break
     
-    return rewards_program
+    return DM_rewards_program
 
 
 # Get all reward program for the zone

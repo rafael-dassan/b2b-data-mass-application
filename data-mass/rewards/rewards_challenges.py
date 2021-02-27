@@ -2,23 +2,231 @@
 import json
 from json import loads
 import os
-from datetime import timedelta, datetime
-from time import time
+from datetime import timedelta, datetime, timezone
+from random import randint, randrange
 
 # Local application imports
 from common import get_header_request, get_microservice_base_url, update_value_to_json, convert_json_to_string, \
-    place_request
+    place_request, print_input_text, set_to_dictionary, print_input_number
 from products import request_get_products_by_account_microservice
 from classes.text import text
-from rewards.rewards_programs import get_rewards_program_for_zone
-from rewards.rewards_utils import generate_id
+from rewards.rewards_programs import get_all_programs
+from rewards.rewards_utils import generate_id, create_product_list_from_zone, display_all_challenges_info, \
+    get_payload
+
+
+def create_challenge_payload(challenge_id, executionMethod, zone_skus_list=None):
+    challenge_payload_template = get_payload('../data/create_rewards_challenges_payload.json')
+
+    start_date = generate_date()
+    end_date = generate_date(180)
+
+    dict_challenge = {
+        'title': 'DM-' + challenge_id,
+        'description': executionMethod + ' challenge created by data-mass',
+        'points': randrange(500, 5000, 100),
+        'startDate': start_date,
+        'endDate': end_date,
+        'executionMethod': executionMethod
+    }
+
+    for key in dict_challenge.keys():
+        json_object = update_value_to_json(challenge_payload_template, key, dict_challenge[key])
+
+    if executionMethod == 'TAKE_PHOTO':
+        good_photo = 'https://b2bstaticwebsagbdev.blob.core.windows.net/challenge-uat/DO/good-examples-photo-challenge/cooler_cerveza_ok.png'
+        bad_photo = 'https://b2bstaticwebsagbdev.blob.core.windows.net/challenge-uat/DO/bad-examples-photo-challenge/cooler_cerveza_nok.png'
+
+        set_to_dictionary(json_object, 'goodPhotoSample', good_photo)
+        set_to_dictionary(json_object, 'badPhotoSample', bad_photo)
+
+    if executionMethod == 'PURCHASE' or executionMethod == 'PURCHASE_MULTIPLE':
+        sku_count = 4 if len(zone_skus_list) > 4 else len(zone_skus_list)
+
+        challenge_sku_list = list()
+        for i in range(sku_count):
+            dict_challenge_sku  = {
+                'sku' : zone_skus_list[i],
+                'quantity' : randint(2, 5)
+            }
+            challenge_sku_list.append(dict_challenge_sku)
+
+        set_to_dictionary(json_object, 'skus', challenge_sku_list)
+    
+    return json_object
+
+
+def create_take_photo_challenge(zone, environment):
+
+    challenge_id = generate_id()
+
+    json_object = create_challenge_payload(challenge_id, 'TAKE_PHOTO')
+
+    #Create body
+    request_body = convert_json_to_string(json_object)
+
+    return put_challenge(challenge_id, request_body, zone, environment)
+
+def create_mark_complete_challenge(zone, environment):
+
+    challenge_id = generate_id()
+
+    json_object = create_challenge_payload(challenge_id, 'MARK_COMPLETE')
+
+    #Create body
+    request_body = convert_json_to_string(json_object)
+
+    return put_challenge(challenge_id, request_body, zone, environment)
+
+
+def create_purchase_challenge(zone, environment):
+    zone_skus_list = create_product_list_from_zone(zone, environment)
+
+    if len(zone_skus_list) == 0:
+        print(text.Red + '\n- [Rewards] There are no products available for "{}" zone.'.format(zone))
+        return None
+
+    challenge_id = generate_id()
+
+    json_object = create_challenge_payload(challenge_id, 'PURCHASE', zone_skus_list)
+    
+    #Create body
+    request_body = convert_json_to_string(json_object)
+
+    return put_challenge(challenge_id, request_body, zone, environment)
+
+
+def create_purchase_multiple_challenge(zone, environment):
+    zone_skus_list = create_product_list_from_zone(zone, environment)
+
+    if len(zone_skus_list) == 0:
+        print(text.Red + '\n- [Rewards] There are no products available for "{}" zone.'.format(zone))
+        return None
+
+    challenge_id = generate_id()
+
+    json_object = create_challenge_payload(challenge_id, 'PURCHASE_MULTIPLE', zone_skus_list)
+    
+    #Create body
+    request_body = convert_json_to_string(json_object)
+
+    return put_challenge(challenge_id, request_body, zone, environment)
+
+
+# Get all challenges for the zone
+def get_all_challenges(zone, environment):
+    header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
+    
+    # Define url request
+    request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/challenges'
+    
+    # Send request
+    response = place_request('GET', request_url, '', header_request)
+
+    if response.status_code == 200:
+        json_data = loads(response.text)
+        if len(json_data) > 0:
+            return response
+        else:
+            print(text.Red + '\n- [Rewards] There are no challenges available in "{}" zone.'.format(zone))
+
+    else:
+        print(text.Red + '\n- [Rewards] Failure when getting all challenges in "{}" zone. \n- Response Status: "{}". \n- Response message '
+                         '"{}".'.format(zone, str(response.status_code), response.text))
+    
+    return None
+
+
+# Get an specific challenge for the zone
+def get_specific_challenge(challenge_id, zone, environment):
+
+    header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
+    
+    # Define url request
+    request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/challenges/' + challenge_id
+    
+    # Send request
+    response = place_request('GET', request_url, '', header_request)
+
+    if response.status_code == 200:
+        return response
+    
+    elif response.status_code == 404:
+        print(text.Red + '\n- [Rewards] The challenge "{}" was not found.'.format(challenge_id))
+
+    else:
+        print(text.Red + '\n- [Rewards] Failure when getting the challenge "{}" information. \n- Response Status: "{}". \n- Response message "{}".'
+                .format(challenge_id, str(response.status_code), response.text))
+
+    return None
+
+
+def put_challenge(challenge_id, request_body, zone, environment):
+    # Define headers
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+
+    # Define url request
+    request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/challenges/' + challenge_id
+
+    response = place_request('PUT', request_url, request_body, request_headers)
+
+    if response.status_code == 200:
+        print(text.Green + '\n- [Rewards] The challenge "{}" was successfully created.'.format(challenge_id))
+
+    else:
+        print(text.Red + '\n- [Rewards] Failure when creating the challenge "{}".  \n- Response Status: "{}". \n- Response message "{}".'
+                .format(challenge_id, str(response.status_code), response.text))
+
+    return response
+
+
+def delete_challenge(challenge_id, zone, environment):
+    # Define headers
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+
+    # Define url request
+    request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/challenges/' + challenge_id
+
+    response = place_request('DELETE', request_url, '', request_headers)
+
+    if response.status_code == 204:
+        print(text.Green + '\n- [Rewards] The challenge "{}" was successfully deleted.'.format(challenge_id))
+
+    elif response.status_code == 404:
+        print(text.Red + '\n- [Rewards] The challenge "{}" was not found.'.format(challenge_id))
+
+    else:
+        print(text.Red + '\n- [Rewards] Failure when deleting the challenge "{}".  \n- Response Status: "{}". \n- Response message "{}".'
+                .format(challenge_id, str(response.status_code), response.text))
+
+    return response
+
+
+def remove_challenge(zone, environment):
+
+    response_all_challenges = get_all_challenges(zone, environment)
+
+    if response_all_challenges is None: return None
+
+    json_all_challenges = loads(response_all_challenges.text)
+    display_all_challenges_info(json_all_challenges)
+
+    challenge_id = print_input_text('\nPlease inform the Challenge ID')
+    delete_challenge(challenge_id, zone, environment)
+
+
+def generate_date(timedelta_days=0):
+    date = datetime.now(timezone.utc) + timedelta(days=timedelta_days)
+    date = date.strftime('%Y-%m-%dT%H:%M:%S.%f')
+    date = date + 'Z'
+    return date
 
 
 # Add Reward challenges to a zone
 def input_challenge_to_zone(abi_id, zone, environment):
     # Verify if the zone already have a reward program created
-    rewards_program = get_rewards_program_for_zone(zone, environment)
-    if rewards_program is None:
+    response_all_programs = get_all_programs(zone, environment, set(["DEFAULT"]))
+    if response_all_programs is None:
         return None
 
     # Gets the account's SKUs to use only for challenge type = PURCHASE
@@ -143,8 +351,8 @@ def input_challenge_to_zone(abi_id, zone, environment):
 
 def challenge_details(challenge_type, products = None):
     # Sets the format of the challenge's start date (current date and time)
-    start_date = datetime.now()
-    start_date = start_date.strftime('%Y-%m-%dT%H:%M:%S')
+    start_date = datetime.now(timezone.utc)
+    start_date = start_date.strftime('%Y-%m-%dT%H:%M:%S.%f')
     start_date = start_date + 'Z'
 
     # Sets the format of the challenge's end date with expiration within 5 days

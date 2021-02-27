@@ -16,7 +16,7 @@ def create_redemption(account_id, zone, environment):
 
     rewards_combos_response = get_rewards_combos_by_account(account_id, zone, environment)
 
-    if rewards_combos_response == None: return None
+    if rewards_combos_response is None: return None
 
     json_rewards_combos = loads(rewards_combos_response.text)
     

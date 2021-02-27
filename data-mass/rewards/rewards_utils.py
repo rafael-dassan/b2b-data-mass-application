@@ -26,6 +26,18 @@ def generate_id():
     return epoch_id
 
 
+def get_payload(file_path):
+    # Create file path
+    path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(path, file_path)
+
+    # Load JSON file
+    with open(file_path) as file:
+        json_data = json.load(file)
+    
+    return json_data
+
+
 # Get the DT Combos for the specified zone from Combos MS
 def get_dt_combos_from_zone(zone, environment, page_size=9999):
     
@@ -146,17 +158,17 @@ def post_combo_relay_account(zone, environment, account_id, dt_combos_to_associa
     return response
 
 
-# Generates the SKUs for the rules for Rewards program
+# Generates the SKU list available for a zone
 def create_product_list_from_zone(zone, environment):
     response_products = request_get_products_microservice(zone, environment)
 
-    sku_rules = list()
+    sku_list = list()
 
     if response_products != 'false':
-        for i in range(len(response_products)):
-            sku_rules.append(response_products[i]['sku'])
+        for product in response_products:
+            sku_list.append(product['sku'])
 
-    return sku_rules
+    return sku_list
 
 
 # Displays all programs information
@@ -173,6 +185,22 @@ def display_all_programs_info(list_all_programs, show_initial_balance=False, sho
             all_programs_dictionary.setdefault('Current redeem limit', []).append(program['redeemLimit'])
 
     print(text.default_text_color + tabulate(all_programs_dictionary, headers='keys', tablefmt='grid'))
+
+
+# Displays all challenges information
+def display_all_challenges_info(list_all_challenges):
+    all_challenges_dictionary = dict()
+    
+    print(text.Yellow + '\nExisting challenges:')
+    for challenge in list_all_challenges:
+        all_challenges_dictionary.setdefault('Challenge ID', []).append(challenge['id'])
+        all_challenges_dictionary.setdefault('Title', []).append(challenge['title'])
+        all_challenges_dictionary.setdefault('Execution Method', []).append(challenge['executionMethod'])
+        all_challenges_dictionary.setdefault('Points', []).append(challenge['points'])
+        all_challenges_dictionary.setdefault('Start Date', []).append(challenge['startDate'])
+        all_challenges_dictionary.setdefault('End Date', []).append(challenge['endDate'])
+
+    print(text.default_text_color + tabulate(all_challenges_dictionary, headers='keys', tablefmt='grid'))
 
 
 def print_make_account_eligible():

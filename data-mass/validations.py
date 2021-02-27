@@ -221,12 +221,14 @@ def validate_rewards_programs(selection):
     return selection in options
 
 
-def validade_challenge_type(type):
-    types = ['1', '2', '3', '4']
-    if type in types:
-        return True
-    else:
-        return False
+def validate_rewards_challenges(selection):
+    options = ['1', '2', '3', '4', '5']
+    return selection in options
+
+
+def validate_rewards_zones(zone):
+    zones = ['AR', 'BR', 'CO', 'DO', 'EC', 'MX', 'PE', 'ZA']
+    return zone in zones
 
 
 def validate_orders(option):

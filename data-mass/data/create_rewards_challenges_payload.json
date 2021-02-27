@@ -1,19 +1,17 @@
 {
   "title": "string",
   "description": "string",
-  "detailedDescription": "string",
   "points": 350,
   "startDate": "string",
   "endDate": "string",
-  "image": "string",
+  "image": "https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/br/challenges/1661/execution_2nd_display.jpg",
   "type": "EXECUTION_PTC",
   "filter": {
-    "potential": ["DM-POTENT"],
-    "segment": ["DM-SEG"]
+    "erpSalesCenter": [],
+    "groupIds": [],
+    "potential": [],
+    "segment": []
   },
   "executionMethod": "string",
-  "goodPhotoSample": "string",
-  "badPhotoSample": "string",
-  "skus": [],
   "mode": "PUBLISHED"
 }
