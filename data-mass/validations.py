@@ -175,7 +175,7 @@ def validate_account_operations_structure(option):
 
 
 def validate_product_operations_structure(option):
-    options = ['1', '2', '3', '4', '5']
+    options = ['1', '2', '3', '4', '5', '6']
     if option in options:
         return True
     else:

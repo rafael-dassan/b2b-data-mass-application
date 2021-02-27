@@ -240,14 +240,7 @@ def create_user(environment, country, email, password, account_id, tax_id):
         return "fail"
 
     confirmed_account_request(params, self_asserted_account_response)
-
-    # Verifying the created account
-    authenticate_user_iam_response = authenticate_user_iam(
-        environment, country, email, password)
-    if authenticate_user_iam_response == "wrong_password" or authenticate_user_iam_response == "fail":
-        return "fail"
-    else:
-        return "success"
+    return "success"
 
 
 def get_cookies(response):
@@ -307,8 +300,7 @@ def authorize_load_request(params):
         "GET", params["BASE_SIGNUP_URL"] + "/oauth2/authorize", data, None)
 
     if authorize_load_response.status_code != 200:
-        print("- Fail on user creation v3 [authorize_load_request]: status_code {0}.".format(
-            authorize_load_response.status_code))
+        print("- Fail [authorize_load_request]: status_code {0}.".format(authorize_load_response.status_code))
         return "fail"
 
     response_text = authorize_load_response.text
@@ -318,12 +310,12 @@ def authorize_load_request(params):
         trans_id = re.search('\"transId\":"([^"]+)', response_text).group(1)
     except AttributeError:
         print(
-            "- Fail on user creation v3 [authorize_load_request]: Invalid response.")
+            "- Fail [authorize_load_request]: Invalid response.")
         return "fail"
 
     if len(csrf) == 0 | len(api) == 0 | len(trans_id) == 0:
         print(
-            "- Fail on user creation v3 [authorize_load_request]: Invalid response.")
+            "- Fail [authorize_load_request]: Invalid response.")
         return "fail"
     else:
         return {
@@ -358,8 +350,11 @@ def self_asserted_email_request(email, params, authorize_load_response):
         headers)
 
     if self_assert_response_error(self_asserted_email_response):
-        print("- Fail on user creation v3 [self_asserted_email_request]: status_code {0}. Body {1}.".format(
-            self_asserted_email_response.status_code, self_asserted_email_response.text))
+        print("- Fail [self_asserted_email_request]: status_code {0}. Body {1}.".format(self_asserted_email_response.status_code,
+                                                                                        self_asserted_email_response.text))
+        if "Esta cuenta ya existe" in self_asserted_email_response.text or "There is another user with this user name" in \
+                self_asserted_email_response.text:
+            return "user_exists"
         return "fail"
     else:
         return {
@@ -434,7 +429,7 @@ def confirmed_email_request(params, last_response):
         last_response["COOKIES"], True)
 
     if confirmed_email_response == "fail":
-        print("- Fail on user creation v3 [confirmed_email_request].")
+        print("- Fail [confirmed_email_request]")
         return "fail"
     else:
         return confirmed_email_response

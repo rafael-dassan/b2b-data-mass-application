@@ -40,7 +40,7 @@ def execute_test(country, environment):
     delete_recommendation(account_params.get('id'), country, environment, 'FORGOTTEN_ITEMS')
     delete_recommendation(account_params.get('id'), country, environment, 'CROSS_SELL_UP_SELL')
 
-    logger.info("delete_orders for account %s/%s", country, environment)
+    logger.info("delete_orders for account %s", account_params.get('id'))
     delete_from_database_by_account(order_database_params.get('client'), order_database_params.get('db_name'),
                                     order_database_params.get('collection_name'), order_database_params.get('prefix'))
 
