@@ -226,11 +226,6 @@ def validate_rewards_challenges(selection):
     return selection in options
 
 
-def validate_rewards_zones(zone):
-    zones = ['AR', 'BR', 'CO', 'DO', 'EC', 'MX', 'PE', 'ZA']
-    return zone in zones
-
-
 def validate_orders(option):
     options = ['1', '2']
     if option in options:

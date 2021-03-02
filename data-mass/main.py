@@ -29,7 +29,7 @@ from menus.product_menu import print_product_operations_menu, print_get_products
 from menus.supplier_menu import print_create_supplier_category_menu, print_new_attribute, print_attribute_primitive, \
     print_create_attribute_menu, print_min_cardinality, print_max_cardinality, print_new_page, print_attribute_type
 from menus.rewards_menu import print_rewards_menu, print_rewards_transactions_menu, print_rewards_program_menu, \
-    print_rewards_challenges_menu, print_zone_for_rewards_ms
+    print_rewards_challenges_menu
 from orders import *
 from combos import *
 from products import *
@@ -250,7 +250,6 @@ def create_rewards_to_account():
 
     reward_option = switcher.get(selection_structure, 'false')
  
-    # zone = print_zone_for_rewards_ms()
     zone = print_zone_menu_for_ms()
     environment = print_environment_menu()
 

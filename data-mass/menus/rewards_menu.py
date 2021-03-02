@@ -1,7 +1,7 @@
 # Local application imports
 from classes.text import text
 from validations import validate_rewards, validate_rewards_transactions, validate_rewards_programs, \
-    validate_rewards_challenges, validate_rewards_zones
+    validate_rewards_challenges
 
 # Print rewards menu
 def print_rewards_menu():
@@ -74,12 +74,3 @@ def print_rewards_challenges_menu():
         structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure
-
-# Print rewards zones
-def print_zone_for_rewards_ms():
-    zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
-    while validate_rewards_zones(zone.upper()) is False:
-        print(text.Red + '\n- {0} is not a valid zone\n'.format(zone.upper()))
-        zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
-
-    return zone.upper()

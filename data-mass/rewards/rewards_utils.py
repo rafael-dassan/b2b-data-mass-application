@@ -38,6 +38,10 @@ def get_payload(file_path):
     return json_data
 
 
+def format_datetime_to_str(date):
+    return date.strftime('%Y-%m-%dT%H:%M:%S.%f') + 'Z'
+    
+
 # Get the DT Combos for the specified zone from Combos MS
 def get_dt_combos_from_zone(zone, environment, page_size=9999):
     
