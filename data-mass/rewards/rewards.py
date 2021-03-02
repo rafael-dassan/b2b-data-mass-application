@@ -126,6 +126,8 @@ def associate_dt_combos_to_poc(account_id, zone, environment):
     sku = response_product_offers[index_offers]['sku']
     
     dt_combos_to_associate = match_dt_combos_to_associate(program_dt_combos, zone_dt_combos)
+    if len(dt_combos_to_associate) == 0:
+        return None
 
     print(text.Yellow + '\n- Associating matched DT combos, please wait...')
 
@@ -139,18 +141,13 @@ def match_dt_combos_to_associate(program_dt_combos, zone_dt_combos):
     print(text.Yellow + '\n- Found "{}" DT combos configured for the zone.'.format(str(len(zone_dt_combos))))
 
     # Verify which combos of the zone matchs with the ones added to the rewards program
-    x = 0
-    y = 0
     dt_combos_matched = list()
-    while x < len(program_dt_combos):
-        y = 0
-        while y < len(zone_dt_combos):
-            if zone_dt_combos[y]['id'] == program_dt_combos[x]['comboId']:
-                dt_combos_matched.append(zone_dt_combos[y])
+    for program_dt_combo in program_dt_combos:
+        for zone_dt_combo in zone_dt_combos:
+            if zone_dt_combo['id'] == program_dt_combo['comboId']:
+                dt_combos_matched.append(zone_dt_combo)
                 break
-            y += 1
-        x += 1
-    
+
     print(text.Yellow + '\n- Found "{}" DT combos matching the program and the zone configuration.'.format(str(len(dt_combos_matched))))
 
     return dt_combos_matched

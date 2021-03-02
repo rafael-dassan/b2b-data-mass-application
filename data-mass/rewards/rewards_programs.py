@@ -35,6 +35,9 @@ def create_new_program(zone, environment):
     product_list_from_zone = create_product_list_from_zone(zone, environment)
 
     # Verify if the zone has at least 20 SKUs available
+    if product_list_from_zone is None:
+        return None
+
     if len(product_list_from_zone) < 20:
         print(text.Red + '\n- [Rewards] The zone must have at least 20 products to proceed')
         return None

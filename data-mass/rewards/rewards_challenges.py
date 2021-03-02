@@ -15,11 +15,11 @@ from rewards.rewards_utils import generate_id, create_product_list_from_zone, di
     get_payload
 
 
-def create_challenge_payload(challenge_id, executionMethod, zone_skus_list=None):
+def create_challenge_payload(challenge_id, executionMethod, zone_skus_list=None, start_date_timedelta=0, end_date_timedelta=180):
     challenge_payload_template = get_payload('../data/create_rewards_challenges_payload.json')
 
-    start_date = generate_date()
-    end_date = generate_date(180)
+    start_date = generate_date(start_date_timedelta)
+    end_date = generate_date(end_date_timedelta)
 
     dict_challenge = {
         'title': 'DM-' + challenge_id,
@@ -56,22 +56,28 @@ def create_challenge_payload(challenge_id, executionMethod, zone_skus_list=None)
     return json_object
 
 
-def create_take_photo_challenge(zone, environment):
+def create_take_photo_challenge(zone, environment, expired=False):
 
     challenge_id = generate_id()
 
-    json_object = create_challenge_payload(challenge_id, 'TAKE_PHOTO')
+    if expired is False:
+        json_object = create_challenge_payload(challenge_id, 'TAKE_PHOTO')
+    else:
+        json_object = create_challenge_payload(challenge_id, 'TAKE_PHOTO', None, -30, -1)
 
     #Create body
     request_body = convert_json_to_string(json_object)
 
     return put_challenge(challenge_id, request_body, zone, environment)
 
-def create_mark_complete_challenge(zone, environment):
+def create_mark_complete_challenge(zone, environment, expired=False):
 
     challenge_id = generate_id()
 
-    json_object = create_challenge_payload(challenge_id, 'MARK_COMPLETE')
+    if expired is False:
+        json_object = create_challenge_payload(challenge_id, 'MARK_COMPLETE')
+    else:
+        json_object = create_challenge_payload(challenge_id, 'MARK_COMPLETE', None, -30, -1)
 
     #Create body
     request_body = convert_json_to_string(json_object)
@@ -79,16 +85,22 @@ def create_mark_complete_challenge(zone, environment):
     return put_challenge(challenge_id, request_body, zone, environment)
 
 
-def create_purchase_challenge(zone, environment):
+def create_purchase_challenge(zone, environment, expired=False):
     zone_skus_list = create_product_list_from_zone(zone, environment)
 
+    if zone_skus_list is None:
+        return None
+    
     if len(zone_skus_list) == 0:
         print(text.Red + '\n- [Rewards] There are no products available for "{}" zone.'.format(zone))
         return None
 
     challenge_id = generate_id()
 
-    json_object = create_challenge_payload(challenge_id, 'PURCHASE', zone_skus_list)
+    if expired is False:
+        json_object = create_challenge_payload(challenge_id, 'PURCHASE', zone_skus_list)
+    else:
+        json_object = create_challenge_payload(challenge_id, 'PURCHASE', zone_skus_list, -30, -1)
     
     #Create body
     request_body = convert_json_to_string(json_object)
@@ -96,8 +108,11 @@ def create_purchase_challenge(zone, environment):
     return put_challenge(challenge_id, request_body, zone, environment)
 
 
-def create_purchase_multiple_challenge(zone, environment):
+def create_purchase_multiple_challenge(zone, environment, expired=False):
     zone_skus_list = create_product_list_from_zone(zone, environment)
+
+    if zone_skus_list is None:
+        return None
 
     if len(zone_skus_list) == 0:
         print(text.Red + '\n- [Rewards] There are no products available for "{}" zone.'.format(zone))
@@ -105,8 +120,11 @@ def create_purchase_multiple_challenge(zone, environment):
 
     challenge_id = generate_id()
 
-    json_object = create_challenge_payload(challenge_id, 'PURCHASE_MULTIPLE', zone_skus_list)
-    
+    if expired is False:
+        json_object = create_challenge_payload(challenge_id, 'PURCHASE_MULTIPLE', zone_skus_list)
+    else:
+        json_object = create_challenge_payload(challenge_id, 'PURCHASE_MULTIPLE', zone_skus_list, -30, -1)
+
     #Create body
     request_body = convert_json_to_string(json_object)
 

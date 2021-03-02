@@ -110,17 +110,15 @@ def post_combo_relay_account(zone, environment, account_id, dt_combos_to_associa
     }
 
     # Define the entire list of Combos for the main payload
-    i = 0
-    combos_list = list()
-    while i < len(dt_combos_to_associate):
-
-        dict_values_combos  = {
-            'id': dt_combos_to_associate[i]['id'],
-            'externalId': dt_combos_to_associate[i]['id'],
-            'title': dt_combos_to_associate[i]['title'],
-            'description': dt_combos_to_associate[i]['description'],
-            'startDate': dt_combos_to_associate[i]['startDate'],
-            'endDate': dt_combos_to_associate[i]['endDate'],
+    dt_combos_list = list()
+    for dt_combo in dt_combos_to_associate:
+        dict_values_dt_combo  = {
+            'id': dt_combo['id'],
+            'externalId': dt_combo['id'],
+            'title': dt_combo['title'],
+            'description': dt_combo['description'],
+            'startDate': dt_combo['startDate'],
+            'endDate': dt_combo['endDate'],
             'type': 'DT',
             'image': 'https://test-conv-micerveceria.abi-sandbox.net/media/catalog/product/c/o/combo-icon_11.png',
             'items': None,
@@ -132,18 +130,16 @@ def post_combo_relay_account(zone, environment, account_id, dt_combos_to_associa
             'discountPercentOff': 0,
             'score': 0,
         }
-
-        combos_list.append(dict_values_combos)
-        i += 1
+        dt_combos_list.append(dict_values_dt_combo)
 
     # Creates the main payload based on the lists created above
-    dict_values_account = {
+    dict_values_account_combos = {
         'accounts': create_list(account_id),
-        'combos': combos_list
+        'combos': dt_combos_list
     }
 
     #Create body to associate the combos to account
-    request_body = convert_json_to_string(dict_values_account)
+    request_body = convert_json_to_string(dict_values_account_combos)
 
     # Send request to associate the combos to account
     response = place_request('POST', request_url, request_body, request_headers)
@@ -162,13 +158,14 @@ def post_combo_relay_account(zone, environment, account_id, dt_combos_to_associa
 def create_product_list_from_zone(zone, environment):
     response_products = request_get_products_microservice(zone, environment)
 
-    sku_list = list()
-
-    if response_products != 'false':
+    if response_products == 'false':
+        return None
+    else:
+        sku_list = list()
         for product in response_products:
             sku_list.append(product['sku'])
 
-    return sku_list
+        return sku_list
 
 
 # Displays all programs information
