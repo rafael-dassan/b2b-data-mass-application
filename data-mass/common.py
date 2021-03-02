@@ -180,19 +180,7 @@ def get_magento_base_url(environment, country):
             'ZA': 'https://za.uat.bees-platform.dev'
         }
     }
-
     return magento_url.get(environment).get(country)
-
-
-def get_region_id(country):
-    region_id = {
-        'BR': 'PT_BR',
-        'DO': 'ES_DO',
-        'AR': 'ES_AR',
-        'ZA': 'EN_ZA',
-        'CO': 'ES_CO'
-    }
-    return region_id.get(country)
 
 
 # Returns Magento User Registration Integration Access Token
@@ -213,6 +201,7 @@ def get_magento_user_registration_access_token(environment, country):
             'DO': '56jqtzzto7tw9uox8nr3eckoeup53dt2',
             'EC': 'kyhzpszn0bswbf17mlb409ldg14j58uv',
             'MX': 'w0mi88cajh0jbq0zrive3ht4eywc8xlm',
+            'PA': '28bfo54x45h9xajalu3hvl0a33dmo4z3',
             'PE': 'hwv67q9d3zyy2u500n2x0r5g7mr2j5is',
             'ZA': 'nmvvuk58lc425a7p5l55orrkgh0jprr2'
         },
@@ -223,6 +212,7 @@ def get_magento_user_registration_access_token(environment, country):
             'DO': '56jqtzzto7tw9uox8nr3eckoeup53dt2',
             'EC': 'awtm7d9as0n9k1o5zi9fi90rtukxdmqh',
             'MX': 'kcsn7y80vvo2by9fluw2vq4r2a6pucfs',
+            'PA': 'ovdnr3wfoh6nf0uh6h9ppoicp8jb15y0',
             'PE': '4z0crqq6yb6t5mip43i63tgntdll09vc',
             'ZA': '31pdb0yht5kn3eld7gum021f6k984jh9'
         }
@@ -235,27 +225,28 @@ def get_magento_user_registration_access_token(environment, country):
 def get_magento_datamass_access_token(environment, country):
     access_token = {
         'UAT': {
-            'BR': '8z2z3y523hoqkcqci8q58afuoue81bns',
-            'DO': 'js4gd8y9wkqogf7eo2s4uy6oys15lfkf',
             'AR': 'a34o213zgisn67efeg0zbq04sqg667qk',
-            'ZA': '0seca4btewbr3e1opma4je2x8ftj57wx',
+            'BR': '8z2z3y523hoqkcqci8q58afuoue81bns',
             'CO': 'meqei3q5ztreebdpb5vyej378mt2o8qy',
-            'MX': 'bqzqcmx3opvntxtwijh98s4kmb21pi8j',
+            'DO': 'js4gd8y9wkqogf7eo2s4uy6oys15lfkf',
             'EC': 'w9pphbvskd35206otky7cv1dobn0p1yb',
-            'PE': 'xcgb5m0rl5pto116q4gxe1msd3zselq6'
+            'MX': 'lsnudq7uujr3svcbn0g0uxlt6vjqe9yj',
+            'PA': 't1l4tdhvzrsk54qgm9b7wg0nty1ia0jr',
+            'PE': 'xcgb5m0rl5pto116q4gxe1msd3zselq6',
+            'ZA': '0seca4btewbr3e1opma4je2x8ftj57wx'
         },
         'SIT': {
-            'BR': 'q6yti2dxmhp0e2xjgyvtt72nziss6ptp',
-            'DO': 'tgqnjlqpfupf0i4zxcs2doqx409k1hyq',
             'AR': 'hzp6hw65oqiyeyv8ozfzunex0nc1rff8',
-            'ZA': 'fde80w10jbbaed1mrz6yg0pwy1vzfo48',
+            'BR': 'q6yti2dxmhp0e2xjgyvtt72nziss6ptp',
             'CO': 'new189lnml9xmcr3m9gc0j6oji6w2izr',
-            'MX': '86pg36lug4ivrx3xh5b5qnemzy1gw6v8',
+            'DO': 'tgqnjlqpfupf0i4zxcs2doqx409k1hyq',
             'EC': 'ybyiars1mhm5e4jyaq94s5csj1e77knp',
-            'PE': 'lda0mjri507oqrm8xfofk6weifajn8cm'
+            'MX': '86pg36lug4ivrx3xh5b5qnemzy1gw6v8',
+            'PA': '3bs7q1f5wtegt7vrgxumcv1plhjatf1d',
+            'PE': 'lda0mjri507oqrm8xfofk6weifajn8cm',
+            'ZA': 'fde80w10jbbaed1mrz6yg0pwy1vzfo48'
         }
     }
-
     return access_token.get(environment).get(country)
 
 
