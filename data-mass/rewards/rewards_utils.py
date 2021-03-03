@@ -26,6 +26,22 @@ def generate_id():
     return epoch_id
 
 
+def get_payload(file_path):
+    # Create file path
+    path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(path, file_path)
+
+    # Load JSON file
+    with open(file_path) as file:
+        json_data = json.load(file)
+    
+    return json_data
+
+
+def format_datetime_to_str(date):
+    return date.strftime('%Y-%m-%dT%H:%M:%S.%f') + 'Z'
+    
+
 # Get the DT Combos for the specified zone from Combos MS
 def get_dt_combos_from_zone(zone, environment, page_size=9999):
     
@@ -98,17 +114,15 @@ def post_combo_relay_account(zone, environment, account_id, dt_combos_to_associa
     }
 
     # Define the entire list of Combos for the main payload
-    i = 0
-    combos_list = list()
-    while i < len(dt_combos_to_associate):
-
-        dict_values_combos  = {
-            'id': dt_combos_to_associate[i]['id'],
-            'externalId': dt_combos_to_associate[i]['id'],
-            'title': dt_combos_to_associate[i]['title'],
-            'description': dt_combos_to_associate[i]['description'],
-            'startDate': dt_combos_to_associate[i]['startDate'],
-            'endDate': dt_combos_to_associate[i]['endDate'],
+    dt_combos_list = list()
+    for dt_combo in dt_combos_to_associate:
+        dict_values_dt_combo  = {
+            'id': dt_combo['id'],
+            'externalId': dt_combo['id'],
+            'title': dt_combo['title'],
+            'description': dt_combo['description'],
+            'startDate': dt_combo['startDate'],
+            'endDate': dt_combo['endDate'],
             'type': 'DT',
             'image': 'https://test-conv-micerveceria.abi-sandbox.net/media/catalog/product/c/o/combo-icon_11.png',
             'items': None,
@@ -120,18 +134,16 @@ def post_combo_relay_account(zone, environment, account_id, dt_combos_to_associa
             'discountPercentOff': 0,
             'score': 0,
         }
-
-        combos_list.append(dict_values_combos)
-        i += 1
+        dt_combos_list.append(dict_values_dt_combo)
 
     # Creates the main payload based on the lists created above
-    dict_values_account = {
+    dict_values_account_combos = {
         'accounts': create_list(account_id),
-        'combos': combos_list
+        'combos': dt_combos_list
     }
 
     #Create body to associate the combos to account
-    request_body = convert_json_to_string(dict_values_account)
+    request_body = convert_json_to_string(dict_values_account_combos)
 
     # Send request to associate the combos to account
     response = place_request('POST', request_url, request_body, request_headers)
@@ -146,17 +158,18 @@ def post_combo_relay_account(zone, environment, account_id, dt_combos_to_associa
     return response
 
 
-# Generates the SKUs for the rules for Rewards program
+# Generates the SKU list available for a zone
 def create_product_list_from_zone(zone, environment):
     response_products = request_get_products_microservice(zone, environment)
 
-    sku_rules = list()
+    if response_products == 'false':
+        return None
+    else:
+        sku_list = list()
+        for product in response_products:
+            sku_list.append(product['sku'])
 
-    if response_products != 'false':
-        for i in range(len(response_products)):
-            sku_rules.append(response_products[i]['sku'])
-
-    return sku_rules
+        return sku_list
 
 
 # Displays all programs information
@@ -173,6 +186,22 @@ def display_all_programs_info(list_all_programs, show_initial_balance=False, sho
             all_programs_dictionary.setdefault('Current redeem limit', []).append(program['redeemLimit'])
 
     print(text.default_text_color + tabulate(all_programs_dictionary, headers='keys', tablefmt='grid'))
+
+
+# Displays all challenges information
+def display_all_challenges_info(list_all_challenges):
+    all_challenges_dictionary = dict()
+    
+    print(text.Yellow + '\nExisting challenges:')
+    for challenge in list_all_challenges:
+        all_challenges_dictionary.setdefault('Challenge ID', []).append(challenge['id'])
+        all_challenges_dictionary.setdefault('Title', []).append(challenge['title'])
+        all_challenges_dictionary.setdefault('Execution Method', []).append(challenge['executionMethod'])
+        all_challenges_dictionary.setdefault('Points', []).append(challenge['points'])
+        all_challenges_dictionary.setdefault('Start Date', []).append(challenge['startDate'])
+        all_challenges_dictionary.setdefault('End Date', []).append(challenge['endDate'])
+
+    print(text.default_text_color + tabulate(all_challenges_dictionary, headers='keys', tablefmt='grid'))
 
 
 def print_make_account_eligible():

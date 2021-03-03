@@ -11,7 +11,7 @@ from tabulate import tabulate
 from common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request
 from products import request_get_offers_microservice, get_sku_name
 from classes.text import text
-from rewards.rewards_programs import get_rewards_program_for_zone, get_specific_program
+from rewards.rewards_programs import get_all_programs, get_specific_program, get_DM_rewards_program_for_zone
 from rewards.rewards_utils import print_make_account_eligible, make_account_eligible, get_dt_combos_from_zone, \
     post_combo_relay_account
 
@@ -23,10 +23,14 @@ def enroll_poc_to_program(account_id, zone, environment, account_info):
 
     if enroll_response.status_code == 406:
 
-        # Check if the zone has a DM reward program created
-        DM_program = get_rewards_program_for_zone(zone, environment)
+        response_all_programs = get_all_programs(zone, environment, set(["DEFAULT"]))
+        if response_all_programs is None:
+            return None
+    
+        # Verify if the zone already have a reward program created
+        DM_program = get_DM_rewards_program_for_zone(loads(response_all_programs.text))
 
-        if DM_program != None:
+        if DM_program is not None:
 
             # Getting account information to check eligibility for DM Rewards program
             seg_account = account_info[0]['segment']
@@ -76,7 +80,7 @@ def associate_dt_combos_to_poc(account_id, zone, environment):
     # Get the reward information for the account
     reward_response = get_rewards(account_id, zone, environment)
     
-    if reward_response == None: return None 
+    if reward_response is None: return None 
 
     json_reward_response = loads(reward_response.text)
 
@@ -88,7 +92,7 @@ def associate_dt_combos_to_poc(account_id, zone, environment):
     # Get the account's rewards program information
     response_program = get_specific_program(program_id, zone, environment, set(["COMBOS"]))
 
-    if response_program == None:
+    if response_program is None:
         print(text.Red + '- Please use the menu option "Unenroll a POC from a program" to disenroll this account and the option "Enroll POC to a program" to enroll this account to an existing rewards program.')
         return None
             
@@ -103,7 +107,7 @@ def associate_dt_combos_to_poc(account_id, zone, environment):
     # Get all the DT combos of the specified zone
     response_combos_from_zone = get_dt_combos_from_zone(zone, environment)
 
-    if response_combos_from_zone == None: return None
+    if response_combos_from_zone is None: return None
 
     # Get all the combos that exists on the specified zone
     json_combos_from_zone = loads(response_combos_from_zone.text)
@@ -122,6 +126,8 @@ def associate_dt_combos_to_poc(account_id, zone, environment):
     sku = response_product_offers[index_offers]['sku']
     
     dt_combos_to_associate = match_dt_combos_to_associate(program_dt_combos, zone_dt_combos)
+    if len(dt_combos_to_associate) == 0:
+        return None
 
     print(text.Yellow + '\n- Associating matched DT combos, please wait...')
 
@@ -135,18 +141,13 @@ def match_dt_combos_to_associate(program_dt_combos, zone_dt_combos):
     print(text.Yellow + '\n- Found "{}" DT combos configured for the zone.'.format(str(len(zone_dt_combos))))
 
     # Verify which combos of the zone matchs with the ones added to the rewards program
-    x = 0
-    y = 0
     dt_combos_matched = list()
-    while x < len(program_dt_combos):
-        y = 0
-        while y < len(zone_dt_combos):
-            if zone_dt_combos[y]['id'] == program_dt_combos[x]['comboId']:
-                dt_combos_matched.append(zone_dt_combos[y])
+    for program_dt_combo in program_dt_combos:
+        for zone_dt_combo in zone_dt_combos:
+            if zone_dt_combo['id'] == program_dt_combo['comboId']:
+                dt_combos_matched.append(zone_dt_combo)
                 break
-            y += 1
-        x += 1
-    
+
     print(text.Yellow + '\n- Found "{}" DT combos matching the program and the zone configuration.'.format(str(len(dt_combos_matched))))
 
     return dt_combos_matched
@@ -157,13 +158,13 @@ def display_program_rules_skus(zone, environment, abi_id):
 
     reward_response = get_rewards(abi_id, zone, environment)
 
-    if reward_response != None:
+    if reward_response is not None:
         json_reward_response = loads(reward_response.text)
 
         program_id = json_reward_response['programId']
         program_response = get_specific_program(program_id, zone, environment, set(["RULES"]))
 
-        if program_response != None:
+        if program_response is not None:
             json_program_response = loads(program_response.text)
 
             print(text.Yellow + '\nProgram ID: "{}" | Program Name: "{}"'

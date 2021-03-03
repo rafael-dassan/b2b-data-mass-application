@@ -28,14 +28,16 @@ from menus.order_menu import print_order_operations_menu, print_allow_cancellabl
 from menus.product_menu import print_product_operations_menu, print_get_products_menu
 from menus.supplier_menu import print_create_supplier_category_menu, print_new_attribute, print_attribute_primitive, \
     print_create_attribute_menu, print_min_cardinality, print_max_cardinality, print_new_page, print_attribute_type
-from menus.rewards_menu import print_rewards_menu, print_rewards_transactions_menu, print_rewards_program_menu    
+from menus.rewards_menu import print_rewards_menu, print_rewards_transactions_menu, print_rewards_program_menu, \
+    print_rewards_challenges_menu
 from orders import *
 from combos import *
 from products import *
 from rewards.rewards import enroll_poc_to_program, disenroll_poc_from_program, associate_dt_combos_to_poc, \
     display_program_rules_skus
 from rewards.rewards_programs import create_new_program, patch_program_root_field, update_dt_combos_rewards
-from rewards.rewards_challenges import input_challenge_to_zone
+from rewards.rewards_challenges import remove_challenge, create_take_photo_challenge, create_mark_complete_challenge, \
+    create_purchase_challenge
 from rewards.rewards_transactions import create_redemption, create_rewards_offer, create_points_removal
 from category_magento import *
 from products_magento import *
@@ -229,13 +231,21 @@ def create_rewards_to_account():
             '2': 'CREATE_REWARDS_OFFER',
             '3': 'CREATE_POINTS_REMOVAL'
         }
+    elif selection_structure == '7':
+        selection_structure = print_rewards_challenges_menu()
+        switcher = {
+            '1': 'CREATE_TAKE_PHOTO',
+            '2': 'CREATE_MARK_COMPLETE',
+            '3': 'CREATE_PURCHASE',
+            '4': 'CREATE_PURCHASE_MULTIPLE',
+            '5': 'DELETE_CHALLENGE'
+        }
     else:
         switcher = {
             '1': 'NEW_PROGRAM',
             '3': 'ENROLL_POC',
             '4': 'DISENROLL_POC',
             '5': 'ADD_REDEEM',
-            '7': 'ADD_CHALLENGE'
         }
 
     reward_option = switcher.get(selection_structure, 'false')
@@ -340,21 +350,36 @@ def create_rewards_to_account():
             
         print_finish_application_menu()
 
-    # Option to input challenges to a specific zone
-    elif reward_option == 'ADD_CHALLENGE':
+    # Option to create a TAKE_PHOTO challenge for zone
+    elif reward_option == 'CREATE_TAKE_PHOTO':
 
-        abi_id = print_account_id_menu(zone)
+        create_take_photo_challenge(zone, environment)
+        print_finish_application_menu()
+    
+    # Option to create a MARK_COMPLETE challenge for zone
+    elif reward_option == 'CREATE_MARK_COMPLETE':
 
-        # Call check account exists function
-        account = check_account_exists_microservice(abi_id, zone, environment)
-
-        if account != 'false':
-            add_challenge = input_challenge_to_zone(abi_id, zone, environment)
-            if add_challenge == 'false':
-                print(text.Red + '\n- [Rewards] Something went wrong, please try again')
-
+        create_mark_complete_challenge(zone, environment)
         print_finish_application_menu()
 
+    # Option to create a PURCHASE challenge for zone
+    elif reward_option == 'CREATE_PURCHASE':
+
+        create_purchase_challenge(zone, environment, False)
+        print_finish_application_menu()
+    
+    # Option to create a PURCHASE_MULTIPLE challenge for zone
+    elif reward_option == 'CREATE_PURCHASE_MULTIPLE':
+
+        create_purchase_challenge(zone, environment, True)
+        print_finish_application_menu()
+
+    # Option to DELETE a challenge
+    elif reward_option == 'DELETE_CHALLENGE':
+
+        remove_challenge(zone, environment)
+        print_finish_application_menu()
+    
 
 def order_menu():
     operation = print_order_operations_menu()
