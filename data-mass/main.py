@@ -36,8 +36,8 @@ from products import *
 from rewards.rewards import enroll_poc_to_program, disenroll_poc_from_program, associate_dt_combos_to_poc, \
     display_program_rules_skus
 from rewards.rewards_programs import create_new_program, patch_program_root_field, update_dt_combos_rewards
-from rewards.rewards_challenges import input_challenge_to_zone, remove_challenge, create_take_photo_challenge, \
-    create_mark_complete_challenge, create_purchase_challenge, create_purchase_multiple_challenge
+from rewards.rewards_challenges import remove_challenge, create_take_photo_challenge, create_mark_complete_challenge, \
+    create_purchase_challenge
 from rewards.rewards_transactions import create_redemption, create_rewards_offer, create_points_removal
 from category_magento import *
 from products_magento import *
@@ -365,13 +365,13 @@ def create_rewards_to_account():
     # Option to create a PURCHASE challenge for zone
     elif reward_option == 'CREATE_PURCHASE':
 
-        create_purchase_challenge(zone, environment)
+        create_purchase_challenge(zone, environment, False)
         print_finish_application_menu()
     
     # Option to create a PURCHASE_MULTIPLE challenge for zone
     elif reward_option == 'CREATE_PURCHASE_MULTIPLE':
 
-        create_purchase_multiple_challenge(zone, environment)
+        create_purchase_challenge(zone, environment, True)
         print_finish_application_menu()
 
     # Option to DELETE a challenge

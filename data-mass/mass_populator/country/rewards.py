@@ -1,6 +1,7 @@
 from mass_populator.log import logging
 from rewards.rewards import disenroll_poc_from_program
-from rewards.rewards_challenges import input_challenge_to_zone
+from rewards.rewards_challenges import create_take_photo_challenge, create_mark_complete_challenge, \
+    create_purchase_challenge
 
 logger = logging.getLogger(__name__)
 
@@ -21,16 +22,34 @@ def exec_disenroll_poc(row, country, environment):
         logger.info("The account %s is already unenrolled. Skipping...", account_id)
 
 
-def populate_challenges(country, environment, dataframe_products):
-    if dataframe_products is not None:
-        dataframe_products.apply(exec_populate_challenges,
-        args=(country, environment), axis=1)
-
-    logger.info("All needed challenges was created.")
+def populate_challenges(country, environment):
+    exec_populate_challenges(country, environment)
+    logger.info("All needed challenges were created.")
 
 
-def exec_populate_challenges(row, country, environment):
-    account_id = str(row['account_id_enrolled'])
-    if account_id != 'nan':
-        logger.info("Adding challenges for account %s in %s/%s", account_id, country, environment)
-        input_challenge_to_zone(account_id, country, environment)
+def exec_populate_challenges(country, environment):
+    logger.info("Adding challenges in %s/%s", country, environment)
+    
+    logger.info("Adding TAKE_PHOTO challenges")
+    # Create an Available TAKE_PHOTO challenge
+    create_take_photo_challenge(country, environment)
+    # Create an Expired TAKE_PHOTO challenge
+    create_take_photo_challenge(country, environment, True)
+    
+    logger.info("Adding MARK_COMPLETE challenges")
+    # Create an Available MARK_COMPLETE challenge
+    create_mark_complete_challenge(country, environment)
+    # Create an Expired MARK_COMPLETE challenge
+    create_mark_complete_challenge(country, environment, True)
+
+    logger.info("Adding PURCHASE challenges")
+    # Create an Available PURCHASE challenge
+    create_purchase_challenge(country, environment, False)
+    # Create an Expired PURCHASE challenge
+    create_purchase_challenge(country, environment, False, True)
+
+    logger.info("Adding PURCHASE_MULTIPLE challenges")
+    # Create an Available PURCHASE_MULTIPLE challenge
+    create_purchase_challenge(country, environment, True)
+    # Create an Expired PURCHASE_MULTIPLE challenge
+    create_purchase_challenge(country, environment, True, True)

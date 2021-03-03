@@ -21,5 +21,5 @@ def disenroll_accounts(country, environment):
 
 def add_challenges_to_accounts(country, environment):
     logger.info("Starting to add challenges...")
-    populate_challenges(country, environment, search_data_by(country, 'rewards'))
+    populate_challenges(country, environment)
     return True
