@@ -806,7 +806,7 @@ def input_combos_menu():
 
     # Combo type only free goods
     elif selection_structure == '4':
-        response = input_combo_free_good_only(abi_id, zone, environment, sku)
+        response = input_combo_only_free_good(abi_id, zone, environment, sku)
 
     # Reset combo consumption to zero
     else:

@@ -92,6 +92,7 @@ Example:
  ┃ ┣ 📜account.csv
  ┃ ┣ 📜combo_discount.csv
  ┃ ┣ 📜combo_free_good.csv
+ ┃ ┣ 📜combo_only_free_good.csv
  ┃ ┣ 📜discount.csv
  ┃ ┣ 📜discount_with_limit.csv
  ┃ ┣ 📜free_good.csv
@@ -107,6 +108,7 @@ Example:
  ┃ ┣ 📜account.csv
  ┃ ┣ 📜combo_discount.csv
  ┃ ┣ 📜combo_free_good.csv
+ ┃ ┣ 📜combo_only_free_good.csv
  ┃ ┣ 📜discount.csv
  ┃ ┣ 📜discount_with_limit.csv
  ┃ ┣ 📜free_good.csv
@@ -122,6 +124,7 @@ Example:
  ┃ ┣ 📜account.csv
  ┃ ┣ 📜combo_discount.csv
  ┃ ┣ 📜combo_free_good.csv
+ ┃ ┣ 📜combo_only_free_good.csv
  ┃ ┣ 📜discount.csv
  ┃ ┣ 📜discount_with_limit.csv
  ┃ ┣ 📜free_good.csv
@@ -137,6 +140,7 @@ Example:
  ┃ ┣ 📜account.csv
  ┃ ┣ 📜combo_discount.csv
  ┃ ┣ 📜combo_free_good.csv
+ ┃ ┣ 📜combo_only_free_good.csv
  ┃ ┣ 📜discount.csv
  ┃ ┣ 📜discount_with_limit.csv
  ┃ ┣ 📜free_good.csv
@@ -152,6 +156,7 @@ Example:
  ┃ ┣ 📜account.csv
  ┃ ┣ 📜combo_discount.csv
  ┃ ┣ 📜combo_free_good.csv
+ ┃ ┣ 📜combo_only_free_good.csv
  ┃ ┣ 📜discount.csv
  ┃ ┣ 📜discount_with_limit.csv
  ┃ ┣ 📜free_good.csv
@@ -166,6 +171,7 @@ Example:
  ┃ ┣ 📜account.csv
  ┃ ┣ 📜combo_discount.csv
  ┃ ┣ 📜combo_free_good.csv
+ ┃ ┣ 📜combo_only_free_good.csv
  ┃ ┣ 📜discount.csv
  ┃ ┣ 📜discount_with_limit.csv
  ┃ ┣ 📜free_good.csv
@@ -181,6 +187,7 @@ Example:
  ┃ ┣ 📜account.csv
  ┃ ┣ 📜combo_discount.csv
  ┃ ┣ 📜combo_free_good.csv
+ ┃ ┣ 📜combo_only_free_good.csv
  ┃ ┣ 📜discount.csv
  ┃ ┣ 📜discount_with_limit.csv
  ┃ ┣ 📜free_good.csv
@@ -195,6 +202,7 @@ Example:
  ┃ ┣ 📜account.csv
  ┃ ┣ 📜combo_discount.csv
  ┃ ┣ 📜combo_free_good.csv
+ ┃ ┣ 📜combo_only_free_good.csv
  ┃ ┣ 📜discount.csv
  ┃ ┣ 📜discount_with_limit.csv
  ┃ ┣ 📜free_good.csv

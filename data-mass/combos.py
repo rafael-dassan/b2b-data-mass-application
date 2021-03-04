@@ -182,12 +182,14 @@ def input_combo_type_free_good(account_id, zone, environment, sku, combo_id=None
         return 'false'
 
 
-def input_combo_free_good_only(abi_id, zone, environment, sku):
-    combo_id = 'DM-' + str(randint(1, 100000))
-    score = randint(1, 100)
+def input_combo_only_free_good(account_id, zone, environment, sku, combo_id=None):
+    if combo_id is None:
+        combo_id = 'DM-' + str(randint(1, 100000))
 
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + '/combo-relay/accounts'
+    score = randint(1, 100)
+    combo_info = get_combo_information(zone, combo_id, 'FREE_GOOD')
+    title = combo_info['title']
+    description = combo_info['description']
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
@@ -198,12 +200,12 @@ def input_combo_free_good_only(abi_id, zone, environment, sku):
         json_data = json.load(file)
 
     dict_values = {
-        'accounts': [abi_id],
-        'combos[0].description': combo_id + ' with free good only',
+        'accounts': [account_id],
+        'combos[0].description': description,
         'combos[0].id': combo_id,
         'combos[0].items': None,
         'combos[0].score': score,
-        'combos[0].title': combo_id + ' with free good only',
+        'combos[0].title': title,
         'combos[0].type': 'FG',
         'combos[0].externalId': combo_id,
         'combos[0].freeGoods.quantity': 1,
@@ -213,6 +215,9 @@ def input_combo_free_good_only(abi_id, zone, environment, sku):
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
+    # Get base URL
+    request_url = '{0}/combo-relay/accounts'.format(get_microservice_base_url(environment))
+
     # Create body
     request_body = convert_json_to_string(json_object)
 
@@ -221,7 +226,7 @@ def input_combo_free_good_only(abi_id, zone, environment, sku):
 
     # Send request
     create_combo_response = place_request('POST', request_url, request_body, request_headers)
-    update_consumption_response = update_combo_consumption(abi_id, zone, environment, combo_id)
+    update_consumption_response = update_combo_consumption(account_id, zone, environment, combo_id)
 
     if create_combo_response.status_code == 201:
         if update_consumption_response == 'success':        
@@ -229,8 +234,9 @@ def input_combo_free_good_only(abi_id, zone, environment, sku):
         else:
             return 'false'
     else:
-        print(text.Red + '\n- [Combo Relay Service] Failure when creating a new combo. Response Status: '
-                    + str(create_combo_response.status_code) + '. Response message ' + create_combo_response.text) 
+        print('\n{0}- [Combo Relay Service] Failure when creating a new combo. Response status: {1}. Response message: {2}'
+              .format(text.Red, create_combo_response.status_code, create_combo_response.text))
+        return 'false'
 
 
 # Turn combo quantity available
