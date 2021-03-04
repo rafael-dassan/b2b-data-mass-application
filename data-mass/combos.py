@@ -11,17 +11,14 @@ from products import get_sku_price
 from classes.text import text
 
 
-def input_combo_type_discount(abi_id, zone, environment, sku, discount_value, combo_id=None):
+def input_combo_type_discount(account_id, zone, environment, sku, discount_value, combo_id=None):
     if combo_id is None:
         combo_id = 'DM-' + str(randint(1, 100000))
     
-    # Get base URL
-    request_url = '{0}/combo-relay/accounts'.format(get_microservice_base_url(environment))
-    
-    original_price = get_sku_price(abi_id, sku, zone, environment)
+    original_price = get_sku_price(account_id, sku, zone, environment)
     price = round(original_price - original_price * (discount_value/100), 2)
     score = randint(1, 100)
-    combo_info = get_combo_information(zone, 'DISCOUNT')
+    combo_info = get_combo_information(zone, combo_id, 'DISCOUNT')
     title = combo_info['title']
     description = combo_info['description']
 
@@ -34,7 +31,7 @@ def input_combo_type_discount(abi_id, zone, environment, sku, discount_value, co
         json_data = json.load(file)
 
     dict_values = {
-        'accounts': [abi_id],
+        'accounts': [account_id],
         'combos[0].description': description,
         'combos[0].id': combo_id,
         'combos[0].items[0].sku': sku,
@@ -51,15 +48,18 @@ def input_combo_type_discount(abi_id, zone, environment, sku, discount_value, co
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
+    # Get base URL
+    request_url = '{0}/combo-relay/accounts'.format(get_microservice_base_url(environment))
+
     # Create body
     request_body = convert_json_to_string(json_object)
 
     # Get header request
-    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false', account_id)
 
     # Send requests
     create_combo_response = place_request('POST', request_url, request_body, request_headers)
-    update_consumption_response = update_combo_consumption(abi_id, zone, environment, combo_id)
+    update_consumption_response = update_combo_consumption(account_id, zone, environment, combo_id)
 
     if create_combo_response.status_code == 201:
         if update_consumption_response == 'success':
@@ -122,14 +122,15 @@ def input_combo_type_digital_trade(abi_id, zone, environment):
         return 'false'
 
 
-def input_combo_type_free_good(abi_id, zone, environment, sku):
-    combo_id = 'DM-' + str(randint(1, 100000))
+def input_combo_type_free_good(account_id, zone, environment, sku, combo_id=None):
+    if combo_id is None:
+        combo_id = 'DM-' + str(randint(1, 100000))
 
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + '/combo-relay/accounts'
-
-    price = get_sku_price(abi_id, sku, zone, environment)
+    price = get_sku_price(account_id, sku, zone, environment)
     score = randint(1, 100)
+    combo_info = get_combo_information(zone, combo_id, 'FREE_GOOD')
+    title = combo_info['title']
+    description = combo_info['description']
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
@@ -140,14 +141,14 @@ def input_combo_type_free_good(abi_id, zone, environment, sku):
         json_data = json.load(file)
 
     dict_values = {
-        'accounts': [abi_id],
-        'combos[0].description': combo_id + ' type free good',
+        'accounts': [account_id],
+        'combos[0].description': description,
         'combos[0].id': combo_id,
         'combos[0].items[0].sku': sku,
         'combos[0].originalPrice': price,
         'combos[0].price': price,
         'combos[0].score': score,
-        'combos[0].title': combo_id + ' type free good',
+        'combos[0].title': title,
         'combos[0].type': 'FG',
         'combos[0].externalId': combo_id,
         'combos[0].freeGoods.quantity': 1,
@@ -157,15 +158,18 @@ def input_combo_type_free_good(abi_id, zone, environment, sku):
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
+    # Get base URL
+    request_url = '{0}/combo-relay/accounts'.format(get_microservice_base_url(environment))
+
     # Create body
     request_body = convert_json_to_string(json_object)
 
     # Get header request
-    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false', account_id)
 
     # Send request
     create_combo_response = place_request('POST', request_url, request_body, request_headers)
-    update_consumption_response = update_combo_consumption(abi_id, zone, environment, combo_id)
+    update_consumption_response = update_combo_consumption(account_id, zone, environment, combo_id)
 
     if create_combo_response.status_code == 201:
         if update_consumption_response == 'success':
@@ -173,8 +177,9 @@ def input_combo_type_free_good(abi_id, zone, environment, sku):
         else:
             return 'false'
     else:
-        print(text.Red + '\n- [Combo Relay Service] Failure when creating a new combo. Response Status: '
-                    + str(create_combo_response.status_code) + '. Response message ' + create_combo_response.text) 
+        print('\n{0}- [Combo Relay Service] Failure when creating a new combo. Response status: {1}. Response message: {2}'
+              .format(text.Red, create_combo_response.status_code, create_combo_response.text))
+        return 'false'
 
 
 def input_combo_free_good_only(abi_id, zone, environment, sku):
@@ -288,23 +293,41 @@ def check_combo_exists_microservice(account_id, zone, environment, combo_id):
         return 'false'
 
 
-def get_combo_information(zone, combo_type):
+def get_combo_information(zone, combo_id, combo_type):
     zones_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PE']
     zones_en = ['ZA']
 
     if zone in zones_es:
         combo_info = {
-            'DISCOUNT': {'title': 'Compra y obten un 10% de descuento', 'description': 'Obtienes descuentos en la compra de este combo'},
-            'FREE_GOOD': {'title': 'Compra 1 y obtenga 1 gratis', 'description': 'Obtienes un producto gratis con la compra de este combo'}
+            'DISCOUNT': {
+                'title': combo_id,
+                'description': 'Obtienes descuentos en la compra de este combo'
+            },
+            'FREE_GOOD': {
+                'title': combo_id,
+                'description': 'Obtienes un producto gratis con la compra de este combo'
+            }
         }
     elif zone in zones_en:
         combo_info = {
-            'DISCOUNT': {'title': 'Buy and get 10% off', 'description': 'You get discounts on the purchase of this combo'},
-            'FREE_GOOD': {'title': 'Buy 1 and get 1 for free', 'description': 'You get one product for free on the purchase of this combo'}
+            'DISCOUNT': {
+                'title': combo_id,
+                'description': 'You get discounts on the purchase of this combo'
+            },
+            'FREE_GOOD': {
+                'title': combo_id,
+                'description': 'You get one product for free on the purchase of this combo'
+            }
         }
     else:
         combo_info = {
-            'DISCOUNT': {'title': 'Compre e ganhe 10% off', 'description': 'Voce ganha descontos na compra deste combo'},
-            'FREE_GOOD': {'title': 'Compre 1 e ganhe outro', 'description': 'Na compra de um produto voce ganha outro neste combo'}
+            'DISCOUNT': {
+                'title': combo_id,
+                'description': 'Voce ganha descontos na compra deste combo'
+            },
+            'FREE_GOOD': {
+                'title': combo_id,
+                'description': 'Na compra de um produto voce ganha outro neste combo'
+            }
         }
     return combo_info[combo_type]
