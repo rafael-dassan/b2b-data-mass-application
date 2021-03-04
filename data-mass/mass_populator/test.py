@@ -1,6 +1,6 @@
 from common import block_print
 from mass_populator.country.category import associate_products_to_category_magento
-from mass_populator.country.combo import populate_combo_discount
+from mass_populator.country.combo import populate_combo_discount, populate_combo_free_good
 from mass_populator.country.deal import populate_stepped_discount_with_limit, populate_discount, \
     populate_stepped_discount, populate_free_good, populate_stepped_free_good
 from mass_populator.helpers.database_helper import delete_from_database_by_account, get_database_params
@@ -31,6 +31,7 @@ def execute_test(country, environment):
     algo_selling_params = get_algo_selling_params(country)
     order_database_params = get_database_params(country, environment, 'order-service-ms')
     combo_discount_params = get_combo_params(country, 'DISCOUNT')
+    combo_free_good_params = get_combo_params(country, 'FREE_GOOD')
 
     # Overwrite standard output (stdout) - disable `print`
     block_print()
@@ -78,6 +79,9 @@ def execute_test(country, environment):
     logger.info("populate_combos for %s/%s", country, environment)
     populate_combo_discount(country, environment, combo_discount_params.get('account_id'), combo_discount_params.get('combo_id'),
                             combo_discount_params.get('sku'), combo_discount_params.get('discount_value'))
+
+    populate_combo_free_good(country, environment, combo_free_good_params.get('account_id'), combo_free_good_params.get('combo_id'),
+                             combo_free_good_params.get('sku'))
 
     logger.info("populate_orders for %s/%s", country, environment)
     populate_order(country, environment, order_params.get('account_id'), order_params.get('allow_order_cancel'), order_params.get('items'),
@@ -256,9 +260,14 @@ def get_combo_params(country, combo_type):
     params = {
         'DISCOUNT': {
             'account_id': get_account_params(country).get('id'),
-            'deal_id': 'DMA-{0}-TEST-CD'.format(country),
+            'combo_id': 'DMA-{0}-TEST-CD'.format(country),
             'sku': get_product_params().get('sku'),
             'discount_value': 10
+        },
+        'FREE_GOOD': {
+            'account_id': get_account_params(country).get('id'),
+            'combo_id': 'DMA-{0}-TEST-CFG'.format(country),
+            'sku': get_product_params().get('sku')
         }
     }
     return params[combo_type]
