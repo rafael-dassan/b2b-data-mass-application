@@ -1,6 +1,6 @@
 from common import block_print
 from mass_populator.country.category import associate_products_to_category_magento
-from mass_populator.country.combo import populate_combo_discount, populate_combo_free_good
+from mass_populator.country.combo import populate_combo_discount, populate_combo_free_good, populate_combo_only_free_good
 from mass_populator.country.deal import populate_stepped_discount_with_limit, populate_discount, \
     populate_stepped_discount, populate_free_good, populate_stepped_free_good
 from mass_populator.helpers.database_helper import delete_from_database_by_account, get_database_params
@@ -82,6 +82,9 @@ def execute_test(country, environment):
 
     populate_combo_free_good(country, environment, combo_free_good_params.get('account_id'), combo_free_good_params.get('combo_id'),
                              combo_free_good_params.get('sku'))
+
+    populate_combo_only_free_good(country, environment, combo_free_good_params.get('account_id'), 'DMA-{0}-TEST-COFG'.format(country),
+                                  combo_free_good_params.get('sku'))
 
     logger.info("populate_orders for %s/%s", country, environment)
     populate_order(country, environment, order_params.get('account_id'), order_params.get('allow_order_cancel'), order_params.get('items'),
