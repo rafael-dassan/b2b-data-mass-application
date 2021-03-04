@@ -11,15 +11,19 @@ from products import get_sku_price
 from classes.text import text
 
 
-def input_combo_type_discount(abi_id, zone, environment, sku, discount_value):
-    combo_id = 'DM-' + str(randint(1, 100000))
+def input_combo_type_discount(abi_id, zone, environment, sku, discount_value, combo_id=None):
+    if combo_id is None:
+        combo_id = 'DM-' + str(randint(1, 100000))
     
     # Get base URL
-    request_url = get_microservice_base_url(environment) + '/combo-relay/accounts'
+    request_url = '{0}/combo-relay/accounts'.format(get_microservice_base_url(environment))
     
     original_price = get_sku_price(abi_id, sku, zone, environment)
     price = round(original_price - original_price * (discount_value/100), 2)
     score = randint(1, 100)
+    combo_info = get_combo_information(zone, 'DISCOUNT')
+    title = combo_info['title']
+    description = combo_info['description']
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
@@ -31,13 +35,13 @@ def input_combo_type_discount(abi_id, zone, environment, sku, discount_value):
 
     dict_values = {
         'accounts': [abi_id],
-        'combos[0].description': combo_id + ' type discount',
+        'combos[0].description': description,
         'combos[0].id': combo_id,
         'combos[0].items[0].sku': sku,
         'combos[0].originalPrice': original_price,
         'combos[0].price': price,
         'combos[0].score': score,
-        'combos[0].title': combo_id + ' type discount',
+        'combos[0].title': title,
         'combos[0].type': 'D',
         'combos[0].externalId': combo_id,
         'combos[0].discountPercentOff': discount_value,
@@ -63,8 +67,8 @@ def input_combo_type_discount(abi_id, zone, environment, sku, discount_value):
         else:
             return 'false'
     else:
-        print(text.Red + '\n- [Combo Relay Service] Failure when creating a new combo. Response Status: '
-                    + str(create_combo_response.status_code) + '. Response message ' + create_combo_response.text) 
+        print('\n{0}- [Combo Relay Service] Failure when creating a new combo. Response status: {1}. Response message: {2}'
+              .format(text.Red, create_combo_response.status_code, create_combo_response.text))
         return 'false'
 
 
@@ -282,3 +286,25 @@ def check_combo_exists_microservice(account_id, zone, environment, combo_id):
         print(text.Red + '\n- [Combo Service] Failure to retrieve the combo. Response Status: '
               + str(response.status_code) + '. Response message ' + response.text)
         return 'false'
+
+
+def get_combo_information(zone, combo_type):
+    zones_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PE']
+    zones_en = ['ZA']
+
+    if zone in zones_es:
+        combo_info = {
+            'DISCOUNT': {'title': 'Compra y obten un 10% de descuento', 'description': 'Obtienes descuentos en la compra de este combo'},
+            'FREE_GOOD': {'title': 'Compra 1 y obtenga 1 gratis', 'description': 'Obtienes un producto gratis con la compra de este combo'}
+        }
+    elif zone in zones_en:
+        combo_info = {
+            'DISCOUNT': {'title': 'Buy and get 10% off', 'description': 'You get discounts on the purchase of this combo'},
+            'FREE_GOOD': {'title': 'Buy 1 and get 1 for free', 'description': 'You get one product for free on the purchase of this combo'}
+        }
+    else:
+        combo_info = {
+            'DISCOUNT': {'title': 'Compre e ganhe 10% off', 'description': 'Voce ganha descontos na compra deste combo'},
+            'FREE_GOOD': {'title': 'Compre 1 e ganhe outro', 'description': 'Na compra de um produto voce ganha outro neste combo'}
+        }
+    return combo_info[combo_type]

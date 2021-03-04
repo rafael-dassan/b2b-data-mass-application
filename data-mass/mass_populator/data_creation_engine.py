@@ -1,4 +1,5 @@
 from mass_populator.country.account import populate_pocs
+from mass_populator.country.combo import populate_combo_discount_base
 from mass_populator.country.deal import populate_discount_base, populate_stepped_discount_base, \
     populate_stepped_discount_with_limit_base, populate_free_good_base, populate_stepped_free_good_base
 from mass_populator.country.invoice import populate_invoices_base
@@ -36,6 +37,11 @@ def populate_deals(country, environment):
     populate_stepped_discount_with_limit_base(country, environment, search_data_by(country, 'discount_with_limit'))
     populate_free_good_base(country, environment, search_data_by(country, 'free_good'))
     populate_stepped_free_good_base(country, environment, search_data_by(country, 'stepped_free_good'))
+
+
+def populate_combos(country, environment):
+    logger.info("populate_combos for %s/%s", country, environment)
+    populate_combo_discount_base(country, environment, search_data_by(country, 'combo_discount'))
 
 
 def populate_orders(country, environment):

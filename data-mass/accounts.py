@@ -130,10 +130,19 @@ def display_account_information(account):
     else:
         liquor_license = liquor_license[0]['number']
 
+    # Validate challengeIds
+    challenge_ids = account_data['challengeIds']
+    if challenge_ids is None:
+        challenge_ids = 'None'
+    else:
+        challenge_ids = str(challenge_ids).replace('[', '').replace(']', '').replace('\'', '')
+
     # Validate payment methods
     payment_methods = account_data['paymentMethods']
     if len(payment_methods) == 0:
         payment_methods = 'None'
+    else:
+        payment_methods = str(payment_methods).replace('[', '').replace(']', '').replace('\'', '')
 
     # Validate minimum order
     minimum_order_information = list()
@@ -169,6 +178,7 @@ def display_account_information(account):
         'Name': account_data['name'],
         'Status': account_data['status'],
         'Tax ID': account_data['taxId'],
+        'Challenge IDs': challenge_ids,
         'Liquor License Number': liquor_license,
         'Payment Methods': payment_methods
     }

@@ -47,3 +47,4 @@ class Message(Enum):
     RETRIEVE_RATING_ERROR = "Failure to retrieve ratings for the account {account_id}."
     DELETE_RATING_ERROR = "Failure to delete ratings for the account {account_id}."
     RATING_NOT_FOUND_ERROR = "Rating not found for account {account_id}."
+    CREATE_COMBO_ERROR = "Fail on create combo for account {account_id}."
