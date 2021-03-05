@@ -6,6 +6,7 @@ def valid_country(country):
         "DO": True,
         "EC": True,
         "MX": True,
+        "PA": True,
         "PE": True,
         "ZA": True
     }
