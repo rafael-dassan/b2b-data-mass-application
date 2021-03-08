@@ -203,6 +203,7 @@ def get_magento_user_registration_access_token(environment, country):
             'MX': 'w0mi88cajh0jbq0zrive3ht4eywc8xlm',
             'PA': '28bfo54x45h9xajalu3hvl0a33dmo4z3',
             'PE': 'hwv67q9d3zyy2u500n2x0r5g7mr2j5is',
+            'PY': '03ijjunt2djravu3kin3siirfdah0u7j',
             'ZA': 'nmvvuk58lc425a7p5l55orrkgh0jprr2'
         },
         'UAT': {
@@ -214,6 +215,7 @@ def get_magento_user_registration_access_token(environment, country):
             'MX': 'kcsn7y80vvo2by9fluw2vq4r2a6pucfs',
             'PA': 'ovdnr3wfoh6nf0uh6h9ppoicp8jb15y0',
             'PE': '4z0crqq6yb6t5mip43i63tgntdll09vc',
+            'PY': 'z3l3d1l09hxd9wy0jmnphfwj09o8iefn',
             'ZA': '31pdb0yht5kn3eld7gum021f6k984jh9'
         }
     }
@@ -233,6 +235,7 @@ def get_magento_datamass_access_token(environment, country):
             'MX': 'lsnudq7uujr3svcbn0g0uxlt6vjqe9yj',
             'PA': 't1l4tdhvzrsk54qgm9b7wg0nty1ia0jr',
             'PE': 'xcgb5m0rl5pto116q4gxe1msd3zselq6',
+            'PY': 'nju63hy7j5nhfzgaeah2y077anlpzs6o',
             'ZA': '0seca4btewbr3e1opma4je2x8ftj57wx'
         },
         'SIT': {
@@ -244,6 +247,7 @@ def get_magento_datamass_access_token(environment, country):
             'MX': '86pg36lug4ivrx3xh5b5qnemzy1gw6v8',
             'PA': '3bs7q1f5wtegt7vrgxumcv1plhjatf1d',
             'PE': 'lda0mjri507oqrm8xfofk6weifajn8cm',
+            'PY': 'bgfrp38faxbpwnad7uoc2vqlprmv5nck',
             'ZA': 'fde80w10jbbaed1mrz6yg0pwy1vzfo48'
         }
     }

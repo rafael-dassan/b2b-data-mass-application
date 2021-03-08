@@ -130,6 +130,7 @@ def get_email_param(country):
         'MX': 'test-populator-mx@mailinator.com',
         'PA': 'test-populator-pa@mailinator.com',
         'PE': 'test-populator-pe@mailinator.com',
+        'PY': 'test-populator-py@mailinator.com',
         'ZA': 'test-populator-za@mailinator.com'
     }
 
