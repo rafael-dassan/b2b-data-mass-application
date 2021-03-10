@@ -153,6 +153,16 @@ def get_magento_base_url(environment, country):
             'MX': 'https://qa-dt-mx.abi-sandbox.net',
             'ZA': 'https://qa-dt-za.abi-sandbox.net'
         },
+        'QA': {
+            'AR': 'https://qa-ma-las.abi-sandbox.net',
+            'BR': 'https://qa-ma-br.abi-sandbox.net',
+            'CO': 'https://qa-m3-copec-co.abi-sandbox.net',
+            'DO': 'https://qa-ma-dr.abi-sandbox.net',
+            'EC': 'https://qa-m1-ec.abi-sandbox.net',
+            'MX': 'https://qa-se-mx.abi-sandbox.net',
+            'PE': 'https://qa-m1-pe.abi-sandbox.net',
+            'ZA': 'https://qa-ma-za.abi-sandbox.net'
+        },
         'SIT': {
             'AR': 'https://ar.sit.bees-platform.dev',
             'BR': 'https://br.sit.bees-platform.dev',
@@ -193,6 +203,16 @@ def get_magento_user_registration_access_token(environment, country):
             'DO': '56jqtzzto7tw9uox8nr3eckoeup53dt2',
             'MX': '40qrmhwv93ixeysxsw5hxrvjn6dstdim',
             'ZA': 'y4u1xqitth7k8y50ei5nlfm538sblk6j'
+        },
+        'QA': {
+            'AR': '30lqki06nbdegugcmdb0ttm9yppnmoec',
+            'BR': 'qq8t0w0tvz7nbn4gxo5jh9u62gohvjrw',
+            'CO': '8mh6b9b6ft6m1cr5k7zm2jh4aljq4slx',
+            'DO': '56jqtzzto7tw9uox8nr3eckoeup53dt2',
+            'EC': 'kyhzpszn0bswbf17mlb409ldg14j58uv',
+            'MX': 'w0mi88cajh0jbq0zrive3ht4eywc8xlm',
+            'PE': 'hwv67q9d3zyy2u500n2x0r5g7mr2j5is',
+            'ZA': 'yq2ed2ygbuiuysimjuir7cr86lbo3b90'
         },
         'SIT': {
             'AR': '30lqki06nbdegugcmdb0ttm9yppnmoec',
@@ -482,10 +502,10 @@ def print_environment_menu_user_creation():
 
 # Print user name menu
 def print_input_email():
-    email = input(text.default_text_color + "User email: ")
+    email = input(text.default_text_color + "User email/UserPhone: ")
     while len(email) == 0:
         print(text.Red + "\n- The user email should not be empty")
-        email = input(text.default_text_color + "User email: ")
+        email = input(text.default_text_color + "User email/UserPhone: ")
 
     return email
 
@@ -619,6 +639,7 @@ def validate_country_menu_in_user_create_iam(zone):
 
 def validate_environment_menu_in_user_create_iam(environment):
     switcher = {
+        'QA': 'true',
         'SIT': 'true',
         'UAT': 'true'
     }
@@ -628,13 +649,14 @@ def validate_environment_menu_in_user_create_iam(environment):
 def print_environment_menu_in_user_create_iam():
     """Print Environment Menu to Create User IAM
         Requirements:
+        - QA
         - SIT
         - UAT
     """
-    environment = input(text.default_text_color + 'Environment (SIT, UAT): ')
+    environment = input(text.default_text_color + 'Environment (QA, SIT, UAT): ')
     while validate_environment_menu_in_user_create_iam(environment.upper()) == 'false':
         print(text.Red + '\n- Invalid option')
-        environment = input(text.default_text_color + 'Environment (SIT, UAT): ')
+        environment = input(text.default_text_color + 'Environment (QA, SIT, UAT): ')
     return environment.upper()
 
 

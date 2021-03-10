@@ -1,7 +1,3 @@
-def get_iam_b2c_environment_uat(environment):
-    return environment == "UAT"
-
-
 def get_iam_b2c_params(environment, country):
     b2c_country_params = get_iam_b2c_country_params(environment, country)
     b2c_azure_params = get_iam_b2c_azure_params(environment)
@@ -33,10 +29,13 @@ def get_iam_b2c_params(environment, country):
 
 
 def get_iam_b2c_country_params(environment, country):
-    if get_iam_b2c_environment_uat(environment):
-        return get_iam_b2c_country_params_uat(country)
-    else:
-        return get_iam_b2c_country_params_sit(country)
+
+    iam_b2c_country_params = {
+        "QA": get_iam_b2c_country_params_qa(country),
+        "SIT": get_iam_b2c_country_params_sit(country),
+        "UAT": get_iam_b2c_country_params_uat(country)
+    }
+    return iam_b2c_country_params[environment]
 
 
 def get_iam_b2c_country_params_uat(country):
@@ -138,12 +137,51 @@ def get_iam_b2c_country_params_sit(country):
     }
     return params[country]
 
+def get_iam_b2c_country_params_qa(country):
+    params = {
+        "BR": {
+            "REDIRECT_URL": "com.abi.parceiro-ambev://oauth/redirect",
+            "CLIENT_ID": "421489e0-e644-4d18-9a79-7624b08ce6b0"
+        },
+        "CO": {
+            "REDIRECT_URL": "com.abi.bees.colombia://oauth/redirect",
+            "CLIENT_ID": "f26757ab-8795-4f19-95fa-792373ae3474"
+        },
+        "DO": {
+            "REDIRECT_URL": "com.abi.socio-cerveceria://oauth/redirect",
+            "CLIENT_ID": "2ad5019f-376d-4f99-a9bf-80521264a66e"
+        },
+        "MX": {
+            "REDIRECT_URL": "com.abi.bees.mexico://oauth/redirect",
+            "CLIENT_ID": "e14f916f-8b28-460e-adcf-f0dbbae66848"
+        },
+        "EC": {
+            "REDIRECT_URL": "com.abi.bees.ecuador://oauth/redirect",
+            "CLIENT_ID": "e0f49717-83f3-4777-8bb7-510541203312"
+        },
+        "PE": {
+            "REDIRECT_URL": "com.abi.bees.peru://oauth/redirect",
+            "CLIENT_ID": "6467b1ca-ed3a-4a11-86a9-d4187f2e1e07"
+        },
+        "ZA": {
+            "REDIRECT_URL": "com.abi.sab-connect://oauth/redirect",
+            "CLIENT_ID": "d427d243-2f42-40ff-849c-1d67d3590fa8"
+        },
+        "AR": {
+            "REDIRECT_URL": "com.abi.Quilmes://oauth/redirect",
+            "CLIENT_ID": "53305725-0200-49f0-80c4-6e70b4c44148"
+        }
+    }
+    return params[country]
+
 
 def get_iam_b2c_azure_params(environment):
-    if get_iam_b2c_environment_uat(environment):
-        return get_iam_b2c_azure_params_uat()
-    else:
-        return get_iam_b2c_azure_params_sit()
+    iam_b2c_environment = {
+        "QA": get_iam_b2c_azure_params_qa(),
+        "SIT": get_iam_b2c_azure_params_sit(),
+        "UAT": get_iam_b2c_azure_params_uat()
+    }
+    return iam_b2c_environment[environment]
 
 
 def get_iam_b2c_azure_params_uat():
@@ -165,6 +203,14 @@ def get_iam_b2c_azure_params_sit():
     }
     return params
 
+def get_iam_b2c_azure_params_qa():
+    params = {
+        "B2B_SERVER_NAME": "b2biamgbusqa1.b2clogin.com",
+        "B2B_PATH": "b2biamgbusqa1.onmicrosoft.com",
+        "AZURE_CLIENT_ID": "1285777d-20f2-4e39-8866-cb80d0b922e7",
+        "AZURE_CLIENT_SECRET": "cbA9Pu8ejf_rPy1Kb0i5a~83_90zZ8g_Db"
+    }
+    return params
 
 def get_iam_b2c_policy_params(country):
     params = {
