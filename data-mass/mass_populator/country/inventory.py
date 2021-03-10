@@ -1,4 +1,4 @@
-from product_inventory import update_sku_inventory_microservice
+from product_inventory import request_inventory_creation
 from products import request_get_account_product_assortment
 from mass_populator.log import *
 
@@ -18,5 +18,5 @@ def populate_default_inventory(account_id, country, environment, delivery_center
     products = request_get_account_product_assortment(account_id, country, environment, delivery_center_id)
 
     # Request the creation of the default inventory
-    if "true" != update_sku_inventory_microservice(country, environment, delivery_center_id, products):
+    if "true" != request_inventory_creation(country, environment, account_id, delivery_center_id, products):
         logger.error(log(Message.INVENTORY_CREATE_ERROR, {"account_id": account_id}))

@@ -1,147 +1,21 @@
-# Standard library imports
+import json
 from json import loads
-from multiprocessing import Pool
-from itertools import repeat
-
-# Third party imports
+import os
 from tabulate import tabulate
-
-# Local application imports
-from common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request
-from products import request_get_account_product_assortment, check_item_enabled, get_sku_name, \
-    request_get_products_microservice
+from common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request, update_value_to_json, \
+    finish_application
 from classes.text import text
 
 
-# Show all available SKUs of the account in the screen
-def display_available_products_account(account_id, zone, environment, delivery_center_id):
-    # Retrieve all SKUs for the specified Account and DeliveryCenter IDs
-    product_offers = request_get_account_product_assortment(account_id, zone, environment, delivery_center_id)
-    # Retrieve all SKUs for the specified Zone
-    products = request_get_products_microservice(zone, environment)
-    if products != 'false':
-        products_list = list()
-        for sku in products:
-            products_list.append(sku['sku'])
-
-        valid_products = list(set(product_offers).intersection(products_list))
-
-        if isinstance(product_offers, list):
-            # Check if the SKU is enabled
-            enabled_skus = list()
-            if len(product_offers):
-                with Pool(20) as pool:
-                    enabled_skus = pool.starmap(check_item_enabled,
-                                                zip(valid_products, repeat(zone), repeat(environment)))
-
-            # Get SKU name
-            if len(enabled_skus) > 0:
-                quantity_enabled_skus = len(enabled_skus)
-                with Pool(20) as pool:
-                    sku_name = pool.starmap(get_sku_name, zip(repeat(zone), repeat(environment), enabled_skus))
-
-                stock_option = input(text.Yellow + '\nDo you want to choose which product will have the stock updated? '
-                                                   '\nIf you don\'t, stock will be added to all products linked to your '
-                                                   'account (1. Yes / 2. No): ')
-
-                while stock_option != '1' and stock_option != '2':
-                    print(text.Red + '\n- Invalid option')
-                    stock_option = input(
-                        text.Yellow + '\nDo you want to choose which product will have the stock updated? '
-                                      '\nIf don\'t, stock will be added to all products linked to your account'
-                                      ' (1. Yes / 2. No): ')
-
-                if stock_option == '2':
-                    update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id,
-                                                                   enabled_skus)
-                else:
-                    # Show all the enabled SKUs and its respective names on the screen
-                    aux_index = 0
-
-                    while aux_index < quantity_enabled_skus:
-                        if enabled_skus[aux_index] == 'false':
-                            aux_index = aux_index + 1
-                        else:
-                            print(
-                                text.default_text_color + '\n SKU: ' + text.Blue + enabled_skus[aux_index] + '  ||  ' +
-                                sku_name[aux_index].upper())
-                            aux_index = aux_index + 1
-
-                    sku_id = input(text.default_text_color + '\n Type here the SKU from the list above you want to add '
-                                                             'inventory: ')
-
-                    while validate_sku(sku_id.strip(), enabled_skus) != 'true':
-                        print(text.Red + '\n- Invalid SKU. Please check the list above and try again.')
-                        sku_id = input(
-                            text.default_text_color + '\n Type here the SKU from the list above you want to add '
-                                                      'inventory: ')
-
-                    sku_quantity = input(text.default_text_color + '\n Type here the quantity you want to add to it: ')
-
-                    while not sku_quantity.isdigit():
-                        print(text.Red + '\n- Invalid option.')
-                        sku_quantity = input(
-                            text.default_text_color + '\n Type here the quantity you want to add to it: ')
-
-                    update_sku = update_sku_inventory_microservice(zone, environment, delivery_center_id,
-                                                                   enabled_skus, sku_id, sku_quantity)
-
-                if update_sku == 'true':
-                    return 'true'
-                else:
-                    return 'false'
-            else:
-                return 'error_len'
-        else:
-            return product_offers
-    else:
-        return 'false'
-
-
-# Update SKU inventory
-def update_sku_inventory_microservice(zone, environment, delivery_center_id, list_skus, sku_id=None, sku_quantity=0):
-    # Define headers
+def request_inventory_creation(zone, environment, account_id, delivery_center_id, products, sku_id=None, sku_quantity=0):
+    # Get headers
     request_headers = get_header_request(zone, 'false', 'false', 'true')
 
-    # Define url request
-    request_url = get_microservice_base_url(environment) + '/inventory-relay/add'
+    # Get URL
+    request_url = '{0}/inventory-relay/add'.format(get_microservice_base_url(environment))
 
-    quantity = 999999
-    if int(sku_quantity) >= 0:
-        specific_quantity = int(sku_quantity)
-
-    inventory_list = []
-    index = 0
-    while index < len(list_skus):
-        if sku_id is not None:
-            if sku_id == list_skus[index]:
-                specific_inventory = {
-                    'sku': sku_id,
-                    'quantity': specific_quantity
-                }
-                inventory_list.append(specific_inventory)
-            else:
-                inventory_data = {
-                    'sku': list_skus[index],
-                    'quantity': quantity
-                }
-                inventory_list.append(inventory_data)
-        else:
-            inventory_data = {
-                'sku': list_skus[index],
-                'quantity': quantity
-            }
-            inventory_list.append(inventory_data)
-
-        index = index + 1
-
-    dict_values = {
-        'fulfillmentCenterId': delivery_center_id,
-        'inventory': inventory_list
-    }
-
-    # Create body
-    request_body = convert_json_to_string(dict_values)
+    # Get request body
+    request_body = get_inventory_payload(zone, environment, account_id, products, delivery_center_id, sku_id, sku_quantity)
 
     # Send request
     response = place_request('PUT', request_url, request_body, request_headers)
@@ -149,59 +23,118 @@ def update_sku_inventory_microservice(zone, environment, delivery_center_id, lis
     if response.status_code == 202:
         return 'true'
     else:
-        print(text.Red + '\n- [Inventory Relay Service] Failure to add stock for products. Response Status: '
-                         '{response_status}. Response message: {response_message}'
-              .format(response_status=response.status_code, response_message=response.text))
+        print('\n{0}- [Inventory Relay Service] Failure to add stock for products. Response Status: {1}. Response message: {2}'
+              .format(text.Red, response.status_code, response.text))
         return 'false'
 
 
-# Validate SKU inventory
-def validate_sku(sku_id, enabled_skus):
-    aux_index = 0
+def get_inventory_payload(zone, environment, account_id, products, delivery_center_id, sku_id, sku_quantity):
+    get_inventory_response = get_delivery_center_inventory(environment, zone, account_id, delivery_center_id, products)
+    if get_inventory_response == 'false':
+        finish_application()
+    inv = get_inventory_response['inventory']
 
-    while aux_index < len(enabled_skus):
-        if enabled_skus[aux_index] == sku_id:
-            return 'true'
-        aux_index = aux_index + 1
+    quantity = 999999
+    if int(sku_quantity) >= 0:
+        specific_quantity = int(sku_quantity)
+
+    inventory_list = list()
+    index = 0
+    while index < len(products):
+        if sku_id is not None:
+            if sku_id == products[index]:
+                specific_inventory = {
+                    'sku': sku_id,
+                    'quantity': specific_quantity
+                }
+                inventory_list.append(specific_inventory)
+            else:
+                current_inventory = {
+                    'sku': inv[index]['sku'],
+                    'quantity': inv[index]['quantity']
+                }
+                inventory_list.append(current_inventory)
+        else:
+            default_inventory = {
+                'sku': products[index],
+                'quantity': quantity
+            }
+            inventory_list.append(default_inventory)
+        index = index + 1
+
+    # Create file path
+    abs_path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(abs_path, 'data/create_inventory_payload.json')
+
+    # Load JSON file
+    with open(file_path) as file:
+        json_data = json.load(file)
+
+    dict_values = {
+        'fulfillmentCenterId': delivery_center_id,
+        'inventory': inventory_list
+    }
+
+    for key in dict_values.keys():
+        json_object = update_value_to_json(json_data, key, dict_values[key])
+
+    # Create body
+    request_body = convert_json_to_string(json_object)
+
+    return request_body
 
 
-def display_inventory_by_account(zone, environment, account_id, delivery_center_id):
-    product_offers = request_get_account_product_assortment(account_id, zone, environment, delivery_center_id)
-    if len(product_offers) != 0:
-        dict_values = {
-            'fulfillmentCenterId': delivery_center_id,
-            'skus': product_offers
+def display_inventory_by_account(inventory):
+    inventory_info = list()
+    if len(inventory) == 0:
+        inventory_values = {
+            'Inventory': 'None'
         }
-        request_body = convert_json_to_string(dict_values)
-        response = get_delivery_center_inventory(environment, zone, account_id, request_body)
-
-        json_data = loads(response.text)
-        inventory_info = list()
-
-        if len(json_data) == 0:
+        inventory_info.append(inventory_values)
+    else:
+        for i in range(len(inventory['inventory'])):
             inventory_values = {
-                'Inventory': 'None'
+                'sku': inventory['inventory'][i]['sku'],
+                'quantity': inventory['inventory'][i]['quantity']
             }
             inventory_info.append(inventory_values)
-        else:
-            for i in range(len(json_data['inventory'])):
-                inventory_values = {
-                    'sku': json_data['inventory'][i]['sku'],
-                    'quantity': json_data['inventory'][i]['quantity']
-                }
-                inventory_info.append(inventory_values)
 
-            print(text.default_text_color + '\nInventory - Sku and Inventory from one account ')
-            print(tabulate(inventory_info, headers='keys', tablefmt='grid'))
+    print(text.default_text_color + '\nInventory/stock information ')
+    print(tabulate(inventory_info, headers='keys', tablefmt='grid'))
 
 
-def get_delivery_center_inventory(environment, zone, account_id, request_body):
+def get_delivery_center_inventory(environment, zone, account_id, delivery_center_id, products):
+    # Create file path
+    abs_path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(abs_path, 'data/get_inventory_payload.json')
+
+    # Load JSON file
+    with open(file_path) as file:
+        json_data = json.load(file)
+
+    for i in range(len(products)):
+        dict_values = {
+            'fulfillmentCenterId': delivery_center_id,
+            'skus': products
+        }
+
+    for key in dict_values.keys():
+        json_object = update_value_to_json(json_data, key, dict_values[key])
+
+    # Create body
+    request_body = convert_json_to_string(json_object)
+
     # Define headers
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Define url request
-    request_url = get_microservice_base_url(environment) + '/inventory/'
+    request_url = '{0}/inventory/'.format(get_microservice_base_url(environment))
 
     response = place_request('POST', request_url, request_body, request_headers)
-
-    return response
+    json_data = loads(response.text)
+    if response.status_code == 200 and len(json_data) != 0:
+        return json_data
+    else:
+        print('\n{0}- [Inventory Service] Failure to retrieve inventory information. Response Status: {1}. Response message: {2}'
+              .format(text.Red, response.status_code, response.text))
+        return 'false'
