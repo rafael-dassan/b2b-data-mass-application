@@ -26,6 +26,7 @@ from menus.invoice_menu import print_invoice_operations_menu, print_invoice_stat
 from menus.order_menu import print_order_operations_menu, print_allow_cancellable_order_menu, print_get_order_menu, \
     print_order_id_menu, print_order_status_menu
 from menus.product_menu import print_product_operations_menu, print_get_products_menu
+from menus.inventory_menu import print_inventory_option_menu, print_inventory_sku_quantity_menu
 from menus.supplier_menu import print_create_supplier_category_menu, print_new_attribute, print_attribute_primitive, \
     print_create_attribute_menu, print_min_cardinality, print_max_cardinality, print_new_page, print_attribute_type
 from menus.rewards_menu import print_rewards_menu, print_rewards_transactions_menu, print_rewards_program_menu, \
@@ -177,9 +178,20 @@ def product_information_menu():
         account = check_account_exists_microservice(abi_id, zone, environment)
         if account == 'false':
             print_finish_application_menu()
-
         delivery_center_id = account[0]['deliveryCenterId']
-        display_inventory_by_account(zone, environment, abi_id, delivery_center_id)
+
+        product_offers = request_get_account_product_assortment(abi_id, zone, environment, delivery_center_id)
+        if product_offers == 'false':
+            print_finish_application_menu()
+        elif product_offers == 'not_found':
+            print(text.Red + '\n- [Product Assortment Service] There is no product associated with the account ' + abi_id)
+            print_finish_application_menu()
+
+        inventory = get_delivery_center_inventory(environment, zone, abi_id, delivery_center_id, product_offers)
+        if inventory == 'false':
+            print_finish_application_menu()
+        else:
+            display_inventory_by_account(inventory)
 
     else:
         zone = print_zone_menu_for_ms()
@@ -618,7 +630,6 @@ def deals_menu():
             product_data = product_offers[index_offers]
             sku_list.append(product_data)
 
-
     else:
         while len(sku_list) <= 2:
             index_offers = randint(0, (len(product_offers) - 1))
@@ -900,7 +911,7 @@ def flow_associate_products_to_account(zone, environment):
             skus_id.append(products[aux_index])
             aux_index = aux_index + 1
 
-        inventory_response = update_sku_inventory_microservice(zone, environment, delivery_center_id, skus_id)
+        inventory_response = request_inventory_creation(zone, environment, account_id, delivery_center_id, skus_id)
 
         if inventory_response == 'false':
             print_finish_application_menu()
@@ -919,17 +930,30 @@ def flow_input_inventory_to_product(zone, environment):
         print_finish_application_menu()
     delivery_center_id = account[0]['deliveryCenterId']
 
-    # Call function to display the SKUs on the screen
-    inventory = display_available_products_account(account_id, zone, environment, delivery_center_id)
+    products = request_get_offers_microservice(account_id, zone, environment)
+    if products == 'not_found':
+        print_finish_application_menu()
+    elif products == 'false':
+        print_finish_application_menu()
+
+    sku_list = list()
+    for i in range(len(products)):
+        sku_list.append(products[i]['sku'])
+
+    option = print_inventory_option_menu()
+    if option == 'N':
+        inventory = request_inventory_creation(zone, environment, account_id, delivery_center_id, sku_list)
+    else:
+        get_inventory_response = get_delivery_center_inventory(environment, zone, account_id, delivery_center_id, sku_list)
+        if get_inventory_response == 'false':
+            print_finish_application_menu()
+        else:
+            inventory_information = print_inventory_sku_quantity_menu(zone, environment, sku_list)
+            inventory = request_inventory_creation(zone, environment, account_id, delivery_center_id, sku_list, inventory_information
+                                                   .get('sku'), inventory_information.get('quantity'))
+
     if inventory == 'true':
-        print(text.Green + '\n- The inventory has been added successfully for the account {account_id}'
-              .format(account_id=account_id))
-    elif inventory == 'error_len':
-        print(text.Red + '\n- There are no products available for the account {account_id}'
-              .format(account_id=account_id))
-        print_finish_application_menu()
-    elif inventory == 'false':
-        print_finish_application_menu()
+        print('\n{0}- The inventory has been added successfully for the account {1}'.format(text.Green, account_id))
     else:
         print_finish_application_menu()
 

@@ -1,0 +1,9 @@
+{
+  "fulfillmentCenterId": "string",
+  "inventory": [
+    {
+      "sku": "string",
+      "quantity": 0
+    }
+  ]
+}

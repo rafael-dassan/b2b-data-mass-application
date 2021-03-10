@@ -1,13 +1,9 @@
-# Standard library imports
 from unicodedata import numeric
 
 
 def validate_yes_no_option(option):
     options = ['Y', 'N']
-    if option in options:
-        return True
-    else:
-        return False
+    return option in options
 
 
 # Validate State in account creation flow
@@ -21,7 +17,6 @@ def validate_state(zone):
         'AR': 'CORRIENTES',
         'PE': 'SANTA CRUZ',
         'EC': 'GUAYAS'
-
     }.get(zone, 'false')
 
 
@@ -85,26 +80,17 @@ def validate_account(account_id, zone):
 # Validate account sub-menus for Data Searching
 def validate_accounts(option):
     options = ['1']
-    if option in options:
-        return True
-    else:
-        return False
+    return option in options
 
 
 def validate_deals_options(option):
-    valid_options = ['1', '2', '3', '4', '5', '6', '7']
-    if option in valid_options:
-        return True
-    else:
-        return False
+    options = ['1', '2', '3', '4', '5', '6', '7']
+    return option in options
 
 
 def validate_option_sku(option):
     options = ['1', '2']
-    if option in options:
-        return True
-    else:
-        return False
+    return option in options
 
 
 def validate_zone_for_interactive_combos_ms(zone):
@@ -136,74 +122,47 @@ def validate_zone_for_ms(zone):
 
 def validate_environment(environment):
     environments = ['DEV', 'SIT', 'UAT']
-    if environment in environments:
-        return True
-    else:
-        return False
+    return environment in environments
 
 
 def validate_invoice_options(option):
     options = ['1', '2', '3']
-    if option in options:
-        return True
-    else:
-        return False
+    return option in options
 
 
 def validate_invoice_status(option):
     options = ['1', '2', '3']
-    if option in options:
-        return True
-    else:
-        return False
+    return option in options
 
 
 def validate_invoice_payment_method(option):
     options = ['1', '2']
-    if option in options:
-        return True
-    else:
-        return False
+    return option in options
 
 
 def validate_account_operations_structure(option):
-    valid_options = ['1', '2', '3', '4', '5', '6', '7']
-    if option in valid_options:
-        return True
-    else:
-        return False
+    options = ['1', '2', '3', '4', '5', '6', '7']
+    return option in options
 
 
 def validate_product_operations_structure(option):
     options = ['1', '2', '3', '4', '5', '6']
-    if option in options:
-        return True
-    else:
-        return False
+    return option in options
 
 
 def validate_recommendation_type(option):
     options = ['1', '2', '3', '4', '5']
-    if option in options:
-        return True
-    else:
-        return False
+    return option in options
 
 
 def validate_get_products(option):
     options = ['1', '2', '3']
-    if option in options:
-        return True
-    else:
-        return False
+    return option in options
 
 
 def validate_structure(option):
     options = ['1', '2', '3', '4', '5', '6', '7']
-    if option in options:
-        return True
-    else:
-        return False
+    return option in options
 
 
 def validate_rewards(selection):
@@ -228,31 +187,22 @@ def validate_rewards_challenges(selection):
 
 def validate_orders(option):
     options = ['1', '2']
-    if option in options:
-        return True
-    else:
-        return False
+    return option in options
 
 
 def validate_order_status(option):
     options = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11']
-    if option in options:
-        return True
-    else:
-        return False
+    return option in options
 
 
 def validate_order_sub_menu(option):
     options = ['1', '2']
-    if option in options:
-        return True
-    else:
-        return False
+    return option in options
 
 
 # Validate option menu selection
 def validate_option_request_selection(selection):
-    switcher = {
+    return {
         '0': 'true',
         '1': 'true',
         '2': 'true',
@@ -265,32 +215,23 @@ def validate_option_request_selection(selection):
         '9': 'true',
         '10': 'true',
         '11': 'true'
-    }
-
-    value = switcher.get(selection, 'false')
-    return value
+    }.get(selection, 'false')
 
 
 def validate_delivery_window_structure(option):
-    valid_options = ['1', '2']
-    if option in valid_options:
-        return True
-    else:
-        return False
+    options = ['1', '2']
+    return option in options
 
 
 def validate_supplier_menu_structure(selection):
-    switcher = {
+    return {
        '0': 'true',
        '1': 'true',
        '2': 'true',
        '3': 'true',
        '4': 'true',
        '5': 'true'
-    }
-
-    value = switcher.get(selection, 'false')
-    return value
+    }.get(selection, 'false')
 
 
 def validate_option_att(selection):
@@ -309,18 +250,23 @@ def validate_supplier_category_menu_structure(selection):
 
 
 def validate_supplier_search_menu_structure(selection):
-    switcher = {
+    return {
        '0': 'true',
        '1': 'true',
        '2': 'true',
        '3': 'true',
        '4': 'true'
-    }
-
-    value = switcher.get(selection, 'false')
-    return value
+    }.get(selection, 'false')
 
 
 def validate_option_type(selection):
     options = ['1', '2', '3']
     return selection in options
+
+
+def validate_sku(sku_id, enabled_skus):
+    aux_index = 0
+    while aux_index < len(enabled_skus):
+        if enabled_skus[aux_index] == sku_id:
+            return True
+        aux_index = aux_index + 1
