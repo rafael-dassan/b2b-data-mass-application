@@ -432,7 +432,6 @@ def create_product(zone, environment, product_data):
     # Create body
     list_dict_values = create_list(json_object)
     request_body = convert_json_to_string(list_dict_values)
-    print(request_body)
 
     # Place request
     response = place_request('PUT', request_url, request_body, request_headers)

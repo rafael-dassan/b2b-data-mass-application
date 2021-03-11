@@ -29,7 +29,7 @@ def print_inventory_sku_quantity_menu(zone, environment, products):
             aux = aux + 1
 
     sku_id = input('\n{0}Input the SKU you want to add inventory: '.format(text.default_text_color))
-    while validate_sku(sku_id.strip(), products) is True:
+    while validate_sku(sku_id, products) is False:
         print('\n{0}- Invalid option'.format(text.Red))
         sku_id = input('\n{0}Input the SKU you want to add inventory: '.format(text.default_text_color))
 

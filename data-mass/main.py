@@ -932,6 +932,7 @@ def flow_input_inventory_to_product(zone, environment):
 
     products = request_get_offers_microservice(account_id, zone, environment)
     if products == 'not_found':
+        print('\n{0}- [Catalog Service] There is no product associated with the account {1}'.format(text.Red, account_id))
         print_finish_application_menu()
     elif products == 'false':
         print_finish_application_menu()

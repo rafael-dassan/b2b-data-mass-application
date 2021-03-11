@@ -265,8 +265,4 @@ def validate_option_type(selection):
 
 
 def validate_sku(sku_id, enabled_skus):
-    aux_index = 0
-    while aux_index < len(enabled_skus):
-        if enabled_skus[aux_index] == sku_id:
-            return True
-        aux_index = aux_index + 1
+    return sku_id in enabled_skus
