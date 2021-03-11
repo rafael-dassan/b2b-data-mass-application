@@ -1,19 +1,13 @@
-# Standard library imports
 import json
 from json import dumps, loads
 import os
 import concurrent.futures
 from random import randint, uniform
 from datetime import datetime
-
-# Third party imports
 from tabulate import tabulate
-
-# Local application imports
 from common import get_microservice_base_url, get_header_request, place_request, update_value_to_json, \
     convert_json_to_string, create_list, finish_application
-from menus.product_menu import print_product_quantity_menu
-from validations import validate_yes_no_option
+from menus.product_menu import print_product_quantity_menu, print_is_returnable_menu, print_is_narcotic_menu, print_is_alcoholic_menu
 from classes.text import text
 
 
@@ -421,7 +415,7 @@ def create_product(zone, environment, product_data):
     request_headers = get_header_request(zone, 'false', 'true', 'false')
 
     # Get base URL
-    request_url = get_microservice_base_url(environment, 'false') + '/item-relay/items'
+    request_url = '{0}/item-relay/items'.format(get_microservice_base_url(environment, 'false'))
 
     # Create file path
     abs_path = os.path.abspath(os.path.dirname(__file__))
@@ -438,6 +432,7 @@ def create_product(zone, environment, product_data):
     # Create body
     list_dict_values = create_list(json_object)
     request_body = convert_json_to_string(list_dict_values)
+    print(request_body)
 
     # Place request
     response = place_request('PUT', request_url, request_body, request_headers)
@@ -448,9 +443,8 @@ def create_product(zone, environment, product_data):
         if update_item_response != 'false' and get_item_response != 'false':
             return product_data
     else:
-        print(text.Red + '\n- [Item Relay Service] Failure to update an item. Response Status: {response_status}. '
-                         'Response message: {response_message}'.format(response_status=response.status_code,
-                                                                       response_message=response.text))
+        print('\n{0}- [Item Relay Service] Failure to update an item. Response Status: {1}. Response message: {2}'
+              .format(text.Red, response.status_code, response.text))
         return 'false'
 
 
@@ -459,39 +453,27 @@ def get_item_input_data():
     Get input data from the user
     Returns: a dictionary containing the customized product data
     """
-
-    sku_identifier = input(text.default_text_color + 'SKU identifier: ')
+    sku_identifier = input('{0}SKU identifier: '.format(text.default_text_color))
     # Create random value for the SKU identifier if the entry is empty
     if len(sku_identifier) == 0:
-        sku_identifier = 'DM' + str(randint(1, 100000))
+        sku_identifier = 'DM-{0}'.format(str(randint(1, 100000)))
 
-    name = input(text.default_text_color + 'Item name: ')
-    brand_name = input(text.default_text_color + 'Brand name (e.g., SKOL, PRESIDENTE LIGHT, CASTLE): ').upper()
-    container_name = input(text.default_text_color + 'Container name (e.g., BOTTLE, PET, CAN): ').upper()
+    name = input('{0}Item name: '.format(text.default_text_color))
+    brand_name = input('{0}Brand name (e.g., SKOL, PRESIDENTE): '.format(text.default_text_color)).upper()
+    container_name = input('{0}Container name (e.g., BOTTLE, PET, CAN): '.format(text.default_text_color)).upper()
 
     # Validate container size input data
     while True:
         try:
-            container_size = int(input(text.default_text_color + 'Container size: '))
+            container_size = int(input('{0}Container size: '.format(text.default_text_color)))
             break
         except ValueError:
-            print(text.Red + '\n- The container size must be an integer value\n')
+            print('\n{0}- The container size must be an integer value\n'.format(text.Red))
 
-    container_unit_measurement = input(
-        text.default_text_color + 'Container unit of measurement (e.g., ML, OZ): ').upper()
-
-    # Validate returnable input data
-    is_returnable = input(text.default_text_color + 'Is it returnable? y/N: ').upper()
-    while validate_yes_no_option(is_returnable) is False:
-        print(text.Red + "\n- Invalid option\n")
-        is_returnable = input(text.default_text_color + 'Is it returnable? y/N: ').upper()
-    if is_returnable == 'Y':
-        is_returnable = True
-    else:
-        is_returnable = False
-
-    # Create random value for the sales ranking
-    sales_ranking = randint(1, 100)
+    container_unit_measurement = input('{0}Container unit of measurement (e.g., ML, OZ): '.format(text.default_text_color)).upper()
+    is_returnable = print_is_returnable_menu()
+    is_narcotic = print_is_narcotic_menu()
+    is_alcoholic = print_is_alcoholic_menu()
 
     # Create item dictionary
     item_data = {
@@ -504,7 +486,9 @@ def get_item_input_data():
         'container.size': container_size,
         'container.returnable': is_returnable,
         'container.unitOfMeasurement': container_unit_measurement,
-        'salesRanking': sales_ranking
+        'salesRanking': randint(1, 100),
+        'isNarcotic': is_narcotic,
+        'isAlcoholic': is_alcoholic
     }
 
     return item_data
@@ -519,12 +503,11 @@ def set_item_enabled(zone, environment, product_data):
         product_data: all necessary and relevant SKU data
     Returns: `success` when the item is updated successfully or `false` in case of failure
     """
-
     # Define headers
     request_headers = get_header_request(zone, 'true', 'false', 'false')
 
     # Get base URL
-    request_url = get_microservice_base_url(environment, 'false') + '/items/' + product_data.get('sku')
+    request_url = '{0}/items/{1}'.format(get_microservice_base_url(environment, 'false'), product_data.get('sku'))
 
     # Create file path
     abs_path = os.path.abspath(os.path.dirname(__file__))

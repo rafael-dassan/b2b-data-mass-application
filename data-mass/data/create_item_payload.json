@@ -18,5 +18,7 @@
         "returnable": false,
         "size": 0,
         "unitOfMeasurement": "string"
-    }
+    },
+    "isAlcoholic": false,
+    "isNarcotic": false
 }
