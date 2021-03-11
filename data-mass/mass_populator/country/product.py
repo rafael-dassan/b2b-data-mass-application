@@ -11,30 +11,13 @@ def populate_products(country, environment, dataframe_products):
 
 
 def apply_populate_product(row, country, environment):
-    populate_product(country, environment,
-        row['sku'],
-        row['name'],
-        row['brand_name'],
-        row['sub_brand_name'],
-        row['package_id'],
-        row['container_name'],
-        row['container_size'],
-        row['container_returnable'],
-        row['container_unitOfMeasurement'],
-        row['sales_ranking'])
+    populate_product(country, environment, row['sku'], row['name'], row['brand_name'], row['sub_brand_name'], row['package_id'],
+                     row['container_name'], row['container_size'], row['container_returnable'], row['container_unit_of_measurement'],
+                     row['sales_ranking'], row['is_narcotic'], row['is_alcoholic'])
 
 
-def populate_product(country, environment,
-        sku,
-        name,
-        brand_name,
-        sub_brand_name,
-        package_id,
-        container_name,
-        container_size,
-        container_returnable,
-        container_unitOfMeasurement,
-        sales_ranking):
+def populate_product(country, environment, sku, name, brand_name, sub_brand_name, package_id, container_name, container_size,
+                     container_returnable, container_unit_of_measurement, sales_ranking, is_narcotic, is_alcoholic):
     """ Populate products
     Arguments:
         - country: (e.g, BR,ZA,DO)
@@ -47,8 +30,10 @@ def populate_product(country, environment,
         -  container_name': container_name
         -  container_size': container_size
         -  container_returnable': container_returnable
-        -  container_unitOfMeasurement': container_unitOfMeasurement
+        -  container_unit_of_measurement': container_unit_of_measurement
         -  sales_ranking': sales_ranking
+        -  is_narcotic': is_narcotic
+        -  is_alcoholic': is_alcoholic
     """
     item_data = {
         'sku': sku, 
@@ -59,18 +44,20 @@ def populate_product(country, environment,
         'container.name': container_name,
         'container.size': container_size,
         'container.returnable': container_returnable,
-        'container.unitOfMeasurement': container_unitOfMeasurement,
-        'salesRanking': sales_ranking
+        'container.unitOfMeasurement': container_unit_of_measurement,
+        'salesRanking': sales_ranking,
+        'isNarcotic': is_narcotic,
+        'isAlcoholic': is_alcoholic
     }
+
     response = create_product(country, environment, item_data)
     if response is None:
-        logger.error(log(Message.PRODUCT_CREATE_ERROR,{"sku": sku}))
+        logger.error(log(Message.PRODUCT_CREATE_ERROR, {"sku": sku}))
 
 
 def enable_products_magento(country, environment, dataframe_products):
     if dataframe_products is not None:
-        dataframe_products.apply(apply_enable_products_magento, 
-        args=(country, environment), axis=1)
+        dataframe_products.apply(apply_enable_products_magento, args=(country, environment), axis=1)
 
 
 def apply_enable_products_magento(row, country, environment):
@@ -85,9 +72,8 @@ def enable_product_magento(country, environment, product_sku):
         - environment: (e.g, UAT,SIT)
         - product: product to enable
     """
-    response = enable_product(country, environment, product_sku)
-    if response == 'false':
-        logger.error(log(Message.PRODUCT_ENABLE_ERROR,{"sku": product_sku}))
+    if 'false' == enable_product(country, environment, product_sku):
+        logger.error(log(Message.PRODUCT_ENABLE_ERROR, {"sku": product_sku}))
 
 
 def check_product_associated_to_account(account_id, country, environment, products):
@@ -102,8 +88,7 @@ def check_product_associated_to_account(account_id, country, environment, produc
     """
     product_offers = request_get_offers_microservice(account_id, country, environment)
     if product_offers == 'not_found':
-        logger.info("[Catalog Service] Products not found for account "
-                    "{account_id}. Skipping...".format(account_id=account_id))
+        logger.warning("[Catalog Service] Products not found for account {account_id}. Skipping...".format(account_id=account_id))
         return False
     elif product_offers == 'false':
         logger.error(log(Message.RETRIEVE_PRODUCT_ERROR, {'account_id': account_id}))
@@ -116,11 +101,11 @@ def check_product_associated_to_account(account_id, country, environment, produc
 
         for i in range(len(products)):
             if products[i] in available_skus:
-                logger.debug("[Catalog Service] Product {product} is already associated to the account {account_id}. "
-                             "Skipping...".format(product=products[i], account_id=account_id))
+                logger.debug("[Catalog Service] Product {product} is already associated to the account {account_id}. Skipping..."
+                             .format(product=products[i], account_id=account_id))
             else:
                 not_associated_skus.append(products[i])
-                logger.debug("[Catalog Service] Product {product} is not associated to the account {account_id} and "
-                             "needs to be added.".format(product=products[i], account_id=account_id))
+                logger.debug("[Catalog Service] Product {product} is not associated to the account {account_id} and needs to be added."
+                             .format(product=products[i], account_id=account_id))
 
         return not_associated_skus

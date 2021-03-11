@@ -44,7 +44,8 @@ def execute_test(country, environment):
     populate_product(country, environment, product_params.get('sku'), product_params.get('name'), product_params.get('brand_name'),
                      product_params.get('sub_brand_name'), product_params.get('package_id'), product_params.get('container_name'),
                      product_params.get('container_size'), product_params.get('container_returnable'),
-                     product_params.get('container_unit_measurement'), product_params.get('sales_ranking'))
+                     product_params.get('container_unit_measurement'), product_params.get('sales_ranking'),
+                     product_params.get('is_narcotic'), product_params.get('is_alcoholic'))
 
     logger.info("populate_accounts for %s/%s", country, environment)
     populate_poc(country, environment, account_params.get('id'), account_params.get('name'), account_params.get('payment_method'),
@@ -121,7 +122,7 @@ def execute_preconditions(country, environment, account_params, order_database_p
 
 
 def get_email_param(country):
-    switcher = {
+    return {
         'AR': 'test-populator-ar@mailinator.com',
         'BR': 'test-populator-br@mailinator.com',
         'CO': 'test-populator-co@mailinator.com',
@@ -132,13 +133,11 @@ def get_email_param(country):
         'PE': 'test-populator-pe@mailinator.com',
         'PY': 'test-populator-py@mailinator.com',
         'ZA': 'test-populator-za@mailinator.com'
-    }
-
-    return switcher.get(country, False)
+    }.get(country, False)
 
 
 def get_account_params(country):
-    params = {
+    return {
         'id': '17629091762452',
         'name': 'TEST_POC_001_{country}'.format(country=country),
         'payment_method': ['CASH'],
@@ -148,20 +147,16 @@ def get_account_params(country):
         'has_delivery_window': True
     }
 
-    return params
-
 
 def get_user_params(country):
-    params = {
+    return {
         'email': get_email_param(country),
         'password': 'Password1'
     }
 
-    return params
-
 
 def get_product_params():
-    params = {
+    return {
         'sku': '0101TEST',
         'name': 'TEST MASS POPULATOR',
         'brand_name': 'Test',
@@ -172,18 +167,16 @@ def get_product_params():
         'container_returnable': False,
         'container_unit_measurement': 'ML',
         'sales_ranking': 1,
+        'is_narcotic': False,
+        'is_alcoholic': True
     }
-
-    return params
 
 
 def get_category_params():
-    params = {
+    return {
         'name': 'Journey',
         'sku': '0101WEB'
     }
-
-    return params
 
 
 def get_deals_params(country, deal_type):
@@ -224,12 +217,11 @@ def get_deals_params(country, deal_type):
             'ranges': ['1,10,1,2', '11,9999,2,2']
         }
     }
-
     return params[deal_type]
 
 
 def get_order_params(country):
-    params = {
+    return {
         'account_id': get_account_params(country).get('id'),
         'allow_order_cancel': 'Y',
         'items': get_product_params().get('sku'),
@@ -238,27 +230,21 @@ def get_order_params(country):
         'prefix': 'DMA-TEST-{0}-'.format(country)
     }
 
-    return params
-
 
 def get_invoice_params(country):
-    params = {
+    return {
         'account_id': get_account_params(country).get('id'),
         'invoice_status': 'CLOSED',
         'order_prefix': 'DMA-TEST-{0}-'.format(country),
         'invoice_prefix': 'DMA-TEST'
     }
 
-    return params
-
 
 def get_algo_selling_params(country):
-    params = {
+    return {
         'account_id': get_account_params(country).get('id'),
         'products': ['0101TEST']
     }
-
-    return params
 
 
 def get_combo_params(country, combo_type):

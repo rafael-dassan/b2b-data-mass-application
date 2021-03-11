@@ -29,7 +29,6 @@ def get_iam_b2c_params(environment, country):
 
 
 def get_iam_b2c_country_params(environment, country):
-
     iam_b2c_country_params = {
         "QA": get_iam_b2c_country_params_qa(country),
         "SIT": get_iam_b2c_country_params_sit(country),
@@ -137,6 +136,7 @@ def get_iam_b2c_country_params_sit(country):
     }
     return params[country]
 
+
 def get_iam_b2c_country_params_qa(country):
     params = {
         "BR": {
@@ -170,6 +170,14 @@ def get_iam_b2c_country_params_qa(country):
         "AR": {
             "REDIRECT_URL": "com.abi.Quilmes://oauth/redirect",
             "CLIENT_ID": "53305725-0200-49f0-80c4-6e70b4c44148"
+        },
+        "PA": {
+            "REDIRECT_URL": "com.abi.bees.panama://oauth/redirect",
+            "CLIENT_ID": "1dc243f0-773e-4920-947e-d43aefff59bb"
+        },
+        "PY": {
+            "REDIRECT_URL": "com.abi.bees.paraguay://oauth/redirect",
+            "CLIENT_ID": "14c66e8e-4820-4426-87e1-9eaa957654a7"
         }
     }
     return params[country]
@@ -203,6 +211,7 @@ def get_iam_b2c_azure_params_sit():
     }
     return params
 
+
 def get_iam_b2c_azure_params_qa():
     params = {
         "B2B_SERVER_NAME": "b2biamgbusqa1.b2clogin.com",
@@ -211,6 +220,7 @@ def get_iam_b2c_azure_params_qa():
         "AZURE_CLIENT_SECRET": "cbA9Pu8ejf_rPy1Kb0i5a~83_90zZ8g_Db"
     }
     return params
+
 
 def get_iam_b2c_policy_params(country):
     params = {
