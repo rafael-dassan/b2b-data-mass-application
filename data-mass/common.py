@@ -217,6 +217,7 @@ def get_magento_user_registration_access_token(environment, country):
         'SIT': {
             'AR': '30lqki06nbdegugcmdb0ttm9yppnmoec',
             'BR': 'qq8t0w0tvz7nbn4gxo5jh9u62gohvjrw',
+            'CA': 'nhdzq8d4c59q1ofzsrpzlm2o7e2vdonf',
             'CO': 'walt5dp3keiq2du0f30kir21v13f3u0v',
             'DO': '56jqtzzto7tw9uox8nr3eckoeup53dt2',
             'EC': 'kyhzpszn0bswbf17mlb409ldg14j58uv',
@@ -229,6 +230,7 @@ def get_magento_user_registration_access_token(environment, country):
         'UAT': {
             'AR': '30lqki06nbdegugcmdb0ttm9yppnmoec',
             'BR': 'qq8t0w0tvz7nbn4gxo5jh9u62gohvjrw',
+            'CA': '1nb7d81mmwmsyd0i6n01fgrkyhmpj6k8',
             'CO': '8mh6b9b6ft6m1cr5k7zm2jh4aljq4slx',
             'DO': '56jqtzzto7tw9uox8nr3eckoeup53dt2',
             'EC': 'awtm7d9as0n9k1o5zi9fi90rtukxdmqh',
@@ -249,6 +251,7 @@ def get_magento_datamass_access_token(environment, country):
         'UAT': {
             'AR': 'a34o213zgisn67efeg0zbq04sqg667qk',
             'BR': '8z2z3y523hoqkcqci8q58afuoue81bns',
+            'CA': 'kz18zssktxjrns2jyq1lbj7mufs3mj2h',
             'CO': 'meqei3q5ztreebdpb5vyej378mt2o8qy',
             'DO': 'js4gd8y9wkqogf7eo2s4uy6oys15lfkf',
             'EC': 'w9pphbvskd35206otky7cv1dobn0p1yb',
@@ -261,6 +264,7 @@ def get_magento_datamass_access_token(environment, country):
         'SIT': {
             'AR': 'hzp6hw65oqiyeyv8ozfzunex0nc1rff8',
             'BR': 'q6yti2dxmhp0e2xjgyvtt72nziss6ptp',
+            'CA': '93slxvujwumdkbpzb1qg4jf0zwrew1ud',
             'CO': 'new189lnml9xmcr3m9gc0j6oji6w2izr',
             'DO': 'tgqnjlqpfupf0i4zxcs2doqx409k1hyq',
             'EC': 'ybyiars1mhm5e4jyaq94s5csj1e77knp',
