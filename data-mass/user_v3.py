@@ -43,6 +43,10 @@ def get_iam_b2c_country_params_uat(country):
             "REDIRECT_URL": "com.abi.parceiro-ambev://oauth/redirect",
             "CLIENT_ID": "442357fe-e514-4919-816c-4baa02b41a6f"
         },
+        "CA": {
+            "REDIRECT_URL": "com.abi.bees.canada://oauth/redirect",
+            "CLIENT_ID": "db2c51ee-28c6-42c7-b73f-9dde1a3a172b"
+        },
         "CO": {
             "REDIRECT_URL": "com.abi.bees.colombia://oauth/redirect",
             "CLIENT_ID": "f1d909d8-f72a-40cd-a7ff-fec8e5b033fc"
@@ -93,6 +97,10 @@ def get_iam_b2c_country_params_sit(country):
             "REDIRECT_URL": "com.abi.parceiro-ambev://oauth/redirect",
             "CLIENT_ID": "4a5ba64b-5053-439b-b29f-27cae493699f"
         },
+        "CA": {
+            "REDIRECT_URL": "com.abi.bees.canada://oauth/redirect",
+            "CLIENT_ID": "ca40d468-d8d7-443b-bd68-abaf13217b11"
+        },
         "CO": {
             "REDIRECT_URL": "com.abi.bees.colombia://oauth/redirect",
             "CLIENT_ID": "70eb36b1-2894-4f1d-b08a-4a1f982a38da"
@@ -142,6 +150,10 @@ def get_iam_b2c_country_params_qa(country):
         "BR": {
             "REDIRECT_URL": "com.abi.parceiro-ambev://oauth/redirect",
             "CLIENT_ID": "421489e0-e644-4d18-9a79-7624b08ce6b0"
+        },
+        "CA": {
+            "REDIRECT_URL": "com.abi.bees.canada://oauth/redirect",
+            "CLIENT_ID": "ca40d468-d8d7-443b-bd68-abaf13217b11"
         },
         "CO": {
             "REDIRECT_URL": "com.abi.bees.colombia://oauth/redirect",
