@@ -30,9 +30,8 @@ def request_inventory_creation(zone, environment, account_id, delivery_center_id
 
 def get_inventory_payload(zone, environment, account_id, products, delivery_center_id, sku_id, sku_quantity):
     get_inventory_response = get_delivery_center_inventory(environment, zone, account_id, delivery_center_id, products)
-    if get_inventory_response == 'false':
-        finish_application()
-    inv = get_inventory_response['inventory']
+    if get_inventory_response != 'false' and get_inventory_response != 'not_found':
+        inv = get_inventory_response['inventory']
 
     quantity = 999999
     if int(sku_quantity) >= 0:
@@ -134,6 +133,8 @@ def get_delivery_center_inventory(environment, zone, account_id, delivery_center
     json_data = loads(response.text)
     if response.status_code == 200 and len(json_data) != 0:
         return json_data
+    elif response.status_code == 404:
+        return 'not_found'
     else:
         print('\n{0}- [Inventory Service] Failure to retrieve inventory information. Response Status: {1}. Response message: {2}'
               .format(text.Red, response.status_code, response.text))
