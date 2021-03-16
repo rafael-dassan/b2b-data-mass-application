@@ -65,7 +65,7 @@ def configure_order_params(zone, environment, account_id, number_size, prefix):
 
 
 def request_order_creation(account_id, delivery_center_id, zone, environment, allow_order_cancel, order_items,
-                           order_status):
+                           order_status, order_data):
     """
     Create an order through the Order Service
     Args:
@@ -84,10 +84,13 @@ def request_order_creation(account_id, delivery_center_id, zone, environment, al
     request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
 
     # Define url request 
-    request_url = get_microservice_base_url(environment) + '/order-service'
+    request_url = get_microservice_base_url(environment) + '/order-service/v1/'
 
     # Get body
-    request_body = create_order_payload(account_id, delivery_center_id, allow_order_cancel, order_items, order_status)
+    if order_data == 'false':
+        request_body = create_order_payload(account_id, delivery_center_id, allow_order_cancel, order_items, order_status)
+    else:
+        request_body = json.dumps(order_data[0])
 
     # Send request
     response = place_request('POST', request_url, request_body, request_headers)
@@ -595,6 +598,6 @@ def change_delivery_date(order_data, zone, environment, account_id):
     datetime_object = datetime.strptime(date_selected[0], "%B")
     date_selected[0] = datetime_object.month
     order_data[0]['delivery']['date'] = '{year}-{month}-{day}'.format(year=datetime.today().year, month=date_selected[0], day=date_selected[1])
-    response = request_changed_order_creation(zone, environment, order_data)
-    #response = request_order_creation(account_id, 'false', zone, environment, 'false', 'false', 'false', order_data)
+    #response = request_changed_order_creation(zone, environment, order_data)
+    response = request_order_creation(account_id, 'false', zone, environment, 'false', 'false', 'false', order_data)
     return response

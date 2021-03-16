@@ -10,8 +10,8 @@ from common import get_header_request, get_microservice_base_url, update_value_t
     place_request
 from products import request_get_products_by_account_microservice
 from classes.text import text
-from rewards.rewards_programs import get_rewards_program_for_zone
-from rewards.rewards_utils import generate_id
+from rewards_programs import get_rewards_program_for_zone
+from rewards_utils import generate_id
 
 
 # Add Reward challenges to a zone

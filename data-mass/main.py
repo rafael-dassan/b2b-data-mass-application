@@ -417,7 +417,7 @@ def flow_create_order(zone, environment, account_id, delivery_center_id, order_s
         print_finish_application_menu()
 
     response = request_order_creation(account_id, delivery_center_id, zone, environment, allow_order_cancel,
-                                      order_items, order_status)
+                                      order_items, order_status, 'false')
     if response != 'false':
         print(text.Green + '\n- Order ' + response.get('orderNumber') + ' created successfully')
         # Call function to re-configure prefix and order number size according to the zone's format
