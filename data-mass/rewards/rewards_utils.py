@@ -15,6 +15,7 @@ from products import request_get_products_microservice
 from classes.text import text
 from validations import validate_yes_no_option
 
+APP_B2B = 'b2b'
 
 def generate_id():
     # Generates an sequential number based on Epoch time using seconds and the first two chars milliseconds
@@ -66,7 +67,7 @@ def get_dt_combos_from_zone(zone, environment, page_size=9999):
 
 
 def get_rewards_combos_by_account(account_id, zone, environment):
-    header_request = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    header_request = get_header_request(zone, 'true', 'false', 'false', 'false', account_id, APP_B2B)
 
     request_url = get_microservice_base_url(environment, 'false') + '/loyalty-business-service/programs/accounts/' + account_id + '/combos'
 

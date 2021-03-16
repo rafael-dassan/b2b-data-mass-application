@@ -14,6 +14,7 @@ from rewards.rewards_programs import get_all_programs
 from rewards.rewards_utils import generate_id, create_product_list_from_zone, display_all_challenges_info, \
     get_payload, format_datetime_to_str
 
+APP_ADMIN = 'membership'
 
 def create_take_photo_challenge(zone, environment, is_expired=False):
 
@@ -116,7 +117,7 @@ def create_challenge_payload(challenge_id, executionMethod, zone_skus_list=None,
 
 def put_challenge(challenge_id, request_body, zone, environment):
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', None, APP_ADMIN + '-' + zone.lower())
 
     # Define url request
     request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/challenges/' + challenge_id
@@ -148,7 +149,7 @@ def remove_challenge(zone, environment):
 
 def delete_challenge(challenge_id, zone, environment):
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', None, APP_ADMIN + '-' + zone.lower())
 
     # Define url request
     request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/challenges/' + challenge_id
@@ -170,7 +171,7 @@ def delete_challenge(challenge_id, zone, environment):
 
 # Get all challenges for the zone
 def get_all_challenges(zone, environment):
-    header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
+    header_request = get_header_request(zone, 'true', 'false', 'false', 'false', None, APP_ADMIN + '-' + zone.lower())
     
     # Define url request
     request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/challenges'
@@ -195,7 +196,7 @@ def get_all_challenges(zone, environment):
 # Get an specific challenge for the zone
 def get_specific_challenge(challenge_id, zone, environment):
 
-    header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
+    header_request = get_header_request(zone, 'true', 'false', 'false', 'false', None, APP_ADMIN + '-' + zone.lower())
     
     # Define url request
     request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/challenges/' + challenge_id

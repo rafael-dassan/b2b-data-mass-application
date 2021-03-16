@@ -89,7 +89,7 @@ def place_request(request_method, request_url, request_body, request_headers):
 
 # Return JWT header request
 def get_header_request(header_country, use_jwt_auth='false', use_root_auth='false', use_inclusion_auth='false',
-                       sku_product='false', account_id=None):
+                       sku_product='false', account_id=None, jwt_app_claim=None):
 
     switcher = {
         'ZA': 'UTC',
@@ -114,7 +114,7 @@ def get_header_request(header_country, use_jwt_auth='false', use_root_auth='fals
     }
 
     if use_jwt_auth == 'true':
-        header['Authorization'] = generate_hmac_jwt(account_id)
+        header['Authorization'] = generate_hmac_jwt(account_id, jwt_app_claim)
     elif use_root_auth == 'true':
         header['Authorization'] = 'Basic cm9vdDpyb290'
     elif use_inclusion_auth == 'true':
@@ -902,7 +902,7 @@ def is_string(item):
     return isinstance(item, str)
 
 
-def generate_hmac_jwt(account_id, expire_months=1):
+def generate_hmac_jwt(account_id, app_claim=None, expire_months=1):
     now = int(t.time())
     expire_in = now + (2592000 * expire_months)
 
@@ -922,6 +922,9 @@ def generate_hmac_jwt(account_id, expire_months=1):
 
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
+    
+    if app_claim is not None:
+        set_to_dictionary(json_object, 'app', app_claim)
 
     encoded = jwt.encode(json_object, '20735d31-46b5-411d-af02-47897a01c0c9', algorithm='HS256')
     return 'Bearer {0}'.format(encoded)

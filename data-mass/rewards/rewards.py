@@ -15,6 +15,8 @@ from rewards.rewards_programs import get_all_programs, get_specific_program, get
 from rewards.rewards_utils import print_make_account_eligible, make_account_eligible, get_dt_combos_from_zone, \
     post_combo_relay_account
 
+APP_B2B = 'b2b'
+APP_ADMIN = 'membership'
 
 # Enroll POC to a zone's reward program
 def enroll_poc_to_program(account_id, zone, environment, account_info):
@@ -54,7 +56,7 @@ def enroll_poc_to_program(account_id, zone, environment, account_info):
 def disenroll_poc_from_program(account_id, zone, environment):
 
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id, APP_ADMIN + '-' + zone.lower())
 
     # Define url request
     request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/rewards/' + account_id
@@ -186,7 +188,7 @@ def display_program_rules_skus(zone, environment, abi_id):
 
 
 def get_rewards(account_id, zone, environment):
-    header_request = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    header_request = get_header_request(zone, 'true', 'false', 'false', 'false', account_id, APP_B2B)
 
     request_url = get_microservice_base_url(environment, 'false') + '/loyalty-business-service/rewards/' + account_id
 
@@ -206,7 +208,7 @@ def get_rewards(account_id, zone, environment):
 
 def put_rewards(account_id, zone, environment):
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id, APP_B2B)
 
     # Define url request
     request_url = get_microservice_base_url(environment, 'false') + '/loyalty-business-service/rewards'

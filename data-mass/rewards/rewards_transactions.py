@@ -10,6 +10,7 @@ from common import get_header_request, get_microservice_base_url, convert_json_t
 from classes.text import text
 from rewards.rewards_utils import get_rewards_combos_by_account
 
+APP_ADMIN = 'membership'
 
 # Create REDEMPTION transaction for an account
 def create_redemption(account_id, zone, environment):
@@ -79,7 +80,7 @@ def create_points_removal(account_id, zone, environment):
 
 def post_rewards_offer(account_id, zone, environment, request_body):
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id, APP_ADMIN + '-' + zone.lower())
 
     # Define url request
     request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/rewards/' + account_id + '/transaction/rewards-offer'
@@ -101,7 +102,7 @@ def post_rewards_offer(account_id, zone, environment, request_body):
 
 def post_redemption(account_id, zone, environment, request_body):
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id, APP_ADMIN + '-' + zone.lower())
 
     # Define url request
     request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/rewards/' + account_id + '/transaction/redemption'
@@ -123,7 +124,7 @@ def post_redemption(account_id, zone, environment, request_body):
 
 def post_points_removal(account_id, zone, environment, request_body):
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id, APP_ADMIN + '-' + zone.lower())
 
     # Define url request
     request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/rewards/' + account_id + '/transaction/points-removal'
