@@ -11,6 +11,7 @@ from classes.text import text
 from rewards.rewards_utils import display_all_programs_info, build_request_url_with_projection_query, get_dt_combos_from_zone, \
     create_product_list_from_zone, get_payload
 
+APP_ADMIN = 'membership'
 
 # Create Rewards Program
 def create_new_program(zone, environment):
@@ -245,7 +246,7 @@ def get_DM_rewards_program_for_zone(zone_programs_list):
 
 # Get all reward program for the zone
 def get_all_programs(zone, environment, projections=set()):
-    header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
+    header_request = get_header_request(zone, 'true', 'false', 'false', 'false', None, APP_ADMIN + '-' + zone.lower())
     
     # Define url request
     request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/programs'
@@ -271,7 +272,7 @@ def get_all_programs(zone, environment, projections=set()):
 # Get an specific reward program for the zone
 def get_specific_program(program_id, zone, environment, projections=set()):
 
-    header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
+    header_request = get_header_request(zone, 'true', 'false', 'false', 'false', None, APP_ADMIN + '-' + zone.lower())
     
     # Define url request
     request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/programs/' + program_id
@@ -296,7 +297,7 @@ def get_specific_program(program_id, zone, environment, projections=set()):
 
 def patch_program(program_id, zone, environment, request_body):
 
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', None, APP_ADMIN + '-' + zone.lower())
 
     # Define url request to patch the Rewards program selected
     request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/programs/' + program_id
@@ -319,7 +320,7 @@ def patch_program(program_id, zone, environment, request_body):
 
 def put_programs(program_id, zone, environment, request_body):
 
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', None, APP_ADMIN + '-' + zone.lower())
 
     # Define url request to patch the Rewards program selected
     request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/programs/' + program_id
@@ -360,7 +361,7 @@ def missing_dt_combos_to_include(program_dt_combos, zone_dt_combos):
 
 def patch_program_combos(program_id, zone, environment, request_body):
 
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', None, APP_ADMIN + '-' + zone.lower())
 
     # Define url request to patch the Rewards program selected
     request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/programs/' + program_id + '/combos'
