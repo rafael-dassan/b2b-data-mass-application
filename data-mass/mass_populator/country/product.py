@@ -88,7 +88,7 @@ def check_product_associated_to_account(account_id, country, environment, produc
     """
     product_offers = request_get_offers_microservice(account_id, country, environment)
     if product_offers == 'not_found':
-        logger.warning("[Catalog Service] Products not found for account {account_id}. Skipping...".format(account_id=account_id))
+        logger.error(log(Message.PRODUCT_NOT_FOUND_ERROR, {'account_id': account_id}))
         return False
     elif product_offers == 'false':
         logger.error(log(Message.RETRIEVE_PRODUCT_ERROR, {'account_id': account_id}))

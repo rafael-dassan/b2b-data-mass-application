@@ -125,6 +125,7 @@ def get_email_param(country):
     return {
         'AR': 'test-populator-ar@mailinator.com',
         'BR': 'test-populator-br@mailinator.com',
+        'CA': 'test-populator-ca@mailinator.com',
         'CO': 'test-populator-co@mailinator.com',
         'DO': 'test-populator-do@mailinator.com',
         'EC': 'test-populator-ec@mailinator.com',
