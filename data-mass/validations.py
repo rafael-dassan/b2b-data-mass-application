@@ -177,7 +177,7 @@ def validate_rewards_transactions(selection):
 
 
 def validate_rewards_programs(selection):
-    options = ['1', '2', '3']
+    options = ['1', '2', '3', '4']
     return selection in options
 
 

@@ -41,7 +41,8 @@
       "title": "string",
       "subtitle": "string",
       "headerImage": "string",
-      "brands": []
+      "brands": [],
+      "position": 0
     },
     {
       "categoryId": "string",
@@ -53,7 +54,8 @@
       "title": "string",
       "subtitle": "string",
       "headerImage": "string",
-      "brands": []
+      "brands": [],
+      "position": 1
     }
   ],
   "termsAndConditions": [
