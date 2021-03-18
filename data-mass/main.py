@@ -1006,7 +1006,11 @@ def flow_input_recommended_products_to_account(zone, environment):
 
     items = list()
     index = 0
-    while index <= 9:
+    max_range = 10
+    if len(product_offers) < max_range:
+        max_range = len(product_offers)
+
+    while index < max_range:
         sku = product_offers[index]['sku']
         items.append(sku)
         index = index + 1
