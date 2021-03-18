@@ -36,7 +36,8 @@ from combos import *
 from products import *
 from rewards.rewards import enroll_poc_to_program, disenroll_poc_from_program, associate_dt_combos_to_poc, \
     display_program_rules_skus
-from rewards.rewards_programs import create_new_program, patch_program_root_field, update_dt_combos_rewards
+from rewards.rewards_programs import create_new_program, patch_program_root_field, update_program_dt_combos, \
+    remove_program_dt_combos
 from rewards.rewards_challenges import remove_challenge, create_take_photo_challenge, create_mark_complete_challenge, \
     create_purchase_challenge
 from rewards.rewards_transactions import create_redemption, create_rewards_offer, create_points_removal
@@ -232,9 +233,10 @@ def create_rewards_to_account():
     if selection_structure == '2':
         selection_structure = print_rewards_program_menu()
         switcher = {
-            '1': 'UPDATE_COMBOS',
-            '2': 'UPDATE_BALANCE',
-            '3': 'UPDATE_REDEEM_LIMIT',
+            '1': 'ADD_COMBOS',
+            '2': 'REMOVE_COMBOS',
+            '3': 'UPDATE_BALANCE',
+            '4': 'UPDATE_REDEEM_LIMIT',
         }
     elif selection_structure == '6':
         selection_structure = print_rewards_transactions_menu()
@@ -271,25 +273,27 @@ def create_rewards_to_account():
         print_finish_application_menu()
     
     # Option to update a program DT combos according to the DT combos from the zone
-    elif reward_option == 'UPDATE_COMBOS':
-        update_dt_combos_rewards(zone, environment)
+    elif reward_option == 'ADD_COMBOS':
+        update_program_dt_combos(zone, environment)
+        print_finish_application_menu()
+    
+    # Option to remove nonexistent DT combos from the program
+    elif reward_option == 'REMOVE_COMBOS':
+        remove_program_dt_combos(zone, environment)
         print_finish_application_menu()
 
     # Option to update initial balance of a program
     elif reward_option == 'UPDATE_BALANCE':
-
         patch_program_root_field(zone, environment, 'initial_balance')
         print_finish_application_menu()
 
     # Option to update the program redeem limit
     elif reward_option == 'UPDATE_REDEEM_LIMIT':
-
         patch_program_root_field(zone, environment, 'redeem_limit')
         print_finish_application_menu()
 
     # Option to enroll a POC to a rewards program
     elif reward_option == 'ENROLL_POC':
-
         abi_id = print_account_id_menu(zone)
 
         # Call check account exists function
@@ -364,31 +368,26 @@ def create_rewards_to_account():
 
     # Option to create a TAKE_PHOTO challenge for zone
     elif reward_option == 'CREATE_TAKE_PHOTO':
-
         create_take_photo_challenge(zone, environment)
         print_finish_application_menu()
     
     # Option to create a MARK_COMPLETE challenge for zone
     elif reward_option == 'CREATE_MARK_COMPLETE':
-
         create_mark_complete_challenge(zone, environment)
         print_finish_application_menu()
 
     # Option to create a PURCHASE challenge for zone
     elif reward_option == 'CREATE_PURCHASE':
-
         create_purchase_challenge(zone, environment, False)
         print_finish_application_menu()
     
     # Option to create a PURCHASE_MULTIPLE challenge for zone
     elif reward_option == 'CREATE_PURCHASE_MULTIPLE':
-
         create_purchase_challenge(zone, environment, True)
         print_finish_application_menu()
 
     # Option to DELETE a challenge
     elif reward_option == 'DELETE_CHALLENGE':
-
         remove_challenge(zone, environment)
         print_finish_application_menu()
     

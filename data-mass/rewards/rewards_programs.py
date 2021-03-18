@@ -2,14 +2,14 @@
 import json
 from json import loads
 import os
-from random import randint
+from random import randint, randrange
 
 # Local application imports
 from common import get_header_request, get_microservice_base_url, update_value_to_json, convert_json_to_string, \
     place_request, print_input_number, print_input_text, set_to_dictionary
 from classes.text import text
 from rewards.rewards_utils import display_all_programs_info, build_request_url_with_projection_query, get_dt_combos_from_zone, \
-    create_product_list_from_zone, get_payload
+    create_product_list_from_zone, get_payload, print_input_decision, print_input_combo_qty
 
 APP_ADMIN = 'membership'
 
@@ -46,34 +46,23 @@ def create_new_program(zone, environment):
     # Generates the new Program ID
     new_program_id = 'DM-REWARDS-' + str(randint(100,900))
 
-    balance = input(text.Yellow + '\nDo you want to create the program with initial balance (20.000)? y/N: ')
-    balance = balance.upper()
-
+    balance = print_input_decision('Do you want to create the program with initial balance (20.000)')
     if balance == 'Y':
         initial_balance = 20000
     else:
         initial_balance = 0
     
-    print(text.default_text_color + '\nCreating new Rewards program in ' + zone + ' - ' + environment + '. Please wait...')
-
     zone_dt_combos = loads(response_zone_dt_combos.text)
     
-    premium_rule_skus = list()
-    core_rule_skus = list()
-    i = 0
-
-    while i <= 9:
-        # Getting 10 SKUs for premium rule
-        premium_rule_skus.append(product_list_from_zone[i])
-
-        # Getting 10 SKUs for core rule
-        core_rule_skus.append(product_list_from_zone[i+10])
-        i += 1
+    premium_rule_skus = product_list_from_zone[0:10]
+    core_rule_skus = product_list_from_zone[10:20]
 
     # Getting all the basic information for the Program to be created
     generated_combos = generate_combos_information(zone_dt_combos)
     categories = generate_categories_information(zone)
     terms = generate_terms_information(zone)
+
+    print(text.default_text_color + '\nCreating new Rewards program in ' + zone + ' - ' + environment + '. Please wait...')
 
     json_data = get_payload('../data/create_rewards_program_payload.json')
 
@@ -123,7 +112,67 @@ def create_new_program(zone, environment):
     return put_programs(new_program_id, zone, environment, request_body)
 
 
-def update_dt_combos_rewards(zone, environment):
+def update_program_dt_combos(zone, environment):
+    all_programs = get_all_programs(zone, environment, set(["COMBOS"]))
+    if all_programs is None:
+        return None
+
+    json_all_programs = loads(all_programs.text)
+    display_all_programs_info(json_all_programs)
+
+    selected_program = None
+    while selected_program is None:
+        program_id = print_input_text('\n- Please inform the Program ID')
+
+        for program in json_all_programs:
+            if program['id'].upper() == program_id.upper():
+                selected_program = program
+                break
+        
+        if selected_program is None:
+            print(text.Red + '\n- Program "{}" not found!!'.format(program_id))
+
+    # Get all the DT combos of the specified zone
+    response_combos_from_zone = get_dt_combos_from_zone(zone, environment)
+
+    if response_combos_from_zone is None:
+        return None
+
+    json_combos_from_zone = loads(response_combos_from_zone.text)
+    zone_dt_combos = json_combos_from_zone['combos']
+
+    # Get the DT combos configured in the rewards program
+    program_dt_combos = selected_program['combos']
+
+    diff_combos_list = diff_combos_program_and_zone(program_dt_combos, zone_dt_combos, 'inclusion')
+    if len(diff_combos_list) == 0:
+        return None
+
+    update_program_combos = print_input_decision('Do you want to update the program configuration to include the missing DT combos')
+
+    if update_program_combos == 'Y':
+        dt_combos_qty = print_input_combo_qty('Number of DT combos to include', len(diff_combos_list))
+        diff_combos_list = diff_combos_list[0:dt_combos_qty]
+
+        patch_combos_list = list()
+        for combo_id in diff_combos_list:
+            dict_combo = {
+                'comboId': combo_id,
+                'points': randrange(500, 5000, 100)
+            }
+            patch_combos_list.append(dict_combo)
+        
+        dict_patch_program_combos = set_to_dictionary(dict(), 'combos', patch_combos_list)
+
+        request_body = convert_json_to_string(dict_patch_program_combos)
+
+        return patch_program_combos(selected_program['id'], zone, environment, request_body)
+
+    else:
+        return None
+
+
+def remove_program_dt_combos(zone, environment):
     all_programs = get_all_programs(zone, environment, set(["COMBOS"]))
     if all_programs is None:
         return None
@@ -155,38 +204,18 @@ def update_dt_combos_rewards(zone, environment):
     # Get the DT combos configured in the rewards program
     program_dt_combos = selected_program['combos']
 
-    missing_combos_list = missing_dt_combos_to_include(program_dt_combos, zone_dt_combos)
+    diff_combos_list = diff_combos_program_and_zone(program_dt_combos, zone_dt_combos, 'exclusion')
 
-    if len(missing_combos_list) == 0:
-        print("\nThere is nothing to update, please insert a DT combo first")
+    if len(diff_combos_list) == 0:
         return None
     
-    update_program_combos = input(text.Yellow + '\n- Do you want to update the program configuration to include "{}" DT combos? y/N: '
-        .format(str(len(missing_combos_list))))
+    remove_program_combos = print_input_decision('Do you want to remove ALL nonexistent DT combos from the program configuration')
 
-    while update_program_combos.upper() != 'Y' and update_program_combos.upper() != 'N':
-        print(text.Red + '\n- Invalid option!!')
-        update_program_combos = input(text.Yellow + '\n- Do you want to update the program configuration to include "{}" DT combos? y/N: '
-            .format(str(len(missing_combos_list)))) 
-    
-    if update_program_combos.upper() == 'Y':
+    if remove_program_combos.upper() == 'Y':
+        for combo_id in diff_combos_list:
+            delete_program_combo(selected_program['id'], combo_id, zone, environment)
 
-        patch_combos_list = list()
-        for j in range(len(missing_combos_list)):
-            dict_combo = {
-                'comboId': missing_combos_list[j],
-                'points': 500
-            }
-            patch_combos_list.append(dict_combo)
-        
-        dict_patch_program_combos = set_to_dictionary(dict(), 'combos', patch_combos_list)
-
-        request_body = convert_json_to_string(dict_patch_program_combos)
-
-        return patch_program_combos(selected_program['id'], zone, environment, request_body)
-
-    else:
-        return None
+    return None
 
 
 # Patches the selected program root field
@@ -338,25 +367,22 @@ def put_programs(program_id, zone, environment, request_body):
     return response
 
 
-def missing_dt_combos_to_include(program_dt_combos, zone_dt_combos):
+def diff_combos_program_and_zone(program_dt_combos, zone_dt_combos, reason):
 
-    program_combos_list = list()
-    for combo in program_dt_combos:
-        program_combos_list.append(combo.get('comboId'))
+    program_combos_list = [ combo['comboId'] for combo in program_dt_combos ]
+    print(text.Yellow + '\n- Found "{}" DT combos configured for rewards program.'.format(str(len(program_combos_list))))
 
-    print(text.Yellow + '\n- Found "{}" DT combos configured for rewards program.'.format(str(len(program_dt_combos))))
+    zone_combos_list = [ combo['id'] for combo in zone_dt_combos ]
+    print(text.Yellow + '\n- Found "{}" DT combos configured for the zone.'.format(str(len(zone_combos_list))))
 
-    zone_combos_list = list()
-    for combo in zone_dt_combos:
-        zone_combos_list.append(combo.get('id'))
-
-    print(text.Yellow + '\n- Found "{}" DT combos configured for the zone.'.format(str(len(zone_dt_combos))))
-
-    missing_combos_list = list(set(zone_combos_list) - set(program_combos_list))
+    if reason == 'inclusion':
+        diff_combos_list = list(set(zone_combos_list) - set(program_combos_list))
+        print(text.Yellow + '\n- Found "{}" DT combos missing in the program configuration.'.format(str(len(diff_combos_list))))
+    else:
+        diff_combos_list = list(set(program_combos_list) - set(zone_combos_list))
+        print(text.Yellow + '\n- Found "{}" nonexistent DT combos in the program configuration.'.format(str(len(diff_combos_list))))
     
-    print(text.Yellow + '\n- Found "{}" DT combos missing in the program configuration.'.format(str(len(missing_combos_list))))
-
-    return missing_combos_list
+    return diff_combos_list
 
 
 def patch_program_combos(program_id, zone, environment, request_body):
@@ -382,19 +408,41 @@ def patch_program_combos(program_id, zone, environment, request_body):
     return response
 
 
+def delete_program_combo(program_id, combo_id, zone, environment):
+    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', None, APP_ADMIN + '-' + zone.lower())
+
+    # Define url request to delete the Rewards program combo
+    request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/programs/' + program_id + '/combos/' + combo_id
+
+    # Send request
+    response = place_request('DELETE', request_url, '', request_headers)
+
+    if response.status_code == 204:
+        print(text.Green + '\n- [Rewards] The combo "{}" have been successfully deleted from Rewards program "{}".'.format(combo_id, program_id))
+
+    elif response.status_code == 404:
+        print(text.Red + '\n- [Rewards] The combo "{}" does not exist in Rewards program "{}".'.format(combo_id, program_id))
+
+    else:
+        print(text.Red + '\n- [Rewards] Failure when deleting the combo "{}" from Rewards program "{}". \n- Response Status: "{}". \n- Response message "{}".'
+                .format(combo_id, program_id, str(response.status_code), response.text))
+
+    return response
+
+
 # Generates the Combos for Rewards program
 def generate_combos_information(zone_dt_combos):
     zone_dt_combos = zone_dt_combos['combos']
+
+    dt_combos_qty = print_input_combo_qty('Number of DT combos to include in the program', len(zone_dt_combos))
+    zone_dt_combos = zone_dt_combos[0:dt_combos_qty]
+
     combos_list = list()
-
-    for i in range(len(zone_dt_combos)):
-        points = i + 1
-
+    for dt_combo in zone_dt_combos:
         dic_combos  = {
-            'comboId' : zone_dt_combos[i]['id'],
-            'points' : points * 250
+            'comboId' : dt_combo['id'],
+            'points' : randrange(500, 5000, 100)
         }
-
         combos_list.append(dic_combos)
 
     return combos_list

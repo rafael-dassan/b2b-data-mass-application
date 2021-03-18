@@ -8,12 +8,12 @@ from random import randint
 from tabulate import tabulate
 
 # Local application imports
-from common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request
+from common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request, print_input_number
 from products import request_get_offers_microservice, get_sku_name
 from classes.text import text
 from rewards.rewards_programs import get_all_programs, get_specific_program, get_DM_rewards_program_for_zone
-from rewards.rewards_utils import print_make_account_eligible, make_account_eligible, get_dt_combos_from_zone, \
-    post_combo_relay_account
+from rewards.rewards_utils import print_input_decision, make_account_eligible, get_dt_combos_from_zone, \
+    post_combo_relay_account, print_input_combo_qty
 
 APP_B2B = 'b2b'
 APP_ADMIN = 'membership'
@@ -40,9 +40,9 @@ def enroll_poc_to_program(account_id, zone, environment, account_info):
             potential_account = account_info[0]['potential']
 
             if seg_account != 'DM-SEG' or subseg_account != 'DM-SUBSEG' or potential_account != 'DM-POTENT':
-                turn_eligible = print_make_account_eligible()
+                turn_eligible = print_input_decision('Do you want to make the account eligible now')
 
-                if turn_eligible.upper() == 'Y':
+                if turn_eligible == 'Y':
                     is_account_eligible = make_account_eligible(account_info, zone, environment)
 
                     if is_account_eligible:
@@ -131,9 +131,18 @@ def associate_dt_combos_to_poc(account_id, zone, environment):
     if len(dt_combos_to_associate) == 0:
         return None
 
-    print(text.Yellow + '\n- Associating matched DT combos, please wait...')
+    associate_matched_combos = print_input_decision('Do you want to associate the matched DT combos to the POC')
+    
+    if associate_matched_combos == 'Y':
+        dt_combos_qty = print_input_combo_qty('Number of DT combos to associate', len(dt_combos_to_associate))
+        dt_combos_to_associate = dt_combos_to_associate[0:dt_combos_qty]
 
-    return post_combo_relay_account(zone, environment, account_id, dt_combos_to_associate, sku)
+        print(text.Yellow + '\n- Associating matched DT combos, please wait...')
+        
+        return post_combo_relay_account(zone, environment, account_id, dt_combos_to_associate, sku)
+
+    else:
+        return None
 
 
 def match_dt_combos_to_associate(program_dt_combos, zone_dt_combos):

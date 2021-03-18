@@ -10,7 +10,7 @@ from tabulate import tabulate
 
 # Local application imports
 from common import get_header_request, get_microservice_base_url, place_request, update_value_to_json, \
-    convert_json_to_string, create_list
+    convert_json_to_string, create_list, print_input_number
 from products import request_get_products_microservice
 from classes.text import text
 from validations import validate_yes_no_option
@@ -49,7 +49,8 @@ def get_dt_combos_from_zone(zone, environment, page_size=9999):
     header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
     
     # Define url request
-    request_url = get_microservice_base_url(environment) + '/combos/?types=DT&includeDeleted=false&includeDisabled=false&page=0&pageSize=' + str(page_size)
+    query_params = '?types=DT&includeDeleted=false&includeDisabled=false&page=0&pageSize=' + str(page_size)
+    request_url = get_microservice_base_url(environment) + '/combos/' + query_params
     
     # Send request
     response = place_request('GET', request_url, '', header_request)
@@ -205,16 +206,6 @@ def display_all_challenges_info(list_all_challenges):
     print(text.default_text_color + tabulate(all_challenges_dictionary, headers='keys', tablefmt='grid'))
 
 
-def print_make_account_eligible():
-    option = input(text.Yellow + '\n- Do you want to make the account eligible now? y/N: ')
-
-    while validate_yes_no_option(option.upper()) is False:
-        print(text.Red + '\n- Invalid option\n')
-        option = input(text.Yellow + '\n- Do you want to make the account eligible now: ')
-    
-    return option.upper()
-
-
 # Make an account eligible to DM Rewards program
 def make_account_eligible(account_info, zone, environment):
 
@@ -253,3 +244,21 @@ def build_request_url_with_projection_query(request_url, projections):
         request_url += projection_query
     
     return request_url
+
+
+def print_input_combo_qty(message, max_value):
+    combos_qty = print_input_number('\n- {} (Maximum: {})'.format(message, str(max_value)))
+    while combos_qty <= 0 or combos_qty > max_value:
+        print(text.Red + '\nInvalid value!! Must be greater than zero, up to {} !!'.format(str(max_value)))
+        combos_qty = print_input_number('\n- {} (Maximum: {})'.format(message, str(max_value)))
+
+    return combos_qty
+
+
+def print_input_decision(message):
+    decision = input(text.Yellow + '\n- {}? y/N: '.format(message))
+    while validate_yes_no_option(decision.upper()) is False:
+        print(text.Red + '\n- Invalid option !!')
+        decision = input(text.Yellow + '\n- {}? y/N: '.format(message))
+
+    return decision.upper()
