@@ -37,7 +37,7 @@ def associate(country, environment, categories, products):
         for sku in products:
             response_associate = associate_product_to_category(country, environment, sku, category)
             if response_associate == 'false':
-                logger.error(log(Message.CATEGORY_PRODUCT_ASSOCIATE_ERROR,{"category": category, "sku": sku}))
+                logger.error(log(Message.CATEGORY_PRODUCT_ASSOCIATE_ERROR, {"category": category, "sku": sku}))
 
 
 def get_categories_magento_web(country, environment, category_name):
@@ -60,7 +60,8 @@ def get_categories_magento_web(country, environment, category_name):
                 parent_id = node['id']
                 parent_name = node['name']
 
-                if 'mobile' not in parent_name.lower():
+                if 'mobile' not in parent_name.lower() and 'promotions' not in parent_name.lower() and 'promotion' \
+                        not in parent_name.lower() and 'promociones' not in parent_name.lower():
                     node_children = request_get_categories(country, environment, {'parent_id': parent_id, 'name': category_name})
                     if node_children.status_code != 200:
                         logger.error(log(Message.RETRIEVE_CATEGORY_ERROR, {"category": category_name}))
@@ -112,7 +113,8 @@ def get_categories_magento_mobile(country, environment, sub_category_name):
                 parent_id = node['id']
                 parent_name = node['name']
 
-                if 'mobile' in parent_name.lower():
+                if 'mobile' in parent_name.lower() and 'promotions' not in parent_name.lower() and 'promotion' \
+                        not in parent_name.lower() and 'banners' not in parent_name.lower() and 'promociones' not in parent_name.lower():
                     node_parent_category = request_get_categories(country, environment, {'parent_id': parent_id,
                                                                                          'name': parent_category_name})
                     if node_parent_category.status_code != 200:

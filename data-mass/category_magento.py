@@ -124,7 +124,7 @@ def request_create_category(country, environment, category_name, parent_id=0, cu
             "name": category_name,
             "is_active": True,
             "available_sort_by": [],
-            "include_in_menu": True,
+            "include_in_menu": False,
             "extension_attributes": {},
             "custom_attributes": build_custom_attribute(custom_attributes)
         }
