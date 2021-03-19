@@ -956,7 +956,10 @@ def generate_erp_token(expire_months=1):
 
 # Return base URL for Supplier
 def get_supplier_base_url(environment):
-    return 'https://services-' + environment.lower()+'.bees-platform.dev/api/product-taxonomy-service/graphql'
+    if environment == 'LOCAL':
+        return 'http://localhost:8080/graphql'
+    else:
+        return 'https://services-' + environment.lower()+'.bees-platform.dev/api/product-taxonomy-service/graphql'
 
 
 def get_header_request_supplier():
@@ -969,17 +972,3 @@ def get_header_request_supplier():
     }
 
     return header
-
-# Place generic request
-def place_graphql(request_method, request_url, request_body, request_headers):
-    # Send request
-    response = request(
-        request_method,
-        request_url,
-        data=request_body,
-        headers=request_headers
-    )
-
-    log_to_file(request_method, request_url, request_body, request_headers, response.status_code, response.text)
-
-    return response

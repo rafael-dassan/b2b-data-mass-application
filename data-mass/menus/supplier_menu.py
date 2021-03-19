@@ -1,6 +1,6 @@
 from classes.text import text
 from validations import validate_supplier_category_menu_structure, validate_attribute_menu_structure, \
-    validate_option_att, validate_option_type
+    validate_option_att, validate_option_type, validate_environment_supplier
 
 
 def print_create_supplier_category_menu():
@@ -115,3 +115,13 @@ def print_primitive_type():
             text.default_text_color + 'Which Primitive type do you want to change the attribute? (1. NUMERIC / 2. '
                                       'TEXT / 3. DATE): ')
     return option
+
+
+# Print environment menu
+def print_environment_menu_supplier():
+    environment = input(text.default_text_color + 'Environment (LOCAL, DEV, SIT, UAT): ')
+    while validate_environment_supplier(environment.upper()) is False:
+        print(text.Red + '\n- {0} is not a valid environment\n'.format(environment.upper()))
+        environment = input(text.default_text_color + 'Environment (LOCAL, DEV, SIT, UAT): ')
+
+    return environment.upper()
