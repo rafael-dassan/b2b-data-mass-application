@@ -48,7 +48,9 @@ def create_product_supplier(environment):
         if len(json_data) != 0:
             json_split = json_data.rsplit()
             product_id = json_split[2]
-            return product_id
+            product_id1 = product_id.lstrip('"')
+            product_id2 = product_id1.rsplit('"', 1)[0]
+            return product_id2
     except TransportQueryError as e:
         print(text.Red + str(e))
         return 'false'
@@ -57,40 +59,40 @@ def create_product_supplier(environment):
 def create_product_payload():
     return gql(
         '''
-        mutation createProduct($name: String!, $description: String!, $category: ID!, $abstractAttributeId1: ID!, 
-            $abstractAttributeId2: ID!, $varName: String!){
-        createProduct(
-            input: {
-                name: $name
-                description: $description
-                categoryId: $category
-                country: "BR"
-                images: ["http://test.com/1"]
-                vendorId: "e437c69f-2f6e-4412-b78b-1845c8ac8838"
-                manufacturerId: "0c2e96b5-26ea-4698-80a7-86d658656572"
-                attributes: [
-                    {
-                        abstractAttributeId: "$abstractAttributeId1"
-                        values: ["1"]
-                    }
-                ]
-                variants: [
-                            {
-                            name: $varName  
-                            images: ["http://testVariant.com/1"]
-                            skus: ["123"]
-                            attributes: [
-                                 {
-                                    abstractAttributeId: "$abstractAttributeId2"
-                                    values: ["2"]
-                                 }
-                            ]
-                            }
-                        ]
-            }
+        mutation createProduct(
+              $name: String!
+              $description: String!
+              $category: ID!
+              $varName: String!
+              $abstractAttributeId1: ID!
+              $abstractAttributeId2: ID!
             ) {
-            id
-            }
+              createProduct(
+                input: {
+                  name: $name
+                  description: $description
+                  categoryId: $category
+                  country: "BR"
+                  images: ["http://test.com/1"]
+                  vendorId: "e437c69f-2f6e-4412-b78b-1845c8ac8838"
+                  manufacturerId: "0c2e96b5-26ea-4698-80a7-86d658656572"
+                  attributes: [
+                    { abstractAttributeId: $abstractAttributeId1, values: ["1"] }
+                  ]
+                  variants: [
+                    {
+                      name: $varName
+                      images: ["http://testVariant.com/1"]
+                      skus: ["123"]
+                      attributes: [
+                        { abstractAttributeId: $abstractAttributeId2, values: ["2"] }
+                      ]
+                    }
+                  ]
+                }
+              ) {
+                id
+              }
             }
         '''
     )
