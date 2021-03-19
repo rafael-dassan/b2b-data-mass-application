@@ -1674,7 +1674,7 @@ def create_attribute_menu():
     if supplier_option == 'PRIMITIVE':
 
         type_att = print_attribute_primitive()
-        environment = print_environment_menu()
+        environment = print_environment_menu_supplier()
 
         switcher_type = {
             '1': 'NUMERIC',
@@ -1695,7 +1695,7 @@ def create_attribute_menu():
             print_finish_application_menu()
     elif supplier_option == 'ENUM':
         type_att = print_attribute_primitive()
-        environment = print_environment_menu()
+        environment = print_environment_menu_supplier()
 
         switcher_type = {
             '1': 'NUMERIC',
@@ -1714,7 +1714,7 @@ def create_attribute_menu():
         else:
             print_finish_application_menu()
     elif supplier_option == 'GROUP':
-        environment = print_environment_menu()
+        environment = print_environment_menu_supplier()
         list_att = insert_sub_attribute_group(environment)
 
         create_group = create_attribute_group(environment, list_att)
@@ -1771,7 +1771,7 @@ def create_category_supplier_menu():
 
     # Option to create a new program
     if supplier_option == 'ROOT':
-        environment = print_environment_menu()
+        environment = print_environment_menu_supplier()
 
         create_category = create_root_category(environment)
 
@@ -1782,7 +1782,7 @@ def create_category_supplier_menu():
         else:
             print_finish_application_menu()
     elif supplier_option == 'SUB':
-        environment = print_environment_menu()
+        environment = print_environment_menu_supplier()
 
         parent_id = input(text.default_text_color + '\nInform the parent category: ')
         check_cat = check_if_supplier_category_exist(environment, parent_id)
@@ -1800,7 +1800,7 @@ def create_category_supplier_menu():
 
 
 def attribute_associated_category_menu():
-    environment = print_environment_menu()
+    environment = print_environment_menu_supplier()
     attribute_id = input(text.default_text_color + 'Inform the attribute id: ')
     valid_att = check_if_attribute_exist(environment, attribute_id)
     if valid_att == 'false':
@@ -1823,7 +1823,7 @@ def attribute_associated_category_menu():
 
 
 def delete_attribute_menu():
-    environment = print_environment_menu()
+    environment = print_environment_menu_supplier()
     attribute_id = input(text.default_text_color + 'Inform the attribute id: ')
     valid_att = check_if_attribute_exist(environment, attribute_id)
     if valid_att == 'false':
@@ -1840,7 +1840,7 @@ def delete_attribute_menu():
 
 
 def search_specific_attribute_menu():
-    environment = print_environment_menu()
+    environment = print_environment_menu_supplier()
     attribute_id = input(text.default_text_color + 'Inform the attribute id: ')
     result = search_specific_attribute(environment, attribute_id)
     if result == 'false':
@@ -1850,7 +1850,7 @@ def search_specific_attribute_menu():
 
 
 def search_all_attribute_menu():
-    environment = print_environment_menu()
+    environment = print_environment_menu_supplier()
     page_number = input(text.default_text_color + 'Wich page do you want: ')
     result = search_all_attribute(environment, page_number)
     if result == 'false':
@@ -1868,7 +1868,7 @@ def search_all_attribute_menu():
 
 
 def search_specific_category_menu():
-    environment = print_environment_menu()
+    environment = print_environment_menu_supplier()
     category_id = input(text.default_text_color + 'Inform the category id: ')
     result = search_specific_category(environment, category_id)
     if result == 'false':
@@ -1878,7 +1878,7 @@ def search_specific_category_menu():
 
 
 def search_all_category_menu():
-    environment = print_environment_menu()
+    environment = print_environment_menu_supplier()
     page_number = input(text.default_text_color + 'Wich page do you want: ')
     result = search_all_category(environment, page_number)
     if result == 'false':
@@ -1896,7 +1896,7 @@ def search_all_category_menu():
 
 
 def edit_attribute_type_menu():
-    environment = print_environment_menu()
+    environment = print_environment_menu_supplier()
     attribute_id = input(text.default_text_color + 'Inform the attribute id: ')
     valid_att = check_if_attribute_exist(environment, attribute_id)
     if valid_att == 'false':

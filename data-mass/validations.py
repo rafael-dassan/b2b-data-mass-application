@@ -267,3 +267,8 @@ def validate_option_type(selection):
 
 def validate_sku(sku_id, enabled_skus):
     return sku_id in enabled_skus
+
+
+def validate_environment_supplier(environment):
+    environments = ['DEV', 'SIT', 'UAT', 'LOCAL']
+    return environment in environments
