@@ -36,7 +36,7 @@ def check_account_exists_microservice(account_id, zone, environment):
         return 'false'
 
 
-def create_account_ms(account_id, name, payment_method, minimum_order, zone, environment, state,
+def create_account_ms(account_id, name, payment_method, minimum_order, zone, environment, delivery_address,
                       account_status='ACTIVE', enable_empties_loan=False):
     payment_term = None
     if zone == 'BR' and 'BANK_SLIP' in payment_method:
@@ -52,7 +52,10 @@ def create_account_ms(account_id, name, payment_method, minimum_order, zone, env
         'taxId': account_id,
         'name': name,
         'paymentMethods': payment_method,
-        'deliveryAddress.state': state,
+        'deliveryAddress.address': delivery_address.get('address'),
+        'deliveryAddress.city': delivery_address.get('city'),
+        'deliveryAddress.state': delivery_address.get('state'),
+        'deliveryAddress.zipcode': delivery_address.get('zipcode'),
         'paymentTerms': payment_term,
         'status': account_status,
         'hasEmptiesLoan': enable_empties_loan
@@ -285,3 +288,75 @@ def return_payment_term_bank_slip():
 
     payment_term.append(list_payment_term)
     return payment_term
+
+
+def get_account_delivery_address(zone):
+    params = {
+        'AR': {
+            'address': 'Guaiviravi 1486',
+            'city': 'Isidro Casanova',
+            'state': 'Buenos Aires',
+            'zipcode': 'N/A'
+        },
+        'BR': {
+            'address': 'Rua Carlos Maul 315',
+            'city': 'Duque de Caxias',
+            'state': 'Rio de Janeiro',
+            'zipcode': '25261-270'
+        },
+        'CA': {
+            'address': '1305  Heatherleigh',
+            'city': 'Cooksville',
+            'state': 'Ontario',
+            'zipcode': 'L5A 1V9'
+        },
+        'CO': {
+            'address': 'Cr 72 No. 74B-39, C.P 11001',
+            'city': 'Bogota',
+            'state': 'Bogota',
+            'zipcode': 'N/A'
+        },
+        'DO': {
+            'address': '14 D Junio, No 150',
+            'city': 'Santo Domingo',
+            'state': 'Santo Domingo',
+            'zipcode': 'N/A'
+        },
+        'EC': {
+            'address': 'Rocafuerte 742',
+            'city': 'Guayas',
+            'state': 'Guayaquil',
+            'zipcode': 'N/A'
+        },
+        'MX': {
+            'address': 'Aguacate No. 19 El Rosario',
+            'city': 'Actopan',
+            'state': 'Hidalgo',
+            'zipcode': 'N/A'
+        },
+        'PA': {
+            'address': 'Via Rdo J Alfaro',
+            'city': 'Panama',
+            'state': 'Panama',
+            'zipcode': 'N/A'
+        },
+        'PE': {
+            'address': 'Avenida Salaverry, 674',
+            'city': 'Jesus Maria',
+            'state': 'Lima',
+            'zipcode': 'N/A'
+        },
+        'PY': {
+            'address': 'De las Llanas 3.796',
+            'city': 'N/A',
+            'state': 'Asuncion',
+            'zipcode': 'N/A'
+        },
+        'ZA': {
+            'address': '726  Thomas St',
+            'city': 'Blood River',
+            'state': 'KwaZulu-Natal',
+            'zipcode': '3024'
+        }
+    }
+    return params[zone]

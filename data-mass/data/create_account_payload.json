@@ -5,12 +5,12 @@
   ],
   "channel": null,
   "deliveryAddress": {
-      "address": "TEST DELIVERY ADDRESS",
-      "city": "TEST DELIVERY CITY",
+      "address": "string",
+      "city": "string",
       "latitude": null,
       "longitude": null,
       "state": "string",
-      "zipcode": "TEST DELIVERY ZIPCODE"
+      "zipcode": "string"
   },
   "deliveryCenterId": "string",
   "deliveryRegion": null,
@@ -45,7 +45,7 @@
   "priceListId": "string",
   "salesRepresentative": {
       "email": "test@zone.com",
-      "name": "TEST SALES REP NAME",
+      "name": "BEES BDR",
       "phone": 11000000000
   },
   "hasEmptiesLoan": false,

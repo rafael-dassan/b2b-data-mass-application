@@ -88,25 +88,28 @@ def place_request(request_method, request_url, request_body, request_headers):
 
 
 # Return JWT header request
-def get_header_request(header_country, use_jwt_auth='false', use_root_auth='false', use_inclusion_auth='false',
+def get_header_request(zone, use_jwt_auth='false', use_root_auth='false', use_inclusion_auth='false',
                        sku_product='false', account_id=None, jwt_app_claim=None):
 
     switcher = {
-        'ZA': 'UTC',
         'AR': 'America/Buenos_Aires',
-        'DO': 'America/Santo_Domingo',
         'BR': 'America/Sao_Paulo',
+        'CA': 'America/Toronto',
         'CO': 'America/Bogota',
-        'PE': 'America/Lima',
+        'DO': 'America/Santo_Domingo',
         'EC': 'America/Guayaquil',
-        'MX': 'UTC'
+        'MX': 'America/Mexico_City',
+        'PA': 'America/Panama',
+        'PE': 'America/Lima',
+        'PY': 'America/Asuncion',
+        'ZA': 'Africa/Johannesburg'
     }
-    timezone = switcher.get(header_country.upper(), 'false')
+    timezone = switcher.get(zone, 'false')
 
     header = {
-        'User-Agent': 'BEES - Data Mass App',
+        'User-Agent': 'BEES - Data Mass Framework',
         'Content-Type': 'application/json',
-        'country': header_country.upper(),
+        'country': zone,
         'requestTraceId': str(uuid1()),
         'x-timestamp': str(int(round(time() * 1000))),
         'cache-control': 'no-cache',

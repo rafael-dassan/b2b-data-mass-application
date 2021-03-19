@@ -49,7 +49,7 @@ from simulation import process_simulation_microservice, request_order_simulation
 from supplier_category import check_if_supplier_category_exist, create_root_category, create_sub_category_supplier, \
     create_association_attribute_with_category, search_specific_category, display_specific_category, \
     search_all_category, display_all_category
-from validations import validate_yes_no_option, validate_state, is_number
+from validations import validate_yes_no_option, is_number
 
 
 def show_menu():
@@ -1126,7 +1126,7 @@ def account_menu():
 def flow_create_account(zone, environment, account_id):
     name = print_account_name_menu()
     payment_method = print_payment_method_menu(zone)
-    state = validate_state(zone)
+    delivery_address = get_account_delivery_address(zone)
     account_status = print_account_status_menu()
     option_include_minimum_order = print_minimum_order_menu()
 
@@ -1142,7 +1142,7 @@ def flow_create_account(zone, environment, account_id):
 
     # Call create account function
     create_account_response = create_account_ms(account_id, name, payment_method, minimum_order, zone, environment,
-                                                state, account_status, enable_empties_loan)
+                                                delivery_address, account_status, enable_empties_loan)
 
     if create_account_response == 'success':
         print(text.Green + '\n- Your account {account_id} has been created successfully'.format(account_id=account_id))
@@ -1229,7 +1229,7 @@ def flow_update_account_name(zone, environment, account_id):
 
     create_account_response = create_account_ms(account_id, name, account_data['paymentMethods'],
                                                 minimum_order, zone, environment,
-                                                account_data['deliveryAddress']['state'], account_data['status'],
+                                                account_data['deliveryAddress'], account_data['status'],
                                                 account_data['hasEmptiesLoan'])
 
     if create_account_response == 'success':
@@ -1252,7 +1252,7 @@ def flow_update_account_status(zone, environment, account_id):
 
     create_account_response = create_account_ms(account_id, account_data['name'], account_data['paymentMethods'],
                                                 minimum_order, zone, environment,
-                                                account_data['deliveryAddress']['state'], account_status,
+                                                account_data['deliveryAddress'], account_status,
                                                 account_data['hasEmptiesLoan'])
 
     if create_account_response == 'success':
@@ -1278,7 +1278,7 @@ def flow_update_account_minimum_order(zone, environment, account_id):
 
     create_account_response = create_account_ms(account_id, account_data['name'], account_data['paymentMethods'],
                                                 minimum_order, zone, environment,
-                                                account_data['deliveryAddress']['state'], account_data['status'],
+                                                account_data['deliveryAddress'], account_data['status'],
                                                 account_data['hasEmptiesLoan'])
 
     if create_account_response == 'success':
@@ -1301,7 +1301,7 @@ def flow_update_account_payment_method(zone, environment, account_id):
 
     create_account_response = create_account_ms(account_id, account_data['name'], payment_method,
                                                 minimum_order, zone, environment,
-                                                account_data['deliveryAddress']['state'], account_data['status'],
+                                                account_data['deliveryAddress'], account_data['status'],
                                                 account_data['hasEmptiesLoan'])
 
     if create_account_response == 'success':

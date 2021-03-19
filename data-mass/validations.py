@@ -6,20 +6,6 @@ def validate_yes_no_option(option):
     return option in options
 
 
-# Validate State in account creation flow
-def validate_state(zone):
-    return {
-        'BR': 'RIO DE JANEIRO',
-        'DO': 'SANTO DOMINGO',
-        'ZA': 'FREE STATE',
-        'CO': 'SAN ALBERTO',
-        'MX': 'CIDADE DO MEXICO',
-        'AR': 'CORRIENTES',
-        'PE': 'SANTA CRUZ',
-        'EC': 'GUAYAS'
-    }.get(zone, 'false')
-
-
 # Validate length of account name
 def validate_account_name(name):
     if len(name) == 0:

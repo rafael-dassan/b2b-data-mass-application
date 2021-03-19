@@ -29,7 +29,7 @@ def create_all_recommendations(zone, environment, account_id, products):
 
 # Define JSON to submit QUICK ORDER recommendation type
 def create_quick_order_payload(account_id, zone, product_list):
-    countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PE']
+    countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PA', 'PE', 'PY']
 
     if zone in countries_es:
         language = 'es'
@@ -88,7 +88,7 @@ def create_quick_order_payload(account_id, zone, product_list):
 
 # Define JSON to submit FORGOTTEN ITEMS recommendation type
 def create_forgotten_items_payload(account_id, zone, product_list):
-    countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PE']
+    countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PA', 'PE', 'PY']
 
     if zone in countries_es:
         language = 'es'
@@ -147,7 +147,7 @@ def create_forgotten_items_payload(account_id, zone, product_list):
 
 # Define JSON to submit UP SELL recommendation type
 def create_upsell_payload(account_id, zone, product_list):
-    countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PE']
+    countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PA', 'PE', 'PY']
 
     if zone in countries_es:
         language = 'es'
@@ -272,17 +272,18 @@ def get_header_request_recommender(zone, environment):
         request_headers = get_header_request(zone, 'false', 'true')
     elif environment == 'UAT':
         switcher = {
-            'ZA': 'UTC',
             'AR': 'America/Buenos_Aires',
-            'DO': 'America/Santo_Domingo',
             'BR': 'America/Sao_Paulo',
+            'CA': 'America/Toronto',
             'CO': 'America/Bogota',
-            'PE': 'America/Lima',
+            'DO': 'America/Santo_Domingo',
             'EC': 'America/Guayaquil',
-            'CL': 'America/Santiago',
-            'MX': 'UTC'
+            'MX': 'America/Mexico_City',
+            'PA': 'America/Panama',
+            'PE': 'America/Lima',
+            'PY': 'America/Asuncion',
+            'ZA': 'Africa/Johannesburg'
         }
-
         timezone = switcher.get(zone, 'false')
 
         request_headers = {

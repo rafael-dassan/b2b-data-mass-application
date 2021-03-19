@@ -1,10 +1,9 @@
-from accounts import create_account_ms
+from accounts import create_account_ms, get_account_delivery_address
 from delivery_window import create_delivery_window_microservice
 from credit import add_credit_to_account_microservice
 from mass_populator.country.product import check_product_associated_to_account
 from products import request_get_products_by_account_microservice, request_get_products_microservice, generate_random_price_ids, \
     slice_array_products, request_post_products_account_microservice
-from validations import validate_state
 from mass_populator.country.inventory import populate_default_inventory
 from mass_populator.log import *
 
@@ -51,8 +50,8 @@ def populate_poc(country, environment, account_id, account_name, payment_method,
 
 # Populate an account
 def populate_account(country, environment, account_id, account_name, payment_method):
-    state = validate_state(country)
-    if "success" != create_account_ms(account_id, account_name, payment_method, None, country, environment, state):
+    delivery_address = get_account_delivery_address(country)
+    if "success" != create_account_ms(account_id, account_name, payment_method, None, country, environment, delivery_address):
         logger.error(log(Message.ACCOUNT_ERROR, {"account_id": account_id}))
 
 
