@@ -28,7 +28,8 @@ from menus.order_menu import print_order_operations_menu, print_allow_cancellabl
 from menus.product_menu import print_product_operations_menu, print_get_products_menu
 from menus.inventory_menu import print_inventory_option_menu, print_inventory_sku_quantity_menu
 from menus.supplier_menu import print_create_supplier_category_menu, print_new_attribute, print_attribute_primitive, \
-    print_create_attribute_menu, print_min_cardinality, print_max_cardinality, print_new_page, print_attribute_type
+    print_create_attribute_menu, print_min_cardinality, print_max_cardinality, print_new_page, print_attribute_type, \
+    print_environment_menu_supplier
 from menus.rewards_menu import print_rewards_menu, print_rewards_transactions_menu, print_rewards_program_menu, \
     print_rewards_challenges_menu
 from orders import *

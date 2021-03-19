@@ -20,8 +20,7 @@ from classes.text import text
 from logs.log import log_to_file
 from validations import is_number, validate_zone_for_ms, validate_environment, \
     validate_structure, validate_zone_for_interactive_combos_ms, \
-    validate_option_request_selection, validate_supplier_menu_structure, validate_supplier_search_menu_structure, \
-    validate_environment_supplier
+    validate_option_request_selection, validate_supplier_menu_structure, validate_supplier_search_menu_structure
 
 
 # Validate option menu selection
@@ -973,13 +972,3 @@ def get_header_request_supplier():
     }
 
     return header
-
-
-# Print environment menu
-def print_environment_menu_supplier():
-    environment = input(text.default_text_color + 'Environment (LOCAL, DEV, SIT, UAT): ')
-    while validate_environment_supplier(environment.upper()) is False:
-        print(text.Red + '\n- {0} is not a valid environment\n'.format(environment.upper()))
-        environment = input(text.default_text_color + 'Environment (LOCAL, DEV, SIT, UAT): ')
-
-    return environment.upper()
