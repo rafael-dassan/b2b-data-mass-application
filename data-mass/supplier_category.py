@@ -31,7 +31,9 @@ def create_root_category(environment):
         if len(json_data) != 0:
             json_split = json_data.rsplit()
             id_cat = json_split[2]
-            return id_cat
+            id_cat1 = id_cat.lstrip('"')
+            id_cat2 = id_cat1.rsplit('"', 1)[0]
+            return id_cat2
     except TransportQueryError as e:
         print(text.Red + str(e))
         return 'false'
@@ -59,7 +61,9 @@ def create_sub_category_supplier(environment, parent):
         if len(json_data) != 0:
             json_split = json_data.rsplit()
             id_cat = json_split[2]
-            return id_cat
+            id_cat1 = id_cat.lstrip('"')
+            id_cat2 = id_cat1.rsplit('"', 1)[0]
+            return id_cat2
     except TransportQueryError as e:
         print(text.Red + str(e))
         return 'false'
@@ -166,8 +170,10 @@ def create_association_attribute_with_category(environment, attribute_id, catego
         json_data = json.dumps(response)
         if len(json_data) != 0:
             json_split = json_data.rsplit()
-            id_cat = json_split[2]
-            return id_cat
+            id_abs = json_split[2]
+            id_abs1 = id_abs.lstrip('"')
+            id_abs2 = id_abs1.rsplit('"', 1)[0]
+            return id_abs2
     except TransportQueryError as e:
         print(text.Red + str(e))
         return 'false'

@@ -42,7 +42,10 @@ def create_attribute_primitive_type(environment, type_attribute):
         if len(json_data) != 0:
             json_split = json_data.rsplit()
             id_att = json_split[2]
-            return id_att
+            id_att1 = id_att.lstrip('"')
+            id_att2 = id_att1.rsplit('"', 1)[0]
+            return id_att2
+
     except TransportQueryError as e:
         print(text.Red + str(e))
         return 'false'
@@ -86,7 +89,9 @@ def create_attribute_enum(environment, type_attribute):
         if len(json_data) != 0:
             json_split = json_data.rsplit()
             id_att = json_split[2]
-            return id_att
+            id_att1 = id_att.lstrip('"')
+            id_att2 = id_att1.rsplit('"', 1)[0]
+            return id_att2
     except TransportQueryError as e:
         print(text.Red + str(e))
         return 'false'
@@ -143,7 +148,9 @@ def create_attribute_group(environment, attributes):
         if len(json_data) != 0:
             json_split = json_data.rsplit()
             id_att = json_split[2]
-            return id_att
+            id_att1 = id_att.lstrip('"')
+            id_att2 = id_att1.rsplit('"', 1)[0]
+            return id_att2
     except TransportQueryError as e:
         print(text.Red + str(e))
         return 'false'
