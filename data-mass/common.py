@@ -977,9 +977,9 @@ def get_header_request_supplier():
 
 # Print environment menu
 def print_environment_menu_supplier():
-    environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT, LOCAL): ')
+    environment = input(text.default_text_color + 'Environment (LOCAL, DEV, SIT, UAT): ')
     while validate_environment_supplier(environment.upper()) is False:
         print(text.Red + '\n- {0} is not a valid environment\n'.format(environment.upper()))
-        environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT, LOCAL): ')
+        environment = input(text.default_text_color + 'Environment (LOCAL, DEV, SIT, UAT): ')
 
     return environment.upper()
