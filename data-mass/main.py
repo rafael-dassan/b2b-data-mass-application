@@ -34,6 +34,7 @@ from menus.rewards_menu import print_rewards_menu, print_rewards_transactions_me
     print_rewards_challenges_menu
 from orders import *
 from combos import *
+from product_supplier import create_product_supplier
 from products import *
 from rewards.rewards import enroll_poc_to_program, disenroll_poc_from_program, associate_dt_combos_to_poc, \
     display_program_rules_skus
@@ -102,7 +103,8 @@ def show_menu():
             '2': create_category_supplier_menu,
             '3': attribute_associated_category_menu,
             '4': delete_attribute_menu,
-            '5': edit_attribute_type_menu
+            '5': edit_attribute_type_menu,
+            '6': create_product_menu
         }
     elif selection_structure == '6':
         switcher = {
@@ -1685,12 +1687,12 @@ def create_attribute_menu():
 
         type_option = switcher_type.get(type_att, 'false')
 
-        create_enum = create_attribute_primitive_type(environment, type_option)
+        create_att = create_attribute_primitive_type(environment, type_option)
 
-        if create_enum != 'false':
+        if create_att != 'false':
             print(text.Green + '\n- [Attribute] The new {attribute_type} has been successfully created. '
                               'ID: {attribute}'.format(attribute_type=str(type_option),
-                                                       attribute=create_enum))
+                                                       attribute=create_att))
             print_finish_application_menu()
         else:
             print_finish_application_menu()
@@ -1705,12 +1707,12 @@ def create_attribute_menu():
         }
 
         type_option = switcher_type.get(type_att, 'false')
-        create_primitive_attribute = create_attribute_enum(environment, type_option)
+        create_enum = create_attribute_enum(environment, type_option)
 
-        if create_primitive_attribute != 'false':
+        if create_enum != 'false':
             print(text.Green + '\n- [Attribute] The new {attribute_type} has been successfully created. '
                                'ID: {attribute}'.format(attribute_type=str(type_option),
-                                                        attribute=create_primitive_attribute))
+                                                        attribute=create_enum))
             print_finish_application_menu()
         else:
             print_finish_application_menu()
@@ -1919,6 +1921,17 @@ def edit_attribute_type_menu():
     else:
         print_finish_application_menu()
 
+
+def create_product_menu():
+    environment = print_environment_menu_supplier()
+    product = create_product_supplier(environment)
+    if product != 'false':
+        print(
+            text.Green + '\n- [Product] The new product has been successfully created. '
+                         'ID: {product}'.format(product=product))
+        print_finish_application_menu()
+    else:
+        print_finish_application_menu()
 
 # Init
 try:

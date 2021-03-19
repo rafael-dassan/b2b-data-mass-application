@@ -370,6 +370,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(3), text.Yellow + 'Create association between attribute and category')
         print(text.default_text_color + str(4), text.Yellow + 'Delete Attribute')
         print(text.default_text_color + str(5), text.Yellow + 'Edit Attribute Type')
+        print(text.default_text_color + str(6), text.Yellow + 'Create Product')
         selection = input(text.default_text_color + '\nPlease select: ')
         while validate_supplier_menu_structure(selection) == 'false':
             print(text.Red + '\n- Invalid option\n')
@@ -379,6 +380,7 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(3), text.Yellow + 'Create association between attribute and category')
             print(text.default_text_color + str(4), text.Yellow + 'Delete Attribute')
             print(text.default_text_color + str(5), text.Yellow + 'Edit Attribute Type')
+            print(text.default_text_color + str(6), text.Yellow + 'Create Product')
             selection = input(text.default_text_color + '\nPlease select: ')
     elif selection_structure == '6':
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
