@@ -21,7 +21,7 @@ def print_create_attribute_menu():
     print(text.default_text_color + str(2), text.Yellow + 'Create attribute ENUM type')
     print(text.default_text_color + str(3), text.Yellow + 'Create attribute GROUP type')
     structure = input(text.default_text_color + '\nPlease select: ')
-    while validate_attribute_menu_structure(structure) is False:
+    while validate_attribute_menu_structure(structure, is_enum=True) is False:
         print(text.Red + '\n- Invalid option')
         print(text.default_text_color + str(1), text.Yellow + 'Create attribute primitive type')
         print(text.default_text_color + str(2), text.Yellow + 'Create attribute ENUM type')
@@ -31,16 +31,20 @@ def print_create_attribute_menu():
     return structure
 
 
-def print_attribute_primitive():
+def print_attribute_primitive(is_enum):
     print(text.default_text_color + str(1), text.Yellow + 'Create NUMERIC attribute')
     print(text.default_text_color + str(2), text.Yellow + 'Create TEXT attribute')
     print(text.default_text_color + str(3), text.Yellow + 'Create DATE attribute')
+    if not is_enum:
+        print(text.default_text_color + str(4), text.Yellow + 'Create BOOLEAN attribute')
     structure = input(text.default_text_color + '\nPlease select: ')
-    while validate_attribute_menu_structure(structure) is False:
+    while validate_attribute_menu_structure(structure, is_enum) is False:
         print(text.Red + '\n- Invalid option')
         print(text.default_text_color + str(1), text.Yellow + 'Create NUMERIC attribute')
         print(text.default_text_color + str(2), text.Yellow + 'Create TEXT attribute')
         print(text.default_text_color + str(3), text.Yellow + 'Create DATE attribute')
+        if not is_enum:
+            print(text.default_text_color + str(4), text.Yellow + 'Create BOOLEAN attribute')
         structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure
@@ -51,7 +55,7 @@ def print_attribute_enum():
     print(text.default_text_color + str(2), text.Yellow + 'Create ENUM TEXT')
     print(text.default_text_color + str(3), text.Yellow + 'Create ENUM DATE')
     structure = input(text.default_text_color + '\nPlease select: ')
-    while validate_attribute_menu_structure(structure) is False:
+    while validate_attribute_menu_structure(structure, is_enum=True) is False:
         print(text.Red + '\n- Invalid option')
         print(text.default_text_color + str(1), text.Yellow + 'Create ENUM NUMERIC')
         print(text.default_text_color + str(2), text.Yellow + 'Create ENUM TEXT')

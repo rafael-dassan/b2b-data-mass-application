@@ -227,8 +227,10 @@ def validate_option_att(selection):
     return selection in options
 
 
-def validate_attribute_menu_structure(selection):
+def validate_attribute_menu_structure(selection, is_enum):
     option = ['1', '2', '3']
+    if not is_enum:
+        option.append('4')
     return selection in option
 
 
