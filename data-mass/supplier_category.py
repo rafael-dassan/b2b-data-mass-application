@@ -69,24 +69,6 @@ def create_sub_category_supplier(environment, parent):
         return 'false'
 
 
-def create_text_payload():
-    return gql(
-        """
-        mutation createAttributeModel($name: String!, $description: String!) {
-            createAttributeModel(input: {
-                name: $name,
-                description: $description,
-                helpText: "This is an attribute to help you in your test",
-                attributeType: TEXT
-        }){
-            id
-            attributeType
-        }
-    }
-    """
-    )
-
-
 def create_sub_category_payload():
     return gql(
         """
@@ -386,7 +368,7 @@ def search_all_category_payload():
                     }
                     attributes {
                       ... on AbstractAttribute {
-                        i
+                        id
                         minCardinality
                         maxCardinality
                         __typename
@@ -424,7 +406,7 @@ def display_all_category(category):
             else:
                 parent_info = {
                     'Id': parent['id'],
-                    'Parent Name': parent['name']
+                    'Name': parent['name']
                 }
 
             category_info = {

@@ -1676,13 +1676,14 @@ def create_attribute_menu():
     # Option to create a new program
     if supplier_option == 'PRIMITIVE':
 
-        type_att = print_attribute_primitive()
+        type_att = print_attribute_primitive(is_enum=False)
         environment = print_environment_menu_supplier()
 
         switcher_type = {
             '1': 'NUMERIC',
             '2': 'TEXT',
-            '3': 'DATE'
+            '3': 'DATE',
+            '4': 'BOOLEAN'
         }
 
         type_option = switcher_type.get(type_att, 'false')
@@ -1697,7 +1698,7 @@ def create_attribute_menu():
         else:
             print_finish_application_menu()
     elif supplier_option == 'ENUM':
-        type_att = print_attribute_primitive()
+        type_att = print_attribute_primitive(is_enum=True)
         environment = print_environment_menu_supplier()
 
         switcher_type = {
@@ -1756,10 +1757,6 @@ def insert_sub_attribute_group(environment):
             list_att.append(sub_att)
             new_att = print_new_attribute()
     return list_att
-
-
-def create_sub_category(environment, parent_id):
-    pass
 
 
 def create_category_supplier_menu():

@@ -25,15 +25,9 @@ def create_attribute_primitive_type(environment, type_attribute):
     # Create a GraphQL client using the defined transport
     client = Client(transport=transport, fetch_schema_from_transport=False)
 
-    # Provide a GraphQL query
-    if type_attribute == 'NUMERIC':
-        mut = create_numeric_payload()
-    elif type_attribute == 'DATE':
-        mut = create_date_payload()
-    elif type_attribute == 'TEXT':
-        mut = create_text_payload()
+    mut = create_primitive_attribute_payload()
 
-    params = {'name': name, 'description': description}
+    params = {'name': name, 'description': description, 'attribute_type': type_attribute}
 
     # Execute the query on the transport
     try:
@@ -65,22 +59,20 @@ def create_attribute_enum(environment, type_attribute):
     values = list()
     # Provide a GraphQL query
     if type_attribute == 'NUMERIC':
-        mut = create_enum_numeric_payload()
         values.append(str(randint(1, 100000)) + '1')
         values.append(str(randint(1, 100000)) + '2')
         values.append(str(randint(1, 100000)) + '3')
     elif type_attribute == 'DATE':
-        mut = create_enum_date_payload()
         values.append((datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d') + 'T00:00:00')
         values.append((datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d') + 'T00:00:00')
         values.append((datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d') + 'T00:00:00')
     elif type_attribute == 'TEXT':
-        mut = create_enum_text_payload()
         values.append(string.ascii_lowercase + 'a')
         values.append(string.ascii_lowercase + 'b')
         values.append(string.ascii_lowercase + 'c')
 
-    params = {'name': name, 'description': description, 'values': values}
+    mut = create_enum_generic_payload()
+    params = {'name': name, 'description': description, 'values': values, 'enum_primitive_type': type_attribute }
 
     # Execute the query on the transport
     try:
@@ -156,15 +148,15 @@ def create_attribute_group(environment, attributes):
         return 'false'
 
 
-def create_numeric_payload():
+def create_primitive_attribute_payload():
     return gql(
         """
-        mutation createAttributeModel($name: String!, $description: String!) {
+        mutation createAttributeModel($name: String!, $description: String!, $attribute_type: AttributeType!) {
             createAttributeModel(input: {
                 name: $name,
                 description: $description,
                 helpText: "This is an attribute to help you in your test",
-                attributeType: NUMERIC
+                attributeType: $attribute_type
         }){
             id
             attributeType
@@ -174,95 +166,18 @@ def create_numeric_payload():
     )
 
 
-def create_text_payload():
+def create_enum_generic_payload():
     return gql(
         """
-        mutation createAttributeModel($name: String!, $description: String!) {
-            createAttributeModel(input: {
-                name: $name,
-                description: $description,
-                helpText: "This is an attribute to help you in your test",
-                attributeType: TEXT
-        }){
-            id
-            attributeType
-        }
-    }
-    """
-    )
-
-
-def create_date_payload():
-    return gql(
-        """
-        mutation createAttributeModel($name: String!, $description: String!) {
-            createAttributeModel(input: {
-                name: $name,
-                description: $description,
-                helpText: "This is an attribute to help you in your test",
-                attributeType: DATE
-        }){
-            id
-            attributeType
-        }
-    }
-    """
-    )
-
-
-def create_enum_numeric_payload():
-    return gql(
-        """
-        mutation createAttributeModel($name: String!, $description: String!, $values: [String!]!) {
+        mutation createAttributeModel($name: String!, $description: String!, $values: [String!]!, 
+            $enum_primitive_type: AttributePrimitiveType) {
             createAttributeModel(input: {
                 name: $name,
                 description: $description,
                 helpText: "This is an attribute to help you in your test",
                 attributeType: ENUM,
                 metadata: {
-                    enumPrimitiveType: NUMERIC,
-                    enumValues: $values
-                }
-        }){
-            id
-            }
-        }
-    """
-    )
-
-
-def create_enum_text_payload():
-    return gql(
-        """
-        mutation createAttributeModel($name: String!, $description: String!, $values: [String!]!) {
-            createAttributeModel(input: {
-                name: $name,
-                description: $description,
-                helpText: "This is an attribute to help you in your test",
-                attributeType: ENUM,
-                metadata: {
-                    enumPrimitiveType: TEXT,
-                    enumValues: $values
-                }
-        }){
-            id            
-            }
-        }
-    """
-    )
-
-
-def create_enum_date_payload():
-    return gql(
-        """
-        mutation createAttributeModel($name: String!, $description: String!, $values: [String!]!) {
-            createAttributeModel(input: {
-                name: $name,
-                description: $description,
-                helpText: "This is an attribute to help you in your test",
-                attributeType: ENUM,
-                metadata: {
-                    enumPrimitiveType: DATE,
+                    enumPrimitiveType: $enum_primitive_type,
                     enumValues: $values
                 }
         }){
@@ -550,13 +465,11 @@ def edit_attribute_type(environment, attribute_id, type, values):
         primitive_type = print_primitive_type()
         if primitive_type == '1':
             type_prim = 'NUMERIC'
-            mut = create_edit_enum_attribute_numeric()
         elif primitive_type == '2':
             type_prim = 'TEXT'
-            mut = create_edit_enum_attribute_text()
         elif primitive_type == '3':
             type_prim = 'DATE'
-            mut = create_edit_enum_attribute_date()
+        mut = create_edit_enum_attribute()
 
         values = list()
         value1 = input(text.default_text_color + 'Insert the first value: ')
@@ -564,7 +477,7 @@ def edit_attribute_type(environment, attribute_id, type, values):
         values.append(value1)
         values.append(value2)
 
-        params = {"id": attribute_id, "values": values}
+        params = {'id': attribute_id, 'values': values, 'enum_primitive_type': type_prim}
 
     elif type == '3':
         mut = create_edit_group_attribute()
@@ -596,55 +509,15 @@ def create_edit_primitive_attribute():
     )
 
 
-def create_edit_enum_attribute_numeric():
+def create_edit_enum_attribute():
     return gql(
         '''
-        mutation updateAttribute($id: ID!, $values: [String!]!) {
+        mutation updateAttribute($id: ID!, $values: [String!]!, $enum_primitive_type: AttributePrimitiveType) {
     updateAttributeModel(id: $id,
         input: {
             attributeType: ENUM,
             metadata: {
-                enumPrimitiveType: NUMERIC,
-                enumValues: $values
-            }
-        }
-    ) {
-        id
-        }
-    }
-        '''
-    )
-
-
-def create_edit_enum_attribute_text():
-    return gql(
-        '''
-        mutation updateAttribute($id: ID!, $values: [String!]!) {
-    updateAttributeModel(id: $id,
-        input: {
-            attributeType: ENUM,
-            metadata: {
-                enumPrimitiveType: TEXT,
-                enumValues: $values
-            }
-        }
-    ) {
-        id
-        }
-    }
-        '''
-    )
-
-
-def create_edit_enum_attribute_date():
-    return gql(
-        '''
-        mutation updateAttribute($id: ID!, $values: [String!]!) {
-    updateAttributeModel(id: $id,
-        input: {
-            attributeType: ENUM,
-            metadata: {
-                enumPrimitiveType: DATE,
+                enumPrimitiveType: $enum_primitive_type,
                 enumValues: $values
             }
         }
