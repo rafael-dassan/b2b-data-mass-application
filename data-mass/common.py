@@ -969,11 +969,9 @@ def get_supplier_base_url(environment):
 
 def get_header_request_supplier():
     header = {
-       'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYi1pbmJldiIsImF1ZCI6ImFiaS'
-                        '1taWNyb3NlcnZpY2VzIiwiZXhwIjoxNjE2MjM5MDIyLCJpYXQiOjE1MTYyMzkwMjIsInVwZGF0ZWRfYXQiO'
-                        'jExMTExMTEsIm5hbWUiOiJ1c2VyQGFiLWluYmV2LmNvbSIsImFjY291bnRJRCI6IjAwMTAwMDEwMDEiLCJ1'
-                        'c2VySUQiOiIyMTE4Iiwicm9sZXMiOlsiUk9MRV9DVVNUT01FUiJdfQ.09CPxmskqvERwhJSvTXb8RJeiwGGM'
-                        '4aEpMTBiBd72_M'
+       'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYi1pbmJldiIsImF1ZCI6ImFiaS1taWNyb3Nlcn'
+                        'ZpY2VzIiwiZXhwIjoxODkzNDU2MDAwLCJpYXQiOjE1MTYyMzkwMjIsInVwZGF0ZWRfYXQiOjExMTExMTEsInJvbGVzIjpbI'
+                        'lJPTEVfQ1VTVE9NRVIiXX0.oDALscasXTa2Zt209Hjmydk9GT7ErsdxI4c1D4q9kNA'
     }
 
     return header
