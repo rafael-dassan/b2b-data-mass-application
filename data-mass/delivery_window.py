@@ -124,14 +124,9 @@ def return_dates_payload(option):
         list_delivery_dates = list()
         initial_date = datetime.now()
         initial_month = initial_date.strftime('%m')
-        last_day_month = calendar.monthrange(int(initial_date.strftime('%Y')), int(initial_date.strftime('%m')))[1]
+        last_day = initial_date + timedelta(days=30)
 
-        if int(initial_date.strftime('%d')) == last_day_month:
-            initial_date = initial_date + timedelta(days=1)
-            initial_month = initial_date.strftime('%m')
-            last_day_month = calendar.monthrange(int(initial_date.strftime('%Y')), int(initial_date.strftime('%m')))[1]
-
-        while (int(initial_date.strftime('%d')) < last_day_month) and (int(initial_date.strftime('%m'))<= int(initial_month)):
+        while (initial_date < last_day):
             clone_initial_date = initial_date
             clone_initial_date = clone_initial_date + timedelta(days=1)
             start_date = clone_initial_date.strftime('%Y-%m-%d')
