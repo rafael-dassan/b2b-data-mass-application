@@ -3,9 +3,9 @@ import json
 import os
 
 # Local application imports
-from common import get_header_request, get_microservice_base_url, update_value_to_json, create_list, \
+from .common import get_header_request, get_microservice_base_url, update_value_to_json, create_list, \
     convert_json_to_string, place_request
-from classes.text import text
+from .classes.text import text
 
 
 # Include credit for account in microservice

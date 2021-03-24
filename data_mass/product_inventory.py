@@ -2,9 +2,9 @@ import json
 from json import loads
 import os
 from tabulate import tabulate
-from common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request, update_value_to_json, \
+from .common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request, update_value_to_json, \
     finish_application
-from classes.text import text
+from .classes.text import text
 
 
 def request_inventory_creation(zone, environment, account_id, delivery_center_id, products, sku_id=None, sku_quantity=0):

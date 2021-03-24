@@ -1,6 +1,6 @@
-from mass_populator.log import *
-from user_creation_v3 import create_user, authorize_load_request, self_asserted_email_request
-from user_v3 import get_iam_b2c_params
+from ...mass_populator.log import *
+from ...user_creation_v3 import create_user, authorize_load_request, self_asserted_email_request
+from ...user_v3 import get_iam_b2c_params
 
 logger = logging.getLogger(__name__)
 

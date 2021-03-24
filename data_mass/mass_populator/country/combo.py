@@ -1,6 +1,6 @@
-from accounts import check_account_exists_microservice
-from combos import input_combo_type_discount, input_combo_type_free_good, input_combo_only_free_good
-from mass_populator.log import *
+from ...accounts import check_account_exists_microservice
+from ...combos import input_combo_type_discount, input_combo_type_free_good, input_combo_only_free_good
+from ...mass_populator.log import *
 
 logger = logging.getLogger(__name__)
 

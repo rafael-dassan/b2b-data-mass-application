@@ -1,8 +1,8 @@
-from accounts import check_account_exists_microservice
-from mass_populator.preconditions import logger
-from products import request_get_offers_microservice
-from algo_selling import request_quick_order, request_forgotten_items
-from mass_populator.log import *
+from ...accounts import check_account_exists_microservice
+from ...mass_populator.preconditions import logger
+from ...products import request_get_offers_microservice
+from ...algo_selling import request_quick_order, request_forgotten_items
+from ...mass_populator.log import *
 
 logger = logging.getLogger(__name__)
 

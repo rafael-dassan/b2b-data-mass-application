@@ -5,9 +5,9 @@ import os
 from random import randint
 
 # Local application imports
-from common import update_value_to_json, set_to_dictionary, get_microservice_base_url, get_header_request, \
+from .common import update_value_to_json, set_to_dictionary, get_microservice_base_url, get_header_request, \
     create_list, convert_json_to_string, place_request
-from classes.text import text
+from .classes.text import text
 
 
 def create_invoice_request(zone, environment, order_id, status, order_details, order_items, invoice_id=None):

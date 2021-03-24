@@ -1,6 +1,6 @@
 # Local application imports
-from classes.text import text
-from validations import validate_product_operations_structure, validate_get_products, validate_yes_no_option
+from ..classes.text import text
+from ..validations import validate_product_operations_structure, validate_get_products, validate_yes_no_option
 
 
 def print_product_operations_menu():

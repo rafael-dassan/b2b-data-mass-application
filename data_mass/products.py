@@ -5,10 +5,10 @@ import concurrent.futures
 from random import randint, uniform
 from datetime import datetime
 from tabulate import tabulate
-from common import get_microservice_base_url, get_header_request, place_request, update_value_to_json, \
+from .common import get_microservice_base_url, get_header_request, place_request, update_value_to_json, \
     convert_json_to_string, create_list, finish_application
-from menus.product_menu import print_product_quantity_menu, print_is_returnable_menu, print_is_narcotic_menu, print_is_alcoholic_menu
-from classes.text import text
+from .menus.product_menu import print_product_quantity_menu, print_is_returnable_menu, print_is_narcotic_menu, print_is_alcoholic_menu
+from .classes.text import text
 
 
 def generate_random_price_ids(qtd):

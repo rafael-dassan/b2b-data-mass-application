@@ -1,6 +1,6 @@
 # Local application imports
-from classes.text import text
-from validations import validate_orders, validate_yes_no_option, validate_order_sub_menu, validate_order_status
+from ..classes.text import text
+from ..validations import validate_orders, validate_yes_no_option, validate_order_sub_menu, validate_order_status
 
 
 def print_order_operations_menu():

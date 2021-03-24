@@ -1,6 +1,6 @@
 import json
-from category_magento import *
-from mass_populator.log import *
+from ...category_magento import *
+from ...mass_populator.log import *
 
 
 logger = logging.getLogger(__name__)

@@ -1,11 +1,11 @@
 import sys
-from mass_populator.gateway import execute_gateway
-from mass_populator.log import *
-from mass_populator.regression import execute_regression
-from mass_populator.test import execute_test
-from mass_populator.product import execute_product
-from mass_populator.rewards import execute_rewards
-from mass_populator.validation import *
+from .mass_populator.gateway import execute_gateway
+from .mass_populator.log import *
+from .mass_populator.regression import execute_regression
+from .mass_populator.test import execute_test
+from .mass_populator.product import execute_product
+from .mass_populator.rewards import execute_rewards
+from .mass_populator.validation import *
 
 logger = logging.getLogger(__name__)
 

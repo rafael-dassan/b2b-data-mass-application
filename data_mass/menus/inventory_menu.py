@@ -1,8 +1,8 @@
 from itertools import repeat
 from multiprocessing import Pool
-from classes.text import text
-from products import get_sku_name
-from validations import validate_yes_no_option, validate_sku
+from ..classes.text import text
+from ..products import get_sku_name
+from ..validations import validate_yes_no_option, validate_sku
 
 
 def print_inventory_option_menu():

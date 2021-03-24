@@ -1,6 +1,6 @@
 # Local application imports
-from classes.text import text
-from validations import validate_invoice_options, validate_invoice_status, validate_invoice_payment_method
+from ..classes.text import text
+from ..validations import validate_invoice_options, validate_invoice_status, validate_invoice_payment_method
 
 
 def print_invoice_operations_menu():

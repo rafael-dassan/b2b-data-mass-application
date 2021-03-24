@@ -1,6 +1,6 @@
 # Local application imports
-from classes.text import text
-from validations import validate_recommendation_type
+from ..classes.text import text
+from ..validations import validate_recommendation_type
 
 
 def print_recommender_type_menu():

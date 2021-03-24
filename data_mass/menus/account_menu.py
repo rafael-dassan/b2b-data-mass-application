@@ -1,6 +1,6 @@
 # Local application imports
-from classes.text import text
-from validations import validate_yes_no_option, validate_account_name, validate_payments_method, validate_account, \
+from ..classes.text import text
+from ..validations import validate_yes_no_option, validate_account_name, validate_payments_method, validate_account, \
     validate_accounts, validate_account_operations_structure, validate_delivery_window_structure
 
 

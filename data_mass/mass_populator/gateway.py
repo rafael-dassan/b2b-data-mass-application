@@ -1,8 +1,8 @@
-from common import block_print
-from mass_populator.data_creation_engine import populate_accounts, populate_users_magento, \
+from ..common import block_print
+from ..mass_populator.data_creation_engine import populate_accounts, populate_users_magento, \
     categorize_and_enable_products_magento
-from mass_populator.helpers.csv_helper import search_data_by
-from mass_populator.preconditions import run_preconditions
+from ..mass_populator.helpers.csv_helper import search_data_by
+from ..mass_populator.preconditions import run_preconditions
 
 
 def execute_gateway(country, environment):

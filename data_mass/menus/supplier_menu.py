@@ -1,5 +1,5 @@
-from classes.text import text
-from validations import validate_supplier_category_menu_structure, validate_attribute_menu_structure, \
+from ..classes.text import text
+from ..validations import validate_supplier_category_menu_structure, validate_attribute_menu_structure, \
     validate_option_att, validate_option_type, validate_environment_supplier
 
 

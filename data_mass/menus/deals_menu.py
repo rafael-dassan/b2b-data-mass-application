@@ -1,6 +1,6 @@
 # Local application imports
-from classes.text import text
-from validations import validate_deals_options, validate_option_sku
+from ..classes.text import text
+from ..validations import validate_deals_options, validate_option_sku
 
 
 def print_deals_operations_menu():

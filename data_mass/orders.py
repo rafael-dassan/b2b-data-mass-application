@@ -8,9 +8,9 @@ from datetime import timedelta, datetime
 from tabulate import tabulate
 
 # Local application imports
-from common import update_value_to_json, convert_json_to_string, get_header_request, get_microservice_base_url, \
+from .common import update_value_to_json, convert_json_to_string, get_header_request, get_microservice_base_url, \
     place_request, set_to_dictionary, find_values, generate_erp_token
-from classes.text import text
+from .classes.text import text
 
 
 def configure_order_params(zone, environment, account_id, number_size, prefix):
