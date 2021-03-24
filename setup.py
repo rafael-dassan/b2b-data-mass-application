@@ -8,6 +8,8 @@ setuptools.setup(
      name='b2b-data-mass-application',
      version='0.1',
      scripts=[],
+     packages=['data-mass'],
+     package_dir={'data-mass': 'data-mass'},
      author="BEES Force Team",
      author_email="",
      description="BEES Data mass cloning from PRD to QAI or UAT",
