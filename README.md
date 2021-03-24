@@ -16,7 +16,7 @@ This repository contains the B2B Data Mass Script, aimed to those who want to cr
 To launch the application menu, please follow the steps below after opening the Terminal:
 
 ```sh
-cd <project-root-dir>/data-mass/
+cd <project-root-dir>/data_mass/
 ```
 
 You may not have all required dependencies installed by default. Install them by using the pip command:

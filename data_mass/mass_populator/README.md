@@ -7,7 +7,7 @@ This folder contains the Mass Populator Script, aimed to be called on Pipelines 
 To launch the script, please follow the steps below after opening the Terminal:
 
 ```sh
-cd <project-root-dir>/data-mass/
+cd <project-root-dir>/data_mass/
 ```
 
 You could execute the script using 3 parameters:
