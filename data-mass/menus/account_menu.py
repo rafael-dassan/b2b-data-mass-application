@@ -180,6 +180,31 @@ def print_payment_method_menu(zone):
         value = switcher.get(payment_method, 'false')
         return value
 
+    elif zone == 'AR':
+        
+        payment_method = input(
+            text.default_text_color + 'Choose the payment method (1. CASH): ')
+        while validate_payments_method(payment_method, zone) != 'true':
+            if validate_payments_method(payment_method, zone) == 'error_0':
+                print(text.Red + '\n- Payments Method should not be empty')
+                payment_method = input(
+                    text.default_text_color + 'Choose the payment method (1. CASH): ')
+            elif validate_payments_method(payment_method, zone) == 'not_number':
+                print(text.Red + '\n- Payments Method should be numeric')
+                payment_method = input(
+                    text.default_text_color + 'Choose the payment method (1. CASH): ')
+            elif validate_payments_method(payment_method, zone) == 'not_payments_method' or payment_method != '1':
+                print(text.Red + '\n- Payments Method should be 1')
+                payment_method = input(
+                    text.default_text_color + 'Choose the payment method (1. CASH): ')
+
+        switcher = {
+            '1': payment_cash
+        }
+
+        value = switcher.get(payment_method, 'false')
+        return value
+
     else:
         payment_method = input(
             text.default_text_color + 'Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ')

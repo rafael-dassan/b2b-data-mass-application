@@ -14,7 +14,7 @@ def validate_account_name(name):
         return name
 
 
-def validate_payments_method(payments_method):
+def validate_payments_method(payments_method, zone=None):
     size_payments_method = len(payments_method)
 
     if size_payments_method == 0:
@@ -24,6 +24,8 @@ def validate_payments_method(payments_method):
     elif (int(payments_method) != 1) and (int(payments_method) != 2) and (int(payments_method) != 3) \
             and (int(payments_method) != 4):
         return 'not_payments_method'
+    elif zone == "AR" and int(payments_method) != 1:
+        return 'not_payments_method'   
     else:
         return 'true'
 
