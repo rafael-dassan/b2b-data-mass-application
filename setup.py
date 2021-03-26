@@ -25,7 +25,7 @@ setuptools.setup(
                                  'mass_populator/country/data/pa/*.csv',
                                  'mass_populator/country/data/pe/*.csv',
                                  'mass_populator/country/data/py/*.csv',
-                                 'mass_populator/country/data/ar/*.csv']},
+                                 'mass_populator/country/data/za/*.csv']},
      classifiers=[
          "Programming Language :: Python :: 3",
          "Operating System :: OS Independent",
