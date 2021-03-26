@@ -22,7 +22,7 @@ steps:
   displayName: "Build and push master branch"
   inputs:
     containerRegistry: 'Azure-Container-Registry-NonPROD-b2bgbacrint'
-    repository: 'b2b-data-mass-application'
+    repository: 'b2b-data_mass-application'
     Dockerfile: Dockerfile
     buildContext: ./
     tags: |
@@ -34,7 +34,7 @@ steps:
   displayName: "Build and push development branch"
   inputs:
     containerRegistry: 'Azure-Container-Registry-NonPROD-b2bgbacrint'
-    repository: 'b2b-data-mass-application'
+    repository: 'b2b-data_mass-application'
     Dockerfile: Dockerfile
     buildContext: ./
     tags: dev-$(build.buildNumber)

@@ -280,4 +280,4 @@ The OTP secret and interval should not change often, but in case it occurs, plea
 * Go to the [platform-config](https://ab-inbev.visualstudio.com/GHQ_B2B_Delta/_git/platform-config) repository
 * Go to `microservices/releases/contact-verification-service`
 * Select the specific environment-values file to check the OTP parameters for [SIT](https://ab-inbev.visualstudio.com/GHQ_B2B_Delta/_git/platform-config?path=%2Fmicroservices%2Freleases%2Fcontact-verification-service%2Fcontact-verification-service-qa-values.yaml) and [UAT](https://ab-inbev.visualstudio.com/GHQ_B2B_Delta/_git/platform-config?path=%2Fmicroservices%2Freleases%2Fcontact-verification-service%2Fcontact-verification-service-uat-values.yaml)
-* Update the new values in [data-mass/user_creation_v3.py](../../data-mass/user_creation_v3.py)
+* Update the new values in [data-mass/user_creation_v3.py](../../data_mass/user_creation_v3.py)
