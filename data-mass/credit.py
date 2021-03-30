@@ -11,7 +11,7 @@ from classes.text import text
 # Include credit for account in microservice
 def add_credit_to_account_microservice(account_id, zone, environment, credit, balance):
     # Get headers
-    request_headers = get_header_request(zone, 'false', 'true', 'false', 'false')
+    request_headers = get_header_request(zone, False, True, False, False)
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/account-relay/credits'
@@ -60,4 +60,4 @@ def add_credit_to_account_microservice(account_id, zone, environment, credit, ba
         print(text.Red + '\n- [Account Relay Service] Failure to add credit to the account {account_id}. '
                          'Response Status: {response_status}. Response message: {response_message}'
               .format(account_id=account_id, response_status=str(response.status_code), response_message=response.text))
-        return 'false'
+        return False

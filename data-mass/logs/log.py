@@ -22,14 +22,14 @@ def log_to_file(request_method, request_url, request_body, request_headers, stat
     file_debug = os.path.join(dir_project, 'debug.log')
 
     # If the logs directory does not exist, create it
-    if path.exists(dir_project) == False:
+    if not path.exists(dir_project):
         if os.name == 'nt':
             os.makedirs(dir_project)
         else:
             subprocess.call(['mkdir', '-p', dir_project])
 
     # If the debug.log file does not exist, create it
-    if path.exists(file_debug) == False:
+    if not path.exists(file_debug):
         if os.name == 'nt':
             f = open(file_debug, 'w+')
             f.close()

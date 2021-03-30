@@ -36,7 +36,7 @@ def create_root_category(environment):
             return id_cat2
     except TransportQueryError as e:
         print(text.Red + str(e))
-        return 'false'
+        return False
 
 
 def create_sub_category_supplier(environment, parent):
@@ -66,7 +66,7 @@ def create_sub_category_supplier(environment, parent):
             return id_cat2
     except TransportQueryError as e:
         print(text.Red + str(e))
-        return 'false'
+        return False
 
 
 def create_sub_category_payload():
@@ -130,7 +130,7 @@ def check_if_supplier_category_exist(environment, category):
         return json_data
     except TransportQueryError as e:
         print(text.Red + str(e))
-        return 'false'
+        return False
 
 
 def create_association_attribute_with_category(environment, attribute_id, category_id, min_cardinality,
@@ -158,7 +158,7 @@ def create_association_attribute_with_category(environment, attribute_id, catego
             return id_abs2
     except TransportQueryError as e:
         print(text.Red + str(e))
-        return 'false'
+        return False
 
 
 def create_association_payload():
@@ -211,7 +211,7 @@ def search_specific_category(environment, category):
         return json_data
     except TransportQueryError as e:
         print(text.Red + str(e))
-        return 'false'
+        return False
 
 
 def create_search_specific_category_payload():
@@ -342,7 +342,7 @@ def search_all_category(environment, page_number):
         return json_data
     except TransportQueryError as e:
         print(text.Red + str(e))
-        return 'false'
+        return False
 
 
 def search_all_category_payload():

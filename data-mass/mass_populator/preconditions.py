@@ -44,19 +44,19 @@ def delete_deal(account_id, country, environment):
     """
     # Check for available deals in Cart-Calculation MS database
     customer_deals = request_get_deals_pricing_service(account_id, country, environment)
-    if customer_deals == 'false':
+    if not customer_deals:
         logger.error(log(Message.RETRIEVE_PROMOTION_ERROR, {'account_id': account_id}))
     elif customer_deals == 'not_found':
         logger.debug("[Pricing Conditions Service] The account {account_id} does not have deals associated. Skipping..."
                     .format(account_id=account_id))
     else:
         # Delete deals from Cart-Calculation MS database
-        if 'false' == request_delete_deals_pricing_service(account_id, country, environment, customer_deals):
+        if False == request_delete_deals_pricing_service(account_id, country, environment, customer_deals):
             logger.error(log(Message.DELETE_PROMOTION_ERROR, {'account_id': account_id}))
 
     # Check for available deals in Promotion MS database
     promotions = request_get_deals_promotion_service(account_id, country, environment)
-    if promotions == 'false':
+    if not promotions:
         logger.error(log(Message.RETRIEVE_PROMOTION_ERROR, {'account_id': account_id}))
     elif promotions == 'not_found':
         logger.debug("[Promotion Service] The account {account_id} does not have deals associated. Skipping..."
@@ -67,10 +67,10 @@ def delete_deal(account_id, country, environment):
                 deal_id = promotions[i]['id']
 
                 # Delete deals from Promotion MS database
-                if 'false' == request_delete_deal_by_id_v1(deal_id, country, environment):
+                if False == request_delete_deal_by_id_v1(deal_id, country, environment):
                     logger.error(log(Message.DELETE_PROMOTION_ERROR, {'account_id': account_id}))
         else:
-            if 'false' == request_delete_deal_by_id(account_id, country, environment, promotions):
+            if False == request_delete_deal_by_id(account_id, country, environment, promotions):
                 logger.error(log(Message.DELETE_PROMOTION_ERROR, {'account_id': account_id}))
 
 
@@ -83,7 +83,7 @@ def delete_invoice(account_id, country, environment):
         environment: e.g., SIT, UAT
     """
     invoices_by_account = get_invoices(country, account_id, environment)
-    if invoices_by_account == 'false':
+    if not invoices_by_account:
         logger.error(log(Message.RETRIEVE_INVOICE_ERROR, {'account_id': account_id}))
     else:
         invoice_ids = list()
@@ -92,7 +92,7 @@ def delete_invoice(account_id, country, environment):
             invoice_ids.append(invoice_id)
 
         for i in range(len(invoice_ids)):
-            if 'false' == delete_invoice_by_id(country, environment, invoice_ids[i]):
+            if False == delete_invoice_by_id(country, environment, invoice_ids[i]):
                 logger.error(log(Message.DELETE_INVOICE_ERROR, {'account_id': account_id}))
 
 
@@ -109,7 +109,7 @@ def delete_recommendation(account_id, country, environment, use_case):
     if data == 'not_found':
         logger.debug("[Global Recommendation Service] Recommendation type {use_case_type} not found for account "
                      "{account_id}. Skipping...".format(use_case_type=use_case, account_id=account_id))
-    elif data == 'false':
+    elif not data:
         logger.error(log(Message.RETRIEVE_RECOMMENDER_ERROR, {'use_case_type': use_case, 'account_id': account_id}))
     else:
         if 'success' != delete_recommendation_by_id(environment, data):

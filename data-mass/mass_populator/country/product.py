@@ -72,7 +72,7 @@ def enable_product_magento(country, environment, product_sku):
         - environment: (e.g, UAT,SIT)
         - product: product to enable
     """
-    if 'false' == enable_product(country, environment, product_sku):
+    if False == enable_product(country, environment, product_sku):
         logger.error(log(Message.PRODUCT_ENABLE_ERROR, {"sku": product_sku}))
 
 
@@ -90,7 +90,7 @@ def check_product_associated_to_account(account_id, country, environment, produc
     if product_offers == 'not_found':
         logger.error(log(Message.PRODUCT_NOT_FOUND_ERROR, {'account_id': account_id}))
         return False
-    elif product_offers == 'false':
+    elif not product_offers:
         logger.error(log(Message.RETRIEVE_PRODUCT_ERROR, {'account_id': account_id}))
         return False
     else:

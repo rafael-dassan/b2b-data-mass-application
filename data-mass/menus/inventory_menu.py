@@ -22,7 +22,7 @@ def print_inventory_sku_quantity_menu(zone, environment, products):
 
     aux = 0
     while aux < len_products:
-        if products[aux] == 'false':
+        if not products[aux]:
             aux = aux + 1
         else:
             print('\n{0}SKU: {1}{2} || {3}'.format(text.default_text_color, text.Blue, products[aux], sku_name[aux].upper()))

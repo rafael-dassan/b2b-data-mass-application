@@ -18,5 +18,5 @@ def populate_default_inventory(account_id, country, environment, delivery_center
     products = request_get_account_product_assortment(account_id, country, environment, delivery_center_id)
 
     # Request the creation of the default inventory
-    if "true" != request_inventory_creation(country, environment, account_id, delivery_center_id, products):
+    if True != request_inventory_creation(country, environment, account_id, delivery_center_id, products):
         logger.error(log(Message.INVENTORY_CREATE_ERROR, {"account_id": account_id}))

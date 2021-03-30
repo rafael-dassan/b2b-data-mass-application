@@ -56,7 +56,7 @@ def create_invoice_request(zone, environment, order_id, status, order_details, o
     request_url = get_microservice_base_url(environment) + '/invoices-relay'
 
     # Get headers
-    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+    request_headers = get_header_request(zone, False, False, True, False)
 
     # Create body
     list_dict_values = create_list(json_object)
@@ -71,7 +71,7 @@ def create_invoice_request(zone, environment, order_id, status, order_details, o
         print(text.Red + '\n- [Invoice Relay Service] Failure to create an invoice. Response Status: '
                          '{response_status}. Response message: {response_message}'
               .format(response_status=response.status_code, response_message=response.text))
-        return 'false'
+        return False
 
 
 def update_invoice_request(zone, environment, account_id, invoice_id, payment_method, status):
@@ -96,7 +96,7 @@ def update_invoice_request(zone, environment, account_id, invoice_id, payment_me
     request_url = get_microservice_base_url(environment) + '/invoices-service'
 
     # Get headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    request_headers = get_header_request(zone, True, False, False, False, account_id)
 
     # Create body
     request_body = convert_json_to_string(json_object)
@@ -110,12 +110,12 @@ def update_invoice_request(zone, environment, account_id, invoice_id, payment_me
         print(text.Red + '\n- [Invoice Service] Failure to update an invoice. Response Status: {response_status}. '
                          'Response message: {response_message}'
               .format(response_status=response.status_code, response_message=response.text))
-        return 'false'
+        return False
 
 
 def check_if_invoice_exists(account_id, invoice_id, zone, environment):
     # Get header request
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    request_headers = get_header_request(zone, True, False, False, False, account_id)
 
     # Get base URL
     request_url = get_microservice_base_url(
@@ -129,18 +129,18 @@ def check_if_invoice_exists(account_id, invoice_id, zone, environment):
         return json_data
     elif response.status_code == 200 and len(json_data['data']) == 0:
         print(text.Red + '\n- [Invoice Service] The invoice {invoice_id} does not exist'.format(invoice_id=invoice_id))
-        return 'false'
+        return False
     else:
         print(text.Red + '\n- [Invoice Service] Failure to retrieve the invoice {invoice_id}. Response status: '
                          '{response_status}. Response message: {response_message}'
               .format(invoice_id=invoice_id, response_status=response.status_code, response_message=response.text))
-        return 'false'
+        return False
 
 
 def get_invoices(zone, account_id, environment):
-    header_request = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    header_request = get_header_request(zone, True, False, False, False, account_id)
     # Get url base
-    request_url = get_microservice_base_url(environment, 'false') + '/invoices-service/?accountId=' + account_id
+    request_url = get_microservice_base_url(environment, False) + '/invoices-service/?accountId=' + account_id
 
     # Place request
     response = place_request('GET', request_url, '', header_request)
@@ -148,7 +148,7 @@ def get_invoices(zone, account_id, environment):
     if response.status_code == 200:
         return invoice_info
     else:
-        return 'false'
+        return False
 
 
 def delete_invoice_by_id(zone, environment, invoice_id):
@@ -156,7 +156,7 @@ def delete_invoice_by_id(zone, environment, invoice_id):
     request_url = get_microservice_base_url(environment) + '/invoices-relay/id/{0}'.format(invoice_id)
 
     # Get headers
-    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+    request_headers = get_header_request(zone, False, False, True, False)
 
     # Send request
     response = place_request('DELETE', request_url, '', request_headers)
@@ -167,4 +167,4 @@ def delete_invoice_by_id(zone, environment, invoice_id):
         print(text.Red + '\n- [Invoice Relay Service] Failure to delete the invoice {invoice_id}. Response status: '
                          '{response_status}. Response message: {response_message}'
               .format(invoice_id=invoice_id, response_status=response.status_code, response_message=response.text))
-        return 'false'
+        return False

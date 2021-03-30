@@ -60,7 +60,7 @@ def print_order_status_menu():
         '9': 'IN_TRANSIT',
         '10': 'PARTIAL_DELIVERY',
         '11': 'PENDING_CANCELLATION',
-    }.get(status, 'false')
+    }.get(status, False)
 
 
 def print_allow_cancellable_order_menu():

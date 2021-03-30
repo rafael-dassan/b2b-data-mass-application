@@ -36,7 +36,7 @@ def associate(country, environment, categories, products):
     for category in categories:
         for sku in products:
             response_associate = associate_product_to_category(country, environment, sku, category)
-            if response_associate == 'false':
+            if not response_associate:
                 logger.error(log(Message.CATEGORY_PRODUCT_ASSOCIATE_ERROR, {"category": category, "sku": sku}))
 
 
@@ -158,7 +158,7 @@ def _create_category(country, environment, category_name, parent_id, custom_attr
     category_id = None
     category = create_category(country, environment, category_name, parent_id, custom_attributes)
 
-    if category == 'false':
+    if not category:
         logger.error(log(Message.CATEGORY_CREATE_ERROR, {"category": category_name}))
     else:
         category_id = category['id']

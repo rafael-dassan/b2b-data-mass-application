@@ -46,7 +46,7 @@ def format_datetime_to_str(date):
 # Get the DT Combos for the specified zone from Combos MS
 def get_dt_combos_from_zone(zone, environment, page_size=9999):
     
-    header_request = get_header_request(zone, 'true', 'false', 'false', 'false')
+    header_request = get_header_request(zone, True, False, False, False)
     
     # Define url request
     query_params = '?types=DT&includeDeleted=false&includeDisabled=false&page=0&pageSize=' + str(page_size)
@@ -68,9 +68,9 @@ def get_dt_combos_from_zone(zone, environment, page_size=9999):
 
 
 def get_rewards_combos_by_account(account_id, zone, environment):
-    header_request = get_header_request(zone, 'true', 'false', 'false', 'false', account_id, APP_B2B)
+    header_request = get_header_request(zone, True, False, False, False, account_id, APP_B2B)
 
-    request_url = get_microservice_base_url(environment, 'false') + '/loyalty-business-service/programs/accounts/' + account_id + '/combos'
+    request_url = get_microservice_base_url(environment, False) + '/loyalty-business-service/programs/accounts/' + account_id + '/combos'
 
     response = place_request('GET', request_url, '', header_request)
 
@@ -93,7 +93,7 @@ def get_rewards_combos_by_account(account_id, zone, environment):
 
 def post_combo_relay_account(zone, environment, account_id, dt_combos_to_associate, sku):
     # Define headers to post the association
-    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+    request_headers = get_header_request(zone, False, False, True, False)
 
     # Define url request to post the association
     request_url = get_microservice_base_url(environment) + '/combo-relay/accounts'
@@ -164,7 +164,7 @@ def post_combo_relay_account(zone, environment, account_id, dt_combos_to_associa
 def create_product_list_from_zone(zone, environment):
     response_products = request_get_products_microservice(zone, environment)
 
-    if response_products == 'false':
+    if not response_products:
         return None
     else:
         sku_list = list()
@@ -210,7 +210,7 @@ def display_all_challenges_info(list_all_challenges):
 def make_account_eligible(account_info, zone, environment):
 
     # Get header request
-    request_headers = get_header_request(zone, 'false', 'true', 'false', 'false')
+    request_headers = get_header_request(zone, False, True, False, False)
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/account-relay/'

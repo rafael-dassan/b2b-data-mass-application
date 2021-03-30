@@ -55,7 +55,7 @@ def input_combo_type_discount(account_id, zone, environment, sku, discount_value
     request_body = convert_json_to_string(json_object)
 
     # Get header request
-    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false', account_id)
+    request_headers = get_header_request(zone, False, False, True, False, account_id)
 
     # Send requests
     create_combo_response = place_request('POST', request_url, request_body, request_headers)
@@ -65,17 +65,17 @@ def input_combo_type_discount(account_id, zone, environment, sku, discount_value
         if update_consumption_response == 'success':
             return combo_id
         else:
-            return 'false'
+            return False
     else:
         print('\n{0}- [Combo Relay Service] Failure when creating a new combo. Response status: {1}. Response message: {2}'
               .format(text.Red, create_combo_response.status_code, create_combo_response.text))
-        return 'false'
+        return False
 
 
 def input_combo_type_digital_trade(abi_id, zone, environment):
     
     # Get header request
-    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+    request_headers = get_header_request(zone, False, False, True, False)
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/combo-relay/accounts'
@@ -115,11 +115,11 @@ def input_combo_type_digital_trade(abi_id, zone, environment):
         if update_consumption_response == 'success':
             return combo_id
         else:
-            return 'false'
+            return False
     else:
         print(text.Red + '\n- [Combo Relay Service] Failure when creating a new combo. Response Status: '
                         + str(create_combo_response.status_code) + '. Response message ' + create_combo_response.text)
-        return 'false'
+        return False
 
 
 def input_combo_type_free_good(account_id, zone, environment, sku, combo_id=None):
@@ -165,7 +165,7 @@ def input_combo_type_free_good(account_id, zone, environment, sku, combo_id=None
     request_body = convert_json_to_string(json_object)
 
     # Get header request
-    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false', account_id)
+    request_headers = get_header_request(zone, False, False, True, False, account_id)
 
     # Send request
     create_combo_response = place_request('POST', request_url, request_body, request_headers)
@@ -175,11 +175,11 @@ def input_combo_type_free_good(account_id, zone, environment, sku, combo_id=None
         if update_consumption_response == 'success':
             return combo_id
         else:
-            return 'false'
+            return False
     else:
         print('\n{0}- [Combo Relay Service] Failure when creating a new combo. Response status: {1}. Response message: {2}'
               .format(text.Red, create_combo_response.status_code, create_combo_response.text))
-        return 'false'
+        return False
 
 
 def input_combo_only_free_good(account_id, zone, environment, sku, combo_id=None):
@@ -222,7 +222,7 @@ def input_combo_only_free_good(account_id, zone, environment, sku, combo_id=None
     request_body = convert_json_to_string(json_object)
 
     # Get header request
-    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+    request_headers = get_header_request(zone, False, False, True, False)
 
     # Send request
     create_combo_response = place_request('POST', request_url, request_body, request_headers)
@@ -232,11 +232,11 @@ def input_combo_only_free_good(account_id, zone, environment, sku, combo_id=None
         if update_consumption_response == 'success':        
             return combo_id
         else:
-            return 'false'
+            return False
     else:
         print('\n{0}- [Combo Relay Service] Failure when creating a new combo. Response status: {1}. Response message: {2}'
               .format(text.Red, create_combo_response.status_code, create_combo_response.text))
-        return 'false'
+        return False
 
 
 # Turn combo quantity available
@@ -264,7 +264,7 @@ def update_combo_consumption(abi_id, zone, environment, combo_id):
     list_dict_values = create_list(json_object)
     request_body = convert_json_to_string(list_dict_values)
 
-    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+    request_headers = get_header_request(zone, False, False, True, False)
 
     response = place_request('POST', request_url, request_body, request_headers)
 
@@ -273,12 +273,12 @@ def update_combo_consumption(abi_id, zone, environment, combo_id):
     else:
         print(text.Red + '\n- [Combo Relay Service] Failure to update combo consumption. Response Status: '
               + str(response.status_code) + '. Response message ' + response.text)
-        return 'false'
+        return False
 
 
 def check_combo_exists_microservice(account_id, zone, environment, combo_id):
     # Get header request
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    request_headers = get_header_request(zone, True, False, False, False, account_id)
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/combos/?accountID=' + account_id + '&comboIds=' + combo_id \
@@ -292,11 +292,11 @@ def check_combo_exists_microservice(account_id, zone, environment, combo_id):
         return json_data
     elif response.status_code == 200 and len(json_data) == 0:
         print(text.Red + '\n- [Combo Service] The combo ' + combo_id + ' does not exist')
-        return 'false'
+        return False
     else:
         print(text.Red + '\n- [Combo Service] Failure to retrieve the combo. Response Status: '
               + str(response.status_code) + '. Response message ' + response.text)
-        return 'false'
+        return False
 
 
 def get_combo_information(zone, combo_id, combo_type):

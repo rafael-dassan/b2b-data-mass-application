@@ -48,7 +48,7 @@ def request_post_price_microservice(account_id, zone, environment, sku_product, 
     """
 
     # Get base URL
-    request_url = get_microservice_base_url(environment, 'false') + '/cart-calculation-relay/v2/prices'
+    request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/prices'
 
     # Get request body
     request_body = get_body_price_microservice_request_v2(account_id, sku_product, product_price_id, price_values)
@@ -64,7 +64,7 @@ def request_post_price_microservice(account_id, zone, environment, sku_product, 
         print(text.Red + '\n- [Pricing Engine Relay Service] Failure to define price for the SKU {sku}. Response '
                          'status: {response_status}. Response message: {response_message}'
               .format(sku=sku_product, response_status=response.status_code, response_message=response.text))
-        return 'false'
+        return False
 
 
 def generate_price_values(zone, product):
@@ -122,7 +122,7 @@ def request_get_products_microservice(zone, environment, page_size=100000):
     """
 
     # Get headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, True, False, False, False)
 
     # Get base URL
     request_url = get_microservice_base_url(
@@ -138,7 +138,7 @@ def request_get_products_microservice(zone, environment, page_size=100000):
         print(text.Red + '\n- [Item Service] Failure to retrieve products. Response Status: {response_status}. '
                          'Response message: {response_message}'
               .format(response_status=response.status_code, response_message=response.text))
-        return 'false'
+        return False
 
 
 # Make the necessary requests to add a product in a microservice-based zone
@@ -149,14 +149,14 @@ def product_post_requests_microservice(product_data, account_id, zone, environme
     # Call product association via Product Assortment Relay Service
     product_inclusion_ms_result = request_post_price_inclusion_microservice(zone, environment, product['sku'],
                                                                             delivery_center_id)
-    if product_inclusion_ms_result == 'false':
-        return 'false'
+    if not product_inclusion_ms_result:
+        return False
 
     # Call price inclusion via Pricing Engine Relay Service
     price_inclusion_result = request_post_price_microservice(account_id, zone, environment, product['sku'], index,
                                                              price_values)
-    if price_inclusion_result == 'false':
-        return 'false'
+    if not price_inclusion_result:
+        return False
 
     return 'success'
 
@@ -175,7 +175,7 @@ def request_post_products_account_microservice(account_id, zone, environment, de
     now = datetime.now()
     lapsed = (now - last).seconds
     print(text.default_text_color + '{}\n- Products added: {} / failed: {}. Completed in {} seconds.'
-          .format(text.Green, results.count('success'), results.count('false'), lapsed))
+          .format(text.Green, results.count('success'), results.count(False), lapsed))
 
     return 'success'
 
@@ -192,7 +192,7 @@ def request_post_price_inclusion_microservice(zone, environment, sku_product, de
     """
 
     # Get headers
-    request_headers = get_header_request(zone, 'false', 'false', 'true', sku_product)
+    request_headers = get_header_request(zone, False, False, True, sku_product)
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/product-assortment-relay/inclusion'
@@ -208,7 +208,7 @@ def request_post_price_inclusion_microservice(zone, environment, sku_product, de
         print(text.Red + '\n- [Product Assortment Relay Service] Failure to associate the SKU {sku}. Response status: '
                          '{response_status}. Response message: {response_message}'
               .format(sku=sku_product, response_status=response.status_code, response_message=response.text))
-        return 'false'
+        return False
 
 
 # Create body for product inclusion
@@ -235,7 +235,7 @@ def request_get_offers_microservice(account_id, zone, environment):
     """
 
     # Get headers
-    headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    headers = get_header_request(zone, True, False, False, False, account_id)
 
     # Get base URL
     request_url = get_microservice_base_url(
@@ -253,7 +253,7 @@ def request_get_offers_microservice(account_id, zone, environment):
         print(text.Red + '\n- [Catalog Service] Failure to get a list of available SKUs. Response Status: '
                          '{response_status}. Response message: {response_message}'
               .format(response_status=response.status_code,response_message=response.text))
-        return 'false'
+        return False
 
 
 def check_item_enabled(sku, zone, environment):
@@ -270,10 +270,10 @@ def check_item_enabled(sku, zone, environment):
     """
 
     # Get base URL
-    request_url = get_microservice_base_url(environment, 'false') + '/items/' + sku + '?includeDisabled=false'
+    request_url = get_microservice_base_url(environment, False) + '/items/' + sku + '?includeDisabled=false'
 
     # Get headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, True, False, False, False)
 
     # Send request
     response = place_request('GET', request_url, '', request_headers)
@@ -283,12 +283,12 @@ def check_item_enabled(sku, zone, environment):
         return json_data['sku']
     elif response.status_code == 404:
         print(text.Red + '\n- [Item Service] SKU {sku} not found for country {country}'.format(sku=sku, country=zone))
-        return 'false'
+        return False
     else:
         print(text.Red + '\n- [Item Service] Failure to update an item. Response Status: {response_status}. Response '
                          'message: {response_message}'.format(response_status=response.status_code,
                                                               response_message=response.text))
-        return 'false'
+        return False
 
 
 def request_get_products_by_account_microservice(account_id, zone, environment):
@@ -306,7 +306,7 @@ def request_get_products_by_account_microservice(account_id, zone, environment):
     """
 
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    request_headers = get_header_request(zone, True, False, False, False, account_id)
 
     # Define base URL
     request_url = get_microservice_base_url(
@@ -324,7 +324,7 @@ def request_get_products_by_account_microservice(account_id, zone, environment):
         print(text.Red + '\n- [Catalog Service] Failure to get a list of available SKUs. Response Status: '
                          '{response_status}. Response message: {response_message}'
               .format(response_status=response.status_code, response_message=response.text))
-        return 'false'
+        return False
 
 
 def get_body_price_microservice_request_v2(abi_id, sku_product, product_price_id, price_values):
@@ -379,7 +379,7 @@ def request_get_account_product_assortment(account_id, zone, environment, delive
     """
 
     # Get headers
-    headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    headers = get_header_request(zone, True, False, False, False, account_id)
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/product-assortment/?accountId=' + account_id \
@@ -398,7 +398,7 @@ def request_get_account_product_assortment(account_id, zone, environment, delive
         print(text.Red + '\n- [Product Assortment Service] Failure to get product association. Response Status: '
                          '{response_status}. Response message: {response_message}'
               .format(response_status=response.status_code, response_message=response.text))
-        return 'false'
+        return False
 
 
 def create_product(zone, environment, product_data):
@@ -412,10 +412,10 @@ def create_product(zone, environment, product_data):
     """
 
     # Define headers
-    request_headers = get_header_request(zone, 'false', 'true', 'false')
+    request_headers = get_header_request(zone, False, True, False)
 
     # Get base URL
-    request_url = '{0}/item-relay/items'.format(get_microservice_base_url(environment, 'false'))
+    request_url = '{0}/item-relay/items'.format(get_microservice_base_url(environment, False))
 
     # Create file path
     abs_path = os.path.abspath(os.path.dirname(__file__))
@@ -439,12 +439,12 @@ def create_product(zone, environment, product_data):
     if response.status_code == 202:
         update_item_response = set_item_enabled(zone, environment, product_data)
         get_item_response = check_item_enabled(product_data.get('sku'), zone, environment)
-        if update_item_response != 'false' and get_item_response != 'false':
+        if update_item_response and get_item_response:
             return product_data
     else:
         print('\n{0}- [Item Relay Service] Failure to update an item. Response Status: {1}. Response message: {2}'
               .format(text.Red, response.status_code, response.text))
-        return 'false'
+        return False
 
 
 def get_item_input_data():
@@ -503,10 +503,10 @@ def set_item_enabled(zone, environment, product_data):
     Returns: `success` when the item is updated successfully or `false` in case of failure
     """
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false')
+    request_headers = get_header_request(zone, True, False, False)
 
     # Get base URL
-    request_url = '{0}/items/{1}'.format(get_microservice_base_url(environment, 'false'), product_data.get('sku'))
+    request_url = '{0}/items/{1}'.format(get_microservice_base_url(environment, False), product_data.get('sku'))
 
     # Create file path
     abs_path = os.path.abspath(os.path.dirname(__file__))
@@ -542,7 +542,7 @@ def set_item_enabled(zone, environment, product_data):
         print(text.Red + '\n- [Item Service] Failure to update an item. Response Status: {response_status}. '
                          'Response message: {response_message}'.format(response_status=response.status_code,
                                                                        response_message=response.text))
-        return 'false'
+        return False
 
 
 def display_product_information(product_offers):
@@ -571,10 +571,10 @@ def display_product_information(product_offers):
 # Get SKU name
 def get_sku_name(zone, environment, sku_id):
     # Get header request
-    headers = get_header_request(zone, 'true')
+    headers = get_header_request(zone, True)
 
     # Get url base
-    request_url = get_microservice_base_url(environment, 'false') + '/items/' + sku_id + '?includeDisabled=false'
+    request_url = get_microservice_base_url(environment, False) + '/items/' + sku_id + '?includeDisabled=false'
 
     # Place request
     response = place_request('GET', request_url, '', headers)
@@ -614,7 +614,7 @@ def get_sku_price(account_id, combo_item, zone, environment):
     request_url = get_microservice_base_url(environment) + '/cart-calculator/prices?accountID=' + account_id
 
     # Get header request
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    request_headers = get_header_request(zone, True, False, False, False, account_id)
 
     # Send request
     response = place_request('GET', request_url, '', request_headers)
@@ -636,7 +636,7 @@ def request_empties_discounts_creation(account_id, zone, environment, empty_sku,
     request_headers = get_header_request(zone)
 
     # Get base URL
-    request_url = get_microservice_base_url(environment, 'false') + '/cart-calculation-relay/v2/prices'
+    request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/prices'
 
     # Create file path
     abs_path = os.path.abspath(os.path.dirname(__file__))
@@ -669,4 +669,4 @@ def request_empties_discounts_creation(account_id, zone, environment, empty_sku,
         print(text.Red + '\n- [Pricing Engine Relay Service] Failure to define price for the empty SKU {sku}. Response '
                          'status: {response_status}. Response message: {response_message}'
               .format(sku=empty_sku, response_status=response.status_code, response_message=response.text))
-        return 'false'
+        return False

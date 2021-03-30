@@ -56,10 +56,10 @@ def enroll_poc_to_program(account_id, zone, environment, account_info):
 def disenroll_poc_from_program(account_id, zone, environment):
 
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id, APP_ADMIN + '-' + zone.lower())
+    request_headers = get_header_request(zone, True, False, False, False, account_id, APP_ADMIN + '-' + zone.lower())
 
     # Define url request
-    request_url = get_microservice_base_url(environment, 'false') + '/rewards-service/rewards/' + account_id
+    request_url = get_microservice_base_url(environment, False) + '/rewards-service/rewards/' + account_id
 
     response = place_request('DELETE', request_url, '', request_headers)
 
@@ -121,7 +121,7 @@ def associate_dt_combos_to_poc(account_id, zone, environment):
     if response_product_offers == 'not_found':
         print(text.Red + '\n- [Catalog Service] There are no products associated with the account "{}"'.format(account_id))
         return None
-    elif response_product_offers == 'false': return None
+    elif not response_product_offers: return None
 
     # Define the list of FreeGoods for the main payload 
     index_offers = randint(0, (len(response_product_offers) - 1))
@@ -197,9 +197,9 @@ def display_program_rules_skus(zone, environment, abi_id):
 
 
 def get_rewards(account_id, zone, environment):
-    header_request = get_header_request(zone, 'true', 'false', 'false', 'false', account_id, APP_B2B)
+    header_request = get_header_request(zone, True, False, False, False, account_id, APP_B2B)
 
-    request_url = get_microservice_base_url(environment, 'false') + '/loyalty-business-service/rewards/' + account_id
+    request_url = get_microservice_base_url(environment, False) + '/loyalty-business-service/rewards/' + account_id
 
     response = place_request('GET', request_url, '', header_request)
 
@@ -217,10 +217,10 @@ def get_rewards(account_id, zone, environment):
 
 def put_rewards(account_id, zone, environment):
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id, APP_B2B)
+    request_headers = get_header_request(zone, True, False, False, False, account_id, APP_B2B)
 
     # Define url request
-    request_url = get_microservice_base_url(environment, 'false') + '/loyalty-business-service/rewards'
+    request_url = get_microservice_base_url(environment, False) + '/loyalty-business-service/rewards'
 
     # Create request body
     dict_values  = {

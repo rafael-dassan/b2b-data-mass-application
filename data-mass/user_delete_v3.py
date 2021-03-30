@@ -14,9 +14,9 @@ def delete_user_v3(environment, country, user_name):
     response_delete_magento = delete_user_magento(environment, country, user_name)
     response_delete_azure = delete_user_azure(user_name, iam_b2c_params)
 
-    if response_delete_magento == "false" and response_delete_azure == "false":
-        return "false"
-    if response_delete_magento == "false" or response_delete_azure == "false":
+    if not response_delete_magento and not response_delete_azure:
+        return False
+    if not response_delete_magento or not response_delete_azure:
         return "partial"
     return "success"
 
@@ -26,8 +26,8 @@ def delete_user_magento(environment, country, user_name):
     magento_token = get_magento_user_registration_access_token(environment, country)
 
     user_id = get_user_id_magento(magento_url, magento_token, user_name)
-    if user_id == "false":
-        return "false"
+    if not user_id:
+        return False
 
     url = "{0}/rest/V1/customers/{1}?XDEBUG_SESSION_START=PHPSTORM".format(magento_url, user_id)
     headers = get_magento_header(magento_token)
@@ -36,7 +36,7 @@ def delete_user_magento(environment, country, user_name):
     if response.status_code != 200:
         print("\n{0}- Fail [delete_user_magento]. Response status: {1}. Response message: {2}".format(text.Red, response.status_code,
                                                                                                       response.text))
-        return "false"
+        return False
 
     return response
 
@@ -60,7 +60,7 @@ def get_user_id_magento(magento_url, magento_token, user_name):
                                                                                                                           response
                                                                                                                           .status_code,
                                                                                                                           response.text))
-        return "false"
+        return False
 
     response_text = response.text
     logging.debug("Get user Magento :: Response Text...........: {text}".format(text=response_text))
@@ -68,7 +68,7 @@ def get_user_id_magento(magento_url, magento_token, user_name):
     magento_response = response.json()
     if len(magento_response) == 0 or not magento_response[0]["customer_id"]:
         print("\n{0}- User Magento not found [get_user_id_magento]: {1}".format(text.Red, user_name))
-        return "false"
+        return False
 
     return magento_response[0]["customer_id"]
 
@@ -93,12 +93,12 @@ def get_magento_header(magento_token):
 
 def delete_user_azure(user_name, iam_b2c_params):
     token = get_token_azure(iam_b2c_params)
-    if token == "false":
-        return "false"
+    if not token:
+        return False
 
     user_id = get_user_id_azure(user_name, iam_b2c_params, token)
-    if user_id == "false":
-        return "false"
+    if not user_id:
+        return False
 
     headers = {
         "Authorization": "Bearer {0}".format(token)
@@ -113,7 +113,7 @@ def delete_user_azure(user_name, iam_b2c_params):
                                                                                                                          response
                                                                                                                          .status_code,
                                                                                                                          response.text))
-        return "false"
+        return False
 
     return response
 
@@ -140,7 +140,7 @@ def get_token_azure(iam_b2c_params):
         print("\n{0}- Fail on get token Azure [get_token_azure]. Response status: {1}. Response message: {2}".format(text.Red,
                                                                                                                      response.status_code,
                                                                                                                      response.text))
-        return "false"
+        return False
 
     response_text = response.text
     logging.debug("Get token Azure :: Response Text...........: {0}".format(response_text))
@@ -167,7 +167,7 @@ def get_user_id_azure(user_name, iam_b2c_params, token):
         print("\n{0}- Fail on get user Azure [get_user_id_azure]. Response status: {1}. Response message: {2}".format(text.Red,
                                                                                                                       response.status_code,
                                                                                                                       response.text))
-        return "false"
+        return False
 
     response_text = response.text
     logging.debug("Get user Azure :: Response Text...........: {text}".format(text=response_text))

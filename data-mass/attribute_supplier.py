@@ -42,7 +42,7 @@ def create_attribute_primitive_type(environment, type_attribute):
 
     except TransportQueryError as e:
         print(text.Red + str(e))
-        return 'false'
+        return False
 
 
 def create_attribute_enum(environment, type_attribute):
@@ -86,7 +86,7 @@ def create_attribute_enum(environment, type_attribute):
             return id_att2
     except TransportQueryError as e:
         print(text.Red + str(e))
-        return 'false'
+        return False
 
 
 def create_attribute_group(environment, attributes):
@@ -145,7 +145,7 @@ def create_attribute_group(environment, attributes):
             return id_att2
     except TransportQueryError as e:
         print(text.Red + str(e))
-        return 'false'
+        return False
 
 
 def create_primitive_attribute_payload():
@@ -212,7 +212,7 @@ def check_if_attribute_exist(environment, attribute):
         return json_data
     except TransportQueryError as e:
         print(text.Red + str(e))
-        return 'false'
+        return False
 
 
 def delete_attribute_supplier(environment, attribute):
@@ -236,7 +236,7 @@ def delete_attribute_supplier(environment, attribute):
         return json_data
     except TransportQueryError as e:
         print(text.Red + str(e))
-        return 'false'
+        return False
 
 
 def search_specific_attribute(environment, attribute):
@@ -256,7 +256,7 @@ def search_specific_attribute(environment, attribute):
         return json_data
     except TransportQueryError as e:
         print(text.Red + str(e))
-        return 'false'
+        return False
 
 
 def search_all_attribute(environment, page_number):
@@ -275,7 +275,7 @@ def search_all_attribute(environment, page_number):
         return json_data
     except TransportQueryError as e:
         print(text.Red + str(e))
-        return 'false'
+        return False
 
 
 def display_specific_attribute(attribute):
@@ -489,7 +489,7 @@ def edit_attribute_type(environment, attribute_id, type, values):
         return json_data
     except TransportQueryError as e:
         print(text.Red + str(e))
-        return 'false'
+        return False
 
 
 def create_edit_primitive_attribute():

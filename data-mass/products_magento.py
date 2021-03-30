@@ -15,7 +15,7 @@ def enable_product(country, environment, product_sku):
     if response.status_code == 200:
         return 'success'
     else:
-        return 'false'
+        return False
 
 
 def request_enable_product(country, environment, product_sku):

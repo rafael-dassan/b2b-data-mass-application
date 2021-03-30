@@ -53,7 +53,7 @@ def create_product_supplier(environment):
             return product_id2
     except TransportQueryError as e:
         print(text.Red + str(e))
-        return 'false'
+        return False
 
 
 def create_product_payload():

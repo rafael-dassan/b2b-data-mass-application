@@ -9,7 +9,7 @@ from classes.text import text
 
 def request_inventory_creation(zone, environment, account_id, delivery_center_id, products, sku_id=None, sku_quantity=0):
     # Get headers
-    request_headers = get_header_request(zone, 'false', 'false', 'true')
+    request_headers = get_header_request(zone, False, False, True)
 
     # Get URL
     request_url = '{0}/inventory-relay/add'.format(get_microservice_base_url(environment))
@@ -21,16 +21,16 @@ def request_inventory_creation(zone, environment, account_id, delivery_center_id
     response = place_request('PUT', request_url, request_body, request_headers)
 
     if response.status_code == 202:
-        return 'true'
+        return True
     else:
         print('\n{0}- [Inventory Relay Service] Failure to add stock for products. Response Status: {1}. Response message: {2}'
               .format(text.Red, response.status_code, response.text))
-        return 'false'
+        return False
 
 
 def get_inventory_payload(zone, environment, account_id, products, delivery_center_id, sku_id, sku_quantity):
     get_inventory_response = get_delivery_center_inventory(environment, zone, account_id, delivery_center_id, products)
-    if get_inventory_response != 'false' and get_inventory_response != 'not_found':
+    if get_inventory_response and get_inventory_response != 'not_found':
         inv = get_inventory_response['inventory']
 
     quantity = 999999
@@ -124,7 +124,7 @@ def get_delivery_center_inventory(environment, zone, account_id, delivery_center
     request_body = convert_json_to_string(json_object)
 
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    request_headers = get_header_request(zone, True, False, False, False, account_id)
 
     # Define url request
     request_url = '{0}/inventory/'.format(get_microservice_base_url(environment))
@@ -138,4 +138,4 @@ def get_delivery_center_inventory(environment, zone, account_id, delivery_center
     else:
         print('\n{0}- [Inventory Service] Failure to retrieve inventory information. Response Status: {1}. Response message: {2}'
               .format(text.Red, response.status_code, response.text))
-        return 'false'
+        return False

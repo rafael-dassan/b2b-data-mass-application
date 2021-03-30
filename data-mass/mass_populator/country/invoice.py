@@ -30,11 +30,11 @@ def populate_invoice(country, environment, account_id, invoice_status, order_pre
         invoice_prefix: invoice prefix that composes the invoice ID
     """
     account = check_account_exists_microservice(account_id, country, environment)
-    if account == 'false':
+    if not account:
         logger.error(log(Message.RETRIEVE_ACCOUNT_ERROR, {'account_id': account_id}))
 
     response = request_get_order_by_date_updated(country, environment, account_id, order_prefix)
-    if response == 'false':
+    if not response:
         logger.error(log(Message.RETRIEVE_ORDER_ERROR, {'account_id': account_id}))
     else:
         order_data = response[0]
@@ -43,6 +43,6 @@ def populate_invoice(country, environment, account_id, invoice_status, order_pre
         order_id = order_data['orderNumber']
         invoice_id = '{0}-{1}'.format(invoice_prefix, country)
 
-        if 'false' == create_invoice_request(country, environment, order_id, invoice_status, order_details,
+        if False == create_invoice_request(country, environment, order_id, invoice_status, order_details,
                                              order_items, invoice_id):
             logger.error(log(Message.CREATE_INVOICE_ERROR, {'account_id': account_id}))

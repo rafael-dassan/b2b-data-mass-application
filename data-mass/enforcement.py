@@ -22,7 +22,7 @@ def display_available_products(account_id, zone, environment, delivery_center_id
     product_offers = request_get_account_product_assortment(account_id, zone, environment, delivery_center_id)
     # Retrieve all SKUs for the specified Zone
     products = request_get_products_microservice(zone, environment)
-    if products != 'false':
+    if products:
         products_list = list()
         for sku in products:
             products_list.append(sku['sku'])
@@ -47,7 +47,7 @@ def display_available_products(account_id, zone, environment, delivery_center_id
                     aux_index = 0
 
                     while aux_index < quantity_enabled_skus:
-                        if enabled_skus[aux_index] == 'false':
+                        if not enabled_skus[aux_index]:
                             aux_index = aux_index + 1
                         else:
                             print(
@@ -58,7 +58,7 @@ def display_available_products(account_id, zone, environment, delivery_center_id
                     sku_id = input(text.default_text_color + '\n Type here the SKU from the list above you want to add '
                                                              'SKU Limit: ')
 
-                    while validate_sku(sku_id.strip(), enabled_skus) != 'true':
+                    while validate_sku(sku_id.strip(), enabled_skus) != True:
                         print(text.Red + '\n- Invalid SKU. Please check the list above and try again.')
                         sku_id = input(
                             text.default_text_color + '\n Type here the SKU from the list above you want to add '
@@ -74,16 +74,16 @@ def display_available_products(account_id, zone, environment, delivery_center_id
                     update_sku_limit = update_sku_limit_enforcement_microservice(zone, environment, account_id,
                                                                                 sku_id, sku_quantity)
 
-                if update_sku_limit == 'true':
-                    return 'true'
+                if update_sku_limit:
+                    return True
                 else:
-                    return 'false'
+                    return False
             else:
                 return 'error_len'
         else:
             return product_offers
     else:
-        return 'false'
+        return False
 
 
 # Update SKU Limit
@@ -105,7 +105,7 @@ def update_sku_limit_enforcement_microservice(zone, environment, account_id, sku
     }
 
     # Define headers
-    request_headers = get_header_request(zone, 'false', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, False, False, False, False)
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
@@ -126,12 +126,12 @@ def update_sku_limit_enforcement_microservice(zone, environment, account_id, sku
     response = place_request('POST', request_url, request_body, request_headers)
 
     if response.status_code == 202:
-        return 'true'
+        return True
     else:
         print(text.Red + '\n- [Enforcement Relay Service] Failure to add SKU Limit. Response Status: '
                          '{response_status}. Response message: {response_message}'
               .format(response_status=response.status_code, response_message=response.text))
-        return 'false'
+        return False
 
 
 # Validate SKU
@@ -140,5 +140,5 @@ def validate_sku(sku_id, enabled_skus):
 
     while aux_index < len(enabled_skus):
         if enabled_skus[aux_index] == sku_id:
-            return 'true'
+            return True
         aux_index = aux_index + 1

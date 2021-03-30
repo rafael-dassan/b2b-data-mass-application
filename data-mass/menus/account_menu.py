@@ -68,7 +68,7 @@ def print_minimum_order_type_menu():
         '3': 'ORDER_TOTAL'
     }
 
-    minimum_order_type = switcher.get(minimum_order_type, 'false')
+    minimum_order_type = switcher.get(minimum_order_type, False)
 
     return minimum_order_type
 
@@ -95,7 +95,7 @@ def print_account_status_menu():
         '2': 'BLOCKED'
     }
 
-    status = switcher.get(option, 'false')
+    status = switcher.get(option, False)
 
     return status
 
@@ -122,7 +122,7 @@ def print_account_enable_empties_loan_menu():
     return {
         '1': True,
         '2': False
-    }.get(option, 'false')
+    }.get(option, False)
 
 
 # Print alternative delivery date menu application
@@ -152,7 +152,7 @@ def print_payment_method_menu(zone):
     if zone == 'BR':
         payment_method = input(text.default_text_color + 'Choose the payment method (1. CASH / 2. BANK SLIP / 3. CHECK'
                                                          ' / 4. CASH, BANK SLIP, CHECK): ')
-        while validate_payments_method(payment_method) != 'true':
+        while validate_payments_method(payment_method) != True:
             if validate_payments_method(payment_method) == 'error_0':
                 print(text.Red + '\n- Payments Method should not be empty')
                 payment_method = input(text.default_text_color + 'Choose the payment method (1. CASH / 2. BANK SLIP /'
@@ -177,14 +177,14 @@ def print_payment_method_menu(zone):
             '4': payment_list,
         }
 
-        value = switcher.get(payment_method, 'false')
+        value = switcher.get(payment_method, False)
         return value
 
     elif zone == 'AR':
         
         payment_method = input(
             text.default_text_color + 'Choose the payment method (1. CASH): ')
-        while validate_payments_method(payment_method, zone) != 'true':
+        while validate_payments_method(payment_method, zone) != True:
             if validate_payments_method(payment_method, zone) == 'error_0':
                 print(text.Red + '\n- Payments Method should not be empty')
                 payment_method = input(
@@ -202,13 +202,13 @@ def print_payment_method_menu(zone):
             '1': payment_cash
         }
 
-        value = switcher.get(payment_method, 'false')
+        value = switcher.get(payment_method, False)
         return value
 
     else:
         payment_method = input(
             text.default_text_color + 'Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ')
-        while validate_payments_method(payment_method) != 'true':
+        while validate_payments_method(payment_method) != True:
             if validate_payments_method(payment_method) == 'error_0':
                 print(text.Red + '\n- Payments Method should not be empty')
                 payment_method = input(
@@ -231,7 +231,7 @@ def print_payment_method_menu(zone):
             '3': payment_list
         }
 
-        value = switcher.get(payment_method, 'false')
+        value = switcher.get(payment_method, False)
         return value
 
 
@@ -243,7 +243,7 @@ def print_payment_method_menu(zone):
 def print_account_id_menu(zone):
     abi_id = str(input(text.default_text_color + 'Account ID: '))
     attempt = 0
-    while validate_account(abi_id, zone) != 'true' and attempt <= 2:
+    while validate_account(abi_id, zone) != True and attempt <= 2:
         if validate_account(abi_id, zone) == 'error_0':
             print(text.Red + '\n- Account ID should not be empty')
             if attempt < 2:
@@ -263,7 +263,7 @@ def print_account_id_menu(zone):
         attempt = attempt + 1
     if attempt == 3:
         print(text.Yellow + '\n- You have reached maximum attempts')
-        return 'false'
+        return False
     else:
         return abi_id
 

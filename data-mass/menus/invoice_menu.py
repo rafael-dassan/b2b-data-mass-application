@@ -30,12 +30,12 @@ def print_invoice_status_menu():
         '1': 'OPEN',
         '2': 'CLOSED',
         '3': 'DELIVERED'
-    }.get(status, 'false')
+    }.get(status, False)
 
 
 def print_invoice_status_menu_retriever():
     status = input(text.default_text_color + 'Do you want to retrieve the invoice with which status: 1. CLOSED, 2. OPEN or 3.DELIVERED: ')
-    while validate_invoice_status(status) == 'false':
+    while not validate_invoice_status(status):
         print(text.Red + '\n- Invalid option')
         status = input(text.default_text_color + 'Do you want to retrieve the invoice with which status: 1. CLOSED, 2. OPEN or 3.DELIVERED: ')
 
@@ -43,7 +43,7 @@ def print_invoice_status_menu_retriever():
         '1': ['1', 'CLOSED'],
         '2': ['2', 'OPEN'],
         '3': ['3', 'DELIVERED']
-    }.get(status, 'false')
+    }.get(status, False)
 
 
 def print_invoice_id_menu():
@@ -69,4 +69,4 @@ def print_invoice_payment_method_menu():
     return {
         '1': 'CASH',
         '2': 'CREDIT'
-    }.get(payment_method, 'false')
+    }.get(payment_method, False)

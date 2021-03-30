@@ -48,7 +48,7 @@ def get_microservice_payload_post_delivery_fee(account_data, include_delivery_co
         'interest[0].externalId': 'NON_REGULAR_DELIVERY_DATE_FEE',
         'interest[0].scope': 'order',
         'interest[0].conditions': {
-            'alternativeDeliveryDate': 'true',
+            'alternativeDeliveryDate': True,
             'orderTotal': {
                 'maximumValue': include_delivery_cost['min_order_value']
             }
@@ -78,25 +78,25 @@ def get_microservice_payload_post_delivery_fee(account_data, include_delivery_co
 # Create delivery date in microservice
 def create_delivery_window_microservice(zone, environment, account_data, is_alternative_delivery_date, option):
     # Get headers
-    request_headers = get_header_request(zone, 'false', 'true', 'false', 'false')
+    request_headers = get_header_request(zone, False, True, False, False)
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/account-relay/delivery-windows'
 
     # Return list of dates
     dates_list = return_dates_payload(option)
-    if dates_list == 'false':
-        return 'false'
+    if not dates_list:
+        return False
     else:
         index = 0
         request_body = list()
         while index <= (len(dates_list) - 1):
             # Force mixed values if it's is_alternative_delivery_date
-            if is_alternative_delivery_date == 'true':
+            if is_alternative_delivery_date:
                 if (index % 2) == 0:
-                    option_is_alternative_delivery_date = 'true'
+                    option_is_alternative_delivery_date = True
                 else:
-                    option_is_alternative_delivery_date = 'false'
+                    option_is_alternative_delivery_date = False
             else:
                 option_is_alternative_delivery_date = is_alternative_delivery_date
 
@@ -113,7 +113,7 @@ def create_delivery_window_microservice(zone, environment, account_data, is_alte
             print(
                 text.Red + '\n- [Account Relay Service] Failure to create delivery window. Response Status: {response_status}. Response message: {response_message}'.format(
                     response_status=str(response.status_code), response_message=response.text))
-            return 'false'
+            return False
 
         return 'success'
 
@@ -143,9 +143,9 @@ def return_dates_payload(option):
         return list_delivery_dates
     else:
         date_list = delivery_window_selector()
-        if date_list == "false":
+        if not date_list:
             print("\nNo delivery window end date was selected.")
-            return "false"
+            return False
         else:
             datetime_object = datetime.strptime(date_list[0], "%B")
             month_number = datetime_object.month
@@ -170,7 +170,7 @@ def return_dates_payload(option):
 # Create delivery fee (interest) in microservice
 def create_delivery_fee_microservice(zone, environment, account_data, include_delivery_cost):
     # Get headers
-    request_headers = get_header_request(zone, 'false', 'false', 'false', 'false')
+    request_headers = get_header_request(zone, False, False, False, False)
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/cart-calculation-relay/v2/interest'
@@ -184,7 +184,7 @@ def create_delivery_fee_microservice(zone, environment, account_data, include_de
         print(text.Red + '\n- [Pricing Engine Relay Service] Failure to add delivery cost. Response Status: '
                          '{response_status}. Response message: {response_message}'
               .format(response_status=str(response.status_code), response_message=response.text))
-        return 'false'
+        return False
 
     return 'success'
 
@@ -202,4 +202,4 @@ def delivery_window_selector():
     if selected_dates:
         return selected_dates
     else:
-        return 'false'
+        return False
