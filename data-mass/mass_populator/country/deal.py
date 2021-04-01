@@ -23,10 +23,10 @@ def populate_stepped_discount_with_limit(country, environment, account_id, deal_
     # Default index range (from 1 to 9999 products)
     default_index_range = [1, 9999]
 
-    if 'false' == check_account_exists_microservice(account_id, country, environment):
+    if False == check_account_exists_microservice(account_id, country, environment):
         logger.error(log(Message.RETRIEVE_ACCOUNT_ERROR, {'account_id': account_id}))
     else:
-        if 'false' == create_stepped_discount_with_limit(account_id, sku, country, environment, default_index_range,
+        if False == create_stepped_discount_with_limit(account_id, sku, country, environment, default_index_range,
                                                      [discount_value], max_quantity, deal_id):
             logger.error(log(Message.CREATE_DEALS_ERROR, {'deal_id': deal_id, 'account_id': account_id}))
 
@@ -41,10 +41,10 @@ def apply_populate_discount(row, country, environment):
 
 
 def populate_discount(country, environment, account_id, deal_id, sku, discount_value, minimum_quantity):
-    if 'false' == check_account_exists_microservice(account_id, country, environment):
+    if False == check_account_exists_microservice(account_id, country, environment):
         logger.error(log(Message.RETRIEVE_ACCOUNT_ERROR, {'account_id': account_id}))
     else:
-        if 'false' == create_discount(account_id, sku, country, environment, discount_value, minimum_quantity, deal_id):
+        if False == create_discount(account_id, sku, country, environment, discount_value, minimum_quantity, deal_id):
             logger.error(log(Message.CREATE_DEALS_ERROR, {'deal_id': deal_id, 'account_id': account_id}))
 
 
@@ -58,7 +58,7 @@ def apply_populate_stepped_discount(row, country, environment):
 
 
 def populate_stepped_discount(country, environment, account_id, deal_id, sku, ranges):
-    if 'false' == check_account_exists_microservice(account_id, country, environment):
+    if False == check_account_exists_microservice(account_id, country, environment):
         logger.error(log(Message.RETRIEVE_ACCOUNT_ERROR, {'account_id': account_id}))
     else:
         range_list = list()
@@ -72,7 +72,7 @@ def populate_stepped_discount(country, environment, account_id, deal_id, sku, ra
 
             range_list.append(dict_values)
 
-        if 'false' == create_stepped_discount(account_id, sku, country, environment, range_list, deal_id):
+        if False == create_stepped_discount(account_id, sku, country, environment, range_list, deal_id):
             logger.error(log(Message.CREATE_DEALS_ERROR, {'deal_id': deal_id, 'account_id': account_id}))
 
 
@@ -88,13 +88,13 @@ def apply_populate_free_good(row, country, environment):
 
 def populate_free_good(country, environment, account_id, deal_id, sku, proportion, quantity, partial_free_good,
                        need_to_buy_product):
-    if 'false' == check_account_exists_microservice(account_id, country, environment):
+    if False == check_account_exists_microservice(account_id, country, environment):
         logger.error(log(Message.RETRIEVE_ACCOUNT_ERROR, {'account_id': account_id}))
     else:
         product_offers = request_get_offers_microservice(account_id, country, environment)
         if product_offers == 'not_found':
             logger.error(log(Message.PRODUCT_NOT_FOUND_ERROR, {'account_id': account_id}))
-        elif product_offers == 'false':
+        elif not product_offers:
             logger.error(log(Message.RETRIEVE_PRODUCT_ERROR, {'account_id': account_id}))
         else:
             sku_list = list()
@@ -105,7 +105,7 @@ def populate_free_good(country, environment, account_id, deal_id, sku, proportio
                 logger.info("Skipping populate_free_good step for account {0} since the SKU {1} is not associated"
                             .format(account_id, sku))
             else:
-                if 'false' == create_free_good(account_id, sku_list, country, environment, proportion, quantity,
+                if False == create_free_good(account_id, sku_list, country, environment, proportion, quantity,
                                                partial_free_good, need_to_buy_product, deal_id):
                     logger.error(log(Message.CREATE_DEALS_ERROR, {'deal_id': deal_id, 'account_id': account_id}))
 
@@ -121,7 +121,7 @@ def apply_populate_stepped_free_good(row, country, environment):
 
 
 def populate_stepped_free_good(country, environment, account_id, deal_id, sku, ranges):
-    if 'false' == check_account_exists_microservice(account_id, country, environment):
+    if False == check_account_exists_microservice(account_id, country, environment):
         logger.error(log(Message.RETRIEVE_ACCOUNT_ERROR, {'account_id': account_id}))
     else:
         range_list = list()
@@ -136,5 +136,5 @@ def populate_stepped_free_good(country, environment, account_id, deal_id, sku, r
 
             range_list.append(dict_values)
 
-        if 'false' == create_stepped_free_good(account_id, sku, country, environment, range_list, deal_id):
+        if False == create_stepped_free_good(account_id, sku, country, environment, range_list, deal_id):
             logger.error(log(Message.CREATE_DEALS_ERROR, {'deal_id': deal_id, 'account_id': account_id}))

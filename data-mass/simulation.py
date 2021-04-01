@@ -35,10 +35,10 @@ def request_order_simulation(zone, environment, account_id, delivery_center_id, 
         combos = []
 
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    request_headers = get_header_request(zone, True, False, False, False, account_id)
 
     # Define URL Microservice
-    request_url = get_microservice_base_url(environment, 'false') + '/cart-service/v2'
+    request_url = get_microservice_base_url(environment, False) + '/cart-service/v2'
 
     # Inputs for default payload simulation
     dict_values = {
@@ -74,7 +74,7 @@ def request_order_simulation(zone, environment, account_id, delivery_center_id, 
         print(text.Red + '\n- [Cart Service] Failure to simulate the order. Response Status: {response_status}. '
                          'Response message: {response_message}'
               .format(response_status=response.status_code, response_message=response.text))
-        return 'false'
+        return False
 
 
 # Order simulation by Microservice

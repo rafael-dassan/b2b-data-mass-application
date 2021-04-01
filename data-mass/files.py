@@ -28,7 +28,7 @@ def create_file_api(zone, environment, account_id, purpose, data):
     title = '{file_id}-{purpose}-{account_id}'.format(file_id=file_id, purpose=purpose, account_id=account_id)
 
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    request_headers = get_header_request(zone, True, False, False, False, account_id)
     set_to_dictionary(request_headers, 'linkExpirationTime', str(-1))
     set_to_dictionary(request_headers, 'metadata', metadata)
     set_to_dictionary(request_headers, 'purpose', purpose)
@@ -49,7 +49,7 @@ def create_file_api(zone, environment, account_id, purpose, data):
         print(text.Red + '\n- [File Management Service] Failure to create file. Response Status: '
                          '{response_status}. Response message: {response_message}'
               .format(response_status=response.status_code, response_message=response.text))
-        return 'false'
+        return False
 
 
 def get_file_metadata(account_id, purpose, data):

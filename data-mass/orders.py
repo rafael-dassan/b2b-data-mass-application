@@ -46,7 +46,7 @@ def configure_order_params(zone, environment, account_id, number_size, prefix):
     request_body = convert_json_to_string(json_object)
 
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    request_headers = get_header_request(zone, True, False, False, False, account_id)
     set_to_dictionary(request_headers, 'Authorization', generate_erp_token())
 
     # Define url request 
@@ -60,7 +60,7 @@ def configure_order_params(zone, environment, account_id, number_size, prefix):
     else:
         print(text.Red + '\n- [Order Service] Failure to configure order prefix and number size. Response Status: '
               + str(response.status_code) + '. Response message ' + response.text)
-        return 'false'
+        return False
 
 
 def request_order_creation(account_id, delivery_center_id, zone, environment, allow_order_cancel, order_items,
@@ -79,7 +79,7 @@ def request_order_creation(account_id, delivery_center_id, zone, environment, al
     Returns: new json_data if success or error message in case of failure
     """
     # Define headers
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    request_headers = get_header_request(zone, True, False, False, False, account_id)
 
     # Define url request 
     request_url = get_microservice_base_url(environment) + '/order-service'
@@ -97,7 +97,7 @@ def request_order_creation(account_id, delivery_center_id, zone, environment, al
         print(text.Red + '\n- [Order Service] Failure to create an order. Response Status: {response_status}. '
                          'Response message {response_message}'
               .format(response_status=response.status_code, response_message=response.text))
-        return 'false'
+        return False
 
 
 def create_order_payload(account_id, delivery_center_id, allow_order_cancel, order_items, order_status):
@@ -244,7 +244,7 @@ def request_changed_order_creation(zone, environment, order_data):
     Returns `success` or error message in case of failure
     """
     # Define headers
-    request_headers = get_header_request(zone, 'false', 'false', 'true', 'false')
+    request_headers = get_header_request(zone, False, False, True, False)
 
     # Define url request
     request_url = get_microservice_base_url(environment) + '/order-relay/'
@@ -260,7 +260,7 @@ def request_changed_order_creation(zone, environment, order_data):
         print(text.Red + '\n- [Order Relay Service] Failure to change an order. Response Status: {response_status}. '
                          'Response message: {response_message}'
               .format(response_status=response.status_code, response_message=response.text))
-        return 'false'
+        return False
 
 
 def get_changed_order_payload(order_data):
@@ -446,7 +446,7 @@ def check_if_order_exists(account_id, zone, environment, order_id, order_status=
         false: if an error comes from back-end
     """
     # Get header request
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    request_headers = get_header_request(zone, True, False, False, False, account_id)
 
     if order_status is not None:
         # Get base URL
@@ -474,7 +474,7 @@ def check_if_order_exists(account_id, zone, environment, order_id, order_status=
         print(text.Red + '\n- [Order Service] Failure to retrieve order information. Response Status: '
                          '{response_status}. Response message: {response_message}'
               .format(response_status=response.status_code, response_message=response.text))
-        return 'false'
+        return False
 
 
 def get_order_details(order_data):
@@ -560,7 +560,7 @@ def request_get_order_by_date_updated(zone, environment, account_id, order_prefi
             false: if an error comes from back-end
         """
     # Get header request
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    request_headers = get_header_request(zone, True, False, False, False, account_id)
 
     updated_since = datetime.now().strftime('%Y-%m-%d') + 'T00:00:00.000Z'
 
@@ -580,4 +580,4 @@ def request_get_order_by_date_updated(zone, environment, account_id, order_prefi
         print(text.Red + '\n- [Order Service] Failure to retrieve order information. Response Status: '
                          '{response_status}. Response message: {response_message}'
                   .format(response_status=response.status_code, response_message=response.text))
-        return 'false'
+        return False

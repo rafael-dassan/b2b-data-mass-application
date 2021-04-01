@@ -26,51 +26,51 @@ from validations import is_number, validate_zone_for_ms, validate_environment, \
 # Validate option menu selection
 def validate_option_request_selection_for_structure_2(option):
     switcher = {
-        '0': 'true',
-        '1': 'true',
-        '2': 'true'
+        '0': True,
+        '1': True,
+        '2': True
     }
 
-    value = switcher.get(option, 'false')
+    value = switcher.get(option, False)
     return value
 
 
 def validate_zone_for_combos(zone):
     switcher = {
-        'AR': 'true',
-        'BR': 'true',
-        'CA': 'true',
-        'DO': 'true',
-        'MX': 'true'
+        'AR': True,
+        'BR': True,
+        'CA': True,
+        'DO': True,
+        'MX': True
     }
 
-    value = switcher.get(zone, 'false')
+    value = switcher.get(zone, False)
     return value
 
 
 def validate_zone_for_combos_dt(zone):
     switcher = {
-        'BR': 'true',
-        'DO': 'true',
-        'AR': 'true',
-        'CO': 'true',
-        'ZA': 'true',
-        'MX': 'true',
-        'PE': 'true',
-        'EC': 'true'
+        'BR': True,
+        'DO': True,
+        'AR': True,
+        'CO': True,
+        'ZA': True,
+        'MX': True,
+        'PE': True,
+        'EC': True
     }
-    return switcher.get(zone, 'false')
+    return switcher.get(zone, False)
 
 
 # Validate environment to User creation
 def validate_environment_user_creation(environment):
     switcher = {
-        'DT': 'true',
-        'SIT': 'true',
-        'UAT': 'true'
+        'DT': True,
+        'SIT': True,
+        'UAT': True
     }
     
-    return switcher.get(environment, 'false')
+    return switcher.get(environment, False)
 
 
 # Place generic request
@@ -88,8 +88,8 @@ def place_request(request_method, request_url, request_body, request_headers):
 
 
 # Return JWT header request
-def get_header_request(zone, use_jwt_auth='false', use_root_auth='false', use_inclusion_auth='false',
-                       sku_product='false', account_id=None, jwt_app_claim=None):
+def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclusion_auth=False,
+                       sku_product=False, account_id=None, jwt_app_claim=None):
 
     switcher = {
         'AR': 'America/Buenos_Aires',
@@ -104,7 +104,7 @@ def get_header_request(zone, use_jwt_auth='false', use_root_auth='false', use_in
         'PY': 'America/Asuncion',
         'ZA': 'Africa/Johannesburg'
     }
-    timezone = switcher.get(zone, 'false')
+    timezone = switcher.get(zone, False)
 
     header = {
         'User-Agent': 'BEES - Data Mass Framework',
@@ -116,31 +116,31 @@ def get_header_request(zone, use_jwt_auth='false', use_root_auth='false', use_in
         'timezone': timezone
     }
 
-    if use_jwt_auth == 'true':
+    if use_jwt_auth:
         header['Authorization'] = generate_hmac_jwt(account_id, jwt_app_claim)
-    elif use_root_auth == 'true':
+    elif use_root_auth:
         header['Authorization'] = 'Basic cm9vdDpyb290'
-    elif use_inclusion_auth == 'true':
+    elif use_inclusion_auth:
         header['Authorization'] = 'Basic cmVsYXk6TVVRd3JENVplSEtB'
     else:
         header['Authorization'] = 'Basic cmVsYXk6cmVsYXk='
 
-    if sku_product != 'false':
+    if sku_product:
         header['skuId'] = sku_product
 
     return header
 
 
 # Return base URL for Microservice
-def get_microservice_base_url(environment, is_v1='true'):
+def get_microservice_base_url(environment, is_v1=True):
     if environment == 'DEV':
-        if is_v1 == 'true':
+        if is_v1:
             return 'https://bees-services-dev.eastus2.cloudapp.azure.com/v1'
         else:
             return 'https://bees-services-dev.eastus2.cloudapp.azure.com/api'
     else:
         env_name = 'SIT' if (environment != 'SIT' and environment != 'UAT') else environment
-        context = '/v1' if (is_v1 == 'true') else '/api'
+        context = '/v1' if is_v1 else '/api'
         return 'https://services-' + env_name.lower() + '.bees-platform.dev' + context
 
 
@@ -304,7 +304,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(7), text.Yellow + 'Create rewards')
         print(text.default_text_color + str(8), text.Yellow + 'Create credit statement')
         selection = input(text.default_text_color + '\nPlease select: ')
-        while validate_option_request_selection(selection) == 'false':
+        while not validate_option_request_selection(selection):
             print(text.Red + '\n- Invalid option\n')
             print(text.default_text_color + str(0), text.Yellow + 'Close application')
             print(text.default_text_color + str(1), text.Yellow + 'Account')
@@ -327,7 +327,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(7), text.Yellow + 'Retrieve available invoices')
         print(text.default_text_color + str(8), text.Yellow + 'SKUs for Reward Shopping')
         selection = input(text.default_text_color + '\nPlease select: ')
-        while validate_option_request_selection(selection) == 'false':
+        while not validate_option_request_selection(selection):
             print(text.Red + '\n- Invalid option\n')
             print(text.default_text_color + str(0), text.Yellow + 'Close application')
             print(text.default_text_color + str(1), text.Yellow + 'Order simulation via Microservice')
@@ -345,7 +345,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(2), text.Yellow + 'Associate product to category')
         print(text.default_text_color + str(3), text.Yellow + 'Create category')
         selection = input(text.default_text_color + '\nPlease select: ')
-        while validate_option_request_selection(selection) == 'false':
+        while not validate_option_request_selection(selection):
             print(text.Red + '\n- Invalid option\n')
             print(text.default_text_color + str(0), text.Yellow + 'Close application')
             print(text.default_text_color + str(1), text.Yellow + 'List categories')
@@ -357,7 +357,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(1), text.Yellow + 'Create User')
         print(text.default_text_color + str(2), text.Yellow + 'Delete User')
         selection = input(text.default_text_color + '\nPlease select: ')
-        while validate_option_request_selection_for_structure_2(selection) == 'false':
+        while not validate_option_request_selection_for_structure_2(selection):
             print(text.Red + '\n- Invalid option\n')
             print(text.default_text_color + str(0), text.Yellow + 'Close application')
             print(text.default_text_color + str(1), text.Yellow + 'Create User')
@@ -372,7 +372,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(5), text.Yellow + 'Edit Attribute Type')
         print(text.default_text_color + str(6), text.Yellow + 'Create Product')
         selection = input(text.default_text_color + '\nPlease select: ')
-        while validate_supplier_menu_structure(selection) == 'false':
+        while not validate_supplier_menu_structure(selection):
             print(text.Red + '\n- Invalid option\n')
             print(text.default_text_color + str(0), text.Yellow + 'Close application')
             print(text.default_text_color + str(1), text.Yellow + 'Create Attribute')
@@ -389,7 +389,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(3), text.Yellow + 'Search a specific category')
         print(text.default_text_color + str(4), text.Yellow + 'Search all category')
         selection = input(text.default_text_color + '\nPlease select: ')
-        while validate_supplier_search_menu_structure(selection) == 'false':
+        while not validate_supplier_search_menu_structure(selection):
             print(text.Red + '\n- Invalid option\n')
             print(text.default_text_color + str(0), text.Yellow + 'Close application')
             print(text.default_text_color + str(1), text.Yellow + 'Search a specific attribute')
@@ -447,7 +447,7 @@ def print_combos_menu():
     print(text.default_text_color + str(4), text.Yellow + 'Input combo with only free goods')
     print(text.default_text_color + str(5), text.Yellow + 'Reset combo consumption to zero')
     structure = input(text.default_text_color + '\nPlease select: ')
-    while validate_combo_structure(structure) == 'false':
+    while not validate_combo_structure(structure):
         print(text.Red + '\n- Invalid option')
         print(text.default_text_color + '\nWhich type of combo do you want to create?')
         print(text.default_text_color + str(1), text.Yellow + 'Input combo type discount')
@@ -464,9 +464,9 @@ def print_combos_menu():
 def validate_combo_structure(option):
     options = ['1', '2', '3', '4', '5']
     if option in options:
-        return 'true'
+        return True
     else:
-        return 'false'
+        return False
 
 
 # Print zone menu for Microservice
@@ -482,7 +482,7 @@ def print_zone_menu_for_ms():
 # For interactive combos
 def print_zone_for_interactive_combos_menu_for_ms():
     zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
-    while validate_zone_for_interactive_combos_ms(zone.upper()) == 'false':
+    while not validate_zone_for_interactive_combos_ms(zone.upper()):
         print(text.Red + '\n- {0} is not a valid zone\n'.format(zone.upper()))
         zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
 
@@ -502,7 +502,7 @@ def print_environment_menu():
 # Print environment menu for User creation
 def print_environment_menu_user_creation():
     environment = input(text.default_text_color + "Environment (e.g., SIT, UAT): ")
-    while validate_environment_user_creation(environment.upper()) == 'false':
+    while not validate_environment_user_creation(environment.upper()):
         print(text.Red + "\n- {0} is not a valid environment")
         environment = input(text.default_text_color + "Environment (e.g., SIT, UAT): ")
 
@@ -632,27 +632,27 @@ def print_input_text(input_text):
 
 def validate_country_menu_in_user_create_iam(zone):
     switcher = {
-        'BR': 'true',
-        'CO': 'true',
-        'DO': 'true',
-        'MX': 'true',
-        'EC': 'true',
-        'PE': 'true',
-        'ZA': 'true',
-        'AR': 'true',
-        'CA': 'true',
-        'PA': 'true'
+        'BR': True,
+        'CO': True,
+        'DO': True,
+        'MX': True,
+        'EC': True,
+        'PE': True,
+        'ZA': True,
+        'AR': True,
+        'CA': True,
+        'PA': True
     }
-    return switcher.get(zone, 'false')
+    return switcher.get(zone, False)
 
 
 def validate_environment_menu_in_user_create_iam(environment):
     switcher = {
-        'QA': 'true',
-        'SIT': 'true',
-        'UAT': 'true'
+        'QA': True,
+        'SIT': True,
+        'UAT': True
     }
-    return switcher.get(environment, 'false')
+    return switcher.get(environment, False)
 
 
 def print_environment_menu_in_user_create_iam():
@@ -663,7 +663,7 @@ def print_environment_menu_in_user_create_iam():
         - UAT
     """
     environment = input(text.default_text_color + 'Environment (QA, SIT, UAT): ')
-    while validate_environment_menu_in_user_create_iam(environment.upper()) == 'false':
+    while not validate_environment_menu_in_user_create_iam(environment.upper()):
         print(text.Red + '\n- Invalid option')
         environment = input(text.default_text_color + 'Environment (QA, SIT, UAT): ')
     return environment.upper()
@@ -743,15 +743,15 @@ def print_combo_id_menu():
 
 def validate_zone_for_credit_statement(zone):
     if zone.upper() != 'ZA':
-        return 'false'
+        return False
     else:
-        return 'true'
+        return True
 
 
 # Print zone menu for credit statement
 def print_zone_credit_statement():
     zone = input(text.default_text_color + 'Zone (ZA): ')
-    while validate_zone_for_credit_statement(zone) == 'false':
+    while not validate_zone_for_credit_statement(zone):
         print(text.Red + '\n- Invalid option\n')
         zone = input(text.default_text_color + 'Zone (ZA): ')
 
@@ -760,21 +760,21 @@ def print_zone_credit_statement():
 
 def validate_month(month):
     switcher = {
-        '01': 'true',
-        '02': 'true',
-        '03': 'true',
-        '04': 'true',
-        '05': 'true',
-        '06': 'true',
-        '07': 'true',
-        '08': 'true',
-        '09': 'true',
-        '10': 'true',
-        '11': 'true',
-        '12': 'true'
+        '01': True,
+        '02': True,
+        '03': True,
+        '04': True,
+        '05': True,
+        '06': True,
+        '07': True,
+        '08': True,
+        '09': True,
+        '10': True,
+        '11': True,
+        '12': True
     }
 
-    value = switcher.get(month, 'false')
+    value = switcher.get(month, False)
     return value
 
 
@@ -784,7 +784,7 @@ def print_month_credit_statement():
     if int(month) < 10:
         month = '0' + month
 
-    while validate_month(month) == 'false':
+    while not validate_month(month):
         print(text.Red + '\n- Invalid option\n')
         month = input(text.default_text_color + 'Which month do you want to create the document? (please put the number'
                                                 'referent the month): ')
@@ -795,18 +795,18 @@ def print_month_credit_statement():
 def validate_years_credit_statement(year):
     if len(year) == 0:
         return 'error_0'
-    elif (len(year) > 0) and (is_number(year) == 'false'):
+    elif (len(year) > 0) and not is_number(year):
         return 'not_number'
     elif len(year) < 4:
         return 'error_4'
-    elif is_number(year) == 'true':
-        return 'true'
+    elif is_number(year):
+        return True
 
 
 def print_year_credit_statement():
     year = input(text.default_text_color + 'Which year do you want to create the document?: ')
 
-    while validate_years_credit_statement(year) != 'true':
+    while validate_years_credit_statement(year) != True:
         if validate_years_credit_statement(year) == 'error_0':
             print(text.Red + '\n- Year should not be empty')
             year = input(text.default_text_color + 'Which year do you want to create the document?: ')
@@ -850,7 +850,7 @@ def validate_invoice_id(invoice_id):
     if size_invoice_id == 0:
         return 'error_0'
     else:
-        return 'true'
+        return True
 
 
 def block_print():

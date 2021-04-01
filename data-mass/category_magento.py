@@ -21,7 +21,7 @@ def get_categories(country, environment, parent_id):
     else:
         print('\n{0}- Error when retrieving categories. Response status: {1}. Response message: {2}'.format(text.Red, response.status_code,
                                                                                                             response.text))
-        return 'false'
+        return False
 
 
 def associate_product_to_category(country, environment, product_sku, category_id):
@@ -34,10 +34,10 @@ def associate_product_to_category(country, environment, product_sku, category_id
     Return str (success: association has been succeeded)
     """
     response = request_associate_product_to_category(country, environment, product_sku, category_id)
-    if response.status_code == 200 and response.text == 'true':
+    if response.status_code == 200 and response.text:
         return 'success'
     else:
-        return 'false'
+        return False
 
 
 def create_category(country, environment, category_name, parent_id, custom_attributes={}):
@@ -53,7 +53,7 @@ def create_category(country, environment, category_name, parent_id, custom_attri
     if response.status_code == 200:
         return loads(response.text)
     else:
-        return 'false'
+        return False
 
 
 def request_associate_product_to_category(country, environment, product_sku, category_id):

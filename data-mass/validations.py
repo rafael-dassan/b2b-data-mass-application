@@ -19,7 +19,7 @@ def validate_payments_method(payments_method, zone=None):
 
     if size_payments_method == 0:
         return 'error_0'
-    elif (size_payments_method > 0) and (is_number(payments_method) == 'false'):
+    elif (size_payments_method > 0) and not is_number(payments_method):
         return 'not_number'
     elif (int(payments_method) != 1) and (int(payments_method) != 2) and (int(payments_method) != 3) \
             and (int(payments_method) != 4):
@@ -27,24 +27,24 @@ def validate_payments_method(payments_method, zone=None):
     elif zone == "AR" and int(payments_method) != 1:
         return 'not_payments_method'   
     else:
-        return 'true'
+        return True
 
 
 # Validate if value is a number
 def is_number(s):
     try:
         float(s)
-        return 'true'
+        return True
     except ValueError:
         pass
 
     try:
         numeric(s)
-        return 'true'
+        return True
     except (TypeError, ValueError):
         pass
 
-    return 'false'
+    return False
 
 
 # Validate length of Account ID
@@ -53,16 +53,16 @@ def validate_account(account_id, zone):
 
     if size_account_id == 0:
         return 'error_0'
-    elif (size_account_id > 0) and (is_number(account_id) == 'false'):
+    elif (size_account_id > 0) and not is_number(account_id):
         return 'not_number'
-    elif (zone == 'DO') and (is_number(account_id) == 'true') and (size_account_id < 10):
+    elif (zone == 'DO') and is_number(account_id) and (size_account_id < 10):
         return 'error_10'
     elif (zone == 'BR') and ((size_account_id == 11) or (size_account_id == 14)):
-        return 'true'
+        return True
     elif (zone == 'BR') and ((size_account_id != 11) or (size_account_id != 14)):
         return 'error_cnpj_cpf'
-    elif is_number(account_id) == 'true':
-        return 'true'
+    elif is_number(account_id):
+        return True
 
 
 # Validate account sub-menus for Data Searching
@@ -83,29 +83,29 @@ def validate_option_sku(option):
 
 def validate_zone_for_interactive_combos_ms(zone):
     return {
-        'BR': 'true',
-        'CO': 'true',
-        'AR': 'true',
-        'DO': 'true',
-        'CA': 'true',
-        'PA': 'true',
-        'PY': 'true'
-    }.get(zone, 'false')
+        'BR': True,
+        'CO': True,
+        'AR': True,
+        'DO': True,
+        'CA': True,
+        'PA': True,
+        'PY': True
+    }.get(zone, False)
 
 
 def validate_zone_for_ms(zone):
     return {
-        'AR': 'true',
-        'BR': 'true',
-        'CA': 'true',
-        'CO': 'true',
-        'DO': 'true',
-        'EC': 'true',
-        'MX': 'true',
-        'PA': 'true',
-        'PE': 'true',
-        'PY': 'true',
-        'ZA': 'true'
+        'AR': True,
+        'BR': True,
+        'CA': True,
+        'CO': True,
+        'DO': True,
+        'EC': True,
+        'MX': True,
+        'PA': True,
+        'PE': True,
+        'PY': True,
+        'ZA': True
     }.get(zone, False)
 
 
@@ -192,19 +192,19 @@ def validate_order_sub_menu(option):
 # Validate option menu selection
 def validate_option_request_selection(selection):
     return {
-        '0': 'true',
-        '1': 'true',
-        '2': 'true',
-        '3': 'true',
-        '4': 'true',
-        '5': 'true',
-        '6': 'true',
-        '7': 'true',
-        '8': 'true',
-        '9': 'true',
-        '10': 'true',
-        '11': 'true'
-    }.get(selection, 'false')
+        '0': True,
+        '1': True,
+        '2': True,
+        '3': True,
+        '4': True,
+        '5': True,
+        '6': True,
+        '7': True,
+        '8': True,
+        '9': True,
+        '10': True,
+        '11': True
+    }.get(selection, False)
 
 
 def validate_delivery_window_structure(option):
@@ -214,14 +214,14 @@ def validate_delivery_window_structure(option):
 
 def validate_supplier_menu_structure(selection):
     return {
-       '0': 'true',
-       '1': 'true',
-       '2': 'true',
-       '3': 'true',
-       '4': 'true',
-       '5': 'true',
-       '6': 'true'
-    }.get(selection, 'false')
+       '0': True,
+       '1': True,
+       '2': True,
+       '3': True,
+       '4': True,
+       '5': True,
+       '6': True
+    }.get(selection, False)
 
 
 def validate_option_att(selection):
@@ -243,12 +243,12 @@ def validate_supplier_category_menu_structure(selection):
 
 def validate_supplier_search_menu_structure(selection):
     return {
-       '0': 'true',
-       '1': 'true',
-       '2': 'true',
-       '3': 'true',
-       '4': 'true'
-    }.get(selection, 'false')
+       '0': True,
+       '1': True,
+       '2': True,
+       '3': True,
+       '4': True
+    }.get(selection, False)
 
 
 def validate_option_type(selection):

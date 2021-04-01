@@ -15,7 +15,7 @@ from menus.account_menu import print_minimum_order_type_menu, print_minimum_orde
 
 def check_account_exists_microservice(account_id, zone, environment):
     # Get header request
-    request_headers = get_header_request(zone, 'true', 'false', 'false', 'false', account_id)
+    request_headers = get_header_request(zone, True, False, False, False, account_id)
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/accounts?accountId=' + account_id
@@ -28,12 +28,12 @@ def check_account_exists_microservice(account_id, zone, environment):
         return json_data
     elif response.status_code == 200 and len(json_data) == 0:
         print(text.Red + '\n- [Account Service] The account {account_id} does not exist'.format(account_id=account_id))
-        return 'false'
+        return False
     else:
         print(text.Red + '\n- [Account Service] Failure to retrieve the account {account_id}. Response Status: '
                          '{response_status}. Response message: {response_message}'
               .format(account_id=account_id, response_status=str(response.status_code), response_message=response.text))
-        return 'false'
+        return False
 
 
 def create_account_ms(account_id, name, payment_method, minimum_order, zone, environment, delivery_address,
@@ -68,7 +68,7 @@ def create_account_ms(account_id, name, payment_method, minimum_order, zone, env
         set_to_dictionary(dict_values, 'minimumOrder', minimum_order)
 
     # Get header request
-    request_headers = get_header_request(zone, 'false', 'true', 'false', 'false')
+    request_headers = get_header_request(zone, False, True, False, False)
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/account-relay/'
@@ -97,7 +97,7 @@ def create_account_ms(account_id, name, payment_method, minimum_order, zone, env
         print('\n- [Account Relay Service] Failure to create the account {account_id}. Response status '
               '{response_status}. Response message: {response_message}'
               .format(account_id=account_id, response_status=str(response.status_code), response_message=response.text))
-        return 'false'
+        return False
 
 
 def display_account_information(account):

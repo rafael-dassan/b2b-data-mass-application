@@ -19,18 +19,18 @@ def authenticate_user_iam(environment, country, user_name, password):
 
     logging.debug("Calling logon_authorize_request...")
     authorize_iam_response = authorize_iam(params)
-    if authorize_iam_response == "false":
-        return "false"
+    if not authorize_iam_response:
+        return False
 
     logging.debug("Calling logon_selfasserted_request...")
     self_asserted_response = self_asserted_logon_request(user_name, password, params, authorize_iam_response)
-    if self_asserted_response == "false" or self_asserted_response == "wrong_password":
+    if not self_asserted_response or self_asserted_response == "wrong_password":
         return self_asserted_response
 
     logging.debug("Calling logon_confirmed_request...")
     id_token = confirmed_logon_request(params, self_asserted_response)
-    if id_token == "false":
-        return "false"
+    if not id_token:
+        return False
 
     return id_token
 
@@ -57,7 +57,7 @@ def authorize_iam(params):
         print("\n{0}- Fail [authorize_load_request]. Response status: {1}. Response message: {2}".format(text.Red,
                                                                                                          authorize_response.status_code,
                                                                                                          authorize_response.text))
-        return "false"
+        return False
 
     response_text = authorize_response.text
     csrf = re.search('\"csrf\":"([^"]+)', response_text).group(1)
@@ -69,7 +69,7 @@ def authorize_iam(params):
     logging.debug("Logon :: authorize() :: TRANS_ID................: {trans_id}".format(trans_id=trans_id))
 
     if len(csrf) == 0 | len(api) == 0 | len(trans_id) == 0:
-        return "false"
+        return False
 
     data = {
         "CSRF": csrf,
@@ -105,7 +105,7 @@ def self_asserted_logon_request(user_name, password, params, authorize_response)
         print("\n{0}- Fail [logon_selfasserted_request]. Response status: {1}. Response message: {2}".format(text.Red,
                                                                                                              response.status_code,
                                                                                                              response.text))
-        return "false"
+        return False
 
     response_text = response.text
     logging.debug("Logon :: self_asserted() :: Response Text...........: {text}".format(text=response_text))
@@ -146,7 +146,7 @@ def confirmed_logon_request(params, self_asserted_response):
     if response.status_code != 200:
         print("\n{0}- Fail [logon_confirmed_request]. Response status: {1}. Response message: {2}".format(text.Red, response.status_code,
                                                                                                           response.text))
-        return "false"
+        return False
 
     response_text = response.text
     logging.debug("Logon :: confirmed() :: Response Text...........: {text}".format(text=response_text))
@@ -156,68 +156,68 @@ def confirmed_logon_request(params, self_asserted_response):
         logging.debug("Logon :: confirmed() :: Response Text...........: {text}".format(text=response_text))
         logging.debug("Logon :: confirmed() :: ID Token................: {value}".format(value=id_token))
         return id_token
-    return "false"
+    return False
 
 
 def create_user(environment, country, email, password, account_id, tax_id):
     params = get_iam_b2c_params(environment, country)
 
     authorize_load_response = authorize_load_request(params)
-    if authorize_load_response == "false":
-        return "false"
+    if not authorize_load_response:
+        return False
 
     self_asserted_email_response = self_asserted_email_request(
         email, params, authorize_load_response)
-    if self_asserted_email_response == "false" or self_asserted_email_response == "user_exists":
-        return "false"
+    if not self_asserted_email_response or self_asserted_email_response == "user_exists":
+        return False
 
     confirmed_email_response = confirmed_email_request(
         params, self_asserted_email_response)
-    if confirmed_email_response == "false":
-        return "false"
+    if not confirmed_email_response:
+        return False
 
     self_asserted_otp_response = self_asserted_otp_request(
         email, params, confirmed_email_response)
-    if self_asserted_otp_response == "false":
-        return "false"
+    if not self_asserted_otp_response:
+        return False
 
     confirmed_otp_response = confirmed_otp_request(
         params, self_asserted_otp_response)
-    if confirmed_otp_response == "false":
-        return "false"
+    if not confirmed_otp_response:
+        return False
 
     self_asserted_name_response = self_asserted_name_request(
         email, params, confirmed_otp_response)
-    if self_asserted_name_response == "false":
-        return "false"
+    if not self_asserted_name_response:
+        return False
 
     confirmed_name_response = confirmed_name_request(
         params, self_asserted_name_response)
-    if confirmed_name_response == "false":
-        return "false"
+    if not confirmed_name_response:
+        return False
 
     self_asserted_password_response = self_asserted_password_request(
         password, params, confirmed_name_response)
-    if self_asserted_password_response == "false":
-        return "false"
+    if not self_asserted_password_response:
+        return False
 
     confirmed_password_response = confirmed_password_request(
         params, self_asserted_password_response)
-    if confirmed_password_response == "false":
-        return "false"
+    if not confirmed_password_response:
+        return False
 
     authorize_account_response = authorize_account_request(
         params, confirmed_password_response)
-    if authorize_account_response == "false":
-        return "false"
+    if not authorize_account_response:
+        return False
 
     self_asserted_account_response = self_asserted_account_request(
         account_id, tax_id, params, authorize_account_response)
-    if self_asserted_account_response == "false":
-        return "false"
+    if not self_asserted_account_response:
+        return False
 
-    if "false" == confirmed_account_request(params, self_asserted_account_response):
-        return "false"
+    if False == confirmed_account_request(params, self_asserted_account_response):
+        return False
 
     return "success"
 
@@ -280,7 +280,7 @@ def authorize_load_request(params):
         print("\n{0}- Fail [authorize_load_request]. Response code: {1}. Response message: {2}".format(text.Red,
                                                                                                        authorize_load_response.status_code,
                                                                                                        response_text))
-        return "false"
+        return False
 
     try:
         csrf = re.search('\"csrf\":"([^"]+)', response_text).group(1)
@@ -288,11 +288,11 @@ def authorize_load_request(params):
         trans_id = re.search('\"transId\":"([^"]+)', response_text).group(1)
     except AttributeError as e:
         print("\n{0}- Fail [authorize_load_request]. Exception: {1}".format(text.Red, str(e)))
-        return "false"
+        return False
 
     if len(csrf) == 0 | len(api) == 0 | len(trans_id) == 0:
         print("\n{0}- Fail [authorize_load_request]. Invalid response.".format(text.Red))
-        return "false"
+        return False
     else:
         return {
             "CSRF": csrf,
@@ -332,7 +332,7 @@ def self_asserted_email_request(email, params, authorize_load_response):
         if "Esta cuenta ya existe" in self_asserted_email_response.text or "There is another user with this user name" in \
                 self_asserted_email_response.text:
             return "user_exists"
-        return "false"
+        return False
     else:
         return {
             "CSRF": authorize_load_response["CSRF"],
@@ -351,7 +351,7 @@ def confirmed_request(base_url, csrf, api, trans_id, b2b_signup_policy, cookies,
     confirmed_response = place_request("GET", url, None, headers)
 
     if confirmed_response.status_code != 200:
-        return "false"
+        return False
     else:
         new_cookies = get_cookies(confirmed_response)
         response_text = confirmed_response.text
@@ -364,7 +364,7 @@ def confirmed_request(base_url, csrf, api, trans_id, b2b_signup_policy, cookies,
                 new_csrf = new_cookies["x-ms-cpim-csrf"]
             except KeyError:
                 if csrf_response_required:
-                    return "false"
+                    return False
                 new_csrf = None
 
         if new_csrf is None:
@@ -376,7 +376,7 @@ def confirmed_request(base_url, csrf, api, trans_id, b2b_signup_policy, cookies,
                 }
             else:
                 logging.debug("Alert: Response_text: {0}".format(response_text))
-                return "false"
+                return False
 
         return {
             "CSRF": new_csrf,
@@ -391,9 +391,9 @@ def confirmed_email_request(params, last_response):
     confirmed_email_response = confirmed_request(params["BASE_SIGNUP_URL"], last_response["CSRF"], last_response["API"],
                                                  last_response["TRANS_ID"], params["B2B_SIGNUP_POLICY"], last_response["COOKIES"], True)
 
-    if confirmed_email_response == "false":
+    if not confirmed_email_response:
         print("\n{0}- Fail [confirmed_email_request]".format(text.Red))
-        return "false"
+        return False
     else:
         return confirmed_email_response
 
@@ -429,7 +429,7 @@ def self_asserted_otp_request(email, params, confirmed_email_response):
     if self_asserted_otp_response.status_code != 200:
         print("\n{0}- Fail [self_asserted_otp_request]. Response status: {1}. Response message: {2}".format(text.Red),
               self_asserted_otp_response.status_code, self_asserted_otp_response.text)
-        return "false"
+        return False
     else:
         return {
             "CSRF": confirmed_email_response["CSRF"],
@@ -444,9 +444,9 @@ def confirmed_otp_request(params, last_response):
     confirmed_opt_response = confirmed_request(params["BASE_SIGNUP_URL"], last_response["CSRF"], last_response["API"],
                                                last_response["TRANS_ID"], params["B2B_SIGNUP_POLICY"], last_response["COOKIES"], True)
 
-    if confirmed_opt_response == "false":
+    if not confirmed_opt_response:
         print("\n{0}- Fail [confirmed_otp_request]".format(text.Red))
-        return "false"
+        return False
     else:
         return confirmed_opt_response
 
@@ -478,7 +478,7 @@ def self_asserted_name_request(email, params, confirmed_otp_response):
                                                                                                              .status_code,
                                                                                                              self_asserted_name_response
                                                                                                              .text))
-        return "false"
+        return False
     else:
         return {
             "CSRF": confirmed_otp_response["CSRF"],
@@ -493,9 +493,9 @@ def confirmed_name_request(params, last_response):
     confirmed_name_response = confirmed_request(params["BASE_SIGNUP_URL"], last_response["CSRF"], last_response["API"],
                                                 last_response["TRANS_ID"], params["B2B_SIGNUP_POLICY"], last_response["COOKIES"], True)
 
-    if confirmed_name_response == "false":
+    if not confirmed_name_response:
         print("\n{0}- Fail [confirmed_name_request]".format(text.Red))
-        return "false"
+        return False
     else:
         return confirmed_name_response
 
@@ -522,7 +522,7 @@ def self_asserted_password_request(password, params, confirmed_name_response):
         print("\n{0}- Fail [self_asserted_password_request]. Response status: {1}. Response message: {2}".format(text.Red,
                                                                                             self_asserted_password_response.status_code,
                                                                                             self_asserted_password_response.text))
-        return "false"
+        return False
     else:
         return {
             "CSRF": confirmed_name_response["CSRF"],
@@ -537,9 +537,9 @@ def confirmed_password_request(params, last_response):
     confirmed_password_response = confirmed_request(params["BASE_SIGNUP_URL"], last_response["CSRF"], last_response["API"],
                                                     last_response["TRANS_ID"], params["B2B_SIGNUP_POLICY"], last_response["COOKIES"], False)
 
-    if confirmed_password_response == "false":
+    if not confirmed_password_response:
         print("\n{0}- Fail [confirmed_password_request]".format(text.Red))
-        return "false"
+        return False
     else:
         return confirmed_password_response
 
@@ -569,14 +569,14 @@ def authorize_account_request(params, last_response):
         print("\n{0}- Fail [authorize_account_request]. Response status: {1}. Response message: {2}".format(text.Red,
                                                                                                             authorize_account_response
                                                                                                             .status_code, response_text))
-        return "false"
+        return False
 
     csrf = re.search('\"csrf\":"([^"]+)', response_text).group(1)
     api = re.search('\"api\":"([^"]+)', response_text).group(1)
     trans_id = re.search('\"transId\":"([^"]+)', response_text).group(1)
 
     if len(csrf) == 0 | len(api) == 0 | len(trans_id) == 0:
-        return "false"
+        return False
     else:
         return {
             "CSRF": csrf,
@@ -608,7 +608,7 @@ def self_asserted_account_request(account_id, tax_id, params, authorize_account_
         print("\n{0}- Fail [self_asserted_account_request]. Response status: {1}. Response message: {2}".format(text.Red,
                                                                                                 self_asserted_account_response.status_code,
                                                                                                 self_asserted_account_response.text))
-        return "false"
+        return False
     else:
         return {
             "CSRF": authorize_account_response["CSRF"],
@@ -624,8 +624,8 @@ def confirmed_account_request(params, last_response):
                                                    last_response["TRANS_ID"], params["B2B_ONBOARDING_POLICY"], last_response["COOKIES"],
                                                    False)
 
-    if confirmed_account_response == "false":
+    if not confirmed_account_response:
         logging.debug("Alert: Fail [confirmed_account_request].")
-        return "false"
+        return False
     else:
         return confirmed_account_response
