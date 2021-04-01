@@ -15,13 +15,13 @@ def request_inventory_creation(zone, environment, account_id, delivery_center_id
     request_headers = get_header_request(zone, False, False, True)
 
     # Get URL
-    request_url = '{0}/inventory-relay/add'.format(get_microservice_base_url(environment))
+    request_url = f"{get_microservice_base_url(environment, 'false')}/inventory-relay/add"
 
     # Get request body
     request_body = get_inventory_payload(zone, environment, account_id, products, delivery_center_id, sku_id, sku_quantity)
 
     # Send request
-    response = place_request('PUT', request_url, request_body, request_headers)
+    response = place_request("PUT", request_url, request_body, request_headers)
 
     if response.status_code == 202:
         return True
