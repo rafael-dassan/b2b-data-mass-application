@@ -22,9 +22,14 @@
   ],
   "combos": "string",
   "filter": {
-    "potential": ["DM-POTENT"],
-    "segment": ["DM-SEG"],
-    "subsegment": ["DM-SUBSEG"]
+    "inclusion": {
+      "potential": ["DM-POTENT"],
+      "segment": ["DM-SEG"],
+      "subsegment": ["DM-SUBSEG"]
+    },
+    "exclusion": {
+      "groupIds": []
+    }
   },
   "initialBalance": 0,
   "calculationType": "SUBTOTAL",

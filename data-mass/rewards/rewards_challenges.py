@@ -81,7 +81,7 @@ def create_challenge_payload(challenge_id, executionMethod, zone_skus_list=None,
     end_date = format_datetime_to_str(end_date)
 
     dict_challenge = {
-        'title': 'DM-' + challenge_id,
+        'title': 'DM-' + challenge_id + '(' + executionMethod + ')',
         'description': executionMethod + ' challenge created by data-mass',
         'points': randrange(500, 5000, 100),
         'startDate': start_date,
