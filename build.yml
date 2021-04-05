@@ -11,10 +11,10 @@ steps:
   inputs:
     versionSpec: '3.6'
 - script: |
-    pip3 install -r data-mass/requirements.txt
+    pip3 install -r requirements.txt
   displayName: 'Install dependencies'
 - script: |
-    python3 data-mass/populate.py do uat test
+    python3 data_mass/populate.py do uat test
   displayName: 'Run tests'
   condition: eq(variables['Build.Reason'], 'PullRequest')
 

@@ -1,7 +1,7 @@
 FROM python:3.8-slim
 
 RUN pip install -U pip
-COPY data-mass/requirements.txt /
+COPY requirements.txt /
 RUN pip install --no-cache-dir -r /requirements.txt
 RUN rm -rf /requirements.txt
 
