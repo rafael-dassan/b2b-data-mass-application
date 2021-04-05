@@ -8,13 +8,8 @@ from random import randint
 from data_mass.common import get_microservice_base_url, \
     update_value_to_json, convert_json_to_string, \
     get_header_request, place_request, create_list
-<<<<<<< HEAD:data_mass/combos.py
-from data_mass.products import get_sku_price
-from data_mass.classes.text import text
-=======
 from product.products import get_sku_price
 from classes.text import text
->>>>>>> BEESDM23 - Group products modules in a product package:data-mass/combos.py
 
 
 def input_combo_type_discount(account_id, zone, environment, sku, discount_value, combo_id=None):
