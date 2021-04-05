@@ -8,6 +8,7 @@ from random import randint
 from tabulate import tabulate
 
 # Local application imports
+<<<<<<< HEAD:data_mass/rewards/rewards.py
 from data_mass.common import get_header_request, \
     get_microservice_base_url, convert_json_to_string, \
     place_request, print_input_number
@@ -19,6 +20,13 @@ from data_mass.rewards.rewards_programs import get_all_programs, \
     get_DM_rewards_program_for_zone
 from data_mass.rewards.rewards_utils import print_input_decision, \
     make_account_eligible, get_dt_combos_from_zone, \
+=======
+from common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request, print_input_number
+from product.products import request_get_offers_microservice, get_sku_name
+from classes.text import text
+from rewards.rewards_programs import get_all_programs, get_specific_program, get_DM_rewards_program_for_zone
+from rewards.rewards_utils import print_input_decision, make_account_eligible, get_dt_combos_from_zone, \
+>>>>>>> BEESDM23 - Group products modules in a product package:data-mass/rewards/rewards.py
     post_combo_relay_account, print_input_combo_qty
 
 APP_B2B = 'b2b'

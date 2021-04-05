@@ -4,7 +4,7 @@ from data_mass.deals import create_stepped_discount_with_limit, create_discount,
 from data_mass.populator.log import *
 from data_mass.populator.log import log, Message
 from data_mass.populator.preconditions import logger
-from data_mass.products import request_get_offers_microservice
+from data_mass.product.products import request_get_offers_microservice
 
 logger = logging.getLogger(__name__)
 
