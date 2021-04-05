@@ -8,7 +8,7 @@ from random import randint, randrange
 # Local application imports
 from common import get_header_request, get_microservice_base_url, update_value_to_json, convert_json_to_string, \
     place_request, print_input_text, set_to_dictionary, print_input_number
-from products import request_get_products_by_account_microservice
+from product.products import request_get_products_by_account_microservice
 from classes.text import text
 from rewards.rewards_programs import get_all_programs
 from rewards.rewards_utils import generate_id, create_product_list_from_zone, display_all_challenges_info, \

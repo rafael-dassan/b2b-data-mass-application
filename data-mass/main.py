@@ -8,7 +8,6 @@ from deals import *
 from delivery_window import *
 from algo_selling import *
 from files import create_file_api
-from product_inventory import *
 from invoices import *
 from enforcement import *
 from menus.account_menu import print_account_operations_menu, print_minimum_order_menu, print_account_status_menu, \
@@ -34,8 +33,9 @@ from menus.rewards_menu import print_rewards_menu, print_rewards_transactions_me
     print_rewards_challenges_menu
 from orders import *
 from combos import *
-from product_supplier import create_product_supplier
-from products import *
+from product.inventory import *
+from product.supplier import create_product_supplier
+from product.products import *
 from rewards.rewards import enroll_poc_to_program, disenroll_poc_from_program, associate_dt_combos_to_poc, \
     display_program_rules_skus
 from rewards.rewards_programs import create_new_program, patch_program_root_field, update_program_dt_combos, \
@@ -44,7 +44,7 @@ from rewards.rewards_challenges import remove_challenge, create_take_photo_chall
     create_purchase_challenge
 from rewards.rewards_transactions import create_redemption, create_rewards_offer, create_points_removal
 from category_magento import *
-from products_magento import *
+from product.magento import *
 import user_creation_v3 as user_v3
 import user_delete_v3 as user_delete_v3
 from simulation import process_simulation_microservice, request_order_simulation

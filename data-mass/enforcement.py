@@ -9,7 +9,7 @@ from tabulate import tabulate
 
 # Local application imports
 from common import convert_json_to_string, get_header_request, get_microservice_base_url, place_request, return_first_and_last_date_year_payload, update_value_to_json
-from products import request_get_account_product_assortment, check_item_enabled, get_sku_name, \
+from product.products import request_get_account_product_assortment, check_item_enabled, get_sku_name, \
     request_get_products_microservice
 from classes.text import text
 import os

@@ -2,7 +2,7 @@ from accounts import check_account_exists_microservice
 from mass_populator.country.product import check_product_associated_to_account
 from mass_populator.log import *
 from orders import configure_order_params, request_order_creation, get_order_prefix_params
-from products import request_get_offers_microservice
+from product.products import request_get_offers_microservice
 from simulation import request_order_simulation
 
 logger = logging.getLogger(__name__)

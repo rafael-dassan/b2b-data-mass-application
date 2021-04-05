@@ -1,7 +1,7 @@
 from itertools import repeat
 from multiprocessing import Pool
 from classes.text import text
-from products import get_sku_name
+from product.products import get_sku_name
 from validations import validate_yes_no_option, validate_sku
 
 
