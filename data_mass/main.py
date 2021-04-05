@@ -1,57 +1,77 @@
-from accounts import *
-from attribute_supplier import create_attribute_enum, check_if_attribute_exist, create_attribute_group, \
-    create_attribute_primitive_type, delete_attribute_supplier, search_specific_attribute, display_specific_attribute, \
+from data_mass.accounts import *
+from data_mass.attribute_supplier import create_attribute_enum, \
+    check_if_attribute_exist, create_attribute_group, \
+    create_attribute_primitive_type, delete_attribute_supplier, \
+    search_specific_attribute, display_specific_attribute, \
     display_all_attribute, search_all_attribute, edit_attribute_type
-from common import *
-from credit import add_credit_to_account_microservice
-from deals import *
-from delivery_window import *
-from algo_selling import *
-from files import create_file_api
-from product_inventory import *
-from invoices import *
-from enforcement import *
-from menus.account_menu import print_account_operations_menu, print_minimum_order_menu, print_account_status_menu, \
-    print_account_name_menu, print_account_enable_empties_loan_menu, print_alternative_delivery_date_menu, \
-    print_include_delivery_cost_menu, print_payment_method_menu, print_account_id_menu, \
+from data_mass.common import *
+from data_mass.credit import add_credit_to_account_microservice
+from data_mass.deals import *
+from data_mass.delivery_window import *
+from data_mass.algo_selling import *
+from data_mass.files import create_file_api
+from data_mass.product_inventory import *
+from data_mass.invoices import *
+from data_mass.enforcement import *
+from data_mass.menus.account_menu import print_account_operations_menu, \
+    print_minimum_order_menu, print_account_status_menu, \
+    print_account_name_menu, print_account_enable_empties_loan_menu, \
+    print_alternative_delivery_date_menu, print_include_delivery_cost_menu, \
+    print_payment_method_menu, print_account_id_menu, \
     print_get_account_operations_menu, delivery_window_menu
-from menus.algo_selling_menu import print_recommender_type_menu
-from menus.deals_menu import print_deals_operations_menu, print_discount_percentage_menu, print_minimum_quantity_menu, \
+from data_mass.menus.algo_selling_menu import print_recommender_type_menu
+from data_mass.menus.deals_menu import print_deals_operations_menu, \
+    print_discount_percentage_menu, print_minimum_quantity_menu, \
     print_max_quantity_menu, print_option_sku_menu, print_partial_free_good_menu, \
-    print_free_good_redemption_menu, print_free_good_quantity_menu, print_interactive_combos_quantity_range_menu, \
-    print_interactive_combos_quantity_range_menu_v2, print_stepped_free_good_ranges_menu, \
+    print_free_good_redemption_menu, print_free_good_quantity_menu, \
+    print_interactive_combos_quantity_range_menu, \
+    print_interactive_combos_quantity_range_menu_v2, \
+    print_stepped_free_good_ranges_menu, \
     print_stepped_discount_ranges_menu, print_discount_range_menu
-from menus.invoice_menu import print_invoice_operations_menu, print_invoice_status_menu, print_invoice_id_menu, \
+from data_mass.menus.invoice_menu import print_invoice_operations_menu, \
+    print_invoice_status_menu, print_invoice_id_menu, \
     print_invoice_payment_method_menu, print_invoice_status_menu_retriever
-from menus.order_menu import print_order_operations_menu, print_allow_cancellable_order_menu, print_get_order_menu, \
+from data_mass.menus.order_menu import print_order_operations_menu, \
+    print_allow_cancellable_order_menu, print_get_order_menu, \
     print_order_id_menu, print_order_status_menu
-from menus.product_menu import print_product_operations_menu, print_get_products_menu
-from menus.inventory_menu import print_inventory_option_menu, print_inventory_sku_quantity_menu
-from menus.supplier_menu import print_create_supplier_category_menu, print_new_attribute, print_attribute_primitive, \
-    print_create_attribute_menu, print_min_cardinality, print_max_cardinality, print_new_page, print_attribute_type, \
+from data_mass.menus.product_menu import print_product_operations_menu, \
+    print_get_products_menu
+from data_mass.menus.inventory_menu import print_inventory_option_menu, \
+    print_inventory_sku_quantity_menu
+from data_mass.menus.supplier_menu import print_create_supplier_category_menu, \
+    print_new_attribute, print_attribute_primitive, print_create_attribute_menu, \
+    print_min_cardinality, print_max_cardinality, print_new_page, print_attribute_type, \
     print_environment_menu_supplier
-from menus.rewards_menu import print_rewards_menu, print_rewards_transactions_menu, print_rewards_program_menu, \
+from data_mass.menus.rewards_menu import print_rewards_menu, \
+    print_rewards_transactions_menu, print_rewards_program_menu, \
     print_rewards_challenges_menu
-from orders import *
-from combos import *
-from product_supplier import create_product_supplier
-from products import *
-from rewards.rewards import enroll_poc_to_program, disenroll_poc_from_program, associate_dt_combos_to_poc, \
+from data_mass.orders import *
+from data_mass.combos import *
+from data_mass.product_supplier import create_product_supplier
+from data_mass.products import *
+from data_mass.rewards.rewards import enroll_poc_to_program, \
+    disenroll_poc_from_program, associate_dt_combos_to_poc, \
     display_program_rules_skus
-from rewards.rewards_programs import create_new_program, patch_program_root_field, update_program_dt_combos, \
+from data_mass.rewards.rewards_programs import create_new_program, \
+    patch_program_root_field, update_program_dt_combos, \
     remove_program_dt_combos
-from rewards.rewards_challenges import remove_challenge, create_take_photo_challenge, create_mark_complete_challenge, \
+from data_mass.rewards.rewards_challenges import remove_challenge, \
+    create_take_photo_challenge, create_mark_complete_challenge, \
     create_purchase_challenge
-from rewards.rewards_transactions import create_redemption, create_rewards_offer, create_points_removal
-from category_magento import *
-from products_magento import *
-import user_creation_v3 as user_v3
-import user_delete_v3 as user_delete_v3
-from simulation import process_simulation_microservice, request_order_simulation
-from supplier_category import check_if_supplier_category_exist, create_root_category, create_sub_category_supplier, \
-    create_association_attribute_with_category, search_specific_category, display_specific_category, \
+from data_mass.rewards.rewards_transactions import create_redemption, \
+    create_rewards_offer, create_points_removal
+from data_mass.category_magento import *
+from data_mass.products_magento import *
+import data_mass.user_creation_v3 as user_v3
+import data_mass.user_delete_v3 as user_delete_v3
+from data_mass.simulation import process_simulation_microservice, \
+    request_order_simulation
+from data_mass.supplier_category import check_if_supplier_category_exist, \
+    create_root_category, create_sub_category_supplier, \
+    create_association_attribute_with_category, \
+    search_specific_category, display_specific_category, \
     search_all_category, display_all_category
-from validations import validate_yes_no_option, is_number
+from data_mass.validations import validate_yes_no_option, is_number
 
 
 def show_menu():

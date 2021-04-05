@@ -1,6 +1,6 @@
-from products import create_product, request_get_offers_microservice
-from products_magento import enable_product
-from mass_populator.log import *
+from data_mass.products import create_product, request_get_offers_microservice
+from data_mass.products_magento import enable_product
+from data_mass.populator.log import *
 
 logger = logging.getLogger(__name__)
 

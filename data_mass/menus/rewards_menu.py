@@ -1,6 +1,7 @@
 # Local application imports
-from classes.text import text
-from validations import validate_rewards, validate_rewards_transactions, validate_rewards_programs, \
+from data_mass.classes.text import text
+from data_mass.validations import validate_rewards, \
+    validate_rewards_transactions, validate_rewards_programs, \
     validate_rewards_challenges
 
 # Print rewards menu

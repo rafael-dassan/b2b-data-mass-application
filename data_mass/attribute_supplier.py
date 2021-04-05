@@ -8,9 +8,10 @@ import string
 
 from tabulate import tabulate
 
-from classes.text import text
-from common import get_supplier_base_url, get_header_request_supplier
-from menus.supplier_menu import print_primitive_type
+from data_mass.classes.text import text
+from data_mass.common import get_supplier_base_url, \
+    get_header_request_supplier
+from data_mass.menus.supplier_menu import print_primitive_type
 
 
 def create_attribute_primitive_type(environment, type_attribute):

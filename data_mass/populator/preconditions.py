@@ -1,9 +1,12 @@
-from algo_selling import get_recommendation_by_account, delete_recommendation_by_id
-from deals import request_get_deals_pricing_service, request_delete_deals_pricing_service, request_get_deals_promotion_service, \
+from data_mass.algo_selling import get_recommendation_by_account, \
+    delete_recommendation_by_id
+from data_mass.deals import request_get_deals_pricing_service, \
+    request_delete_deals_pricing_service, request_get_deals_promotion_service, \
     request_delete_deal_by_id_v1, request_delete_deal_by_id
-from invoices import get_invoices, delete_invoice_by_id
-from mass_populator.helpers.database_helper import get_database_params, delete_from_database_by_account
-from mass_populator.log import *
+from data_mass.invoices import get_invoices, delete_invoice_by_id
+from data_mass.populator.helpers.database_helper import get_database_params, \
+    delete_from_database_by_account
+from data_mass.populator.log import *
 
 logger = logging.getLogger(__name__)
 

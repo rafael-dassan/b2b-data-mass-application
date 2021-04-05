@@ -1,6 +1,7 @@
-from mass_populator.data_creation_engine import populate_deals, populate_orders, populate_invoices, populate_recommendations, \
+from data_mass.populator.data_creation_engine import populate_deals, \
+    populate_orders, populate_invoices, populate_recommendations, \
     populate_combos
-from mass_populator.gateway import execute_gateway
+from data_mass.populator.gateway import execute_gateway
 
 
 def execute_regression(country, environment):

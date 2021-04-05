@@ -16,11 +16,14 @@ from tabulate import tabulate
 import jwt
 
 # Local application imports
-from classes.text import text
-from logs.log import log_to_file
-from validations import is_number, validate_zone_for_ms, validate_environment, \
-    validate_structure, validate_zone_for_interactive_combos_ms, \
-    validate_option_request_selection, validate_supplier_menu_structure, validate_supplier_search_menu_structure
+from data_mass.classes.text import text
+from data_mass.logs.log import log_to_file
+from data_mass.validations import is_number, validate_zone_for_ms, \
+    validate_environment, validate_structure, \
+    validate_zone_for_interactive_combos_ms, \
+    validate_option_request_selection, \
+    validate_supplier_menu_structure, \
+    validate_supplier_search_menu_structure
 
 
 # Validate option menu selection

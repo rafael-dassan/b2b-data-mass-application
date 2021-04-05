@@ -1,17 +1,22 @@
-from common import block_print
-from mass_populator.country.category import associate_products_to_category_magento
-from mass_populator.country.combo import populate_combo_discount, populate_combo_free_good, populate_combo_only_free_good
-from mass_populator.country.deal import populate_stepped_discount_with_limit, populate_discount, \
-    populate_stepped_discount, populate_free_good, populate_stepped_free_good
-from mass_populator.helpers.database_helper import delete_from_database_by_account, get_database_params
-from mass_populator.preconditions import delete_deal, delete_invoice, delete_recommendation
-from mass_populator.country.invoice import populate_invoice
-from mass_populator.country.order import populate_order
-from mass_populator.country.product import enable_product_magento, populate_product
-from mass_populator.country.user_iam import populate_user_iam_b2c
-from mass_populator.log import *
-from mass_populator.country.account import populate_poc
-from mass_populator.country.recommendation import populate_recommendation
+import logging
+
+from data_mass.common import block_print
+from data_mass.populator.country.category import associate_products_to_category_magento
+from data_mass.populator.country.combo import populate_combo_discount, \
+    populate_combo_free_good, populate_combo_only_free_good
+from data_mass.populator.country.deal import populate_stepped_discount_with_limit, \
+    populate_discount, populate_stepped_discount, populate_free_good, \
+    populate_stepped_free_good
+from data_mass.populator.helpers.database_helper import delete_from_database_by_account, \
+    get_database_params
+from data_mass.populator.preconditions import delete_deal, delete_invoice, delete_recommendation
+from data_mass.populator.country.invoice import populate_invoice
+from data_mass.populator.country.order import populate_order
+from data_mass.populator.country.product import enable_product_magento, populate_product
+from data_mass.populator.country.user_iam import populate_user_iam_b2c
+from data_mass.populator.log import *
+from data_mass.populator.country.account import populate_poc
+from data_mass.populator.country.recommendation import populate_recommendation
 
 logger = logging.getLogger(__name__)
 

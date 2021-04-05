@@ -43,18 +43,18 @@ setup(
     package_data={
         "data_mass": [
             "data/*.json",
-            "mass_populator/country/data/*.csv",
-            "mass_populator/country/data/ar/*.csv",
-            "mass_populator/country/data/br/*.csv",
-            "mass_populator/country/data/ca/*.csv",
-            "mass_populator/country/data/co/*.csv",
-            "mass_populator/country/data/do/*.csv",
-            "mass_populator/country/data/ec/*.csv",
-            "mass_populator/country/data/mx/*.csv",
-            "mass_populator/country/data/pa/*.csv",
-            "mass_populator/country/data/pe/*.csv",
-            "mass_populator/country/data/py/*.csv",
-            "mass_populator/country/data/ar/*.csv",
+            "populator/country/data/*.csv",
+            "populator/country/data/ar/*.csv",
+            "populator/country/data/br/*.csv",
+            "populator/country/data/ca/*.csv",
+            "populator/country/data/co/*.csv",
+            "populator/country/data/do/*.csv",
+            "populator/country/data/ec/*.csv",
+            "populator/country/data/mx/*.csv",
+            "populator/country/data/pa/*.csv",
+            "populator/country/data/pe/*.csv",
+            "populator/country/data/py/*.csv",
+            "populator/country/data/ar/*.csv",
         ]
     },
     install_requires=requirements,
@@ -66,4 +66,9 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
     ],
+    entry_points={
+        "console_scripts": [
+            "run-data-mass = data_mass.main:show_menu",
+        ]
+    },
 )

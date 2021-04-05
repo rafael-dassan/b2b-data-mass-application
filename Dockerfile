@@ -10,7 +10,7 @@ RUN apt-get install ffmpeg libsm6 libxext6  -y
 
 COPY . /
 
-WORKDIR /data-mass
+WORKDIR /data_mass
 
 ENTRYPOINT ["python", "populate.py"]
 CMD ["--help"]

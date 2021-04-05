@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 import sys
-from mass_populator.log import *
+from data_mass.populator.log import *
 
 
 logger = logging.getLogger(__name__)

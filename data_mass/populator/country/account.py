@@ -1,11 +1,11 @@
-from accounts import create_account_ms, get_account_delivery_address
-from delivery_window import create_delivery_window_microservice
-from credit import add_credit_to_account_microservice
-from mass_populator.country.product import check_product_associated_to_account
-from products import request_get_products_by_account_microservice, request_get_products_microservice, generate_random_price_ids, \
+from data_mass.accounts import create_account_ms, get_account_delivery_address
+from data_mass.delivery_window import create_delivery_window_microservice
+from data_mass.credit import add_credit_to_account_microservice
+from data_mass.populator.country.product import check_product_associated_to_account
+from data_mass.products import request_get_products_by_account_microservice, request_get_products_microservice, generate_random_price_ids, \
     slice_array_products, request_post_products_account_microservice
-from mass_populator.country.inventory import populate_default_inventory
-from mass_populator.log import *
+from data_mass.populator.country.inventory import populate_default_inventory
+from data_mass.populator.log import *
 
 logger = logging.getLogger(__name__)
 

@@ -5,10 +5,11 @@ import os
 from random import randint
 
 # Local application imports
-from common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request, \
+from data_mass.common import get_header_request, \
+    get_microservice_base_url, convert_json_to_string, place_request, \
     print_input_number
-from classes.text import text
-from rewards.rewards_utils import get_rewards_combos_by_account
+from data_mass.classes.text import text
+from data_mass.rewards.rewards_utils import get_rewards_combos_by_account
 
 APP_ADMIN = 'membership'
 

@@ -5,9 +5,11 @@ from random import randint
 from requests import request
 
 # Local application imports
-from classes.text import text
-from common import get_header_request, get_microservice_base_url, set_to_dictionary, remove_from_dictionary
-from logs.log import log_to_file
+from data_mass.classes.text import text
+from data_mass.common import get_header_request, \
+    get_microservice_base_url, set_to_dictionary, \
+    remove_from_dictionary
+from data_mass.logs.log import log_to_file
 
 
 def create_file_api(zone, environment, account_id, purpose, data):

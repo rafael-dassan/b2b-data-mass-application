@@ -9,11 +9,12 @@ from time import time
 from tabulate import tabulate
 
 # Local application imports
-from common import get_header_request, get_microservice_base_url, place_request, update_value_to_json, \
+from data_mass.common import get_header_request, \
+    get_microservice_base_url, place_request, update_value_to_json, \
     convert_json_to_string, create_list, print_input_number
-from products import request_get_products_microservice
-from classes.text import text
-from validations import validate_yes_no_option
+from data_mass.products import request_get_products_microservice
+from data_mass.classes.text import text
+from data_mass.validations import validate_yes_no_option
 
 APP_B2B = 'b2b'
 

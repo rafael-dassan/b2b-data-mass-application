@@ -8,9 +8,10 @@ from random import randint
 from tabulate import tabulate
 
 # Local application imports
-from common import get_microservice_base_url, get_header_request, place_request, update_value_to_json, create_list, \
+from data_mass.common import get_microservice_base_url, \
+    get_header_request, place_request, update_value_to_json, create_list, \
     convert_json_to_string, return_first_and_last_date_year_payload
-from classes.text import text
+from data_mass.classes.text import text
 
 
 def request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id=None):

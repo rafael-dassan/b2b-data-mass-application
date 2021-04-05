@@ -5,10 +5,11 @@ import os
 from random import randint
 
 # Local application imports
-from common import get_microservice_base_url, update_value_to_json, convert_json_to_string, \
+from data_mass.common import get_microservice_base_url, \
+    update_value_to_json, convert_json_to_string, \
     get_header_request, place_request, create_list
-from products import get_sku_price
-from classes.text import text
+from data_mass.products import get_sku_price
+from data_mass.classes.text import text
 
 
 def input_combo_type_discount(account_id, zone, environment, sku, discount_value, combo_id=None):

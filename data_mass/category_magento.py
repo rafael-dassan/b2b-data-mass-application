@@ -2,8 +2,10 @@
 from json import loads
 
 # Local application imports
-from classes.text import text
-from common import get_magento_base_url, get_magento_datamass_access_token, place_request, convert_json_to_string
+from data_mass.classes.text import text
+from data_mass.common import get_magento_base_url, \
+    get_magento_datamass_access_token, place_request, \
+    convert_json_to_string
 
 
 def get_categories(country, environment, parent_id):

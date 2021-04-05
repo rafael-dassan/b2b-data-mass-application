@@ -13,7 +13,7 @@ cd <project-root-dir>/data_mass/
 You could execute the script using 3 parameters:
 
 ```sh
-python3 populate.py <COUNTRY> <ENVIRONMENT> <EXECUTION_TYPE>
+python3 -m data_mass.populate <COUNTRY> <ENVIRONMENT> <EXECUTION_TYPE>
 ```
 
 Example #1:
@@ -24,7 +24,7 @@ Example #1:
   - Execution type to populate data for GATEWAY tests: `gateway`
 
 ```sh
-python3 populate.py DO UAT gateway
+python3 -m data_mass.populate DO UAT gateway
 ```
 
 Example #2:
@@ -35,7 +35,7 @@ Example #2:
   - Execution type to populate data for REGRESSION tests: `regression`
 
 ```sh
-python3 populate.py AR DEV regression
+python3 -m data_mass.populate AR DEV regression
 ```
 
 Example #3:
@@ -46,7 +46,7 @@ Example #3:
   - Execution type to validate the populator script: `test`
 
 ```sh
-python3 populate.py DO UAT test
+python3 -m data_mass.populate DO UAT test
 ```
 
 Example #4:
@@ -57,7 +57,7 @@ Example #4:
   - Execution type to populate specific products for a specific country: `product`
 
 ```sh
-python3 populate.py DO SIT product
+python3 -m data_mass.populate DO SIT product
 ```
 
 ## How to change Log Level

@@ -1,6 +1,7 @@
-from classes.text import text
-from validations import validate_supplier_category_menu_structure, validate_attribute_menu_structure, \
-    validate_option_att, validate_option_type, validate_environment_supplier
+from data_mass.classes.text import text
+from data_mass.validations import validate_supplier_category_menu_structure, \
+    validate_attribute_menu_structure, validate_option_att, \
+    validate_option_type, validate_environment_supplier
 
 
 def print_create_supplier_category_menu():

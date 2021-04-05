@@ -7,9 +7,11 @@ from PyQt5.QtWidgets import QApplication
 import calendar
 
 # Local application imports
-from common import update_value_to_json, get_header_request, get_microservice_base_url, place_request
-from classes.text import text
-from classes.window import window
+from data_mass.common import update_value_to_json, \
+    get_header_request, get_microservice_base_url, \
+    place_request
+from data_mass.classes.text import text
+from data_mass.classes.window import window
 
 
 # Create payload for delivery date

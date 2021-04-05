@@ -1,6 +1,6 @@
-from mass_populator.log import *
-from mass_populator.country.product import populate_products as populate_products_base
-from mass_populator.helpers.csv_helper import search_data_by
+from data_mass.populator.log import *
+from data_mass.populator.country.product import populate_products as populate_products_base
+from data_mass.populator.helpers.csv_helper import search_data_by
 
 logger = logging.getLogger(__name__)
 

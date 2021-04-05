@@ -9,9 +9,9 @@ import logging
 import pyotp
 
 # Local application imports
-from classes.text import text
-from common import place_request
-from user_v3 import get_iam_b2c_params
+from data_mass.classes.text import text
+from data_mass.common import place_request
+from data_mass.user_v3 import get_iam_b2c_params
 
 
 def authenticate_user_iam(environment, country, user_name, password):
