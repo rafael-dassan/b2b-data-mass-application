@@ -1,6 +1,6 @@
 from data_mass.accounts import check_account_exists_microservice
 from data_mass.populator.preconditions import logger
-from data_mass.products import request_get_offers_microservice
+from data_mass.product.products import request_get_offers_microservice
 from data_mass.algo_selling import request_quick_order, request_forgotten_items
 from data_mass.populator.log import *
 
