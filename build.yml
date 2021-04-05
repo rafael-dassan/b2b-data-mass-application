@@ -11,7 +11,7 @@ steps:
   inputs:
     versionSpec: '3.6'
 - script: |
-    pip3 install -r requirements.txt
+    pip3 install .
   displayName: 'Install dependencies'
 - script: |
     python3 data_mass/populate.py do uat test
