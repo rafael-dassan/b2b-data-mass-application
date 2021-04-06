@@ -62,8 +62,8 @@ from data_mass.rewards.rewards_transactions import create_redemption, \
     create_rewards_offer, create_points_removal
 from data_mass.category_magento import *
 from data_mass.products_magento import *
-import data_mass.user_creation_v3 as user_v3
-import data_mass.user_delete_v3 as user_delete_v3
+from data_mass.user.creation import create_user
+from data_mass.user.deletion import delete_user_v3
 from data_mass.simulation import process_simulation_microservice, \
     request_order_simulation
 from data_mass.supplier_category import check_if_supplier_category_exist, \
@@ -1385,7 +1385,7 @@ def registration_user_iam():
     if not account_result:
         print_finish_application_menu()
 
-    status_response = user_v3.create_user(environment, country, email, password, account_id, tax_id)
+    status_response = create_user(environment, country, email, password, account_id, tax_id)
     if status_response == "success":
         print(text.Green + "\n- User IAM created successfully")
     else:
@@ -1404,7 +1404,7 @@ def delete_user_iam():
     environment = print_environment_menu_in_user_create_iam()
     email = print_input_email()
 
-    status_response = user_delete_v3.delete_user_v3(environment, country, email)
+    status_response = delete_user_v3(environment, country, email)
     if status_response == "success":
         print(text.Green + "\n- User IAM deleted successfully")
     elif status_response == "partial":

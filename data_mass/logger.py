@@ -32,7 +32,7 @@ def log_to_file(
     response_body : str
         Response from the service when available.
     """
-    log_directory = join(dirname(__file__), "logs")
+    log_directory = join(dirname("__main__"), "logs")
     log_file = join(log_directory, f"{int(time())}.log")
 
     if not exists(log_directory):
