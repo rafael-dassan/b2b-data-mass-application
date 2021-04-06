@@ -10,7 +10,6 @@ from data_mass.deals import *
 from data_mass.delivery_window import *
 from data_mass.algo_selling import *
 from data_mass.files import create_file_api
-from data_mass.product_inventory import *
 from data_mass.invoices import *
 from data_mass.enforcement import *
 from data_mass.menus.account_menu import print_account_operations_menu, \
@@ -47,8 +46,6 @@ from data_mass.menus.rewards_menu import print_rewards_menu, \
     print_rewards_challenges_menu
 from data_mass.orders import *
 from data_mass.combos import *
-from data_mass.product.supplier import create_product_supplier
-from data_mass.product.product import *
 from data_mass.rewards.rewards import enroll_poc_to_program, \
     disenroll_poc_from_program, associate_dt_combos_to_poc, \
     display_program_rules_skus
@@ -61,6 +58,9 @@ from data_mass.rewards.rewards_challenges import remove_challenge, \
 from data_mass.rewards.rewards_transactions import create_redemption, \
     create_rewards_offer, create_points_removal
 from data_mass.category_magento import *
+from data_mass.product.supplier import create_product_supplier
+from data_mass.product.products import *
+from data_mass.product.inventory import *
 from data_mass.product.magento import *
 import data_mass.user_creation_v3 as user_v3
 import data_mass.user_delete_v3 as user_delete_v3
