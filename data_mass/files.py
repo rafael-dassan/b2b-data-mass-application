@@ -9,7 +9,7 @@ from data_mass.classes.text import text
 from data_mass.common import get_header_request, \
     get_microservice_base_url, set_to_dictionary, \
     remove_from_dictionary
-from data_mass.logs.log import log_to_file
+from data_mass.logger import log_to_file
 
 
 def create_file_api(zone, environment, account_id, purpose, data):
@@ -43,7 +43,14 @@ def create_file_api(zone, environment, account_id, purpose, data):
 
     # Send request
     response = request('POST', request_url, files=file, headers=request_headers)
-    log_to_file('POST', request_url, 'random-file.pdf', request_headers, response.status_code, response.text)
+    log_to_file(
+        request_method='POST',
+        request_url=request_url,
+        request_body='random-file.pdf',
+        request_headers=request_headers,
+        status_code=response.status_code,
+        response_body=response.text,
+    )
 
     if response.status_code == 200:
         return 'success'
