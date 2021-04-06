@@ -1,14 +1,17 @@
+import concurrent.futures
+from datetime import datetime
 import json
 from json import dumps, loads
 import os
-import concurrent.futures
 from random import randint, uniform
-from datetime import datetime
 from tabulate import tabulate
-from common import get_microservice_base_url, get_header_request, place_request, update_value_to_json, \
-    convert_json_to_string, create_list, finish_application
-from menus.product_menu import print_product_quantity_menu, print_is_returnable_menu, print_is_narcotic_menu, print_is_alcoholic_menu
-from classes.text import text
+
+from data_mass.common import get_microservice_base_url, get_header_request, \
+    place_request, update_value_to_json, convert_json_to_string, \
+    create_list, finish_application
+from data_mass.menus.product_menu import print_product_quantity_menu, \
+    print_is_returnable_menu, print_is_narcotic_menu, print_is_alcoholic_menu
+from data_mass.classes.text import text
 
 
 def generate_random_price_ids(qtd):
@@ -350,8 +353,9 @@ def get_body_price_microservice_request_v2(abi_id, sku_product, product_price_id
     }
 
     # Create file path
-    abs_path = os.path.abspath(os.path.dirname("__init__"))
-    file_path = os.path.join(abs_path, 'data/create_sku_price_payload_v2.json')
+    abs_path = os.path.abspath(os.path.dirname('__init__'))
+    breakpoint()
+    file_path = os.path.join(abs_path, 'data_mass/data/create_sku_price_payload_v2.json')
 
     # Load JSON file
     with open(file_path) as file:
@@ -418,8 +422,8 @@ def create_product(zone, environment, product_data):
     request_url = '{0}/item-relay/items'.format(get_microservice_base_url(environment, False))
 
     # Create file path
-    abs_path = os.path.abspath(os.path.dirname("__init__"))
-    file_path = os.path.join(abs_path, 'data/create_item_payload.json')
+    abs_path = os.path.abspath(os.path.dirname('__init__'))
+    file_path = os.path.join(abs_path, 'data_mass/data/create_item_payload.json')
 
     # Load JSON file
     with open(file_path) as file:
@@ -509,8 +513,8 @@ def set_item_enabled(zone, environment, product_data):
     request_url = '{0}/items/{1}'.format(get_microservice_base_url(environment, False), product_data.get('sku'))
 
     # Create file path
-    abs_path = os.path.abspath(os.path.dirname("__init__"))
-    file_path = os.path.join(abs_path, 'data/update_item_payload.json')
+    abs_path = os.path.abspath(os.path.dirname('__init__'))
+    file_path = os.path.join(abs_path, 'data_mass/data/update_item_payload.json')
 
     # Load JSON file
     with open(file_path) as file:
@@ -639,8 +643,8 @@ def request_empties_discounts_creation(account_id, zone, environment, empty_sku,
     request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/prices'
 
     # Create file path
-    abs_path = os.path.abspath(os.path.dirname("__init__"))
-    file_path = os.path.join(abs_path, 'data/create_empties_discounts_payload.json')
+    abs_path = os.path.abspath(os.path.dirname('__init__'))
+    file_path = os.path.join(abs_path, 'data_mass/data/create_empties_discounts_payload.json')
 
     dict_values = {
         'accounts': [account_id],

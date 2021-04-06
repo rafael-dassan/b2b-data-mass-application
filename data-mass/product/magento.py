@@ -1,5 +1,7 @@
 # Local application imports
-from common import get_magento_base_url, get_magento_datamass_access_token, place_request, convert_json_to_string
+from data_mass.common import get_magento_base_url, \
+    get_magento_datamass_access_token, place_request, \
+    convert_json_to_string
 
 
 def enable_product(country, environment, product_sku):

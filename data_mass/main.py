@@ -49,7 +49,7 @@ from data_mass.orders import *
 from data_mass.combos import *
 from data_mass.product.inventory import *
 from data_mass.product.supplier import create_product_supplier
-from data_mass.product.products import *
+from data_mass.product.product.products import *
 from data_mass.rewards.rewards import enroll_poc_to_program, \
     disenroll_poc_from_program, associate_dt_combos_to_poc, \
     display_program_rules_skus
