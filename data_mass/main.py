@@ -62,6 +62,9 @@ from data_mass.rewards.rewards_challenges import remove_challenge, \
 from data_mass.rewards.rewards_transactions import create_redemption, \
     create_rewards_offer, create_points_removal
 from data_mass.category_magento import *
+from data_mass.product.supplier import create_product_supplier
+from data_mass.product.products import *
+from data_mass.product.inventory import *
 from data_mass.product.magento import *
 from data_mass.user.creation import create_user
 from data_mass.user.deletion import delete_user_v3
