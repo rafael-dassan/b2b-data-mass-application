@@ -17,7 +17,7 @@ import jwt
 
 # Local application imports
 from data_mass.classes.text import text
-from data_mass.logs.log import log_to_file
+from data_mass.logger import log_to_file
 from data_mass.validations import is_number, validate_zone_for_ms, \
     validate_environment, validate_structure, \
     validate_zone_for_interactive_combos_ms, \
@@ -85,7 +85,14 @@ def place_request(request_method, request_url, request_body, request_headers):
         print('\n{0}{1}'.format(text.Red, str(e)))
         finish_application()
 
-    log_to_file(request_method, request_url, request_body, request_headers, response.status_code, response.text)
+    log_to_file(
+        request_method=request_method,
+        request_url=request_url,
+        request_body=request_body,
+        request_headers=request_headers,
+        status_code=response.status_code,
+        response_body=response.text,
+    )
 
     return response
 
