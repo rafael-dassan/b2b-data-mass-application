@@ -1,16 +1,17 @@
-FROM python:3.8-slim
+FROM python:3.7-buster
 
-RUN pip install -U pip
-COPY requirements.txt /
-RUN pip install --no-cache-dir -r /requirements.txt
-RUN rm -rf /requirements.txt
+LABEL maintainer="Data Mass Team"
+
+COPY ./requirements.txt /app/requirements.txt
+
+RUN pip install -r /app/requirements.txt
 
 RUN apt-get update
 RUN apt-get install ffmpeg libsm6 libxext6  -y
 
-COPY . /
+COPY ./data_mass /app/data_mass
 
-WORKDIR /data_mass
+WORKDIR /app/
 
-ENTRYPOINT ["python", "populate.py"]
+ENTRYPOINT ["python", "-m", "data_mass.populate"]
 CMD ["--help"]
