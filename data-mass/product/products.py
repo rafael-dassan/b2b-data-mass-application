@@ -354,7 +354,6 @@ def get_body_price_microservice_request_v2(abi_id, sku_product, product_price_id
 
     # Create file path
     abs_path = os.path.abspath(os.path.dirname('__init__'))
-    breakpoint()
     file_path = os.path.join(abs_path, 'data_mass/data/create_sku_price_payload_v2.json')
 
     # Load JSON file
