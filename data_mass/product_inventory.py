@@ -63,7 +63,7 @@ def get_inventory_payload(zone, environment, account_id, products, delivery_cent
 
     # Create file path
     abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, 'data/create_inventory_payload.json')
+    file_path = os.path.join(abs_path, 'data/create/create_inventory_payload.json')
 
     # Load JSON file
     with open(file_path) as file:
@@ -105,7 +105,7 @@ def display_inventory_by_account(inventory):
 def get_delivery_center_inventory(environment, zone, account_id, delivery_center_id, products):
     # Create file path
     abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, 'data/get_inventory_payload.json')
+    file_path = os.path.join(abs_path, 'data/get/get_inventory_payload.json')
 
     # Load JSON file
     with open(file_path) as file:

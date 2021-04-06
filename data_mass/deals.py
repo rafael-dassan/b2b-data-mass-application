@@ -6,12 +6,15 @@ from random import randint
 
 # Third party imports
 from tabulate import tabulate
+from string import Template
 
 # Local application imports
 from data_mass.common import get_microservice_base_url, \
     get_header_request, place_request, update_value_to_json, create_list, \
     convert_json_to_string, return_first_and_last_date_year_payload
+
 from data_mass.classes.text import text
+from data import TEMPLATE_ACCOUNT_GROUP
 
 
 def request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id=None):
@@ -149,7 +152,7 @@ def get_deals_payload_v2(deal_id, deal_type):
 
     # Create file path
     abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, 'data/create_promotion_payload_v2.json')
+    file_path = os.path.join(abs_path, 'data/create/create_promotion_payload_v2.json')
 
     # Load JSON file
     with open(file_path) as file:
@@ -184,29 +187,14 @@ def create_account_group(account_id, zone, environment):
     Returns: `account_group_id` if success and error message in case of failure
     """
 
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_account_group_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
-
     # Assign an account group unique identifier
     account_group_id = 'DM-' + str(randint(1, 100000))
 
-    # Create dictionary with account group's values
-    dict_values = {
-        'accountGroupId': account_group_id,
-        'accounts': [account_id]
-    }
-
-    for key in dict_values.keys():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
-
-    # Create body
-    list_dict_values = create_list(json_object)
-    request_body = convert_json_to_string(list_dict_values)
+    # Create the template String
+    request_body = TEMPLATE_ACCOUNT_GROUP.substitute(
+        accountGroupId=account_group_id,
+        accounts=[account_id]
+    )
 
     # Get header request
     request_headers = get_header_request(zone, False, False, True, False)
@@ -775,7 +763,7 @@ def request_create_discount_cart_calculation(account_id, deal_id, zone, environm
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_discount_payload_v2.json')
+    file_path = os.path.join(path, 'data/create/create_discount_payload_v2.json')
 
     # Load JSON file
     with open(file_path) as file:

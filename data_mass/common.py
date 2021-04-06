@@ -916,7 +916,7 @@ def generate_hmac_jwt(account_id, app_claim=None, expire_months=1):
 
     # Create file path
     abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, 'data/create_jwt_payload.json')
+    file_path = os.path.join(abs_path, 'data/create/create_jwt_payload.json')
 
     # Load JSON file
     with open(file_path) as file:
@@ -944,7 +944,7 @@ def generate_erp_token(expire_months=1):
 
     # Create file path
     abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, 'data/create_erp_token_payload.json')
+    file_path = os.path.join(abs_path, 'data/create/create_erp_token_payload.json')
 
     # Load JSON file
     with open(file_path) as file:

@@ -54,7 +54,7 @@ def request_order_simulation(zone, environment, account_id, delivery_center_id, 
 
     # Create file path
     abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, 'data/order_simulation_microservice_payload.json')
+    file_path = os.path.join(abs_path, 'data/order/order_simulation_microservice_payload.json')
 
     # Load JSON file
     with open(file_path) as file:

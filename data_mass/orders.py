@@ -2,7 +2,12 @@
 import json
 from json import loads
 import os
+
 from datetime import timedelta, datetime
+from string import Template
+
+from data import TEMPLATE_ORDER_PREFIX
+
 
 # Third party imports
 from tabulate import tabulate
@@ -25,35 +30,17 @@ def configure_order_params(zone, environment, account_id, number_size, prefix):
         prefix: order prefix
     Returns: `success` or error message in case of failure
     """
+    # Create the template String
+    request_body = TEMPLATE_ORDER_PREFIX.substitute(
+        orderNumberSize=number_size,
+        prefix=prefix
+    )
 
-    # Create file path
-    abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, 'data/configure_order_prefix_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
-
-    dict_values = {
-        'orderNumberSize': number_size,
-        'prefix': prefix
-    }
-
-    # Update the deal's values in runtime
-    for key in dict_values.keys():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
-
-    # Create body
-    request_body = convert_json_to_string(json_object)
-
-    # Define headers
     request_headers = get_header_request(zone, True, False, False, False, account_id)
     set_to_dictionary(request_headers, 'Authorization', generate_erp_token())
 
-    # Define url request 
     request_url = get_microservice_base_url(environment) + '/order-service/configure'
 
-    # Send request
     response = place_request('POST', request_url, request_body, request_headers)
     
     if response.status_code == 204:
@@ -127,7 +114,7 @@ def create_order_payload(account_id, delivery_center_id, allow_order_cancel, ord
 
     # Create file path
     abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, 'data/create_order_payload.json')
+    file_path = os.path.join(abs_path, 'data/create/create_order_payload.json')
 
     # Load JSON file
     with open(file_path) as file:
