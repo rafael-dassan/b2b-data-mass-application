@@ -3,7 +3,7 @@ import logging
 
 from time import time
 from os import makedirs, name
-from os.path import dirname, exists, join
+from os.path import abspath, dirname, exists, join
 
 
 def log_to_file(
@@ -32,7 +32,7 @@ def log_to_file(
     response_body : str
         Response from the service when available.
     """
-    log_directory = join(dirname("__main__"), "logs")
+    log_directory = join(abspath(dirname("__main__")), "data_mass/logs")
     log_file = join(log_directory, f"{int(time())}.log")
 
     if not exists(log_directory):
