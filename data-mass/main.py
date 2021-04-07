@@ -1,16 +1,20 @@
+import user_creation_v3 as user_v3
+import user_delete_v3 as user_delete_v3
 from accounts import *
+from algo_selling import *
 from attribute_supplier import create_attribute_enum, check_if_attribute_exist, create_attribute_group, \
     create_attribute_primitive_type, delete_attribute_supplier, search_specific_attribute, display_specific_attribute, \
-    display_all_attribute, search_all_attribute, edit_attribute_type
+    display_all_attribute, search_all_attribute, edit_attribute_type, create_legacy_attribute_package, \
+    create_legacy_attribute_container, create_legacy_root_attribute
+from category_magento import *
+from combos import *
 from common import *
 from credit import add_credit_to_account_microservice
 from deals import *
 from delivery_window import *
-from algo_selling import *
-from files import create_file_api
-from product_inventory import *
-from invoices import *
 from enforcement import *
+from files import create_file_api
+from invoices import *
 from menus.account_menu import print_account_operations_menu, print_minimum_order_menu, print_account_status_menu, \
     print_account_name_menu, print_account_enable_empties_loan_menu, print_alternative_delivery_date_menu, \
     print_include_delivery_cost_menu, print_payment_method_menu, print_account_id_menu, \
@@ -21,32 +25,29 @@ from menus.deals_menu import print_deals_operations_menu, print_discount_percent
     print_free_good_redemption_menu, print_free_good_quantity_menu, print_interactive_combos_quantity_range_menu, \
     print_interactive_combos_quantity_range_menu_v2, print_stepped_free_good_ranges_menu, \
     print_stepped_discount_ranges_menu, print_discount_range_menu
+from menus.inventory_menu import print_inventory_option_menu, print_inventory_sku_quantity_menu
 from menus.invoice_menu import print_invoice_operations_menu, print_invoice_status_menu, print_invoice_id_menu, \
     print_invoice_payment_method_menu, print_invoice_status_menu_retriever
 from menus.order_menu import print_order_operations_menu, print_allow_cancellable_order_menu, print_get_order_menu, \
     print_order_id_menu, print_order_status_menu
 from menus.product_menu import print_product_operations_menu, print_get_products_menu
-from menus.inventory_menu import print_inventory_option_menu, print_inventory_sku_quantity_menu
+from menus.rewards_menu import print_rewards_menu, print_rewards_transactions_menu, print_rewards_program_menu, \
+    print_rewards_challenges_menu
 from menus.supplier_menu import print_create_supplier_category_menu, print_new_attribute, print_attribute_primitive, \
     print_create_attribute_menu, print_min_cardinality, print_max_cardinality, print_new_page, print_attribute_type, \
     print_environment_menu_supplier
-from menus.rewards_menu import print_rewards_menu, print_rewards_transactions_menu, print_rewards_program_menu, \
-    print_rewards_challenges_menu
 from orders import *
-from combos import *
+from product_inventory import *
 from product_supplier import create_product_supplier
 from products import *
+from products_magento import *
 from rewards.rewards import enroll_poc_to_program, disenroll_poc_from_program, associate_dt_combos_to_poc, \
     display_program_rules_skus
-from rewards.rewards_programs import create_new_program, patch_program_root_field, update_program_dt_combos, \
-    remove_program_dt_combos
 from rewards.rewards_challenges import remove_challenge, create_take_photo_challenge, create_mark_complete_challenge, \
     create_purchase_challenge
+from rewards.rewards_programs import create_new_program, patch_program_root_field, update_program_dt_combos, \
+    remove_program_dt_combos
 from rewards.rewards_transactions import create_redemption, create_rewards_offer, create_points_removal
-from category_magento import *
-from products_magento import *
-import user_creation_v3 as user_v3
-import user_delete_v3 as user_delete_v3
 from simulation import process_simulation_microservice, request_order_simulation
 from supplier_category import check_if_supplier_category_exist, create_root_category, create_sub_category_supplier, \
     create_association_attribute_with_category, search_specific_category, display_specific_category, \
@@ -104,7 +105,8 @@ def show_menu():
             '3': attribute_associated_category_menu,
             '4': delete_attribute_menu,
             '5': edit_attribute_type_menu,
-            '6': create_product_menu
+            '6': create_product_menu,
+            '7': create_legacy_data
         }
     elif selection_structure == '6':
         switcher = {
@@ -188,7 +190,8 @@ def product_information_menu():
         if product_offers == 'false':
             print_finish_application_menu()
         elif product_offers == 'not_found':
-            print(text.Red + '\n- [Product Assortment Service] There is no product associated with the account ' + abi_id)
+            print(
+                text.Red + '\n- [Product Assortment Service] There is no product associated with the account ' + abi_id)
             print_finish_application_menu()
 
         inventory = get_delivery_center_inventory(environment, zone, abi_id, delivery_center_id, product_offers)
@@ -232,7 +235,7 @@ def flow_get_account(zone, environment):
 # Input Rewards to account
 def create_rewards_to_account():
     selection_structure = print_rewards_menu()
-    
+
     if selection_structure == '2':
         selection_structure = print_rewards_program_menu()
         switcher = {
@@ -266,7 +269,7 @@ def create_rewards_to_account():
         }
 
     reward_option = switcher.get(selection_structure, 'false')
- 
+
     zone = print_zone_menu_for_ms()
     environment = print_environment_menu()
 
@@ -274,12 +277,12 @@ def create_rewards_to_account():
     if reward_option == 'NEW_PROGRAM':
         create_new_program(zone, environment)
         print_finish_application_menu()
-    
+
     # Option to update a program DT combos according to the DT combos from the zone
     elif reward_option == 'ADD_COMBOS':
         update_program_dt_combos(zone, environment)
         print_finish_application_menu()
-    
+
     # Option to remove nonexistent DT combos from the program
     elif reward_option == 'REMOVE_COMBOS':
         remove_program_dt_combos(zone, environment)
@@ -317,7 +320,7 @@ def create_rewards_to_account():
 
         if account != 'false':
             disenroll_poc_from_program(abi_id, zone, environment)
-            
+
         print_finish_application_menu()
 
     # Option to associate redeem products to an account
@@ -330,9 +333,9 @@ def create_rewards_to_account():
 
         if account != 'false':
             associate_dt_combos_to_poc(abi_id, zone, environment)
-        
+
         print_finish_application_menu()
-    
+
     # Option to create a REDEMPTION transaction to a POC
     elif reward_option == 'CREATE_REDEMPTION':
         abi_id = print_account_id_menu(zone)
@@ -342,9 +345,9 @@ def create_rewards_to_account():
 
         if account != 'false':
             create_redemption(abi_id, zone, environment)
-            
+
         print_finish_application_menu()
-    
+
     # Option to create a REWARDS_OFFER transaction to a POC
     elif reward_option == 'CREATE_REWARDS_OFFER':
         abi_id = print_account_id_menu(zone)
@@ -354,7 +357,7 @@ def create_rewards_to_account():
 
         if account != 'false':
             create_rewards_offer(abi_id, zone, environment)
-            
+
         print_finish_application_menu()
 
     # Option to create a POINTS_REMOVAL transaction to a POC
@@ -366,14 +369,14 @@ def create_rewards_to_account():
 
         if account != 'false':
             create_points_removal(abi_id, zone, environment)
-            
+
         print_finish_application_menu()
 
     # Option to create a TAKE_PHOTO challenge for zone
     elif reward_option == 'CREATE_TAKE_PHOTO':
         create_take_photo_challenge(zone, environment)
         print_finish_application_menu()
-    
+
     # Option to create a MARK_COMPLETE challenge for zone
     elif reward_option == 'CREATE_MARK_COMPLETE':
         create_mark_complete_challenge(zone, environment)
@@ -383,7 +386,7 @@ def create_rewards_to_account():
     elif reward_option == 'CREATE_PURCHASE':
         create_purchase_challenge(zone, environment, False)
         print_finish_application_menu()
-    
+
     # Option to create a PURCHASE_MULTIPLE challenge for zone
     elif reward_option == 'CREATE_PURCHASE_MULTIPLE':
         create_purchase_challenge(zone, environment, True)
@@ -393,7 +396,7 @@ def create_rewards_to_account():
     elif reward_option == 'DELETE_CHALLENGE':
         remove_challenge(zone, environment)
         print_finish_application_menu()
-    
+
 
 def order_menu():
     operation = print_order_operations_menu()
@@ -460,7 +463,8 @@ def flow_create_order(zone, environment, account_id, delivery_center_id, order_s
         print(text.Green + '\n- Order ' + response.get('orderNumber') + ' created successfully')
         # Call function to re-configure prefix and order number size according to the zone's format
         order_prefix_params = get_order_prefix_params(zone)
-        if 'false' == configure_order_params(zone, environment, account_id, order_prefix_params.get('order_number_size'),
+        if 'false' == configure_order_params(zone, environment, account_id,
+                                             order_prefix_params.get('order_number_size'),
                                              order_prefix_params.get('prefix')):
             print_finish_application_menu()
 
@@ -649,14 +653,15 @@ def deals_menu():
                         sku_list.append(product_offers[i])
 
                 if len(sku_list) == 0:
-                    print(text.Red + '\n- The SKU {sku_id} is not associated with the account {account_id} or it doesn`t exist'
-                          .format(sku_id=sku_id, account_id=account_id))
+                    print(
+                        text.Red + '\n- The SKU {sku_id} is not associated with the account {account_id} or it doesn`t exist'
+                        .format(sku_id=sku_id, account_id=account_id))
                     print_finish_application_menu()
 
             if len(sku_list) == 3:
                 if sku_list[0] == sku_list[1] or sku_list[1] == sku_list[2] or sku_list[2] == sku_list[0]:
-                            print(text.Red + '\n It is not possible to insert interactive combos using the same SKU')
-                            print_finish_application_menu()
+                    print(text.Red + '\n It is not possible to insert interactive combos using the same SKU')
+                    print_finish_application_menu()
         else:
             sku = input(text.default_text_color + 'SKU: ')
             sku_id = sku.strip()
@@ -665,8 +670,9 @@ def deals_menu():
                 if product_offers[i]['sku'] == sku_id:
                     sku_list.append(product_offers[i])
             if len(sku_list) == 0:
-                print(text.Red + '\n- The SKU {sku_id} is not associated with the account {account_id} or it doesn`t exist'
-                      .format(sku_id=sku_id, account_id=account_id))
+                print(
+                    text.Red + '\n- The SKU {sku_id} is not associated with the account {account_id} or it doesn`t exist'
+                    .format(sku_id=sku_id, account_id=account_id))
                 print_finish_application_menu()
 
     else:
@@ -934,7 +940,8 @@ def flow_input_inventory_to_product(zone, environment):
 
     products = request_get_offers_microservice(account_id, zone, environment)
     if products == 'not_found':
-        print('\n{0}- [Catalog Service] There is no product associated with the account {1}'.format(text.Red, account_id))
+        print(
+            '\n{0}- [Catalog Service] There is no product associated with the account {1}'.format(text.Red, account_id))
         print_finish_application_menu()
     elif products == 'false':
         print_finish_application_menu()
@@ -947,12 +954,14 @@ def flow_input_inventory_to_product(zone, environment):
     if option == 'N':
         inventory = request_inventory_creation(zone, environment, account_id, delivery_center_id, sku_list)
     else:
-        get_inventory_response = get_delivery_center_inventory(environment, zone, account_id, delivery_center_id, sku_list)
+        get_inventory_response = get_delivery_center_inventory(environment, zone, account_id, delivery_center_id,
+                                                               sku_list)
         if get_inventory_response == 'false':
             print_finish_application_menu()
         else:
             inventory_information = print_inventory_sku_quantity_menu(zone, environment, sku_list)
-            inventory = request_inventory_creation(zone, environment, account_id, delivery_center_id, sku_list, inventory_information
+            inventory = request_inventory_creation(zone, environment, account_id, delivery_center_id, sku_list,
+                                                   inventory_information
                                                    .get('sku'), inventory_information.get('quantity'))
 
     if inventory == 'true':
@@ -977,16 +986,16 @@ def flow_input_sku_limit(zone, environment):
     # Call function to display the SKUs on the screen
     enforcement = display_available_products(account_id, zone, environment, delivery_center_id)
     if enforcement == 'true':
-            print(text.Green + '\n- The SKU Limit has been added successfully for the account {account_id}'
-                .format(account_id=account_id))
+        print(text.Green + '\n- The SKU Limit has been added successfully for the account {account_id}'
+              .format(account_id=account_id))
     elif enforcement == 'error_len':
-            print(text.Red + '\n- There are no products available for the account {account_id}'
-                .format(account_id=account_id))
-            print_finish_application_menu()
+        print(text.Red + '\n- There are no products available for the account {account_id}'
+              .format(account_id=account_id))
+        print_finish_application_menu()
     elif enforcement == 'false':
-            print_finish_application_menu()
+        print_finish_application_menu()
     else:
-            print_finish_application_menu()
+        print_finish_application_menu()
 
 
 def flow_input_recommended_products_to_account(zone, environment):
@@ -1159,7 +1168,7 @@ def flow_create_account(zone, environment, account_id):
 
 def flow_create_delivery_window(zone, environment, account_id, option):
     allow_flexible_delivery_dates = ['BR', 'ZA', 'MX', 'DO', 'CO', 'PE']
-    allow_delivery_cost = ['BR', 'MX', 'DO', 'CO','PE']
+    allow_delivery_cost = ['BR', 'MX', 'DO', 'CO', 'PE']
 
     # Call check account exists function
     account = check_account_exists_microservice(account_id, zone, environment)
@@ -1179,7 +1188,7 @@ def flow_create_delivery_window(zone, environment, account_id, option):
 
     # Call add delivery window to account function
     delivery_window = create_delivery_window_microservice(zone, environment, account_data,
-                                                              is_alternative_delivery_date, option)
+                                                          is_alternative_delivery_date, option)
 
     if delivery_window == 'success':
         print(text.Green + '\n- Delivery window created successfully for the account {account_id}'
@@ -1528,7 +1537,7 @@ def associate_product_to_category_menu():
             print_finish_application_menu()
 
     print("\n{text_green}{success}".format(text_green=text.Green,
-                                         success="Success to enable and to associate product to category"))
+                                           success="Success to enable and to associate product to category"))
 
 
 def create_categories_menu():
@@ -1631,10 +1640,10 @@ def retriever_sku_menu():
         print_finish_application_menu()
 
     account = check_account_exists_microservice(account_id, zone, environment)
-    
+
     if account != 'false':
         display_program_rules_skus(zone, environment, account_id)
-        
+
     print_finish_application_menu()
 
 
@@ -1662,7 +1671,6 @@ def create_credit_statement_menu():
 
 
 def create_attribute_menu():
-
     selection_structure = print_create_attribute_menu()
 
     switcher = {
@@ -1692,8 +1700,8 @@ def create_attribute_menu():
 
         if create_att != 'false':
             print(text.Green + '\n- [Attribute] The new {attribute_type} has been successfully created. '
-                              'ID: {attribute}'.format(attribute_type=str(type_option),
-                                                       attribute=create_att))
+                               'ID: {attribute}'.format(attribute_type=str(type_option),
+                                                        attribute=create_att))
             print_finish_application_menu()
         else:
             print_finish_application_menu()
@@ -1811,10 +1819,12 @@ def attribute_associated_category_menu():
         if check_cat != 'false':
             min_cardinality = print_min_cardinality()
             max_cardinality = print_max_cardinality()
-            association = create_association_attribute_with_category(environment, attribute_id, category_id, min_cardinality, max_cardinality)
+            association = create_association_attribute_with_category(environment, attribute_id, category_id,
+                                                                     min_cardinality, max_cardinality)
             if association != 'false':
-                print(text.Green + '\n- [Association] The new association between attribute and categoty has been successfully created. '
-                                   'ID: {association}'.format(association=association))
+                print(
+                    text.Green + '\n- [Association] The new association between attribute and categoty has been successfully created. '
+                                 'ID: {association}'.format(association=association))
                 print_finish_application_menu()
             else:
                 print_finish_application_menu()
@@ -1879,7 +1889,7 @@ def search_specific_category_menu():
 
 def search_all_category_menu():
     environment = print_environment_menu_supplier()
-    page_number = input(text.default_text_color + 'Wich page do you want: ')
+    page_number = input(text.default_text_color + 'Which page do you want: ')
     result = search_all_category(environment, page_number)
     if result == 'false':
         print_finish_application_menu()
@@ -1887,7 +1897,7 @@ def search_all_category_menu():
         display_all_category(result)
         is_new_page = print_new_page()
         while is_new_page == '1':
-            page_number = input(text.default_text_color + 'Wich page do you want: ')
+            page_number = input(text.default_text_color + 'Which page do you want: ')
             result = search_all_category(environment, page_number)
             display_all_category(result)
             is_new_page = print_new_page()
@@ -1929,6 +1939,33 @@ def create_product_menu():
         print_finish_application_menu()
     else:
         print_finish_application_menu()
+
+
+def create_legacy_data():
+    environment = print_environment_menu_supplier()
+
+    all_attribute_ids = create_legacy_root_attribute(environment)
+
+    package_attribute_id = create_legacy_attribute_package(environment)
+    container_attribute_id = create_legacy_attribute_container(environment)
+
+    all_attribute_ids.append(package_attribute_id)
+    all_attribute_ids.append(container_attribute_id)
+
+    category_id = create_root_category(environment)
+
+    print(
+        text.Green + '\n- Category created successfully. Category ID: {category_id}.'.format(category_id=category_id))
+
+    for attribute_id in all_attribute_ids:
+        abstract_attribute_id = create_association_attribute_with_category(environment, attribute_id, category_id, 1, 1)
+        if abstract_attribute_id != 'false':
+            print(
+                text.Green + '\n- Abstract attribute ID {abstract_attribute_id} created. Attribute ID: {attribute_id}.'
+                .format(abstract_attribute_id=abstract_attribute_id, attribute_id=attribute_id))
+
+    print_finish_application_menu()
+
 
 # Init
 try:
