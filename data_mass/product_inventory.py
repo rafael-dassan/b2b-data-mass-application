@@ -30,7 +30,7 @@ def request_inventory_creation(zone, environment, account_id, delivery_center_id
 
 def get_inventory_payload(zone, environment, account_id, products, delivery_center_id, sku_id, sku_quantity):
     get_inventory_response = get_delivery_center_inventory(environment, zone, account_id, delivery_center_id, products)
-    if get_inventory_response and get_inventory_response != 'not_found':
+    if get_inventory_response != 'not_found':
         inv = get_inventory_response['inventory']
 
     quantity = 999999
@@ -38,10 +38,9 @@ def get_inventory_payload(zone, environment, account_id, products, delivery_cent
         specific_quantity = int(sku_quantity)
 
     inventory_list = list()
-    index = 0
-    while index < len(products):
+    for product in products:
         if sku_id is not None:
-            if sku_id == products[index]:
+            if sku_id == product:
                 specific_inventory = {
                     'sku': sku_id,
                     'quantity': specific_quantity
@@ -49,17 +48,16 @@ def get_inventory_payload(zone, environment, account_id, products, delivery_cent
                 inventory_list.append(specific_inventory)
             else:
                 current_inventory = {
-                    'sku': inv[index]['sku'],
-                    'quantity': inv[index]['quantity']
+                    'sku': inv[products.index(product)]['sku'],
+                    'quantity': inv[products.index(product)]['quantity']
                 }
                 inventory_list.append(current_inventory)
         else:
             default_inventory = {
-                'sku': products[index],
+                'sku': product,
                 'quantity': quantity
             }
             inventory_list.append(default_inventory)
-        index = index + 1
 
     # Create file path
     abs_path = os.path.abspath(os.path.dirname(__file__))
