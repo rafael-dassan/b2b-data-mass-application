@@ -64,6 +64,12 @@ from data_mass.category_magento import *
 from data_mass.product.magento import *
 from data_mass.user.creation import create_user
 from data_mass.user.deletion import delete_user_v3
+from data_mass.product.supplier import create_product_supplier
+from data_mass.product.products import *
+from data_mass.product.inventory import *
+from data_mass.product.magento import *
+import data_mass.user_creation_v3 as user_v3
+import data_mass.user_delete_v3 as user_delete_v3
 from data_mass.simulation import process_simulation_microservice, \
     request_order_simulation
 from data_mass.supplier_category import check_if_supplier_category_exist, \

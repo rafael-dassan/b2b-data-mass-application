@@ -2,8 +2,9 @@ import json
 from json import loads
 import os
 from tabulate import tabulate
-from data_mass.common import get_header_request, get_microservice_base_url, \
-    convert_json_to_string, place_request, update_value_to_json, finish_application
+
+from data_mass.common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request, update_value_to_json, \
+    finish_application
 from data_mass.classes.text import text
 
 
@@ -62,8 +63,8 @@ def get_inventory_payload(zone, environment, account_id, products, delivery_cent
         index = index + 1
 
     # Create file path
-    abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, 'data/create_inventory_payload.json')
+    abs_path = os.path.abspath(os.path.dirname("__init__"))
+    file_path = os.path.join(abs_path, 'data_mass/data/create_inventory_payload.json')
 
     # Load JSON file
     with open(file_path) as file:
@@ -104,8 +105,8 @@ def display_inventory_by_account(inventory):
 
 def get_delivery_center_inventory(environment, zone, account_id, delivery_center_id, products):
     # Create file path
-    abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, 'data/get_inventory_payload.json')
+    abs_path = os.path.abspath(os.path.dirname("__init__"))
+    file_path = os.path.join(abs_path, 'data_mass/data/get_inventory_payload.json')
 
     # Load JSON file
     with open(file_path) as file:
