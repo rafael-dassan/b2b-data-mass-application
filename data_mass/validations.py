@@ -220,7 +220,8 @@ def validate_supplier_menu_structure(selection):
        '3': True,
        '4': True,
        '5': True,
-       '6': True
+       '6': True,
+       '7': True
     }.get(selection, False)
 
 

@@ -3,7 +3,8 @@ from data_mass.attribute_supplier import create_attribute_enum, \
     check_if_attribute_exist, create_attribute_group, \
     create_attribute_primitive_type, delete_attribute_supplier, \
     search_specific_attribute, display_specific_attribute, \
-    display_all_attribute, search_all_attribute, edit_attribute_type
+    display_all_attribute, search_all_attribute, edit_attribute_type, create_legacy_root_attribute, \
+    create_legacy_attribute_package, create_legacy_attribute_container
 from data_mass.common import *
 from data_mass.credit import add_credit_to_account_microservice
 from data_mass.deals import *
@@ -124,7 +125,8 @@ def show_menu():
             '3': attribute_associated_category_menu,
             '4': delete_attribute_menu,
             '5': edit_attribute_type_menu,
-            '6': create_product_menu
+            '6': create_product_menu,
+            '7': create_legacy_data
         }
     elif selection_structure == '6':
         switcher = {
@@ -1949,6 +1951,33 @@ def create_product_menu():
         print_finish_application_menu()
     else:
         print_finish_application_menu()
+
+
+def create_legacy_data():
+    environment = print_environment_menu_supplier()
+
+    all_attribute_ids = create_legacy_root_attribute(environment)
+
+    package_attribute_id = create_legacy_attribute_package(environment)
+    container_attribute_id = create_legacy_attribute_container(environment)
+
+    all_attribute_ids.append(package_attribute_id)
+    all_attribute_ids.append(container_attribute_id)
+
+    category_id = create_root_category(environment)
+
+    print(
+        text.Green + '\n- Category created successfully. Category ID: {category_id}.'.format(category_id=category_id))
+
+    for attribute_id in all_attribute_ids:
+        abstract_attribute_id = create_association_attribute_with_category(environment, attribute_id, category_id, 1, 1)
+        if abstract_attribute_id != 'false':
+            print(
+                text.Green + '\n- Abstract attribute ID {abstract_attribute_id} created. Attribute ID: {attribute_id}.'
+                .format(abstract_attribute_id=abstract_attribute_id, attribute_id=attribute_id))
+
+    print_finish_application_menu()
+
 
 # Init
 try:

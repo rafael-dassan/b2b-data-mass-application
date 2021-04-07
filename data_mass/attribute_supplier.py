@@ -149,6 +149,121 @@ def create_attribute_group(environment, attributes):
         return False
 
 
+def create_legacy_attributes_by_type(environment, attribute_name_list, attribute_type):
+    attribute_ids = []
+    for name in attribute_name_list:
+        attribute_id = create_legacy_attribute_primitive_type(environment, name, attribute_type)
+        attribute_ids.append(attribute_id)
+
+    return attribute_ids
+
+
+def create_legacy_root_attribute(environment):
+    text_attributes = ["Classification", "Brand ID", "Brand", "Sub Brand Name", "Minimum Order Quantity"]
+    attribute_type_text = 'TEXT'
+    all_attribute_ids = create_legacy_attributes_by_type(environment, text_attributes, attribute_type_text)
+
+    boolean_attributes = ["Is Alcoholic", "Is Narcotic", "Hidden"]
+    attribute_type_boolean = 'BOOLEAN'
+    all_attribute_ids.extend(create_legacy_attributes_by_type(environment, boolean_attributes, attribute_type_boolean))
+
+    numeric_attributes = ["Sales Ranking", "Pallet Quantity"]
+    attribute_type_numeric = 'NUMERIC'
+    all_attribute_ids.extend(create_legacy_attributes_by_type(environment, numeric_attributes, attribute_type_numeric))
+
+    return all_attribute_ids
+
+
+def create_legacy_attribute_package(environment):
+    numeric_attributes = ["Unit Count", "Item Count"]
+    attribute_type_numeric = 'NUMERIC'
+    sub_attributes_ids = create_legacy_attributes_by_type(environment, numeric_attributes, attribute_type_numeric)
+
+    text_attributes = ["Package ID", "Package Name", "Pack", "Pack Material Type"]
+    attribute_type_text = 'TEXT'
+    sub_attributes_ids.extend(create_legacy_attributes_by_type(environment, text_attributes, attribute_type_text))
+
+    name = 'Package'
+    attribute_id = create_legacy_group_attribute(environment, name, sub_attributes_ids)
+    return attribute_id
+
+
+def create_legacy_attribute_container(environment):
+    numeric_attributes = ["Size"]
+    attribute_type_numeric = 'NUMERIC'
+    sub_attributes_ids = create_legacy_attributes_by_type(environment, numeric_attributes, attribute_type_numeric)
+
+    text_attributes = ["Container Name", "Unit of Measurement", "Container Material"]
+    attribute_type_text = 'TEXT'
+    sub_attributes_ids.extend(create_legacy_attributes_by_type(environment, text_attributes, attribute_type_text))
+
+    boolean_attributes = ["Returnable"]
+    attribute_type_boolean = 'BOOLEAN'
+    sub_attributes_ids.extend(create_legacy_attributes_by_type(environment, boolean_attributes, attribute_type_boolean))
+
+    name = 'Container'
+    attribute_id = create_legacy_group_attribute(environment, name, sub_attributes_ids)
+    return attribute_id
+
+
+def create_legacy_group_attribute(environment, name, attributes):
+    description = 'DESCRIPTION OF ' + name
+
+    # Select your transport with a defined url endpoint
+    base_url = get_supplier_base_url(environment)
+    base_header = get_header_request_supplier()
+    transport = RequestsHTTPTransport(url=base_url, headers=base_header)
+
+    # Create a GraphQL client using the defined transport
+    client = Client(transport=transport, fetch_schema_from_transport=False)
+
+    mut = gql(
+        """
+        mutation createAttributeModel($name: String!, $description: String!, $values: [ID!]){
+            createAttributeModel(input: {
+                name: $name,
+                description: $description,
+                helpText: "This is an attribute to help you in your test",
+                attributeType: GROUP,
+                metadata: {
+                    subAttributes: $values
+                }
+            }){
+                id
+                name
+                description
+                helpText
+                attributeType
+                metadata {
+                     ... on GroupAttributeModelMetadata {
+                            subAttributes{
+                                id
+                            }
+                    }
+                }
+                createdAt
+                }
+            }
+        """
+    )
+
+    params = {'name': name, 'description': description, 'values': attributes}
+
+    # Execute the query on the transport
+    try:
+        response = client.execute(mut, variable_values=params)
+        json_data = json.dumps(response)
+        if len(json_data) != 0:
+            json_split = json_data.rsplit()
+            id_att = json_split[2]
+            id_att1 = id_att.lstrip('"')
+            id_att2 = id_att1.rsplit('"', 1)[0]
+            return id_att2
+    except TransportQueryError as e:
+        print(text.Red + str(e))
+        return 'false'
+
+
 def create_primitive_attribute_payload():
     return gql(
         """
@@ -491,6 +606,37 @@ def edit_attribute_type(environment, attribute_id, type, values):
     except TransportQueryError as e:
         print(text.Red + str(e))
         return False
+
+
+def create_legacy_attribute_primitive_type(environment, name, attribute_type):
+    description = 'DESCRIPTION OF ' + name + ' ATTRIBUTE'
+
+    # Select your transport with a defined url endpoint
+    base_url = get_supplier_base_url(environment)
+    base_header = get_header_request_supplier()
+    transport = RequestsHTTPTransport(url=base_url, headers=base_header)
+
+    # Create a GraphQL client using the defined transport
+    client = Client(transport=transport, fetch_schema_from_transport=False)
+
+    mut = create_primitive_attribute_payload()
+
+    params = {'name': name, 'description': description, 'attribute_type': attribute_type}
+
+    # Execute the query on the transport
+    try:
+        response = client.execute(mut, variable_values=params)
+        json_data = json.dumps(response)
+        if len(json_data) != 0:
+            json_split = json_data.rsplit()
+            id_att = json_split[2]
+            id_att1 = id_att.lstrip('"')
+            id_att2 = id_att1.rsplit('"', 1)[0]
+            return id_att2
+
+    except TransportQueryError as e:
+        print(text.Red + str(e))
+        return 'false'
 
 
 def create_edit_primitive_attribute():
