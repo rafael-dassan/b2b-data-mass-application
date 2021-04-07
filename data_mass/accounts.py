@@ -355,6 +355,12 @@ def get_account_delivery_address(zone):
             'state': 'Asuncion',
             'zipcode': 'N/A'
         },
+        'US': {
+            'address': '4582 North Street',
+            'city': 'Salt Lake City',
+            'state': 'Utah',
+            'zipcode': '84104'
+        },
         'ZA': {
             'address': '726  Thomas St',
             'city': 'Blood River',

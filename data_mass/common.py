@@ -105,6 +105,7 @@ def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclus
         'PA': 'America/Panama',
         'PE': 'America/Lima',
         'PY': 'America/Asuncion',
+        'US': 'EST',
         'ZA': 'Africa/Johannesburg'
     }
     timezone = switcher.get(zone, False)
