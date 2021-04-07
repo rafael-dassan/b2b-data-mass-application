@@ -1,12 +1,9 @@
-# Standard library imports
 import json
 from json import loads
 import os
 
-# Third party imports
 from tabulate import tabulate
 
-# Local application imports
 from data_mass.common import get_header_request, \
     get_microservice_base_url, place_request, \
     update_value_to_json, create_list, \

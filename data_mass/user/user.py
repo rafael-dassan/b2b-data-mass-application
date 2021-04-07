@@ -192,6 +192,7 @@ def get_iam_b2c_country_params_qa(country):
             "CLIENT_ID": "14c66e8e-4820-4426-87e1-9eaa957654a7"
         }
     }
+
     return params[country]
 
 
@@ -211,6 +212,7 @@ def get_iam_b2c_azure_params_uat():
         "AZURE_CLIENT_ID": "0b102fc8-9835-4f67-8c7b-cf2731609d8b",
         "AZURE_CLIENT_SECRET": "nwAyfc5RLg_UJ~5~G_u7EGL~Kn7yR~TZ2Q"
     }
+
     return params
 
 
@@ -231,6 +233,7 @@ def get_iam_b2c_azure_params_qa():
         "AZURE_CLIENT_ID": "1285777d-20f2-4e39-8866-cb80d0b922e7",
         "AZURE_CLIENT_SECRET": "cbA9Pu8ejf_rPy1Kb0i5a~83_90zZ8g_Db"
     }
+
     return params
 
 
@@ -240,4 +243,5 @@ def get_iam_b2c_policy_params(country):
         "B2B_SIGNUP_POLICY": "B2C_1A_SignUp_{0}".format(country),
         "B2B_ONBOARDING_POLICY": "B2C_1A_Onboarding_{0}".format(country)
     }
+
     return params

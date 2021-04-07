@@ -6,12 +6,12 @@ This repository contains the B2B Data Mass Script, aimed to those who want to cr
 
 ## Required Tooling
 *  [Git][GitDoc]
-*  [Python 3.5 or higher][Python]
+*  [Python 3.7 or higher][Python]
 
 ## Running the Script
 To launch the application menu, please follow the steps below after opening the Terminal:
 ```sh
-cd <project-root-dir>/data_mass/
+cd <project-root-dir>
 ```
 
 You may not have all required dependencies installed by default. Install them by using the pip command:
