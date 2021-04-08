@@ -1,17 +1,21 @@
-import json
-from json import dumps, loads
-import os
 import concurrent.futures
-
-from random import randint, uniform
+import json
+import os
 from datetime import datetime
+from json import dumps, loads
+from random import randint, uniform
+
 from tabulate import tabulate
-from data_mass.common import get_microservice_base_url, get_header_request, \
-    place_request, update_value_to_json, convert_json_to_string, create_list, \
-    finish_application
-from data_mass.menus.product_menu import print_product_quantity_menu, \
-    print_is_returnable_menu, print_is_narcotic_menu, print_is_alcoholic_menu
+
 from data_mass.classes.text import text
+from data_mass.common import (convert_json_to_string, create_list,
+                              finish_application, get_header_request,
+                              get_microservice_base_url, place_request,
+                              update_value_to_json)
+from data_mass.menus.product_menu import (print_is_alcoholic_menu,
+                                          print_is_narcotic_menu,
+                                          print_is_returnable_menu,
+                                          print_product_quantity_menu)
 
 
 def generate_random_price_ids(qtd):
@@ -51,7 +55,10 @@ def request_post_price_microservice(account_id, zone, environment, sku_product, 
     """
 
     # Get base URL
-    request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/prices'
+    if zone == "AR":
+        request_url = get_microservice_base_url(environment, False) + '/price-relay/v1'    
+    else:
+        request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2'
 
     # Get request body
     request_body = get_body_price_microservice_request_v2(account_id, sku_product, product_price_id, price_values)
@@ -349,7 +356,8 @@ def get_body_price_microservice_request_v2(abi_id, sku_product, product_price_id
         'prices[0].deposit': price_values.get('deposit'),
         'prices[0].quantityPerPallet': price_values.get('quantityPerPallet'),
         'prices[0].taxes[0].taxId': product_price_id,
-        'prices[0].taxes[0].value': str(price_values.get('tax'))
+        'prices[0].taxes[0].value': str(price_values.get('tax')),
+        'prices[0].validFrom': datetime.now().strftime('%Y-%m-%d'),
     }
 
     # Create file path
@@ -526,7 +534,7 @@ def set_item_enabled(zone, environment, product_data):
         'container.itemSize': product_data.get('container.size'),
         'container.unitOfMeasurement': product_data.get('container.unitOfMeasurement'),
         'description': product_data.get('name'),
-        'salesRanking': product_data.get('salesRanking')
+        'salesRanking': product_data.get('salesRanking'),
     }
 
     for key in dict_values.keys():
