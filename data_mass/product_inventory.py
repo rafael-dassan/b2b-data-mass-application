@@ -1,10 +1,13 @@
 import json
-from json import loads
 import os
+from json import loads
+
 from tabulate import tabulate
-from data_mass.common import get_header_request, get_microservice_base_url, \
-    convert_json_to_string, place_request, update_value_to_json, finish_application
+
 from data_mass.classes.text import text
+from data_mass.common import (convert_json_to_string, finish_application,
+                              get_header_request, get_microservice_base_url,
+                              place_request, update_value_to_json)
 
 
 def request_inventory_creation(zone, environment, account_id, delivery_center_id, products, sku_id=None, sku_quantity=0):
@@ -38,7 +41,7 @@ def get_inventory_payload(zone, environment, account_id, products, delivery_cent
         specific_quantity = int(sku_quantity)
 
     inventory_list = list()
-    for product in products:
+    for product in products[:len(inv)]:
         if sku_id is not None:
             if sku_id == product:
                 specific_inventory = {
