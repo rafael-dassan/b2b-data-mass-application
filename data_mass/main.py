@@ -1169,7 +1169,7 @@ def flow_create_account(zone, environment, account_id):
     create_account_response = create_account_ms(account_id, name, payment_method, minimum_order, zone, environment,
                                                 delivery_address, account_status, enable_empties_loan)
 
-    if create_account_response == 'success':
+    if create_account_response:
         print(text.Green + '\n- Your account {account_id} has been created successfully'.format(account_id=account_id))
 
         # Input default credit to the account so it won't be `null` in the Account Service database
@@ -1257,7 +1257,7 @@ def flow_update_account_name(zone, environment, account_id):
                                                 account_data['deliveryAddress'], account_data['status'],
                                                 account_data['hasEmptiesLoan'])
 
-    if create_account_response == 'success':
+    if create_account_response:
         print(text.Green + '\n- Account name updated for the account {account_id}'
               .format(account_id=account_id))
     else:
@@ -1280,7 +1280,7 @@ def flow_update_account_status(zone, environment, account_id):
                                                 account_data['deliveryAddress'], account_status,
                                                 account_data['hasEmptiesLoan'])
 
-    if create_account_response == 'success':
+    if create_account_response:
         print(text.Green + '\n- Account status updated to {account_status} for the account {account_id}'
               .format(account_status=account_status, account_id=account_id))
     else:
@@ -1306,7 +1306,7 @@ def flow_update_account_minimum_order(zone, environment, account_id):
                                                 account_data['deliveryAddress'], account_data['status'],
                                                 account_data['hasEmptiesLoan'])
 
-    if create_account_response == 'success':
+    if create_account_response:
         print(text.Green + '\n- Minimum order updated for the account {account_id}'
               .format(account_id=account_id))
     else:
@@ -1329,7 +1329,7 @@ def flow_update_account_payment_method(zone, environment, account_id):
                                                 account_data['deliveryAddress'], account_data['status'],
                                                 account_data['hasEmptiesLoan'])
 
-    if create_account_response == 'success':
+    if create_account_response:
         print(text.Green + '\n- Payment method updated for the account {account_id}'
               .format(account_id=account_id))
     else:
