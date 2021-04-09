@@ -1,13 +1,11 @@
 import json
-import os
 from json import loads
-
+import os
 from tabulate import tabulate
 
+from data_mass.common import get_header_request, get_microservice_base_url, convert_json_to_string, place_request, update_value_to_json, \
+    finish_application
 from data_mass.classes.text import text
-from data_mass.common import (convert_json_to_string, finish_application,
-                              get_header_request, get_microservice_base_url,
-                              place_request, update_value_to_json)
 
 
 def request_inventory_creation(zone, environment, account_id, delivery_center_id, products, sku_id=None, sku_quantity=0):
@@ -33,7 +31,7 @@ def request_inventory_creation(zone, environment, account_id, delivery_center_id
 
 def get_inventory_payload(zone, environment, account_id, products, delivery_center_id, sku_id, sku_quantity):
     get_inventory_response = get_delivery_center_inventory(environment, zone, account_id, delivery_center_id, products)
-    if get_inventory_response != 'not_found':
+    if get_inventory_response and get_inventory_response != 'not_found':
         inv = get_inventory_response['inventory']
 
     quantity = 999999
@@ -41,9 +39,10 @@ def get_inventory_payload(zone, environment, account_id, products, delivery_cent
         specific_quantity = int(sku_quantity)
 
     inventory_list = list()
-    for product in products[:len(inv)]:
+    index = 0
+    while index < len(products):
         if sku_id is not None:
-            if sku_id == product:
+            if sku_id == products[index]:
                 specific_inventory = {
                     'sku': sku_id,
                     'quantity': specific_quantity
@@ -51,20 +50,21 @@ def get_inventory_payload(zone, environment, account_id, products, delivery_cent
                 inventory_list.append(specific_inventory)
             else:
                 current_inventory = {
-                    'sku': inv[products.index(product)]['sku'],
-                    'quantity': inv[products.index(product)]['quantity']
+                    'sku': inv[index]['sku'],
+                    'quantity': inv[index]['quantity']
                 }
                 inventory_list.append(current_inventory)
         else:
             default_inventory = {
-                'sku': product,
+                'sku': products[index],
                 'quantity': quantity
             }
             inventory_list.append(default_inventory)
+        index = index + 1
 
     # Create file path
-    abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, 'data/create_inventory_payload.json')
+    abs_path = os.path.abspath(os.path.dirname("__init__"))
+    file_path = os.path.join(abs_path, 'data_mass/data/create_inventory_payload.json')
 
     # Load JSON file
     with open(file_path) as file:
@@ -105,8 +105,8 @@ def display_inventory_by_account(inventory):
 
 def get_delivery_center_inventory(environment, zone, account_id, delivery_center_id, products):
     # Create file path
-    abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, 'data/get_inventory_payload.json')
+    abs_path = os.path.abspath(os.path.dirname("__init__"))
+    file_path = os.path.join(abs_path, 'data_mass/data/get_inventory_payload.json')
 
     # Load JSON file
     with open(file_path) as file:
