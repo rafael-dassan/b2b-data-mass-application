@@ -2,6 +2,7 @@ import json
 from json import dumps, loads
 import os
 import concurrent.futures
+from typing import Any, Union
 
 from random import randint, uniform
 from datetime import datetime
@@ -223,39 +224,64 @@ def get_body_price_inclusion_microservice_request(delivery_center_id):
     return body_price_inclusion
 
 
-def request_get_offers_microservice(account_id, zone, environment):
+def request_get_offers_microservice(
+        account_id: str,
+        zone: str,
+        environment: str) -> Union[str, bool, Any]:
     """
     Get available SKUs for a specific account via Catalog Service
     Projection: SMALL
-    Args:
-        account_id: POC unique identifier
-        zone: e.g., AR, BR, CO, DO, MX, ZA
-        environment: e.g., DEV, SIT, UAT
-    Returns:
-        json_data: new json object in case of success
-        not_found: if there is no product association for an account
-        false: if there is any error coming from the microservice
+
+    Parameters
+    ----------
+    account_id: str
+        POC unique identifier.
+    zone: str
+        e.g., AR, BR, CO, DO, MX, ZA
+    environment: str
+        e.g., DEV, SIT, UAT
+
+    Returns
+    -------
+    str, bool or Any
+        `False` if there is any error coming from the microservice \
+        `json_data` (Any) if new json object in case of success \
+        `str(not_found)` if there is no product association \
+        for an account.
     """
+    request_headers = get_header_request(
+        zone=zone,
+        use_jwt_auth=True,
+        account_id=account_id
+    )
 
-    # Get headers
-    headers = get_header_request(zone, True, False, False, False, account_id)
+    base_url = get_microservice_base_url(environment)
+    request_url = (
+        f"{base_url}/catalog-service/"
+        f"catalog?accountId={account_id}"
+        "&projection=SMALL"
+    )
 
-    # Get base URL
-    request_url = get_microservice_base_url(
-        environment) + '/catalog-service/catalog?accountId=' + account_id + '&projection=SMALL'
-
-    # Send request
-    response = place_request('GET', request_url, '', headers)
+    response = place_request(
+        request_method="GET",
+        request_url=request_url,
+        request_body='',
+        request_headers=request_headers
+    )
 
     json_data = loads(response.text)
     if response.status_code == 200 and len(json_data) != 0:
         return json_data
-    elif response.status_code == 200 and len(json_data) == 0:
+    elif response.status_code == 200 and (json_data) == 0:
         return 'not_found'
     else:
-        print(text.Red + '\n- [Catalog Service] Failure to get a list of available SKUs. Response Status: '
-                         '{response_status}. Response message: {response_message}'
-              .format(response_status=response.status_code,response_message=response.text))
+        print((
+            f'{text.Red}\n'
+            '- [Catalog Service] Failure to get a list of available SKUs. '
+            f'Response Status: {response.status_code}'
+            f'Response message: {response.text}'
+        ))
+
         return False
 
 
@@ -571,8 +597,21 @@ def display_product_information(product_offers):
     print(tabulate(product_information, headers='keys', tablefmt='grid'))
 
 
-# Get SKU name
-def get_sku_name(zone, environment, sku_id):
+def get_sku_name(zone: str, environment: str, sku_id: str) -> str:
+    """
+    Get SKU name.
+
+    Parameters
+    ----------
+    zone : str
+    environment : 
+    sku_id : str
+
+    Returns
+    -------
+    str
+        The SKU name.
+    """
     # Get header request
     headers = get_header_request(zone, True)
 
