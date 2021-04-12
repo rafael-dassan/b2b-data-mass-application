@@ -42,7 +42,7 @@ def populate_poc(country, environment, account_id, account_name, payment_method,
         if not_associated_products:
             products_length = len(not_associated_products)
             for i in range(len(not_associated_products)):
-                if products_length == 1:
+                if products_length <= 1:
                     associate_products_to_account(country, environment, account_id, not_associated_products)
                 else:
                     associate_products_to_account(country, environment, account_id, [not_associated_products[i]])

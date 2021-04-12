@@ -89,10 +89,10 @@ def check_product_associated_to_account(account_id, country, environment, produc
     product_offers = request_get_offers_microservice(account_id, country, environment)
     if product_offers == 'not_found':
         logger.error(log(Message.PRODUCT_NOT_FOUND_ERROR, {'account_id': account_id}))
-        return False
+        return []
     elif not product_offers:
         logger.error(log(Message.RETRIEVE_PRODUCT_ERROR, {'account_id': account_id}))
-        return False
+        return []
     else:
         available_skus = list()
         not_associated_skus = list()
