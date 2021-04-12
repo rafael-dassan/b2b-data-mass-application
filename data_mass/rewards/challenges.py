@@ -190,8 +190,8 @@ def create_challenge_payload(
         challenge_id: str,
         execution_method: str,
         zone_skus_list: Optional[list] = None,
-        start_date_timedelta: int = 0,
-        end_date_timedelta: int = 180) -> Union[None, Response]:
+        start_date_timedelta: Optional[int] = 0,
+        end_date_timedelta: Optional[int] = 180) -> Union[None, Response]:
     """
     Create challenge payload.
 
