@@ -660,8 +660,8 @@ def set_item_enabled(zone, environment, product_data):
     )
 
     # Create file path
-    abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, "data/update_item_payload.json")
+    abs_path = os.path.abspath(os.path.dirname("__main__"))
+    file_path = os.path.join(abs_path, "data_mass/data/update_item_payload.json")
 
     # Load JSON file
     with open(file_path) as file:
