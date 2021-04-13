@@ -38,7 +38,7 @@ def populate_order(country, environment, account_id, allow_order_cancel, items, 
         delivery_center_id = account[0]['deliveryCenterId']
 
         not_associated_products = check_product_associated_to_account(account_id, country, environment, [items])
-        if not_associated_products is not False:
+        if not_associated_products:
             product_offers = request_get_offers_microservice(account_id, country, environment)
             if product_offers:
                 data = {'sku': items, 'itemQuantity': quantity}
