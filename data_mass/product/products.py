@@ -465,8 +465,8 @@ def get_body_price_microservice_request_v2(
     }
 
     # Create file path
-    abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, "data/create_sku_price_payload_v2.json")
+    abs_path = os.path.abspath(os.path.dirname("__init__"))
+    file_path = os.path.join(abs_path, "data_mass/data/create_sku_price_payload_v2.json")
 
     # Load JSON file
     with open(file_path) as file:
@@ -550,8 +550,8 @@ def create_product(zone, environment, product_data):
     )
 
     # Create file path
-    abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, "data/create_item_payload.json")
+    abs_path = os.path.abspath(os.path.dirname("__main__"))
+    file_path = os.path.join(abs_path, "data_mass/data/create_item_payload.json")
 
     # Load JSON file
     with open(file_path) as file:
@@ -809,8 +809,8 @@ def request_empties_discounts_creation(
     )
 
     # Create file path
-    abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, "data/create_empties_discounts_payload.json")
+    abs_path = os.path.abspath(os.path.dirname("__main__"))
+    file_path = os.path.join(abs_path, "data_mass/data/create_empties_discounts_payload.json")
 
     dict_values = {
         "accounts": [account_id],

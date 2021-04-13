@@ -215,6 +215,7 @@ def product_information_menu():
 
         inventory = get_delivery_center_inventory(environment, zone, abi_id, delivery_center_id, product_offers)
         if not inventory:
+            print_error_delivery_center_inventory(delivery_center_id)
             print_finish_application_menu()
         else:
             display_inventory_by_account(inventory)
@@ -227,6 +228,13 @@ def product_information_menu():
             print_finish_application_menu()
 
         display_items_information_zone(products)
+
+
+def print_error_delivery_center_inventory(delivery_id: str):
+    print((
+        f'{text.Red}\n'
+        f'Error while trying to retrive inventory for "{delivery_id}".'
+    ))
 
 
 def account_information_menu():
