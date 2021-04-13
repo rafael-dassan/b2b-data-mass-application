@@ -5,7 +5,6 @@ from gql import gql, Client
 from gql.transport.exceptions import TransportQueryError
 from gql.transport.requests import RequestsHTTPTransport
 import string
-
 from tabulate import tabulate
 
 from data_mass.attribute_supplier import create_attribute_primitive_type
@@ -13,7 +12,7 @@ from data_mass.classes.text import text
 from data_mass.common import get_supplier_base_url, get_header_request_supplier
 from data_mass.menus.supplier_menu import print_primitive_type
 from data_mass.supplier_category import create_root_category, \
-  create_association_attribute_with_category
+    create_association_attribute_with_category
 
 
 def create_product_supplier(environment):
