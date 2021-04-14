@@ -8,7 +8,7 @@ from random import randint
 from data_mass.common import get_microservice_base_url, \
     update_value_to_json, convert_json_to_string, \
     get_header_request, place_request, create_list
-from data_mass.products import get_sku_price
+from data_mass.product.products import get_sku_price
 from data_mass.classes.text import text
 
 

@@ -1,18 +1,19 @@
 {
-    "itemName": "string",
-    "itemImage": null,
-    "brandId": "DM2020",
-    "container": {
-      "itemSize": 0,
-      "name": "string",
-      "unitOfMeasurement": "string"
-    },
-    "package": {
-      "packageId": "string",
-      "unitCount": 1
-    },
-    "enabled": true,
-    "deleted": false,
-    "description": "string",
-    "salesRanking": 0
-  }
+  "itemName": "string",
+  "itemImage": null,
+  "brandId": "DM2020",
+  "container": {
+    "itemSize": 0,
+    "name": "string",
+    "unitOfMeasurement": "string"
+  },
+  "package": {
+    "packageId": "string",
+    "unitCount": 1
+  },
+  "enabled": true,
+  "deleted": false,
+  "description": "string",
+  "salesRanking": 0,
+  "validFrom": "2021-12-31"
+}

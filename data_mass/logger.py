@@ -1,7 +1,7 @@
 import subprocess
 import logging
 
-from time import time
+from datetime import datetime
 from os import makedirs, name
 from os.path import abspath, dirname, exists, join
 
@@ -14,7 +14,8 @@ def log_to_file(
         status_code: str,
         response_body: str):
     """
-    Log all requests to a specific file.
+    Log all requests to a specific file named
+     following year-month-day-hour pattern.
 
     Parameters
     ----------
@@ -33,7 +34,9 @@ def log_to_file(
         Response from the service when available.
     """
     log_directory = join(abspath(dirname("__main__")), "data_mass/logs")
-    log_file = join(log_directory, f"{int(time())}.log")
+    log_file = join(
+        log_directory, f"{datetime.now().strftime('%Y-%m-%d-%H:%M:%S')}.log"
+    )
 
     if not exists(log_directory):
         if name == "nt":

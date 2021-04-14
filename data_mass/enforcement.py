@@ -1,5 +1,7 @@
 # Standard library imports
 from json import loads
+import os
+import json
 from multiprocessing import Pool
 from itertools import repeat
 
@@ -12,12 +14,11 @@ from data_mass.common import convert_json_to_string, \
     get_header_request, get_microservice_base_url, \
     place_request, return_first_and_last_date_year_payload, \
     update_value_to_json
-from data_mass.products import request_get_account_product_assortment, \
+from data_mass.product.products import request_get_account_product_assortment, \
     check_item_enabled, get_sku_name, \
     request_get_products_microservice
 from data_mass.classes.text import text
-import os
-import json
+
 
 
 # Show all available SKUs of the account in the screen
