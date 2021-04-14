@@ -1,3 +1,4 @@
+"""Utils tools for Data Mass use."""
 import json
 import sys
 from datetime import date
@@ -207,8 +208,8 @@ def find_values(key: Hashable, json_str: str) -> Union[None, Any]:
 
     if len(results) == 0:
         return None
-    else:
-        return results[0]
+
+    return results[0]
 
 
 def remove_from_dictionary(dictionary: dict, *keys: Any) -> None:

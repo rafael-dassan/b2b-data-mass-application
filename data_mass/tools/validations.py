@@ -1,3 +1,4 @@
+"""Validations tools for Data Mass use."""
 from typing import Any, Optional, Union
 from unicodedata import numeric
 
@@ -253,8 +254,8 @@ def validate_invoice_id(invoice_id: str) -> Union[bool, str]:
 
     if size_invoice_id == 0:
         return "error_0"
-    else:
-        return True
+
+    return True
 
 
 def validate_yes_no_option(option: str) -> bool:

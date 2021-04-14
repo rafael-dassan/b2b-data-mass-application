@@ -1,16 +1,17 @@
+"""Request tools for Data Mass use."""
 import json
 import os
 
 from io import FileIO
+from typing import Union, Optional, List
+from time import time
+from uuid import uuid1
 from requests import request, Response
 from requests.exceptions import RequestException
-from uuid import uuid1
-from time import time
-from typing import Union, Optional, List
 
 import jwt
 
-from data_mass.classes import text
+from data_mass.classes.text import text
 from data_mass.tools.logger import log_to_file
 from data_mass.tools.utils import (
     finish_application,
@@ -51,8 +52,8 @@ def place_request(
             data=request_body,
             headers=request_headers
         )
-    except RequestException as e:
-        print(f"\n{text.Red}{str(e)}")
+    except RequestException as error:
+        print(f"\n{text.Red}{str(error)}")
         finish_application()
 
     log_to_file(
@@ -161,18 +162,18 @@ def get_microservice_base_url(
             return "https://bees-services-dev.eastus2.cloudapp.azure.com/v1"
 
         return "https://bees-services-dev.eastus2.cloudapp.azure.com/api"
+
+    if environment not in ["UAT", "SIT"]:
+        env_name = "SIT"
     else:
-        if environment != "SIT" and environment != "UAT":
-            env_name = "SIT"
-        else:
-            env_name = environment
+        env_name = environment
 
-        context = "v1" if is_v1 else "api"
+    context = "v1" if is_v1 else "api"
 
-        return (
-            f"https://services-{env_name.lower()}.bees-platform.dev/"
-            f"{context}"
-        )
+    return (
+        f"https://services-{env_name.lower()}.bees-platform.dev/"
+        f"{context}"
+    )
 
 
 def get_magento_base_url(environment: str, country: str) -> str:
@@ -387,7 +388,7 @@ def generate_hmac_jwt(
         "accounts": [account_id]
     }
 
-    for key in dict_values.keys():
+    for _, key in dict_values.items():
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
     if app_claim is not None:
@@ -430,7 +431,7 @@ def generate_erp_token(expire_months: Optional[int] = 1) -> str:
         "iat": now
     }
 
-    for key in dict_values.keys():
+    for _, key in dict_values.items():
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
     encoded = jwt.encode(
@@ -457,11 +458,11 @@ def get_supplier_base_url(environment: str) -> str:
     """
     if environment == "LOCAL":
         return "http://localhost:8080/graphql"
-    else:
-        return (
-            f"https://services-{environment.lower()}.bees-platform.dev"
-            "/api/product-taxonomy-service/graphql"
-        )
+
+    return (
+        f"https://services-{environment.lower()}.bees-platform.dev"
+        "/api/product-taxonomy-service/graphql"
+    )
 
 
 def get_header_request_supplier() -> dict:
