@@ -115,22 +115,17 @@ def get_inventory_payload(
         products=products
     )
 
-    if not get_inventory_response:
-        print((
-            f'{text.Red}\n'
-            f'Error while trying to retrive inventory for "{delivery_center_id}".'
-        ))
-        exit()
+    inventory = get_inventory_response['inventory'] if get_inventory_response else {}
 
-    inv = get_inventory_response['inventory']
-    
     quantity = 999999
     if int(sku_quantity) >= 0:
         specific_quantity = int(sku_quantity)
 
     inventory_list = []
 
-    for product in products[:len(inv)]:
+    len_inventory = len(inventory) if inventory else len(products)
+
+    for product in products[:len_inventory]:
         if sku_id is not None:
             if sku_id == product:
                 specific_inventory = {
@@ -140,8 +135,8 @@ def get_inventory_payload(
                 inventory_list.append(specific_inventory)
             else:
                 current_inventory = {
-                    'sku': inv[products.index(product)]['sku'],
-                    'quantity': inv[products.index(product)]['quantity']
+                    'sku': inventory[products.index(product)]['sku'],
+                    'quantity': inventory[products.index(product)]['quantity']
                 }
                 inventory_list.append(current_inventory)
         else:
