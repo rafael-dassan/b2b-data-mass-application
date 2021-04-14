@@ -4,8 +4,12 @@ import logging
 
 # Local application imports
 from data_mass.classes.text import text
-from data_mass.common import place_request, get_magento_base_url, get_magento_user_registration_access_token, \
-    convert_json_to_string
+from data_mass.tools.requests import (
+    get_magento_base_url,
+    get_magento_user_registration_access_token,
+    place_request,
+)
+from data_mass.tools.utils import convert_json_to_string
 from data_mass.user.user import get_iam_b2c_params
 
 

@@ -6,7 +6,10 @@ from gql.transport.requests import RequestsHTTPTransport
 from tabulate import tabulate
 
 from data_mass.classes.text import text
-from data_mass.common import get_supplier_base_url, get_header_request_supplier
+from data_mass.tools.requests import (
+    get_header_request_supplier,
+    get_supplier_base_url,
+)
 
 
 def create_root_category(environment):

@@ -5,7 +5,30 @@ from data_mass.attribute_supplier import create_attribute_enum, \
     search_specific_attribute, display_specific_attribute, \
     display_all_attribute, search_all_attribute, edit_attribute_type, create_legacy_root_attribute, \
     create_legacy_attribute_package, create_legacy_attribute_container
-from data_mass.common import *
+from data_mass.tools.prompt import (
+    print_available_options,
+    print_combo_id_menu,
+    print_combos_menu,
+    print_environment_menu,
+    print_environment_menu_in_user_create_iam,
+    print_environment_menu_user_creation,
+    print_input_email,
+    print_input_number,
+    print_input_number_with_default,
+    print_input_password,
+    print_invoices,
+    print_input_tax_id,
+    print_input_text,
+    print_month_credit_statement,
+    print_payment_method_simulation_menu,
+    print_structure_menu,
+    print_welcome_script,
+    print_year_credit_statement,
+    print_zone_credit_statement,
+    print_zone_for_interactive_combos_menu_for_ms,
+    print_zone_menu_for_ms,
+)
+from data_mass.tools.utils import clear_terminal
 from data_mass.credit import add_credit_to_account_microservice
 from data_mass.deals import *
 from data_mass.delivery_window import *

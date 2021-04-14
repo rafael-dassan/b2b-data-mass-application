@@ -3,13 +3,22 @@ import os
 
 from tabulate import tabulate
 
-from data_mass.common import get_header_request, \
-    get_microservice_base_url, place_request, \
-    update_value_to_json, create_list, \
-    convert_json_to_string, set_to_dictionary
+from data_mass.tools.requests import (
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+)
+from data_mass.tools.utils import (
+    convert_json_to_string,
+    create_list,
+    set_to_dictionary,
+    update_value_to_json,
+)
 from data_mass.classes.text import text
-from data_mass.menus.account_menu import print_minimum_order_type_menu, \
-    print_minimum_order_value_menu
+from data_mass.menus.account_menu import (
+    print_minimum_order_type_menu,
+    print_minimum_order_value_menu,
+)
 
 
 def check_account_exists_microservice(

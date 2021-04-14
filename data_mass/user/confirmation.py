@@ -3,9 +3,12 @@ import re
 import urllib
 
 from data_mass.classes.text import text
-from data_mass.common import place_request
-from data_mass.user.utils import get_cookies, get_cookies_header, \
-    merge_cookies
+from data_mass.tools.requests import place_request
+from data_mass.user.utils import (
+    get_cookies,
+    get_cookies_header,
+    merge_cookies,
+)
 
 
 def confirm_logon_request(params, self_asserted_response):

@@ -7,9 +7,12 @@ from PyQt5.QtWidgets import QApplication
 import calendar
 
 # Local application imports
-from data_mass.common import update_value_to_json, \
-    get_header_request, get_microservice_base_url, \
-    place_request
+from data_mass.tools.requests import (
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+)
+from data_mass.tools.utils import update_value_to_json
 from data_mass.classes.text import text
 from data_mass.classes.window import window
 

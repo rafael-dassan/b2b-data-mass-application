@@ -6,10 +6,15 @@ from requests import request
 
 # Local application imports
 from data_mass.classes.text import text
-from data_mass.common import get_header_request, \
-    get_microservice_base_url, set_to_dictionary, \
-    remove_from_dictionary
-from data_mass.logger import log_to_file
+from data_mass.tools.requests import (
+    get_header_request,
+    get_microservice_base_url,
+)
+from data_mass.tools.utils import (
+    remove_from_dictionary,
+    set_to_dictionary,
+)
+from data_mass.tools.logger import log_to_file
 
 
 def create_file_api(zone, environment, account_id, purpose, data):

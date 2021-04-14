@@ -1,4 +1,4 @@
-from data_mass.common import block_print
+from data_mass.tools.utils import block_print
 from data_mass.populator.data_creation_engine import populate_accounts, \
     populate_users_magento, categorize_and_enable_products_magento
 from data_mass.populator.helpers.csv_helper import search_data_by

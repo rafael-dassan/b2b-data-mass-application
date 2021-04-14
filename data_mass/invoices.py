@@ -5,9 +5,17 @@ import os
 from random import randint
 
 # Local application imports
-from data_mass.common import update_value_to_json, \
-    set_to_dictionary, get_microservice_base_url, get_header_request, \
-    create_list, convert_json_to_string, place_request
+from data_mass.tools.requests import (
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+)
+from data_mass.tools.utils import (
+    convert_json_to_string,
+    create_list,
+    set_to_dictionary,
+    update_value_to_json,
+)
 from data_mass.classes.text import text
 
 

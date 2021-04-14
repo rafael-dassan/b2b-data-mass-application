@@ -1,0 +1,2 @@
+# data_mass/tools
+A Data Mass package which provides an interface to handle requests, validations and log actions and terminal customization. This is a package to deal specifically with application management, not the business rule.

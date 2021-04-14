@@ -6,11 +6,23 @@ import os
 from random import randint, uniform
 from tabulate import tabulate
 
-from data_mass.common import get_microservice_base_url, get_header_request, \
-    place_request, update_value_to_json, convert_json_to_string, \
-    create_list, finish_application
-from data_mass.menus.product_menu import print_product_quantity_menu, \
-    print_is_returnable_menu, print_is_narcotic_menu, print_is_alcoholic_menu
+from data_mass.tools.requests import (
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+)
+from data_mass.tools.utils import (
+    create_list,
+    convert_json_to_string,
+    finish_application,
+    update_value_to_json,
+)
+from data_mass.menus.product_menu import (
+    print_product_quantity_menu,
+    print_is_returnable_menu,
+    print_is_narcotic_menu,
+    print_is_alcoholic_menu,
+)
 from data_mass.classes.text import text
 
 

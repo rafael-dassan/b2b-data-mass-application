@@ -3,9 +3,16 @@ import json
 import os
 
 # Local application imports
-from data_mass.common import get_header_request, \
-    get_microservice_base_url, update_value_to_json, \
-    create_list, convert_json_to_string, place_request
+from data_mass.tools.requests import (
+    get_header_request,
+    get_microservice_base_url,
+    place_request
+)
+from data_mass.tools.utils import (
+    convert_json_to_string,
+    create_list,
+    update_value_to_json,
+)
 from data_mass.classes.text import text
 
 

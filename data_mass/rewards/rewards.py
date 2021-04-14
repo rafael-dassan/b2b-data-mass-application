@@ -8,9 +8,13 @@ from random import randint
 from tabulate import tabulate
 
 # Local application imports
-from data_mass.common import get_header_request, \
-    get_microservice_base_url, convert_json_to_string, \
-    place_request, print_input_number
+from data_mass.tools.prompt import print_input_number
+from data_mass.tools.requests import (
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+)
+from data_mass.tools.utils import convert_json_to_string
 from data_mass.product.products import request_get_offers_microservice, \
     get_sku_name
 from data_mass.classes.text import text

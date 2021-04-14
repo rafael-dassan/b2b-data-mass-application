@@ -8,9 +8,18 @@ from datetime import timedelta, datetime
 from tabulate import tabulate
 
 # Local application imports
-from data_mass.common import update_value_to_json, \
-    convert_json_to_string, get_header_request, get_microservice_base_url, \
-    place_request, set_to_dictionary, find_values, generate_erp_token
+from data_mass.tools.requests import (
+    generate_erp_token,
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+)
+from data_mass.tools.utils import (
+    convert_json_to_string,
+    find_values,
+    set_to_dictionary,
+    update_value_to_json,
+)
 from data_mass.classes.text import text
 
 

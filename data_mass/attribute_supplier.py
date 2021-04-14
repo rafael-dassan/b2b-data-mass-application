@@ -9,8 +9,10 @@ import string
 from tabulate import tabulate
 
 from data_mass.classes.text import text
-from data_mass.common import get_supplier_base_url, \
-    get_header_request_supplier
+from data_mass.tools.requests import (
+    get_supplier_base_url,
+    get_header_request_supplier,
+)
 from data_mass.menus.supplier_menu import print_primitive_type
 
 

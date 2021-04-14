@@ -10,10 +10,17 @@ from uuid import uuid1
 from tabulate import tabulate
 
 # Local application imports
-from data_mass.common import update_value_to_json, \
-    create_list, convert_json_to_string, \
-    get_microservice_base_url, place_request, \
-    get_header_request, set_to_dictionary
+from data_mass.tools.utils import (
+    update_value_to_json,
+    create_list,
+    convert_json_to_string,
+    set_to_dictionary,
+)
+from data_mass.tools.requests import (
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+)
 from data_mass.classes.text import text
 
 

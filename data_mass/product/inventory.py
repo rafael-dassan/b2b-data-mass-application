@@ -5,9 +5,16 @@ from json import loads
 from tabulate import tabulate
 
 from data_mass.classes.text import text
-from data_mass.common import (convert_json_to_string, finish_application,
-                              get_header_request, get_microservice_base_url,
-                              place_request, update_value_to_json)
+from data_mass.tools.requests import (
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+)
+from data_mass.tools.utils import (
+    convert_json_to_string,
+    finish_application,
+    update_value_to_json,
+)
 
 
 def request_inventory_creation(zone, environment, account_id, delivery_center_id, products, sku_id=None, sku_quantity=0):

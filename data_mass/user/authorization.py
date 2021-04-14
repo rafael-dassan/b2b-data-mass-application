@@ -1,11 +1,13 @@
 import logging
 import re
-
 from uuid import uuid1, uuid4
 
 from data_mass.classes.text import text
-from data_mass.common import place_request
-from data_mass.user.utils import get_cookies, get_cookies_header
+from data_mass.tools.requests import place_request
+from data_mass.user.utils import (
+    get_cookies,
+    get_cookies_header,
+)
 
 
 def authorize_iam(params):

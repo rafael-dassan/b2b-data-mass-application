@@ -5,9 +5,20 @@ import os
 from random import randint, randrange
 
 # Local application imports
-from data_mass.common import get_header_request, \
-    get_microservice_base_url, update_value_to_json, convert_json_to_string, \
-    place_request, print_input_number, print_input_text, set_to_dictionary
+from data_mass.tools.requests import (
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+)
+from data_mass.tools.utils import (
+    convert_json_to_string,
+    set_to_dictionary,
+    update_value_to_json
+)
+from data_mass.tools.prompt import (
+    print_input_text,
+    print_input_number,
+)
 from data_mass.classes.text import text
 from data_mass.rewards.rewards_utils import display_all_programs_info, \
     build_request_url_with_projection_query, get_dt_combos_from_zone, \

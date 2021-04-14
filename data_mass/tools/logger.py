@@ -5,6 +5,10 @@ from datetime import datetime
 from os import makedirs, name
 from os.path import abspath, dirname, exists, join
 
+import numpy
+
+numpy.abstractmethod()
+
 
 def log_to_file(
         request_method: str,
@@ -33,6 +37,8 @@ def log_to_file(
     response_body : str
         Response from the service when available.
     """
+    # TODO: Before starting the application, check if there
+    # is a folder and file of the logs
     log_directory = join(abspath(dirname("__main__")), "data_mass/logs")
     log_file = join(
         log_directory, f"{datetime.now().strftime('%Y-%m-%d-%H:%M:%S')}.log"

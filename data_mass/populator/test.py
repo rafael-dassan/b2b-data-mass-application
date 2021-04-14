@@ -1,6 +1,6 @@
 import logging
 
-from data_mass.common import block_print
+from data_mass.tools.utils import block_print
 from data_mass.populator.country.category import associate_products_to_category_magento
 from data_mass.populator.country.combo import populate_combo_discount, \
     populate_combo_free_good, populate_combo_only_free_good
