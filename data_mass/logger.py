@@ -79,7 +79,6 @@ def create_today_directory() -> str:
     log_path = "data_mass/logs"
 
     if project_dir is None:
-        print("entrou no if")
         project_dir = join(abspath(dirname("__main__")), log_path)
     else:
         project_dir = project_dir.group(0)
