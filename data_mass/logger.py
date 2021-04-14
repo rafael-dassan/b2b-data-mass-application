@@ -75,10 +75,17 @@ def create_today_directory() -> str:
     # Solution: it must use the path to the project, and after that,
     # manually define the rest.
     current_dir = abspath(dirname(__file__))
-    project_dir = re.match(rf"^.*?\{PROJECT}", current_dir).group(0)
+    project_dir = re.match(rf"^.*?\{PROJECT}", current_dir)
+    log_path = "data_mass/logs"
+
+    if project_dir is None:
+        print("entrou no if")
+        project_dir = join(abspath(dirname("__main__")), log_path)
+    else:
+        project_dir = project_dir.group(0)
 
     today = datetime.today().strftime("%Y-%m-%d")
-    today_dir_path = join(project_dir, f"data_mass/logs/{today}")
+    today_dir_path = join(project_dir, f"{log_path}/{today}")
 
     if not exists(today_dir_path):
         if name == "nt":
