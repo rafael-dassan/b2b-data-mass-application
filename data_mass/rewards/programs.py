@@ -1,4 +1,4 @@
-"""Porgrams handler file."""
+"""Programs handler file."""
 from json import loads
 from random import randint, randrange
 from typing import Union

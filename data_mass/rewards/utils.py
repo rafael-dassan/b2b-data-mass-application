@@ -520,9 +520,9 @@ def build_request_url_with_projection_query(
         i = 0
         for projection in projections:
             if i == 0:
-                projection_query = f"?projection='{str(projection).upper()}"
+                projection_query = f"?projection={str(projection).upper()}"
             else:
-                projection_query += f"?projection='{str(projection).upper()}"
+                projection_query += f"?projection={str(projection).upper()}"
             i += 1
         request_url += projection_query
 
