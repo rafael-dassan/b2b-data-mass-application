@@ -18,7 +18,9 @@ from data_mass.common import (
     create_list,
     print_input_number,
 )
-from data_mass.products import request_get_products_microservice
+from data_mass.product.products import (
+    request_get_products_microservice
+)
 from data_mass.validations import validate_yes_no_option
 
 APP_B2B = "b2b"
