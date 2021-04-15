@@ -1,7 +1,8 @@
+"""Transactions Rewards."""
 from json import loads
 from random import randint
-from requests import Response
 from typing import Union
+from requests import Response
 
 from data_mass.classes.text import text
 from data_mass.common import (
@@ -46,12 +47,12 @@ def create_redemption(
 
     json_rewards_combos = loads(rewards_combos_response.text)
 
-    comboId = json_rewards_combos["combos"][0]["id"]
+    combo_id = json_rewards_combos["combos"][0]["id"]
     order_id = f"DM-{account_id}{str(randint(100,900))}"
 
     dict_redemption = {
         "combos": [{
-            "comboId": comboId,
+            "comboId": combo_id,
             "quantity": 1
         }],
         "orderId": order_id

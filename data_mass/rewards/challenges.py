@@ -1,8 +1,9 @@
+"""Rewards Challenges."""
 import json
 from datetime import timedelta, datetime, timezone
 from random import randint, randrange
-from requests import Response
 from typing import Optional, Union
+from requests import Response
 
 from data_mass.common import (
     convert_json_to_string,
@@ -190,8 +191,8 @@ def create_challenge_payload(
         challenge_id: str,
         execution_method: str,
         zone_skus_list: Optional[list] = None,
-        start_date_timedelta: Optional[int] = 0,
-        end_date_timedelta: Optional[int] = 180) -> Union[None, Response]:
+        start_date_timedelta: Optional[float] = 0,
+        end_date_timedelta: Optional[float] = 180) -> Union[None, Response]:
     """
     Create challenge payload.
 
@@ -231,11 +232,11 @@ def create_challenge_payload(
         "executionMethod": execution_method
     }
 
-    for key in dict_challenge.keys():
+    for key, value in dict_challenge.items():
         json_object = update_value_to_json(
             challenge_payload_template,
             key,
-            dict_challenge[key]
+            value
         )
 
     if execution_method == "TAKE_PHOTO":
@@ -322,7 +323,7 @@ def put_challenge(
     return response
 
 
-def remove_challenge(zone: str, environment: str) -> Union[None, Response]:
+def remove_challenge(zone: str, environment: str):
     """
     Remove challenge.
 
@@ -330,16 +331,12 @@ def remove_challenge(zone: str, environment: str) -> Union[None, Response]:
     ----------
     zone : str
     environment : str
-
-    Returns
-    -------
-    None or Response
-        None if the request fails, else, the response from the service.
     """
     response_all_challenges = get_all_challenges(zone, environment)
 
+    # TODO: if there's no challenge, skip input text
     if response_all_challenges is None:
-        return None
+        print("There's no challenge avaliable.")
 
     json_all_challenges = json.loads(response_all_challenges.text)
     display_all_challenges_info(json_all_challenges)
@@ -440,12 +437,12 @@ def get_all_challenges(zone: str, environment: str) -> Union[None, Response]:
         json_data = json.loads(response.text)
         if len(json_data) > 0:
             return response
-        else:
-            print((
-                f"{text.Red}\n"
-                "- [Rewards] There are no challenges "
-                f'available in "{zone}"" zone.'
-            ))
+
+        print((
+            f"{text.Red}\n"
+            "- [Rewards] There are no challenges "
+            f'available in "{zone}"" zone.'
+        ))
 
     else:
         print((
@@ -497,7 +494,7 @@ def get_specific_challenge(
     if response.status_code == 200:
         return response
 
-    elif response.status_code == 404:
+    if response.status_code == 404:
         print((
             f"{text.Red}\n"
             f'- [Rewards] The challenge "{challenge_id}" was not found.'

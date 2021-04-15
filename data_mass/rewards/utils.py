@@ -1,10 +1,12 @@
+"""Reward utils file."""
 import json
 import os
 
+from datetime import datetime
 from json import loads
-from requests import Response
 from time import time
 from typing import Any, Optional, Union
+from requests import Response
 
 from tabulate import tabulate
 
@@ -64,7 +66,7 @@ def get_payload(file_path: str) -> Any:
     return json_data
 
 
-def format_datetime_to_str(date: str) -> str:
+def format_datetime_to_str(date: datetime) -> str:
     """
     Convert datetime to string.
 
@@ -116,7 +118,8 @@ def get_dt_combos_from_zone(
 
     if response.status_code == 200:
         return response
-    elif response.status_code == 404:
+
+    if response.status_code == 404:
         print((
             f'{text.Red}\n'
             '- [Combo Service] There are no DT combos registered.\n'
@@ -178,14 +181,14 @@ def get_rewards_combos_by_account(
 
         if json_data['combos']:
             return response
-        else:
-            print((
-                f'{text.Red}\n'
-                '- [Rewards] There are no DT combos available '
-                f'for the account "{account_id}".\n'
-                '- Please use the menu option to associate '
-                'DT combos to this account.'
-            ))
+
+        print((
+            f'{text.Red}\n'
+            '- [Rewards] There are no DT combos available '
+            f'for the account "{account_id}".\n'
+            '- Please use the menu option to associate '
+            'DT combos to this account.'
+        ))
     elif response.status_code == 404:
         print((
             f"{text.Red}\n"
@@ -488,7 +491,7 @@ def make_account_eligible(
         request_method='POST',
         request_url=request_url,
         request_body=request_body,
-        request_header=request_headers,
+        request_headers=request_headers,
     )
 
     if response.status_code == 202:

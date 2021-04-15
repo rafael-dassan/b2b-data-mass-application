@@ -1,21 +1,22 @@
+"""Rewards file."""
 import json
 from random import randint
-from requests import Response
 from typing import Union
+from requests import Response
 
 from tabulate import tabulate
 
 # Local application imports
 from data_mass.common import get_header_request, \
     get_microservice_base_url, convert_json_to_string, \
-    place_request, print_input_number
+    place_request
 from data_mass.product.products import request_get_offers_microservice, \
     get_sku_name
 from data_mass.classes.text import text
 from data_mass.rewards.programs import (
     get_all_programs,
     get_specific_program,
-    get_DM_rewards_program_for_zone
+    get_dm_rewards_program_for_zone
 )
 from data_mass.rewards.utils import (
     print_input_decision,
@@ -68,7 +69,7 @@ def enroll_poc_to_program(
 
         # Verify if the zone already have a reward program created
         zone_programs_list = json.loads(response_all_programs.text)
-        dm_program = get_DM_rewards_program_for_zone(zone_programs_list)
+        dm_program = get_dm_rewards_program_for_zone(zone_programs_list)
 
         if dm_program is not None:
             # Getting account information to check
@@ -252,7 +253,8 @@ def associate_dt_combos_to_poc(
             f'associated with the account "{account_id}"'
         ))
         return None
-    elif not response_product_offers:
+
+    if not response_product_offers:
         return None
 
     # Define the list of FreeGoods for the main payload
@@ -448,7 +450,8 @@ def get_rewards(
 
     if response.status_code == 200:
         return response
-    elif response.status_code in [404, 406]:
+
+    if response.status_code in [404, 406]:
         print((
             f'{text.Red}\n'
             f'- [Rewards] The account "{account_id}" is not enrolled '

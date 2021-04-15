@@ -1,7 +1,8 @@
+"""Porgrams handler file."""
 from json import loads
 from random import randint, randrange
-from requests import Response
 from typing import Union
+from requests import Response
 
 from data_mass.classes.text import text
 from data_mass.common import (
@@ -54,7 +55,7 @@ def create_new_program(
         return None
 
     response_list_json = loads(response_all_programs.text)
-    dm_program = get_DM_rewards_program_for_zone(
+    dm_program = get_dm_rewards_program_for_zone(
         response_list_json
     )
 
@@ -174,19 +175,21 @@ def create_new_program(
         "termsAndConditions[0].changeLog": terms[1]
     }
 
-    for key in dict_values.keys():
+    for key, value in dict_values.items():
         json_object = update_value_to_json(
             json_data,
-            key, dict_values[key]
+            key,
+            value
         )
 
     request_body = convert_json_to_string(json_object)
 
-    return put_programs(
+    return update_program(
         program_id=new_program_id,
         zone=zone,
         environment=environment,
-        request_body=request_body
+        request_body=request_body,
+        method="PUT"
     )
 
 
@@ -448,17 +451,18 @@ def patch_program_root_field(
 
         request_body = convert_json_to_string(dict_values_patch_program)
 
-        return patch_program(
+        return update_program(
             program_id=program_id,
             zone=zone,
             environment=environment,
-            request_body=request_body
+            request_body=request_body,
+            method="PATCH"
         )
 
     return None
 
 
-def get_DM_rewards_program_for_zone(
+def get_dm_rewards_program_for_zone(
         zone_programs_list: list) -> Union[None, str]:
     """
     Check if DM Rewards program exists for the zone.
@@ -600,7 +604,7 @@ def get_specific_program(
     if response.status_code == 200:
         return response
 
-    elif response.status_code == 404:
+    if response.status_code == 404:
         print((
             f'{text.Red}\n'
             f'- [Rewards] The Rewards program "{program_id}" does not exist.'
@@ -617,75 +621,14 @@ def get_specific_program(
     return None
 
 
-def patch_program(
+def update_program(
         program_id: str,
         zone: str,
         environment: str,
-        request_body: str) -> Response:
+        request_body: str,
+        method: str = "PUT") -> Response:
     """
-    Update a program on the microservice.
-
-    Paramters
-    ---------
-    program_id : str
-    zone : str
-    environment : str
-    request_body : str
-
-    Returns
-    -------
-    Response
-        The http response.
-    """
-    jwt_app_claim = f"{APP_ADMIN}-{zone.lower()}"
-    request_headers = get_header_request(
-        zone=zone,
-        use_jwt_auth=True,
-        jwt_app_claim=jwt_app_claim
-    )
-
-    # Define url request to patch the Rewards program selected
-    base_url = get_microservice_base_url(environment, False)
-    request_url = f"{base_url}/rewards-service/programs/{program_id}"
-
-    response = place_request(
-        request_method="PATCH",
-        request_url=request_url,
-        request_body=request_body,
-        request_headers=request_headers
-    )
-
-    if response.status_code == 200:
-        print((
-            f'{text.Green}\n'
-            f'- [Rewards] The Rewards program "{program_id}" has been '
-            'successfully updated.'
-        ))
-
-    elif response.status_code == 404:
-        print((
-            f'{text.Red}\n'
-            f'- [Rewards] The Rewards program "{program_id}" does not exist.'
-        ))
-    else:
-        print((
-            f'{text.Red}\n'
-            '- [Rewards] Failure when updating the program '
-            f'"{program_id}" configuration.\n'
-            f'- Response Status: "{response.status_code}".\n'
-            f'- Response message "{response.text}".'
-        ))
-
-    return response
-
-
-def put_programs(
-        program_id: str,
-        zone: str,
-        environment: str,
-        request_body: str) -> Response:
-    """
-    Create Programs on the microservice.
+    Update Programs on the microservice.
 
     Parameters
     ----------
@@ -693,12 +636,21 @@ def put_programs(
     zone : str
     environment : str
     request_body : str
+    method : str
+        One of "PATCH" or "PUT". Default to `PUT`.
 
     Returns
     -------
     Response
         The http response.
     """
+    # TODO: validate with Rich
+    if method not in ["PATCH", "PUT"]:
+        print(
+            f'{text.Red}\n'
+            'Method should be one of "PATCH" or "PUT"'
+        )
+
     jwt_app_claim = f"{APP_ADMIN}-{zone.lower()}"
     request_headers = get_header_request(
         zone=zone,
