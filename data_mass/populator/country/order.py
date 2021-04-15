@@ -2,7 +2,7 @@ from data_mass.accounts import check_account_exists_microservice
 from data_mass.populator.country.product import check_product_associated_to_account
 from data_mass.populator.log import *
 from data_mass.orders import configure_order_params, request_order_creation, get_order_prefix_params
-from data_mass.products import request_get_offers_microservice
+from data_mass.product.products import request_get_offers_microservice
 from data_mass.simulation import request_order_simulation
 
 logger = logging.getLogger(__name__)
@@ -38,7 +38,7 @@ def populate_order(country, environment, account_id, allow_order_cancel, items, 
         delivery_center_id = account[0]['deliveryCenterId']
 
         not_associated_products = check_product_associated_to_account(account_id, country, environment, [items])
-        if not_associated_products is not False:
+        if not_associated_products:
             product_offers = request_get_offers_microservice(account_id, country, environment)
             if product_offers:
                 data = {'sku': items, 'itemQuantity': quantity}

@@ -5,16 +5,12 @@ from typing import Union
 
 from tabulate import tabulate
 
-from data_mass.common import (
-    get_header_request,
-    get_microservice_base_url,
-    convert_json_to_string,
-    place_request,
-)
-from data_mass.products import (
-    request_get_offers_microservice,
-    get_sku_name,
-)
+# Local application imports
+from data_mass.common import get_header_request, \
+    get_microservice_base_url, convert_json_to_string, \
+    place_request, print_input_number
+from data_mass.product.products import request_get_offers_microservice, \
+    get_sku_name
 from data_mass.classes.text import text
 from data_mass.rewards.programs import (
     get_all_programs,
@@ -535,12 +531,7 @@ def put_rewards(
         ))
 
     else:
-        print((
-            f'{text.Red}\n'
-            f'- [Rewards] Failure when enrolling the account "{account_id}" '
-            'to a rewards program.\n'
-            f'- Response Status: "{response.status_code}".\n'
-            f'- Response message "{response.text}".'
-        ))
+        print(text.Red + '\n- [Rewards] Failure when enrolling the account "{}" to a rewards program.  \n- Response Status: "{}". \n- Response message "{}".'
+                .format(account_id, str(response.status_code), response.text))
 
     return response
