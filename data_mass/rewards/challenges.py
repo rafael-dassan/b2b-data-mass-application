@@ -215,10 +215,8 @@ def create_challenge_payload(
         file_path='../data/create_rewards_challenges_payload.json'
     )
 
-    now = datetime.now(timezone.utc)
-    delta = timedelta(days=start_date_timedelta)
-    start_date = f"{now}{delta}"
-
+    start_date = datetime.now(timezone.utc) + \
+        timedelta(days=start_date_timedelta)
     start_date = format_datetime_to_str(start_date)
 
     end_date = datetime.now(timezone.utc) + timedelta(days=end_date_timedelta)

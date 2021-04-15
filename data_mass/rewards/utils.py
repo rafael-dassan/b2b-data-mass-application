@@ -167,7 +167,7 @@ def get_rewards_combos_by_account(
     )
 
     response = place_request(
-        request_method="GE",
+        request_method="GET",
         request_url=request_url,
         request_body="",
         request_headers=request_headers
