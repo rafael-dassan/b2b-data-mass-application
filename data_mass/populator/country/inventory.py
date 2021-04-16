@@ -1,5 +1,5 @@
-from data_mass.product_inventory import request_inventory_creation
-from data_mass.products import request_get_account_product_assortment
+from data_mass.product.inventory import request_inventory_creation
+from data_mass.product.products import request_get_account_product_assortment
 from data_mass.populator.log import *
 
 logger = logging.getLogger(__name__)

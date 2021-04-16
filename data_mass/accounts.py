@@ -1,5 +1,4 @@
 import json
-from json import loads
 import os
 
 from tabulate import tabulate
@@ -13,31 +12,96 @@ from data_mass.menus.account_menu import print_minimum_order_type_menu, \
     print_minimum_order_value_menu
 
 
-def check_account_exists_microservice(account_id, zone, environment):
-    # Get header request
-    request_headers = get_header_request(zone, True, False, False, False, account_id)
+def check_account_exists_microservice(
+        account_id: int,
+        zone: str,
+        environment: str):
+    """
+    Check if a given `accout_id` exists in the microservice.
 
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + '/accounts?accountId=' + account_id
+    Parameters
+    ----------
+    account_id : int
+    zone : str
+    environment : str
 
-    # Place request
-    response = place_request('GET', request_url, '', request_headers)
+    Returns
+    -------
+    bool or json
+        `False` if not exists, else the account data.
+    """
+    request_headers = get_header_request(
+        zone=zone,
+        use_jwt_auth=True,
+        use_root_auth=False,
+        use_inclusion_auth=False,
+        sku_product=False,
+        account_id=account_id
+    )
 
-    json_data = loads(response.text)
+    base_url = get_microservice_base_url(environment=environment)
+    request_url = f"{base_url}/accounts?accountId={account_id}"
+    response = place_request(
+        request_method='GET',
+        request_url=request_url,
+        request_body='',
+        request_headers=request_headers
+    )
+
+    json_data = json.loads(response.text)
+
     if response.status_code == 200 and len(json_data) != 0:
         return json_data
     elif response.status_code == 200 and len(json_data) == 0:
-        print(text.Red + '\n- [Account Service] The account {account_id} does not exist'.format(account_id=account_id))
+        print((
+            f"{text.Red}\n- "
+            f"[Account Service] "
+            f"The account {account_id} does not exist"
+        ))
+
         return False
     else:
-        print(text.Red + '\n- [Account Service] Failure to retrieve the account {account_id}. Response Status: '
-                         '{response_status}. Response message: {response_message}'
-              .format(account_id=account_id, response_status=str(response.status_code), response_message=response.text))
+        print((
+            f"{text.Red}\n-"
+            f" [Account Service]"
+            f" Failure to retrieve the account {account_id}."
+            f" Response Status: {str(response.status_code)}."
+            f" Response message: {response.text}"
+        ))
+
         return False
 
 
-def create_account_ms(account_id, name, payment_method, minimum_order, zone, environment, delivery_address,
-                      account_status='ACTIVE', enable_empties_loan=False):
+def create_account_ms(
+        account_id: str,
+        name: str,
+        payment_method: list,
+        minimum_order: list,
+        zone: str,
+        environment: str,
+        delivery_address: dict,
+        account_status: str = 'ACTIVE',
+        enable_empties_loan: bool = False):
+    """
+    Create account on the microservice.
+
+    Parameters
+    ---------
+    account_id : str
+    name : str
+    payment_method : list
+    minimum_order : list
+    zone : str
+    environment : str
+    delivery_address : dict
+    account_status : str
+    enable_empties_loan : bool
+
+    Returns
+    -------
+    bool
+        Whenever an account is successfully created.
+    """
     payment_term = None
     if zone == 'BR' and 'BANK_SLIP' in payment_method:
         payment_term = return_payment_term_bank_slip()
@@ -62,53 +126,66 @@ def create_account_ms(account_id, name, payment_method, minimum_order, zone, env
     }
 
     if minimum_order is not None:
-        set_to_dictionary(dict_values, 'minimumOrder.type', minimum_order[0])
-        set_to_dictionary(dict_values, 'minimumOrder.value', int(minimum_order[1]))
+        set_to_dictionary(
+            dict_values,
+            'minimumOrder.type',
+            minimum_order[0]
+        )
+        set_to_dictionary(
+            dict_values,
+            'minimumOrder.value',
+            int(minimum_order[1])
+        )
     else:
         set_to_dictionary(dict_values, 'minimumOrder', minimum_order)
 
-    # Get header request
     request_headers = get_header_request(zone, False, True, False, False)
 
-    # Get base URL
     request_url = get_microservice_base_url(environment) + '/account-relay/'
 
-    # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
     file_path = os.path.join(path, 'data/create_account_payload.json')
 
-    # Load JSON file
     with open(file_path) as file:
         json_data = json.load(file)
 
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
-    # Create body
     list_dict_values = create_list(json_object)
     request_body = convert_json_to_string(list_dict_values)
 
-    # Place request
-    response = place_request('POST', request_url, request_body, request_headers)
+    response = place_request(
+        request_method='POST',
+        request_url=request_url,
+        request_body=request_body,
+        request_headers=request_headers
+    )
 
     if response.status_code == 202:
-        return 'success'
+        return True
     else:
-        print('\n- [Account Relay Service] Failure to create the account {account_id}. Response status '
-              '{response_status}. Response message: {response_message}'
-              .format(account_id=account_id, response_status=str(response.status_code), response_message=response.text))
+        print((
+            f"\n- [Account Relay Service]"
+            f" Failure to create the account {account_id}."
+            f" Response status {str(response.status_code)}."
+            f" Response message: {response.text}"
+        ))
+
         return False
 
 
-def display_account_information(account):
-    """Display account information
-    Arguments:
-        - account: all account data
-    Print a table containing the available account information
+def display_account_information(account: str):
+    """
+    Display account information.
+
+    Parameters
+    ---------
+    account: str
+        All account data
     """
     account_data = account[0]
 
-    # Validate delivery windows
     delivery_window = account_data['deliveryWindows']
     delivery_window_information = list()
     if len(delivery_window) == 0:
@@ -126,28 +203,30 @@ def display_account_information(account):
             }
             delivery_window_information.append(account_delivery_window_values)
 
-    # Validate liquor license number
     liquor_license = account_data['liquorLicense']
     if len(liquor_license) == 0:
         liquor_license = 'None'
     else:
         liquor_license = liquor_license[0]['number']
 
-    # Validate challengeIds
     challenge_ids = account_data['challengeIds']
     if challenge_ids is None:
         challenge_ids = 'None'
     else:
-        challenge_ids = str(challenge_ids).replace('[', '').replace(']', '').replace('\'', '')
+        challenge_ids = str(challenge_ids)\
+            .replace('[', '')\
+            .replace(']', '')\
+            .replace('\'', '')
 
-    # Validate payment methods
     payment_methods = account_data['paymentMethods']
     if len(payment_methods) == 0:
         payment_methods = 'None'
     else:
-        payment_methods = str(payment_methods).replace('[', '').replace(']', '').replace('\'', '')
+        payment_methods = str(payment_methods)\
+            .replace('[', '')\
+            .replace(']', '')\
+            .replace('\'', '')
 
-    # Validate minimum order
     minimum_order_information = list()
     minimum_order = account_data['minimumOrder']
     if minimum_order is None:
@@ -161,7 +240,6 @@ def display_account_information(account):
         }
     minimum_order_information.append(minimum_order_values)
 
-    # Validate maximum order
     maximum_order_information = list()
     maximum_order = account_data['maximumOrder']
     if maximum_order is None:
@@ -203,20 +281,40 @@ def display_account_information(account):
         }
     credit_information.append(account_credit_values)
 
-    print(text.default_text_color + '\nAccount - Basic Information')
-    print(tabulate(basic_information, headers='keys', tablefmt='grid'))
+    print(f"{text.default_text_color}\nAccount - Basic Information")
+    print(tabulate(
+        tabular_data=basic_information,
+        headers='keys',
+        tablefmt='grid'
+    ))
 
-    print(text.default_text_color + '\nAccount - Credit Information')
-    print(tabulate(credit_information, headers='keys', tablefmt='grid'))
+    print(f"{text.default_text_color}\nAccount - Credit Information")
+    print(tabulate(
+        tabular_data=credit_information,
+        headers='keys',
+        tablefmt='grid'
+    ))
 
-    print(text.default_text_color + '\nAccount - Delivery Window Information')
-    print(tabulate(delivery_window_information, headers='keys', tablefmt='grid'))
+    print(f"{text.default_text_color}\nAccount - Delivery Window Information")
+    print(tabulate(
+        tabular_data=delivery_window_information,
+        headers='keys',
+        tablefmt='grid'
+    ))
 
-    print(text.default_text_color + '\nAccount - Minimum Order Information')
-    print(tabulate(minimum_order_information, headers='keys', tablefmt='grid'))
+    print(f"{text.default_text_color}\nAccount - Minimum Order Information")
+    print(tabulate(
+        tabular_data=minimum_order_information,
+        headers='keys',
+        tablefmt='grid'
+    ))
 
-    print(text.default_text_color + '\nAccount - Maximum Order Information')
-    print(tabulate(maximum_order_information, headers='keys', tablefmt='grid'))
+    print(f"{text.default_text_color}\nAccount - Maximum Order Information")
+    print(tabulate(
+        tabular_data=maximum_order_information,
+        headers='keys',
+        tablefmt='grid'
+    ))
 
 
 def get_minimum_order_info():
@@ -235,8 +333,15 @@ def get_delivery_cost_values(option):
     tax_value = 0
 
     if option.upper() == 'Y':
-        min_value = input(text.default_text_color + 'Define the minimum order value to not pay any delivery fee: ')
-        tax_value = input(text.default_text_color + 'Define the delivery fee value: ')
+        min_value = input((
+            f"{text.default_text_color} "
+            f"Define the minimum order value to not pay any delivery fee: "
+        ))
+
+        tax_value = input((
+            f"{text.default_text_color} "
+            f"Define the delivery fee value: "
+        ))
 
     delivery_cost_values = {
         'min_order_value': min_value,
@@ -247,8 +352,22 @@ def get_delivery_cost_values(option):
 
 
 def get_credit_info():
-    credit = input(text.default_text_color + 'Desired credit available (Default 5000): ')
-    balance = input(text.default_text_color + 'Desired credit balance (Default 15000): ')
+    """
+    Prompts to the user for credit information.
+
+    Returns
+    ------
+    dict
+        The credit info.
+    """
+    credit = input((
+        f"{text.default_text_color} "
+        "Desired credit available (Default 5000): "
+    ))
+    balance = input((
+        f"{text.default_text_color} "
+        "Desired credit balance (Default 15000): "
+    ))
 
     credit_info = {
         'credit': credit,
@@ -258,25 +377,46 @@ def get_credit_info():
     return credit_info
 
 
-def get_minimum_order_list(minimum_order_values):
+def get_minimum_order_list(minimum_order_values: dict):
+    """
+    Convert minimum order to list.
+
+    Parameters
+    ----------
+    minimum_order_values : dict
+
+    Returns
+    -------
+    list
+    """
+    minimum_order = None
+
     if minimum_order_values is not None:
-        minimum_order = [minimum_order_values.get('type'), minimum_order_values.get('value')]
-    else:
-        minimum_order = None
+        minimum_order = [
+            minimum_order_values.get('type'),
+            minimum_order_values.get('value')
+        ]
 
     return minimum_order
 
 
-# Return payment term value for BANK_SLIP payment method
-def return_payment_term_bank_slip():
-    payment_term = []
+def return_payment_term_bank_slip(days: int = 5):
+    """
+    Return payment term value for `BANK_SLIP` payment method.
+
+    Parameters
+    ----------
+    days : int
+
+    Returns
+    -------
+    list
+    """
     term_periods = []
 
-    temp_index = 0
-    while temp_index < 5:
-        temp_index = temp_index + 1
+    for day in range(1, days + 1):
         list_term_periods = {
-            'days': temp_index
+            'days': day
         }
 
         term_periods.append(list_term_periods)
@@ -286,8 +426,7 @@ def return_payment_term_bank_slip():
         'termPeriods': term_periods
     }
 
-    payment_term.append(list_payment_term)
-    return payment_term
+    return [list_payment_term]
 
 
 def get_account_delivery_address(zone):
@@ -359,4 +498,5 @@ def get_account_delivery_address(zone):
             'zipcode': '3024'
         }
     }
+
     return params[zone]

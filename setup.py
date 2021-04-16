@@ -65,10 +65,5 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
-    ],
-    entry_points={
-        "console_scripts": [
-            "run-data-mass = data_mass.main:show_menu",
-        ]
-    },
+    ]
 )

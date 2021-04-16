@@ -5,14 +5,13 @@ from gql import gql, Client
 from gql.transport.exceptions import TransportQueryError
 from gql.transport.requests import RequestsHTTPTransport
 import string
-
 from tabulate import tabulate
 
 from data_mass.attribute_supplier import get_all_legacy_attributes, populate_package_attribute_payload, \
     populate_container_attribute_payload, create_root_attribute_payload
 from data_mass.classes.text import text
 from data_mass.common import get_supplier_base_url, get_header_request_supplier
-from data_mass.supplier_category import create_association_attribute_with_category, associate_all_legacy_attributes
+from data_mass.supplier_category import associate_all_legacy_attributes
 
 
 def create_product_supplier(environment, category_id):
@@ -96,3 +95,4 @@ def create_product_payload():
             }
         '''
     )
+

@@ -11,7 +11,6 @@ from data_mass.deals import *
 from data_mass.delivery_window import *
 from data_mass.algo_selling import *
 from data_mass.files import create_file_api
-from data_mass.product_inventory import *
 from data_mass.invoices import *
 from data_mass.enforcement import *
 from data_mass.menus.account_menu import print_account_operations_menu, \
@@ -48,8 +47,6 @@ from data_mass.menus.rewards_menu import print_rewards_menu, \
     print_rewards_challenges_menu
 from data_mass.orders import *
 from data_mass.combos import *
-from data_mass.product_supplier import create_product_supplier
-from data_mass.products import *
 from data_mass.rewards.rewards import enroll_poc_to_program, \
     disenroll_poc_from_program, associate_dt_combos_to_poc, \
     display_program_rules_skus
@@ -62,7 +59,10 @@ from data_mass.rewards.rewards_challenges import remove_challenge, \
 from data_mass.rewards.rewards_transactions import create_redemption, \
     create_rewards_offer, create_points_removal
 from data_mass.category_magento import *
-from data_mass.products_magento import *
+from data_mass.product.supplier import create_product_supplier
+from data_mass.product.products import *
+from data_mass.product.inventory import *
+from data_mass.product.magento import *
 from data_mass.user.creation import create_user
 from data_mass.user.deletion import delete_user_v3
 from data_mass.simulation import process_simulation_microservice, \
@@ -215,6 +215,7 @@ def product_information_menu():
 
         inventory = get_delivery_center_inventory(environment, zone, abi_id, delivery_center_id, product_offers)
         if not inventory:
+            print_error_delivery_center_inventory(delivery_center_id)
             print_finish_application_menu()
         else:
             display_inventory_by_account(inventory)
@@ -227,6 +228,13 @@ def product_information_menu():
             print_finish_application_menu()
 
         display_items_information_zone(products)
+
+
+def print_error_delivery_center_inventory(delivery_id: str):
+    print((
+        f'{text.Red}\n'
+        f'Error while trying to retrive inventory for "{delivery_id}".'
+    ))
 
 
 def account_information_menu():
@@ -1169,7 +1177,7 @@ def flow_create_account(zone, environment, account_id):
     create_account_response = create_account_ms(account_id, name, payment_method, minimum_order, zone, environment,
                                                 delivery_address, account_status, enable_empties_loan)
 
-    if create_account_response == 'success':
+    if create_account_response:
         print(text.Green + '\n- Your account {account_id} has been created successfully'.format(account_id=account_id))
 
         # Input default credit to the account so it won't be `null` in the Account Service database
@@ -1257,7 +1265,7 @@ def flow_update_account_name(zone, environment, account_id):
                                                 account_data['deliveryAddress'], account_data['status'],
                                                 account_data['hasEmptiesLoan'])
 
-    if create_account_response == 'success':
+    if create_account_response:
         print(text.Green + '\n- Account name updated for the account {account_id}'
               .format(account_id=account_id))
     else:
@@ -1280,7 +1288,7 @@ def flow_update_account_status(zone, environment, account_id):
                                                 account_data['deliveryAddress'], account_status,
                                                 account_data['hasEmptiesLoan'])
 
-    if create_account_response == 'success':
+    if create_account_response:
         print(text.Green + '\n- Account status updated to {account_status} for the account {account_id}'
               .format(account_status=account_status, account_id=account_id))
     else:
@@ -1306,7 +1314,7 @@ def flow_update_account_minimum_order(zone, environment, account_id):
                                                 account_data['deliveryAddress'], account_data['status'],
                                                 account_data['hasEmptiesLoan'])
 
-    if create_account_response == 'success':
+    if create_account_response:
         print(text.Green + '\n- Minimum order updated for the account {account_id}'
               .format(account_id=account_id))
     else:
@@ -1329,7 +1337,7 @@ def flow_update_account_payment_method(zone, environment, account_id):
                                                 account_data['deliveryAddress'], account_data['status'],
                                                 account_data['hasEmptiesLoan'])
 
-    if create_account_response == 'success':
+    if create_account_response:
         print(text.Green + '\n- Payment method updated for the account {account_id}'
               .format(account_id=account_id))
     else:

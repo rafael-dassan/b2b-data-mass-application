@@ -22,7 +22,9 @@
                     "hidden": false
                 }
             ],
-            "charges": []
+            "charges": [],
+            "validFrom": "string",
+            "consignment": 0
         }
     ]
 }
