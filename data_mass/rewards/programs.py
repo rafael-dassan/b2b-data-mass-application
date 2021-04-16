@@ -54,7 +54,7 @@ def create_new_program(
         return None
 
     response_list_json = loads(response_all_programs.text)
-    dm_program = get_DM_rewards_program_for_zone(
+    dm_program = get_dm_rewards_program_for_zone(
         response_list_json
     )
 
@@ -458,7 +458,7 @@ def patch_program_root_field(
     return None
 
 
-def get_DM_rewards_program_for_zone(
+def get_dm_rewards_program_for_zone(
         zone_programs_list: list) -> Union[None, str]:
     """
     Check if DM Rewards program exists for the zone.
