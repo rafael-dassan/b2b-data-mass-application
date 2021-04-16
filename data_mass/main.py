@@ -126,7 +126,7 @@ def show_menu():
             '4': delete_attribute_menu,
             '5': edit_attribute_type_menu,
             '6': create_product_menu,
-            '7': create_legacy_data
+            '7': create_legacy_attributes
         }
     elif selection_structure == '6':
         switcher = {
@@ -1942,8 +1942,11 @@ def edit_attribute_type_menu():
 
 
 def create_product_menu():
+    category_id = input(text.default_text_color + 'Category ID the product will be linked with: ')
+
     environment = print_environment_menu_supplier()
-    product = create_product_supplier(environment)
+
+    product = create_product_supplier(environment, category_id)
     if product:
         print(
             text.Green + '\n- [Product] The new product has been successfully created. '
@@ -1953,28 +1956,14 @@ def create_product_menu():
         print_finish_application_menu()
 
 
-def create_legacy_data():
+def create_legacy_attributes():
     environment = print_environment_menu_supplier()
 
-    all_attribute_ids = create_legacy_root_attribute(environment)
+    create_legacy_root_attribute(environment)
+    create_legacy_attribute_package(environment)
+    create_legacy_attribute_container(environment)
 
-    package_attribute_id = create_legacy_attribute_package(environment)
-    container_attribute_id = create_legacy_attribute_container(environment)
-
-    all_attribute_ids.append(package_attribute_id)
-    all_attribute_ids.append(container_attribute_id)
-
-    category_id = create_root_category(environment)
-
-    print(
-        text.Green + '\n- Category created successfully. Category ID: {category_id}.'.format(category_id=category_id))
-
-    for attribute_id in all_attribute_ids:
-        abstract_attribute_id = create_association_attribute_with_category(environment, attribute_id, category_id, 1, 1)
-        if abstract_attribute_id != 'false':
-            print(
-                text.Green + '\n- Abstract attribute ID {abstract_attribute_id} created. Attribute ID: {attribute_id}.'
-                .format(abstract_attribute_id=abstract_attribute_id, attribute_id=attribute_id))
+    print(text.Green + '\n- Attributes created successfully.')
 
     print_finish_application_menu()
 

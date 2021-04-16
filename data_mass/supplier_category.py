@@ -147,6 +147,7 @@ def create_association_attribute_with_category(environment, attribute_id, catego
 
     params = {"attribute_id": attribute_id, "category_id": category_id, "min_cardinality": min_cardinality,
               "max_cardinality": max_cardinality}
+
     try:
         response = client.execute(mut, variable_values=params)
         json_data = json.dumps(response)
@@ -418,3 +419,30 @@ def display_all_category(category):
 
     print(text.default_text_color + '\nCategory - General Information')
     print(tabulate(information_cat, headers='keys', tablefmt='grid'))
+
+
+def associate_all_legacy_attributes(environment, category_id, all_attributes):
+    attributes_to_be_associated = ['classification', 'brand-id', 'brand', 'sub-brand-name', 'minimum-order-quantity',
+                                   'is-alcoholic', 'is-narcotic', 'hidden', 'sales-ranking', 'pallet-quantity',
+                                   'package', 'container']
+
+    root_abstract_attribute_id = {}
+    package_abstract_attribute_id = None
+    container_abstract_attribute_id = None
+
+    for attribute in attributes_to_be_associated:
+        if attribute == 'package':
+            package_abstract_attribute_id = create_association_attribute_with_category(environment,
+                                                                                       all_attributes[attribute],
+                                                                                       category_id, 1, 1)
+        elif attribute == 'container':
+            container_abstract_attribute_id = create_association_attribute_with_category(environment,
+                                                                                         all_attributes[attribute],
+                                                                                         category_id, 1, 1)
+        else:
+            abstract_attribute_id = create_association_attribute_with_category(environment,
+                                                                               all_attributes[attribute],
+                                                                               category_id, 1, 1)
+            root_abstract_attribute_id[attribute] = abstract_attribute_id
+
+    return root_abstract_attribute_id, package_abstract_attribute_id, container_abstract_attribute_id
