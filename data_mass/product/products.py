@@ -24,8 +24,8 @@ from data_mass.menus.product_menu import (
     print_product_quantity_menu,
 )
 
-ZONES_DIFFERENT_CONTRACT = ["AR", "PY"]
-
+ZONES_NEW_ENDPOINT = ["AR", "PY", "PA"]
+ZONES_DIFF_CONTRACT = ["AR", "PY"]
 
 def generate_random_price_ids(qtd):
     if qtd < 1:
@@ -72,7 +72,7 @@ def request_post_price_microservice(
 
     request_headers = get_header_request(zone)
 
-    if zone in ZONES_DIFFERENT_CONTRACT:
+    if zone in ZONES_NEW_ENDPOINT:
         request_url = get_microservice_base_url(environment, False) + "/price-relay/v1"
         request_body = get_body_price_microservice_request_v2(
             account_id, sku_product, product_price_id, price_values, zone
@@ -472,7 +472,7 @@ def get_body_price_microservice_request_v2(
     with open(file_path) as file:
         json_data = json.load(file)
 
-    if zone not in ZONES_DIFFERENT_CONTRACT:
+    if zone not in ZONES_DIFF_CONTRACT:
         del json_data["prices"][0]["validFrom"]
         del json_data["prices"][0]["consignment"]
 
