@@ -239,14 +239,13 @@ def post_combo_relay_account(
         sku_product=False
     )
 
-    request_url = get_microservice_base_url(
-        f"{environment}/combo-relay/accounts"
-    )
+    base_url = get_microservice_base_url(environment)
+    request_url = f"{environment}/combo-relay/accounts"
 
     # Define the list of Limits for the main payload
     dict_values_limit = {
-        'daily': 200,
-        'monthly': 200,
+        "daily": 200,
+        "monthly": 200,
     }
 
     # Define the list of ConsumedLimits for the main payload
@@ -256,8 +255,8 @@ def post_combo_relay_account(
     }
 
     dict_values_freegoods = {
-        'quantity': 5,
-        'skus': create_list(sku),
+        "quantity": 5,
+        "skus": create_list(sku),
     }
 
     # Define the entire list of Combos for the main payload
@@ -273,7 +272,7 @@ def post_combo_relay_account(
             "type": "DT",
             "image": (
                 "https://test-conv-micerveceria.abi-sandbox.net/"
-                "media/catalog/product/c/o/combo-icon_11.png",
+                "media/catalog/product/c/o/combo-icon_11.png"
             ),
             "items": None,
             "freeGoods": dict_values_freegoods,
