@@ -161,17 +161,15 @@ def create_legacy_attributes_by_type(environment, attribute_name_list, attribute
 def create_legacy_root_attribute(environment):
     text_attributes = ["Classification", "Brand ID", "Brand", "Sub Brand Name", "Minimum Order Quantity"]
     attribute_type_text = 'TEXT'
-    all_attribute_ids = create_legacy_attributes_by_type(environment, text_attributes, attribute_type_text)
+    create_legacy_attributes_by_type(environment, text_attributes, attribute_type_text)
 
     boolean_attributes = ["Is Alcoholic", "Is Narcotic", "Hidden"]
     attribute_type_boolean = 'BOOLEAN'
-    all_attribute_ids.extend(create_legacy_attributes_by_type(environment, boolean_attributes, attribute_type_boolean))
+    create_legacy_attributes_by_type(environment, boolean_attributes, attribute_type_boolean)
 
     numeric_attributes = ["Sales Ranking", "Pallet Quantity"]
     attribute_type_numeric = 'NUMERIC'
-    all_attribute_ids.extend(create_legacy_attributes_by_type(environment, numeric_attributes, attribute_type_numeric))
-
-    return all_attribute_ids
+    create_legacy_attributes_by_type(environment, numeric_attributes, attribute_type_numeric)
 
 
 def create_legacy_attribute_package(environment):
@@ -394,6 +392,147 @@ def search_all_attribute(environment, page_number):
         return False
 
 
+def search_all_legacy_attributes(environment, page_number):
+    base_url = get_supplier_base_url(environment)
+    base_header = get_header_request_supplier()
+    transport = RequestsHTTPTransport(url=base_url, headers=base_header)
+
+    # Create a GraphQL client using the defined transport
+    client = Client(transport=transport, fetch_schema_from_transport=False)
+
+    mut = create_search_all_legacy_attributes_payload()
+    params = {"page": page_number}
+    try:
+        response = client.execute(mut, variable_values=params)
+        return response
+    except TransportQueryError as e:
+        print(text.Red + str(e))
+        return False
+
+
+def get_all_legacy_attributes(environment):
+    all_attributes = ['classification', 'brand-id', 'brand', 'sub-brand-name', 'minimum-order-quantity',
+                      'is-alcoholic', 'is-narcotic', 'hidden', 'sales-ranking', 'pallet-quantity', 'unit-count',
+                      'item-count', 'package-id', 'package-name', 'pack', 'pack-material-type', 'package', 'size',
+                      'container-name', 'unit-of-measurement', 'container-material', 'returnable', 'container']
+
+    semantic_id_and_id = {}
+    has_all_attributes = False
+    page_number = 0
+
+    while not has_all_attributes and page_number < 50:
+        result = search_all_legacy_attributes(environment, page_number)
+        for attribute_model in result['attributeModels']:
+            populate_attributes(all_attributes, attribute_model, semantic_id_and_id)
+
+        has_all_attributes = validate_if_contains_all_legacy_attributes(all_attributes, has_all_attributes,
+                                                                        semantic_id_and_id)
+
+        page_number += 1
+
+    return semantic_id_and_id
+
+
+def populate_attributes(all_attributes, attribute_model, semantic_id_and_id):
+    if attribute_model['semanticId'] in all_attributes:
+        semantic_id_and_id[attribute_model['semanticId']] = attribute_model['id']
+        if attribute_model['attributeType'] == 'GROUP':
+            populate_sub_attributes(all_attributes, attribute_model, semantic_id_and_id)
+
+
+def populate_sub_attributes(all_attributes, attribute_model, semantic_id_and_id):
+    for sub_attribute in attribute_model['metadata']['subAttributes']:
+        if sub_attribute['semanticId'] in all_attributes:
+            semantic_id_and_id[sub_attribute['semanticId']] = sub_attribute['id']
+
+
+def validate_if_contains_all_legacy_attributes(all_attributes, has_all_attributes, semantic_id_and_id):
+    for attribute in all_attributes:
+        if attribute not in semantic_id_and_id.keys():
+            has_all_attributes = False
+            break
+        else:
+            has_all_attributes = True
+    return has_all_attributes
+
+
+def populate_package_attribute_payload(abstract_package_attribute_id, all_attributes):
+    payload = {
+        "abstractAttributeId": abstract_package_attribute_id,
+        "values": [
+            [
+                {"id": all_attributes['unit-count'], "value": 1},
+                {"id": all_attributes['item-count'], "value": 10},
+                {"id": all_attributes['package-id'], "value": "pack_id"},
+                {"id": all_attributes['package-name'], "value": "pack_name"},
+                {"id": all_attributes['pack'], "value": "pack"},
+                {"id": all_attributes['pack-material-type'], "value": "pack_material_type"}
+            ]
+        ]
+    }
+    return payload
+
+
+def populate_container_attribute_payload(abstract_container_attribute_id, all_attributes):
+    payload = {
+        "abstractAttributeId": abstract_container_attribute_id,
+        "values": [
+            [
+                {"id": all_attributes['size'], "value": 15},
+                {"id": all_attributes['container-name'], "value": "container-name"},
+                {"id": all_attributes['unit-of-measurement'], "value": "unit-of-measurement"},
+                {"id": all_attributes['container-material'], "value": "container-material"},
+                {"id": all_attributes['returnable'], "value": True}
+            ]
+        ]
+    }
+    return payload
+
+
+def create_root_attribute_payload(root_abstract_attribute_ids_dictionary):
+    payload = [{
+             "abstractAttributeId": root_abstract_attribute_ids_dictionary['classification'],
+             "values": ["classification"]
+            },
+            {
+             "abstractAttributeId": root_abstract_attribute_ids_dictionary['brand-id'],
+             "values": ["brand-id"]
+            },
+            {
+             "abstractAttributeId": root_abstract_attribute_ids_dictionary['brand'],
+             "values": ["skol"]
+            },
+            {
+             "abstractAttributeId": root_abstract_attribute_ids_dictionary['sub-brand-name'],
+             "values": ["sub-skol"]
+            },
+            {
+             "abstractAttributeId": root_abstract_attribute_ids_dictionary['minimum-order-quantity'],
+             "values": ["1"]
+            },
+            {
+             "abstractAttributeId": root_abstract_attribute_ids_dictionary['is-alcoholic'],
+             "values": [True]
+            },
+            {
+             "abstractAttributeId": root_abstract_attribute_ids_dictionary['is-narcotic'],
+             "values": [False]
+            },
+            {
+             "abstractAttributeId": root_abstract_attribute_ids_dictionary['hidden'],
+             "values": [False]
+            },
+            {
+             "abstractAttributeId": root_abstract_attribute_ids_dictionary['sales-ranking'],
+             "values": [1]
+            },
+            {
+             "abstractAttributeId": root_abstract_attribute_ids_dictionary['pallet-quantity'],
+             "values": [10]
+            }]
+    return payload
+
+
 def display_specific_attribute(attribute):
     attribute_model = json.loads(attribute)
     info = attribute_model['attributeModel']
@@ -512,6 +651,31 @@ def create_search_specific_attribute_payload():
             }
         }
     """
+    )
+
+
+def create_search_all_legacy_attributes_payload():
+    return gql(
+        '''
+        query attributeModels($page: NonNegativeInt) {
+            attributeModels(input:  {
+                page: $page
+                size: 50
+                }){
+                    id
+                    semanticId
+                    attributeType
+                    metadata {
+                        ... on GroupAttributeModelMetadata {
+                            subAttributes{
+                                id
+                                semanticId
+                            }
+                        }
+                    }   
+                }
+        }
+        '''
     )
 
 

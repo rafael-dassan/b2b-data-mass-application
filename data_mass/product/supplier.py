@@ -7,27 +7,29 @@ from gql.transport.requests import RequestsHTTPTransport
 import string
 from tabulate import tabulate
 
-from data_mass.attribute_supplier import create_attribute_primitive_type
+from data_mass.attribute_supplier import get_all_legacy_attributes, populate_package_attribute_payload, \
+    populate_container_attribute_payload, create_root_attribute_payload
 from data_mass.classes.text import text
 from data_mass.common import get_supplier_base_url, get_header_request_supplier
-from data_mass.menus.supplier_menu import print_primitive_type
-from data_mass.supplier_category import create_root_category, \
-    create_association_attribute_with_category
+from data_mass.supplier_category import associate_all_legacy_attributes
 
 
-def create_product_supplier(environment):
+def create_product_supplier(environment, category_id):
     name = 'DM PRODUCT ' + str(randint(1, 100000))
     description = 'DM DESCRIPTION to ' + name
     var_name = 'DM VARIANT ' + str(randint(1, 100000))
-    att_type_option = 'TEXT'
 
-    att1 = create_attribute_primitive_type(environment, att_type_option)
-    att2 = create_attribute_primitive_type(environment, att_type_option)
+    all_attributes = get_all_legacy_attributes(environment)
 
-    category = create_root_category(environment)
+    root_abstract_attribute_ids_dictionary, package_abstract_attribute_id, container_abstract_attribute_id = \
+        associate_all_legacy_attributes(environment, category_id, all_attributes)
 
-    abs1 = create_association_attribute_with_category(environment, att1, category, 1, 1)
-    abs2 = create_association_attribute_with_category(environment, att2, category, 1, 1)
+    package_group_payload = populate_package_attribute_payload(package_abstract_attribute_id, all_attributes)
+    container_group_payload = populate_container_attribute_payload(container_abstract_attribute_id, all_attributes)
+
+    attributes = create_root_attribute_payload(root_abstract_attribute_ids_dictionary)
+    attributes.append(package_group_payload)
+    attributes.append(container_group_payload)
 
     # Select your transport with a defined url endpoint
     base_url = get_supplier_base_url(environment)
@@ -39,8 +41,9 @@ def create_product_supplier(environment):
 
     mut = create_product_payload()
 
-    params = {'name': name, 'description': description, 'category': category, 'abstractAttributeId1': abs1,
-              'abstractAttributeId2': abs2, 'varName': var_name}
+    params = {'name': name, 'description': description, 'category': category_id,
+              'attributes': attributes, 'varName': var_name}
+
     # Execute the query on the transport
     try:
         response = client.execute(mut, variable_values=params)
@@ -64,8 +67,7 @@ def create_product_payload():
               $description: String!
               $category: ID!
               $varName: String!
-              $abstractAttributeId1: ID!
-              $abstractAttributeId2: ID!
+              $attributes: [ConcreteAttributeInput!]!
             ) {
               createProduct(
                 input: {
@@ -74,19 +76,16 @@ def create_product_payload():
                   categoryId: $category
                   country: "BR"
                   images: ["http://test.com/1"]
-                  vendorId: "e437c69f-2f6e-4412-b78b-1845c8ac8838"
-                  manufacturerId: "0c2e96b5-26ea-4698-80a7-86d658656572"
-                  attributes: [
-                    { abstractAttributeId: $abstractAttributeId1, values: ["1"] }
-                  ]
+                  attributes: 
+                    $attributes
                   variants: [
                     {
                       name: $varName
                       images: ["http://testVariant.com/1"]
                       skus: ["123"]
-                      attributes: [
-                        { abstractAttributeId: $abstractAttributeId2, values: ["2"] }
-                      ]
+                      vendorId: "e437c69f-2f6e-4412-b78b-1845c8ac8838"
+                      manufacturerId: "0c2e96b5-26ea-4698-80a7-86d658656572"
+                      attributes: []
                     }
                   ]
                 }
