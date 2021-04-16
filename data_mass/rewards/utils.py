@@ -240,7 +240,7 @@ def post_combo_relay_account(
     )
 
     base_url = get_microservice_base_url(environment)
-    request_url = f"{environment}/combo-relay/accounts"
+    request_url = f"{base_url}/combo-relay/accounts"
 
     # Define the list of Limits for the main payload
     dict_values_limit = {
