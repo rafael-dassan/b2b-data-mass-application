@@ -255,7 +255,7 @@ def post_redemption(
     request_url = (
         f"{base_url}"
         "/rewards-service/rewards"
-        "/{account_id}"
+        f"/{account_id}"
         "/transaction/redemption"
     )
 
