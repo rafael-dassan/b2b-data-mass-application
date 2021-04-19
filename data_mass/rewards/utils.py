@@ -463,7 +463,7 @@ def make_account_eligible(
     bool
         `True`, when no error accours, else, `False`.
     """
-    request_headers = get_header_request(zone=zone)
+    request_headers = get_header_request(zone=zone, use_root_auth=True)
     base_url = get_microservice_base_url(environment)
     request_url = f"{base_url}/account-relay/"
 

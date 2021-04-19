@@ -224,7 +224,7 @@ def create_challenge_payload(
     end_date = format_datetime_to_str(end_date)
 
     dict_challenge = {
-        "title": f"DM-{challenge_id}({execution_method})",
+        "title": f"DM-{challenge_id} ({execution_method})",
         "description": f"{execution_method} challenge created by data-mass",
         "points": randrange(500, 5000, 100),
         "startDate": start_date,
