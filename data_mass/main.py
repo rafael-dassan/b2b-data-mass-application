@@ -50,13 +50,13 @@ from data_mass.combos import *
 from data_mass.rewards.rewards import enroll_poc_to_program, \
     disenroll_poc_from_program, associate_dt_combos_to_poc, \
     display_program_rules_skus
-from data_mass.rewards.rewards_programs import create_new_program, \
+from data_mass.rewards.programs import create_new_program, \
     patch_program_root_field, update_program_dt_combos, \
     remove_program_dt_combos
-from data_mass.rewards.rewards_challenges import remove_challenge, \
+from data_mass.rewards.challenges import remove_challenge, \
     create_take_photo_challenge, create_mark_complete_challenge, \
     create_purchase_challenge
-from data_mass.rewards.rewards_transactions import create_redemption, \
+from data_mass.rewards.transactions import create_redemption, \
     create_rewards_offer, create_points_removal
 from data_mass.category_magento import *
 from data_mass.product.supplier import create_product_supplier
