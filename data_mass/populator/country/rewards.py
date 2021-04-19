@@ -1,6 +1,6 @@
 from data_mass.populator.log import logging
 from data_mass.rewards.rewards import disenroll_poc_from_program
-from data_mass.rewards.rewards_challenges import create_take_photo_challenge, \
+from data_mass.rewards.challenges import create_take_photo_challenge, \
     create_mark_complete_challenge, create_purchase_challenge
 
 logger = logging.getLogger(__name__)

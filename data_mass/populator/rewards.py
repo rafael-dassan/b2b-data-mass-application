@@ -1,4 +1,4 @@
-from data_mass.tools.prompt import block_print
+from data_mass.tools.utils import block_print
 from data_mass.populator.log import logging
 from data_mass.populator.helpers.csv_helper import search_data_by
 from data_mass.populator.country.rewards import disenroll_pocs, \

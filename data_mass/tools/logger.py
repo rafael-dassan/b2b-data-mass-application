@@ -1,4 +1,3 @@
-"""Log Handler."""
 import logging
 import re
 import subprocess

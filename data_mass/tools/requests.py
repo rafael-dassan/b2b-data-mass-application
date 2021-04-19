@@ -377,7 +377,7 @@ def generate_hmac_jwt(
     expire_in = now + (2592000 * expire_months)
 
     abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, "data/create_jwt_payload.json")
+    file_path = os.path.join(abs_path, "../data/create_jwt_payload.json")
 
     with open(file_path) as file:
         json_data = json.load(file)
@@ -388,8 +388,12 @@ def generate_hmac_jwt(
         "accounts": [account_id]
     }
 
-    for _, key in dict_values.items():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
+    for key, value in dict_values.items():
+        json_object = update_value_to_json(
+            json_data,
+            key,
+            value
+        )
 
     if app_claim is not None:
         set_to_dictionary(json_object, "app", app_claim)
@@ -421,7 +425,7 @@ def generate_erp_token(expire_months: Optional[int] = 1) -> str:
     expire_in = now + (2592000 * expire_months)
 
     abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, "data/create_erp_token_payload.json")
+    file_path = os.path.join(abs_path, "../data/create_erp_token_payload.json")
 
     with open(file_path) as file:
         json_data = json.load(file)
@@ -431,8 +435,12 @@ def generate_erp_token(expire_months: Optional[int] = 1) -> str:
         "iat": now
     }
 
-    for _, key in dict_values.items():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
+    for key, value in dict_values.items():
+        json_object = update_value_to_json(
+            json_data,
+            key,
+            value,
+        )
 
     encoded = jwt.encode(
         json_object,
