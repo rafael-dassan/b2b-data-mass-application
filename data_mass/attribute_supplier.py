@@ -159,7 +159,7 @@ def create_legacy_attributes_by_type(environment, attribute_name_list, attribute
 
 
 def create_legacy_root_attribute(environment):
-    text_attributes = ["Classification", "Brand ID", "Brand", "Sub Brand Name", "Minimum Order Quantity"]
+    text_attributes = ["Classification", "Brand ID", "Brand", "Sub Brand Name"]
     attribute_type_text = 'TEXT'
     create_legacy_attributes_by_type(environment, text_attributes, attribute_type_text)
 
@@ -167,7 +167,7 @@ def create_legacy_root_attribute(environment):
     attribute_type_boolean = 'BOOLEAN'
     create_legacy_attributes_by_type(environment, boolean_attributes, attribute_type_boolean)
 
-    numeric_attributes = ["Sales Ranking", "Pallet Quantity"]
+    numeric_attributes = ["Sales Ranking", "Pallet Quantity", "Minimum Order Quantity"]
     attribute_type_numeric = 'NUMERIC'
     create_legacy_attributes_by_type(environment, numeric_attributes, attribute_type_numeric)
 
@@ -508,7 +508,7 @@ def create_root_attribute_payload(root_abstract_attribute_ids_dictionary):
             },
             {
              "abstractAttributeId": root_abstract_attribute_ids_dictionary['minimum-order-quantity'],
-             "values": ["1"]
+             "values": [1]
             },
             {
              "abstractAttributeId": root_abstract_attribute_ids_dictionary['is-alcoholic'],

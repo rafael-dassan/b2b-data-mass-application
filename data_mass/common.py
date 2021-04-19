@@ -985,7 +985,8 @@ def get_header_request_supplier():
     header = {
        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYi1pbmJldiIsImF1ZCI6ImFiaS1taWNyb3Nlcn'
                         'ZpY2VzIiwiZXhwIjoxODkzNDU2MDAwLCJpYXQiOjE1MTYyMzkwMjIsInVwZGF0ZWRfYXQiOjExMTExMTEsInJvbGVzIjpbI'
-                        'lJPTEVfQ1VTVE9NRVIiXX0.oDALscasXTa2Zt209Hjmydk9GT7ErsdxI4c1D4q9kNA'
+                        'lJPTEVfQ1VTVE9NRVIiXX0.oDALscasXTa2Zt209Hjmydk9GT7ErsdxI4c1D4q9kNA',
+       'requestTraceId': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'
     }
 
     return header
