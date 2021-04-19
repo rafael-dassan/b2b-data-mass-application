@@ -14,5 +14,6 @@
     "enabled": true,
     "deleted": false,
     "description": "string",
-    "salesRanking": 0
+    "salesRanking": 0,
+    "validFrom": "2021-12-31"
   }
