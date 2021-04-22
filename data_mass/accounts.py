@@ -61,10 +61,11 @@ def check_account_exists_microservice(
     json_data = json.loads(response.text)
 
     if response.status_code == 200 and len(json_data) != 0:
-        if not(
+        if (
             zone in COUNTRY_SEGMENT_VERIFICATION
-            and json_data[0]["segment"] == 'DM-SEG'
-            and json_data[0]["subSegment"] == 'DM-SUBSEG'
+            and not (json_data[0]["segment"] == 'DM-SEG'
+                and json_data[0]["subSegment"] == 'DM-SUBSEG'
+            )
         ):
             print((
                 f"{text.Red}\n-"
