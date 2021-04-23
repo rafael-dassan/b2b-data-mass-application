@@ -5,7 +5,7 @@ from datetime import date
 from os import devnull, system
 from typing import Any, Hashable, Union
 
-from jsonpath_rw import Index, Fields
+from jsonpath_rw import Fields, Index
 from jsonpath_rw_ext import parse
 
 
@@ -75,7 +75,7 @@ def convert_json_to_string(json_object: dict) -> str:
 
 def create_list(*items) -> list:
     """
-    Create a list from a serie of given values.
+    Create a list from a series of given values.
 
     Returns
     -------
@@ -87,8 +87,8 @@ def create_list(*items) -> list:
     The returned list can be assigned both to ``${scalar}`` and ``@{list}`` \
     variables.
     """
-    # TODO: stop using this method and use list convertion directly
-    return list(items)
+    # TODO: stop using this method and use list conversion directly
+    return [items]
 
 
 def is_blank(string: str) -> bool:
@@ -142,7 +142,7 @@ def set_to_dictionary(
     Returns
     -------
     dict
-        A new dictonary.
+        A new dictionary.
 
     Examples
     -------
@@ -157,10 +157,10 @@ def set_to_dictionary(
     """
 
     if len(key_value_pairs) % 2 != 0:
-        raise ValueError((
+        raise ValueError(
             "Adding data to a dictionary failed."
             "There should be even number of key-value-pairs."
-        ))
+        )
 
     for i in range(0, len(key_value_pairs), 2):
         dictionary[key_value_pairs[i]] = key_value_pairs[i + 1]
@@ -232,10 +232,10 @@ def remove_from_dictionary(dictionary: dict, *keys: Any) -> None:
     is ignored.
     """
     if is_string(dictionary) or isinstance(dictionary, (int, float)):
-        raise TypeError((
+        raise TypeError(
             "Expected argument to be a dictionary or "
             f"dictionary-like, got {type(dictionary)} instead."
-        ))
+        )
 
     for key in keys:
         if key in dictionary:

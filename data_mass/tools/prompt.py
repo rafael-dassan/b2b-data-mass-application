@@ -1,14 +1,8 @@
-import json
-import os
-import sys
-
+"""Prompt utils."""
 from tabulate import tabulate
 
 from data_mass.classes.text import text
-from data_mass.tools.utils import (
-    finish_application,
-    is_blank,
-)
+from data_mass.tools.utils import finish_application, is_blank
 from data_mass.tools.validations import (
     validate_combo_structure,
     validate_environment,
@@ -201,7 +195,7 @@ def print_combos_menu():
 def print_zone_menu_for_ms():
     zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
     while validate_zone_for_ms(zone.upper()) is False:
-        print(text.Red + '\n- {0} is not a valid zone\n'.format(zone.upper()))
+        print(text.Red + f'\n- {zone.upper()} is not a valid zone\n')
         zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
 
     return zone.upper()
@@ -211,7 +205,7 @@ def print_zone_menu_for_ms():
 def print_zone_for_interactive_combos_menu_for_ms():
     zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
     while not validate_zone_for_interactive_combos_ms(zone.upper()):
-        print(text.Red + '\n- {0} is not a valid zone\n'.format(zone.upper()))
+        print(text.Red + f'\n- {zone.upper()} is not a valid zone\n')
         zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
 
     return zone.upper()
@@ -221,7 +215,7 @@ def print_zone_for_interactive_combos_menu_for_ms():
 def print_environment_menu():
     environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
     while validate_environment(environment.upper()) is False:
-        print(text.Red + '\n- {0} is not a valid environment\n'.format(environment.upper()))
+        print(text.Red + f'\n- {environment.upper()} is not a valid environment\n')
         environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
 
     return environment.upper()

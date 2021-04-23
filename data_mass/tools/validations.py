@@ -227,7 +227,7 @@ def validate_years_credit_statement(year: int) -> Union[str, int]:
     """
     if len(year) == 0:
         return "error_0"
-    elif (len(year) > 0) and not is_number(year):
+    if (len(year) > 0) and not is_number(year):
         return "not_number"
     elif len(year) < 4:
         return "error_4"

@@ -1,3 +1,4 @@
+"""Logger handler."""
 import logging
 import re
 import subprocess
@@ -51,13 +52,19 @@ def log_to_file(
     logging.getLogger("urllib3").setLevel(logging.WARNING)
     logging.getLogger("chardet.charsetprober").setLevel(logging.WARNING)
 
-    logging.debug((
-        f"Starting new HTTPS connection: {request_method} {request_url}\n"
-        f"Request headers: {request_headers}\n"
-        f"Request body: {request_body}\n"
-        f"Response code: {status_code}\n"
-        f"Response body: {response_body}\n"
-    ))
+    logging.debug(
+        "Starting new HTTPS connection: %s %s\n",
+        "Request headers: %s\n"
+        "Request body: %s\n"
+        "Response code: %s\n"
+        "Response body: %s\n",
+        request_method,
+        request_url,
+        request_headers,
+        request_body,
+        status_code,
+        response_body
+    )
 
 
 def create_today_directory() -> str:

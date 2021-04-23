@@ -1,22 +1,21 @@
 """Request tools for Data Mass use."""
 import json
 import os
-
 from io import FileIO
-from typing import Union, Optional, List
 from time import time
+from typing import List, Optional, Union
 from uuid import uuid1
-from requests import request, Response
-from requests.exceptions import RequestException
 
 import jwt
+from requests import Response, request
+from requests.exceptions import RequestException
 
 from data_mass.classes.text import text
 from data_mass.tools.logger import log_to_file
 from data_mass.tools.utils import (
     finish_application,
     set_to_dictionary,
-    update_value_to_json,
+    update_value_to_json
 )
 
 
@@ -155,7 +154,7 @@ def get_microservice_base_url(
     Returns
     -------
     str
-        The formated string.
+        The formatted string.
     """
     if environment == "DEV":
         if is_v1:
