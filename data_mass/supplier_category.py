@@ -431,18 +431,23 @@ def associate_all_legacy_attributes(environment, category_id, all_attributes):
     container_abstract_attribute_id = None
 
     for attribute in attributes_to_be_associated:
-        if attribute == 'package':
-            package_abstract_attribute_id = create_association_attribute_with_category(environment,
+            if attribute == 'package':
+                package_abstract_attribute_id = create_association_attribute_with_category(environment,
+                                                                                           all_attributes[attribute],
+                                                                                           category_id, 0, 1)
+            elif attribute == 'container':
+                container_abstract_attribute_id = create_association_attribute_with_category(environment,
+                                                                                             all_attributes[attribute],
+                                                                                             category_id, 0, 1)
+            else:
+                if attribute == 'brand-id':
+                    abstract_attribute_id = create_association_attribute_with_category(environment,
                                                                                        all_attributes[attribute],
                                                                                        category_id, 1, 1)
-        elif attribute == 'container':
-            container_abstract_attribute_id = create_association_attribute_with_category(environment,
-                                                                                         all_attributes[attribute],
-                                                                                         category_id, 1, 1)
-        else:
-            abstract_attribute_id = create_association_attribute_with_category(environment,
-                                                                               all_attributes[attribute],
-                                                                               category_id, 1, 1)
-            root_abstract_attribute_id[attribute] = abstract_attribute_id
+                else:
+                    abstract_attribute_id = create_association_attribute_with_category(environment,
+                                                                                       all_attributes[attribute],
+                                                                                       category_id, 0, 1)
+                root_abstract_attribute_id[attribute] = abstract_attribute_id
 
     return root_abstract_attribute_id, package_abstract_attribute_id, container_abstract_attribute_id
