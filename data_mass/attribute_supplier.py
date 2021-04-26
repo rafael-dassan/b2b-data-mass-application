@@ -264,7 +264,7 @@ def create_legacy_group_attribute(environment, name, attributes):
             return id_att2
     except TransportQueryError as e:
         print(text.Red + str(e))
-        return 'false'
+        return False
 
 
 def create_primitive_attribute_payload():
@@ -805,7 +805,7 @@ def create_legacy_attribute_primitive_type(environment, name, attribute_type):
 
     except TransportQueryError as e:
         print(text.Red + str(e))
-        return 'false'
+        return False
 
 
 def create_legacy_attribute_enum_type(environment, name, values, type_prim):

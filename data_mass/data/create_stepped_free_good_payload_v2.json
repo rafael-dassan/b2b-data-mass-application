@@ -32,8 +32,8 @@
                             "to": "string"
                         }
                     ],
-                    "sharedMinimumQuantity": "true",
-                    "crossDiscount": "true"
+                    "sharedMinimumQuantity": true,
+                    "crossDiscount": true
                 }
             },
             "output": {
