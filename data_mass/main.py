@@ -1209,8 +1209,8 @@ def flow_create_account(zone, environment, account_id):
 
 
 def flow_create_delivery_window(zone, environment, account_id, option):
-    allow_flexible_delivery_dates = ['BR', 'ZA', 'MX', 'DO', 'CO', 'PE']
-    allow_delivery_cost = ['BR', 'MX', 'DO', 'CO','PE']
+    allow_flexible_delivery_dates = ['BR', 'ZA', 'MX', 'DO', 'CO', 'PE', 'EC']
+    allow_delivery_cost = ['BR', 'MX', 'DO', 'CO','PE', 'EC']
 
     # Call check account exists function
     account = check_account_exists_microservice(account_id, zone, environment)
