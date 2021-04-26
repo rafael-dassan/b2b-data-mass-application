@@ -1,8 +1,9 @@
-import pandas as pd
 import os
 import sys
-from data_mass.populator.log import *
 
+import pandas as pd
+
+from data_mass.populator.log import *
 
 logger = logging.getLogger(__name__)
     
@@ -34,17 +35,35 @@ def converter_dtype_to_string_by_entity(entity):
     return dict.fromkeys(converter, 'str') if converter is not None else {}
 
 
-def search_file_path(country, entity, is_default_file=True):
-    absolute_path = os.path.dirname(os.path.abspath(__file__))
-    base_file = "../country/data"
+def search_file_path(
+        country: str,
+        entity: str,
+        is_default_file: bool = True) -> str:
+    """
+    Search File Path.
 
-    default_file = "{base_file}/{entity}.csv".format(
-        base_file=base_file, entity=entity)
+    Parameters
+    ----------
+    country : str
+    entity : str
+        File name
+    is_default_file : bool, optional
+        Whenever a file is default or not. Default to `True`.
+
+    Returns
+    -------
+    str
+        The file path.
+    """
+    absolute_path = os.path.dirname(os.path.abspath(__file__))
+    base_file = f"{os.path.dirname(absolute_path)}/country/data"
+
+    default_file = f"{base_file}/{entity}.csv"
+
     if not is_default_file:
-        default_file = "{base_file}/{country}/{entity}.csv".format(
-            base_file=base_file, country=country, entity=entity)
-    
-    return '{}/{}'.format(absolute_path, default_file)
+        default_file = f"{base_file}/{country}/{entity}.csv"
+
+    return default_file
 
 
 def search_file_content(country, entity, file_path, is_default_file):
