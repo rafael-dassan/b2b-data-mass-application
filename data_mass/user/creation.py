@@ -1,11 +1,20 @@
-from data_mass.user.authorization import authorize_account_request, \
-    authorize_load_request 
-from data_mass.user.assertion import assert_email_request, \
-    assert_otp_request, assert_name_request, \
-    assert_name_request, assert_password_request, \
-    assert_account_request
-from data_mass.user.confirmation import confirm_account_request, \
-    confirm_email_request, confirm_otp_request, confirm_password_request
+from data_mass.user.assertion import (
+    assert_account_request,
+    assert_email_request,
+    assert_name_request,
+    assert_otp_request,
+    assert_password_request
+    )
+from data_mass.user.authorization import (
+    authorize_account_request,
+    authorize_load_request
+    )
+from data_mass.user.confirmation import (
+    confirm_account_request,
+    confirm_email_request,
+    confirm_otp_request,
+    confirm_password_request
+    )
 from data_mass.user.user import get_iam_b2c_params
 
 
@@ -42,7 +51,7 @@ def create_user(environment, country, email, password, account_id, tax_id):
         return False
 
     confirmed_name_response = assert_name_request(
-        params, self_asserted_name_response)
+        email, params, self_asserted_name_response)
     if not confirmed_name_response:
         return False
 
