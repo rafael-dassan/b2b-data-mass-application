@@ -1,0 +1,33 @@
+repos:
+-   repo: https://gitlab.com/pycqa/flake8
+    rev: 3.7.9
+    hooks:
+    - id: flake8
+      name: Flake8
+      exclude: "/classes|/data|/menus|/populator|/product"
+-   repo: https://github.com/PyCQA/pylint
+    rev: pylint-2.7.4
+    hooks:
+      - id: pylint
+        name: Pylint
+        exclude: "/classes|/data|/menus|/populator|/product"
+-   repo: https://github.com/MarcoGorelli/absolufy-imports
+    rev: v0.3.0
+    hooks:
+    -   id: absolufy-imports
+-   repo: https://github.com/PyCQA/isort
+    rev: 5.8.0
+    hooks:
+    -   id: isort
+        args: [--multi-line, VERTICAL_HANGING_INDENT_BRACKET]
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.4.0
+    hooks:
+    -   id: end-of-file-fixer
+        exclude: \.txt$
+-   repo: https://github.com/asottile/pyupgrade
+    rev: v2.12.0
+    hooks:
+    -   id: pyupgrade
+        args: [--py37-plus]
+        exclude: "/classes|/data|/menus|/populator|/product"

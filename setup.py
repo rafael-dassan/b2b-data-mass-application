@@ -1,5 +1,7 @@
+"""Package Installation."""
 import re
 from os.path import dirname, join
+
 from setuptools import find_packages, setup
 
 with open(join(dirname(__file__), "data_mass", "__init__.py")) as fp:
@@ -14,7 +16,7 @@ with open(join(dirname(__file__), "data_mass", "__init__.py")) as fp:
 with open("requirements.txt") as f:
     requirements = f.read().splitlines()
 
-with open("README.md", "r") as f:
+with open("README.md") as f:
     long_description = f.read()
 
 extras = {
@@ -22,7 +24,6 @@ extras = {
         "pytest>=4.4.0",
         "pytest-xdist==1.31.0",
         "pytest-cov==2.8.1",
-        "flake8==3.7.9",
     ]
 }
 
@@ -31,13 +32,28 @@ setup(
     version=version,
     author="BEES Community",
     maintainer="Data Mass Team",
+    maintainer_email="qcoe.data@ab-inbev.com",
     description="Data generation.",
     long_description=long_description,
     project_urls={
-        "Documentation": "https://ab-inbev.atlassian.net/wiki/spaces/PKB/pages/2175860865/Data+Mass",
-        "Repository": "https://dev.azure.com/ab-inbev/GHQ_B2B_Delta/_git/b2b-data-mass-application",
-        "Standards": "https://anheuserbuschinbev.sharepoint.com/sites/b2bengineering/architecture/SitePages/Data-Mass-Application.aspx",
-        "Release Notes": "https://anheuserbuschinbev.sharepoint.com/:b:/s/b2bengineering/EaTlUWEzsp1EqdmKaqBclL4ByT6uvxDV1nF1erEOsD-stQ?e=QQyxU8",
+        "Documentation": (
+            "https://ab-inbev.atlassian.net"
+            "/wiki/spaces/PKB/pages/2175860865/Data+Mass"
+        ),
+        "Repository": (
+            "https://dev.azure.com/ab-inbev/"
+            "GHQ_B2B_Delta/_git/b2b-data-mass-application"
+        ),
+        "Standards": (
+            "https://anheuserbuschinbev.sharepoint.com/"
+            "sites/b2bengineering/architecture/SitePages/"
+            "Data-Mass-Application.aspx"
+        ),
+        "Release Notes": (
+            "https://anheuserbuschinbev.sharepoint.com/:b:/s"
+            "/b2bengineering/"
+            "EaTlUWEzsp1EqdmKaqBclL4ByT6uvxDV1nF1erEOsD-stQ?e=QQyxU8"
+        ),
     },
     packages=find_packages(),
     package_data={
@@ -65,5 +81,6 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
     ]
 )

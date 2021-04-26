@@ -1,6 +1,8 @@
 # B2B Data Mass Script
 This repository contains the B2B Data Mass Script, aimed to those who want to create all necessary information to execute tests, develop new features and even explore the apps.
 
+[Lengua española readme](doc/README.es.md) • [Readme português](doc/README.p.md)
+
 ## System Requirements
 * Operating system based on UNIX.
 
@@ -13,6 +15,7 @@ To launch the application menu, please follow the steps below after opening the 
 ```sh
 cd <project-root-dir>
 ```
+(Optional) To have an unexpected free environment, install the `virtualenv` package [using our guide](doc/USER_GUIDE.md#using-virtualenv).
 
 You may not have all required dependencies installed by default. Install them by using the pip command:
 ```sh
@@ -26,7 +29,14 @@ python3 -m data_mass.main
 
 By running this command, anyone will be able to see the application menu, and then choose any of the available options depending on the usage.
 
-## Additional information
+## Contributing to Data Mass
+All contributions, bug reports, bug fixes, documentation improvements, enhancements, and ideas are welcome.
+
+A detailed overview on how to contribute can be found in the [contributing guide](doc/USER_GUIDE.md#contributing-to-data-mass).
+
+Check out our [code style guide](doc/C_STYLE_GUIDE.md) (available in english only)!
+
+## Additional Information
 *  [Development Standards][Standards]
 *  [Release Notes][Release Notes]
 
