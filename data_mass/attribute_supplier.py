@@ -73,7 +73,7 @@ def create_attribute_enum(environment, type_attribute):
         values.append(string.ascii_lowercase + 'c')
 
     mut = create_enum_generic_payload()
-    params = {'name': name, 'description': description, 'values': values, 'enum_primitive_type': type_attribute }
+    params = {'name': name, 'description': description, 'values': values, 'enum_primitive_type': type_attribute}
 
     # Execute the query on the transport
     try:
@@ -191,13 +191,18 @@ def create_legacy_attribute_container(environment):
     attribute_type_numeric = 'NUMERIC'
     sub_attributes_ids = create_legacy_attributes_by_type(environment, numeric_attributes, attribute_type_numeric)
 
-    text_attributes = ["Container Name", "Unit of Measurement", "Container Material"]
+    text_attributes = ["Container Name", "Container Material"]
     attribute_type_text = 'TEXT'
     sub_attributes_ids.extend(create_legacy_attributes_by_type(environment, text_attributes, attribute_type_text))
 
     boolean_attributes = ["Returnable"]
     attribute_type_boolean = 'BOOLEAN'
     sub_attributes_ids.extend(create_legacy_attributes_by_type(environment, boolean_attributes, attribute_type_boolean))
+
+    unit_of_measurement_name = "Unit of Measurement"
+    unit_of_measurement_values = ["G", "GR", "Gal", "L", "ML", "OZ", "Litro", "Onz"]
+    unit_of_measurement_enum_type = 'TEXT'
+    sub_attributes_ids.append(create_legacy_attribute_enum_type(environment, unit_of_measurement_name, unit_of_measurement_values, unit_of_measurement_enum_type))
 
     name = 'Container'
     attribute_id = create_legacy_group_attribute(environment, name, sub_attributes_ids)
@@ -480,7 +485,7 @@ def populate_container_attribute_payload(abstract_container_attribute_id, all_at
             [
                 {"id": all_attributes['size'], "value": 15},
                 {"id": all_attributes['container-name'], "value": "container-name"},
-                {"id": all_attributes['unit-of-measurement'], "value": "unit-of-measurement"},
+                {"id": all_attributes['unit-of-measurement'], "value": "ml"},
                 {"id": all_attributes['container-material'], "value": "container-material"},
                 {"id": all_attributes['returnable'], "value": True}
             ]
@@ -491,45 +496,45 @@ def populate_container_attribute_payload(abstract_container_attribute_id, all_at
 
 def create_root_attribute_payload(root_abstract_attribute_ids_dictionary):
     payload = [{
-             "abstractAttributeId": root_abstract_attribute_ids_dictionary['classification'],
-             "values": ["classification"]
-            },
-            {
-             "abstractAttributeId": root_abstract_attribute_ids_dictionary['brand-id'],
-             "values": ["brand-id"]
-            },
-            {
-             "abstractAttributeId": root_abstract_attribute_ids_dictionary['brand'],
-             "values": ["skol"]
-            },
-            {
-             "abstractAttributeId": root_abstract_attribute_ids_dictionary['sub-brand-name'],
-             "values": ["sub-skol"]
-            },
-            {
-             "abstractAttributeId": root_abstract_attribute_ids_dictionary['minimum-order-quantity'],
-             "values": [1]
-            },
-            {
-             "abstractAttributeId": root_abstract_attribute_ids_dictionary['is-alcoholic'],
-             "values": [True]
-            },
-            {
-             "abstractAttributeId": root_abstract_attribute_ids_dictionary['is-narcotic'],
-             "values": [False]
-            },
-            {
-             "abstractAttributeId": root_abstract_attribute_ids_dictionary['hidden'],
-             "values": [False]
-            },
-            {
-             "abstractAttributeId": root_abstract_attribute_ids_dictionary['sales-ranking'],
-             "values": [1]
-            },
-            {
-             "abstractAttributeId": root_abstract_attribute_ids_dictionary['pallet-quantity'],
-             "values": [10]
-            }]
+        "abstractAttributeId": root_abstract_attribute_ids_dictionary['classification'],
+        "values": ["classification"]
+    },
+        {
+            "abstractAttributeId": root_abstract_attribute_ids_dictionary['brand-id'],
+            "values": ["brand-id"]
+        },
+        {
+            "abstractAttributeId": root_abstract_attribute_ids_dictionary['brand'],
+            "values": ["skol"]
+        },
+        {
+            "abstractAttributeId": root_abstract_attribute_ids_dictionary['sub-brand-name'],
+            "values": ["sub-skol"]
+        },
+        {
+            "abstractAttributeId": root_abstract_attribute_ids_dictionary['minimum-order-quantity'],
+            "values": [1]
+        },
+        {
+            "abstractAttributeId": root_abstract_attribute_ids_dictionary['is-alcoholic'],
+            "values": [True]
+        },
+        {
+            "abstractAttributeId": root_abstract_attribute_ids_dictionary['is-narcotic'],
+            "values": [False]
+        },
+        {
+            "abstractAttributeId": root_abstract_attribute_ids_dictionary['hidden'],
+            "values": [False]
+        },
+        {
+            "abstractAttributeId": root_abstract_attribute_ids_dictionary['sales-ranking'],
+            "values": [1]
+        },
+        {
+            "abstractAttributeId": root_abstract_attribute_ids_dictionary['pallet-quantity'],
+            "values": [10]
+        }]
     return payload
 
 
@@ -801,6 +806,37 @@ def create_legacy_attribute_primitive_type(environment, name, attribute_type):
     except TransportQueryError as e:
         print(text.Red + str(e))
         return 'false'
+
+
+def create_legacy_attribute_enum_type(environment, name, values, type_prim):
+    description = 'DESCRIPTION OF ' + name + ' ATTRIBUTE'
+
+    # Select your transport with a defined url endpoint
+    base_url = get_supplier_base_url(environment)
+    base_header = get_header_request_supplier()
+    transport = RequestsHTTPTransport(url=base_url, headers=base_header)
+
+    # Create a GraphQL client using the defined transport
+    client = Client(transport=transport, fetch_schema_from_transport=False)
+
+    mut = create_enum_generic_payload()
+
+    params = {'name': name, 'description': description, 'values': values, 'enum_primitive_type': type_prim}
+
+    # Execute the query on the transport
+    try:
+        response = client.execute(mut, variable_values=params)
+        json_data = json.dumps(response)
+        if len(json_data) != 0:
+            json_split = json_data.rsplit()
+            id_att = json_split[2]
+            id_att1 = id_att.lstrip('"')
+            id_att2 = id_att1.rsplit('"', 1)[0]
+            return id_att2
+
+    except TransportQueryError as e:
+        print(text.Red + str(e))
+        return False
 
 
 def create_edit_primitive_attribute():
