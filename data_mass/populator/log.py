@@ -48,3 +48,5 @@ class Message(Enum):
     DELETE_RATING_ERROR = "Failure to delete ratings for the account {account_id}."
     RATING_NOT_FOUND_ERROR = "Rating not found for account {account_id}."
     CREATE_COMBO_ERROR = "Fail on create combo for account {account_id}."
+    POC_ENROLLMENT_ERROR = "Fail on enroll the account {account_id} in a rewards program."
+    CHALLENGE_CREATION_ERROR = "Fail on create the challenge {challenge_id}."

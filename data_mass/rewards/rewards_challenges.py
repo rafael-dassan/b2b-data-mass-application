@@ -1,53 +1,52 @@
 # Standard library imports
-import json
 from json import loads
-import os
 from datetime import timedelta, datetime, timezone
 from random import randint, randrange
 
 # Local application imports
 from data_mass.common import get_header_request, \
     get_microservice_base_url, update_value_to_json, convert_json_to_string, \
-    place_request, print_input_text, set_to_dictionary, print_input_number
-from data_mass.product.products import request_get_products_by_account_microservice
+    place_request, print_input_text, set_to_dictionary
 from data_mass.classes.text import text
-from data_mass.rewards.rewards_programs import get_all_programs
 from data_mass.rewards.rewards_utils import generate_id, \
     create_product_list_from_zone, display_all_challenges_info, \
     get_payload, format_datetime_to_str
 
+
 APP_ADMIN = 'membership'
 
-def create_take_photo_challenge(zone, environment, is_expired=False):
 
-    challenge_id = generate_id()
+def create_take_photo_challenge(zone, environment, challenge_id=None, is_expired=False):
+    if challenge_id is None:
+        challenge_id = generate_id()
 
     if is_expired is False:
         json_object = create_challenge_payload(challenge_id, 'TAKE_PHOTO')
     else:
         json_object = create_challenge_payload(challenge_id, 'TAKE_PHOTO', None, -30, -1)
 
-    #Create body
+    # Create body
     request_body = convert_json_to_string(json_object)
 
     return put_challenge(challenge_id, request_body, zone, environment)
 
-def create_mark_complete_challenge(zone, environment, is_expired=False):
 
-    challenge_id = generate_id()
+def create_mark_complete_challenge(zone, environment, challenge_id=None, is_expired=False):
+    if challenge_id is None:
+        challenge_id = generate_id()
 
     if is_expired is False:
         json_object = create_challenge_payload(challenge_id, 'MARK_COMPLETE')
     else:
         json_object = create_challenge_payload(challenge_id, 'MARK_COMPLETE', None, -30, -1)
 
-    #Create body
+    # Create body
     request_body = convert_json_to_string(json_object)
 
     return put_challenge(challenge_id, request_body, zone, environment)
 
 
-def create_purchase_challenge(zone, environment, is_multiple, is_expired=False):
+def create_purchase_challenge(zone, environment, is_multiple, challenge_id=None, is_expired=False):
     print(text.Yellow + '\n- [Products] Verifying the list of available products for "{}" zone.'.format(zone))
     zone_skus_list = create_product_list_from_zone(zone, environment)
 
@@ -58,22 +57,23 @@ def create_purchase_challenge(zone, environment, is_multiple, is_expired=False):
         print(text.Red + '\n- [Rewards] There are no products available for "{}" zone.'.format(zone))
         return None
 
-    challenge_id = generate_id()
+    if challenge_id is None:
+        challenge_id = generate_id()
 
-    executionMethod = 'PURCHASE' if is_multiple is False else 'PURCHASE_MULTIPLE'
+    execution_method = 'PURCHASE' if is_multiple is False else 'PURCHASE_MULTIPLE'
 
     if is_expired is False:
-        json_object = create_challenge_payload(challenge_id, executionMethod, zone_skus_list)
+        json_object = create_challenge_payload(challenge_id, execution_method, zone_skus_list)
     else:
-        json_object = create_challenge_payload(challenge_id, executionMethod, zone_skus_list, -30, -1)
+        json_object = create_challenge_payload(challenge_id, execution_method, zone_skus_list, -30, -1)
     
-    #Create body
+    # Create body
     request_body = convert_json_to_string(json_object)
 
     return put_challenge(challenge_id, request_body, zone, environment)
 
 
-def create_challenge_payload(challenge_id, executionMethod, zone_skus_list=None, start_date_timedelta=0, end_date_timedelta=180):
+def create_challenge_payload(challenge_id, execution_method, zone_skus_list=None, start_date_timedelta=0, end_date_timedelta=180):
     challenge_payload_template = get_payload('../data/create_rewards_challenges_payload.json')
 
     start_date = datetime.now(timezone.utc) + timedelta(days=start_date_timedelta)
@@ -83,25 +83,25 @@ def create_challenge_payload(challenge_id, executionMethod, zone_skus_list=None,
     end_date = format_datetime_to_str(end_date)
 
     dict_challenge = {
-        'title': 'DM-' + challenge_id + ' (' + executionMethod + ')',
-        'description': executionMethod + ' challenge created by data-mass',
+        'title': 'DM-' + challenge_id + ' (' + execution_method + ')',
+        'description': execution_method + ' challenge created by data-mass',
         'points': randrange(500, 5000, 100),
         'startDate': start_date,
         'endDate': end_date,
-        'executionMethod': executionMethod
+        'executionMethod': execution_method
     }
 
     for key in dict_challenge.keys():
         json_object = update_value_to_json(challenge_payload_template, key, dict_challenge[key])
 
-    if executionMethod == 'TAKE_PHOTO':
+    if execution_method == 'TAKE_PHOTO':
         good_photo = 'https://b2bstaticwebsagbdev.blob.core.windows.net/challenge-uat/DO/good-examples-photo-challenge/cooler_cerveza_ok.png'
         bad_photo = 'https://b2bstaticwebsagbdev.blob.core.windows.net/challenge-uat/DO/bad-examples-photo-challenge/cooler_cerveza_nok.png'
 
         set_to_dictionary(json_object, 'goodPhotoSample', good_photo)
         set_to_dictionary(json_object, 'badPhotoSample', bad_photo)
 
-    if executionMethod == 'PURCHASE' or executionMethod == 'PURCHASE_MULTIPLE':
+    if execution_method == 'PURCHASE' or execution_method == 'PURCHASE_MULTIPLE':
         sku_count = 4 if len(zone_skus_list) > 4 else len(zone_skus_list)
 
         challenge_sku_list = list()

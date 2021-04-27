@@ -2,10 +2,11 @@ from data_mass.populator.country.account import populate_pocs
 from data_mass.populator.country.combo import populate_combo_discount_base, \
     populate_combo_free_good_base, populate_combo_only_free_good_base
 from data_mass.populator.country.deal import populate_discount_base, \
-    populate_stepped_discount_base, populate_stepped_discount_with_limit_base, \
-        populate_free_good_base, populate_stepped_free_good_base
+    populate_stepped_discount_base, populate_stepped_discount_with_limit_base, populate_free_good_base, \
+    populate_stepped_free_good_base
 from data_mass.populator.country.invoice import populate_invoices_base
 from data_mass.populator.country.order import populate_orders_base
+from data_mass.populator.country.rewards import populate_challenge_base, disenroll_pocs, enroll_poc_base
 from data_mass.populator.country.user_iam import populate_users_iam_b2c
 from data_mass.populator.country.recommendation import populate_recommendations as populate_recommendations_base
 from data_mass.populator.country.category import associate_products_to_category_magento_base
@@ -56,6 +57,17 @@ def populate_orders(country, environment):
 def populate_invoices(country, environment):
     logger.info("populate_invoices for %s/%s", country, environment)
     populate_invoices_base(country, environment, search_data_by(country, 'invoice'))
+
+
+def populate_challenges(country, environment):
+    logger.info("remove_rewards_enrollment for %s/%s", country, environment)
+    disenroll_pocs(country, environment, search_data_by(country, 'rewards_enroll'))
+
+    logger.info("enroll_poc_rewards for %s/%s", country, environment)
+    enroll_poc_base(country, environment, search_data_by(country, 'rewards_enroll'))
+
+    logger.info("populate_rewards_challenges for %s/%s", country, environment)
+    populate_challenge_base(country, environment, search_data_by(country, 'rewards_enroll'))
 
 
 def categorize_and_enable_products_magento(country, environment):

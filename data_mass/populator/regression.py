@@ -1,6 +1,6 @@
 from data_mass.populator.data_creation_engine import populate_deals, \
     populate_orders, populate_invoices, populate_recommendations, \
-    populate_combos
+    populate_combos, populate_challenges
 from data_mass.populator.gateway import execute_gateway
 
 
@@ -11,4 +11,5 @@ def execute_regression(country, environment):
     populate_combos(country, environment)
     populate_orders(country, environment)
     populate_invoices(country, environment)
+    populate_challenges(country, environment)
     return True

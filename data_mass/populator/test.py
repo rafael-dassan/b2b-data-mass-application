@@ -7,6 +7,7 @@ from data_mass.populator.country.combo import populate_combo_discount, \
 from data_mass.populator.country.deal import populate_stepped_discount_with_limit, \
     populate_discount, populate_stepped_discount, populate_free_good, \
     populate_stepped_free_good
+from data_mass.populator.country.rewards import enroll_poc, populate_challenge
 from data_mass.populator.helpers.database_helper import delete_from_database_by_account, \
     get_database_params
 from data_mass.populator.preconditions import delete_deal, delete_invoice, delete_recommendation
@@ -37,6 +38,7 @@ def execute_test(country, environment):
     order_database_params = get_database_params(country, environment, 'order-service-ms')
     combo_discount_params = get_combo_params(country, 'DISCOUNT')
     combo_free_good_params = get_combo_params(country, 'FREE_GOOD')
+    rewards_params = get_rewards_params(country)
 
     # Overwrite standard output (stdout) - disable `print`
     block_print()
@@ -99,6 +101,12 @@ def execute_test(country, environment):
     logger.info("populate_invoices for %s/%s", country, environment)
     populate_invoice(country, environment, invoice_params.get('account_id'), invoice_params.get('invoice_status'),
                      invoice_params.get('order_prefix'), invoice_params.get('invoice_prefix'))
+
+    logger.info("enroll_poc_rewards for %s/%s", country, environment)
+    enroll_poc(country, environment, rewards_params.get('account_id'))
+
+    logger.info("populate_rewards_challenges for %s/%s", country, environment)
+    populate_challenge(country, environment, rewards_params.get('challenge_id'))
 
     logger.info("enable_products_magento %s/%s", country, environment)
     enable_product_magento(country, environment, category_params.get('sku'))
@@ -268,3 +276,10 @@ def get_combo_params(country, combo_type):
         }
     }
     return params[combo_type]
+
+
+def get_rewards_params(country):
+    return {
+        'account_id': get_account_params(country).get('id'),
+        'challenge_id': 'DMA-{0}-TEST'.format(country)
+    }

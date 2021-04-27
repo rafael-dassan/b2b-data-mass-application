@@ -1,8 +1,7 @@
 from data_mass.common import block_print
 from data_mass.populator.log import logging
 from data_mass.populator.helpers.csv_helper import search_data_by
-from data_mass.populator.country.rewards import disenroll_pocs, \
-    populate_challenges
+from data_mass.populator.country.rewards import disenroll_pocs, populate_challenge
 
 logger = logging.getLogger(__name__)
 
@@ -22,5 +21,5 @@ def disenroll_accounts(country, environment):
 
 def add_challenges_to_accounts(country, environment):
     logger.info("Starting to add challenges...")
-    populate_challenges(country, environment)
+    populate_challenge(country, environment)
     return True

@@ -7,7 +7,7 @@ This folder contains the Mass Populator Script, aimed to be called on Pipelines 
 To launch the script, please follow the steps below after opening the Terminal:
 
 ```sh
-cd <project-root-dir>/data_mass/
+cd <project-root-dir>
 ```
 
 You could execute the script using 3 parameters:
@@ -101,6 +101,7 @@ Example:
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
  ┃ ┣ 📜rewards.csv
+ ┃ ┣ 📜rewards_enroll.csv
  ┃ ┣ 📜stepped_discount.csv
  ┃ ┣ 📜stepped_free_good.csv
  ┃ ┗ 📜user.csv
@@ -117,6 +118,7 @@ Example:
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
  ┃ ┣ 📜rewards.csv
+ ┃ ┣ 📜rewards_enroll.csv
  ┃ ┣ 📜stepped_discount.csv
  ┃ ┣ 📜stepped_free_good.csv
  ┃ ┗ 📜user.csv
@@ -148,6 +150,7 @@ Example:
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
  ┃ ┣ 📜rewards.csv
+ ┃ ┣ 📜rewards_enroll.csv
  ┃ ┣ 📜stepped_discount.csv
  ┃ ┣ 📜stepped_free_good.csv
  ┃ ┗ 📜user.csv
@@ -164,6 +167,7 @@ Example:
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
  ┃ ┣ 📜rewards.csv
+ ┃ ┣ 📜rewards_enroll.csv
  ┃ ┣ 📜stepped_discount.csv
  ┃ ┣ 📜stepped_free_good.csv
  ┃ ┗ 📜user.csv
@@ -179,6 +183,7 @@ Example:
  ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
+ ┃ ┣ 📜rewards_enroll.csv
  ┃ ┣ 📜stepped_discount.csv
  ┃ ┣ 📜stepped_free_good.csv
  ┃ ┗ 📜user.csv
@@ -195,6 +200,7 @@ Example:
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
  ┃ ┣ 📜rewards.csv
+ ┃ ┣ 📜rewards_enroll.csv
  ┃ ┣ 📜stepped_discount.csv
  ┃ ┣ 📜stepped_free_good.csv
  ┃ ┗ 📜user.csv
@@ -225,6 +231,7 @@ Example:
  ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
+ ┃ ┣ 📜rewards_enroll.csv
  ┃ ┣ 📜stepped_discount.csv
  ┃ ┣ 📜stepped_free_good.csv
  ┃ ┗ 📜user.csv
@@ -256,6 +263,7 @@ Example:
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
  ┃ ┣ 📜rewards.csv
+ ┃ ┣ 📜rewards_enroll.csv
  ┃ ┣ 📜stepped_discount.csv
  ┃ ┣ 📜stepped_free_good.csv
  ┃ ┗ 📜user.csv
