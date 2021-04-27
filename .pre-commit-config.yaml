@@ -30,4 +30,4 @@ repos:
     hooks:
     -   id: pyupgrade
         args: [--py37-plus]
-        exclude: "/classes|/data|/menus|/populator|/product"
+        exclude: "/classes|/data|/menus|/populator|/product|/user"

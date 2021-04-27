@@ -4,8 +4,12 @@ import urllib
 
 from data_mass.classes.text import text
 from data_mass.common import place_request
-from data_mass.user.utils import generate_otp, get_cookies, \
-    get_cookies_header, merge_cookies
+from data_mass.user.utils import (
+    generate_otp,
+    get_cookies,
+    get_cookies_header,
+    merge_cookies
+    )
 
 
 def assert_logon_request(user_name, password, params, authorize_response):
@@ -29,7 +33,7 @@ def assert_logon_request(user_name, password, params, authorize_response):
     logging.debug("Logon :: asserted() :: Response................: {response}".format(response=response))
 
     if response.status_code != 200:
-        print("\n{0}- Fail [logon_selfasserted_request]. Response status: {1}. Response message: {2}".format(text.Red,
+        print("\n{0}- Fail [logon_selfassert_request]. Response status: {1}. Response message: {2}".format(text.Red,
                                                                                                              response.status_code,
                                                                                                              response.text))
         return False
@@ -43,7 +47,7 @@ def assert_logon_request(user_name, password, params, authorize_response):
         if "@registration_link" in response_text:
             logging.debug("Alert: The user doesn't exist.")
         if "@reset_password_link" in response_text:
-            print("\n{0}- Fail [logon_selfasserted_request]. The user exists but the password is wrong".format(text.Red))
+            print("\n{0}- Fail [assert_logon_request]. The user exists but the password is wrong".format(text.Red))
             return "wrong_password"
 
     logging.debug("Logon :: asserted() :: JSON Status.............: {status}".format(status=status))
@@ -93,7 +97,7 @@ def assert_email_request(email, params, authorize_load_response):
     assert_email_response = place_request("POST", url, data, headers)
 
     if assert_response_error(assert_email_response):
-        print("\n{0}- Fail [asserted_email_request]. Response status: {1}. Response message: {2}".format(text.Red,
+        print("\n{0}- Fail [assert_email_request]. Response status: {1}. Response message: {2}".format(text.Red,
                                                                                                               assert_email_response
                                                                                                               .status_code,
                                                                                                               assert_email_response
@@ -131,7 +135,7 @@ def assert_otp_request(email, params, confirmed_email_response):
     assert_otp_response = place_request("GET", url, data, headers)
 
     if assert_otp_response.status_code != 200:
-        print("\n{0}- Fail [asserted_otp_request]. Response status: {1}. Response message: {2}".format(text.Red),
+        print("\n{0}- Fail [assert_otp_request]. Response status: {1}. Response message: {2}".format(text.Red),
               assert_otp_response.status_code, assert_otp_response.text)
         return False
     else:
@@ -165,7 +169,7 @@ def assert_name_request(email, params, confirmed_otp_response):
     assert_name_response = place_request("POST", url, data, headers)
 
     if assert_response_error(assert_name_response):
-        print("\n{0}- Fail [asserted_name_request]. Response status: {1}. Response message: {2}".format(text.Red,
+        print("\n{0}- Fail [assert_name_request]. Response status: {1}. Response message: {2}".format(text.Red,
                                                                                                              assert_name_response
                                                                                                              .status_code,
                                                                                                              assert_name_response
@@ -199,17 +203,30 @@ def assert_password_request(password, params, confirmed_name_response):
     assert_password_response = place_request("POST", url, data, headers)
 
     if assert_response_error(assert_password_response):
-        print("\n{0}- Fail [asserted_password_request]. Response status: {1}. Response message: {2}".format(text.Red,
-                                                                                            assert_password_response.status_code,
-                                                                                            assert_password_response.text))
+        # TODO: Check with the IAM team and validate why the response is
+        # returned with code 200, even when an 400 error occurs, for example.
+        # And, also check, regarding the password pattern.
+
+        print(
+            f"\n{text.Red}"
+            "- Fail [assert_password_request]. "
+            f"Response status: {assert_password_response.status_code}. "
+            f"Response message: {assert_password_response.text}"
+        )
+
+        print(
+            f"\n{text.Red}"
+            "- [Suggestion]"
+            " Password should contain alphanumeric special character and capital letter."
+        )
         return False
-    else:
-        return {
-            "CSRF": confirmed_name_response["CSRF"],
-            "API": confirmed_name_response["API"],
-            "TRANS_ID": confirmed_name_response["TRANS_ID"],
-            "COOKIES": merge_cookies(confirmed_name_response["COOKIES"], get_cookies(assert_password_response))
-        }
+
+    return {
+        "CSRF": confirmed_name_response["CSRF"],
+        "API": confirmed_name_response["API"],
+        "TRANS_ID": confirmed_name_response["TRANS_ID"],
+        "COOKIES": merge_cookies(confirmed_name_response["COOKIES"], get_cookies(assert_password_response))
+    }
 
 
 def assert_account_request(account_id, tax_id, params, authorize_account_response):
@@ -231,7 +248,7 @@ def assert_account_request(account_id, tax_id, params, authorize_account_respons
 
     assert_account_response = place_request("POST", url, data, headers)
     if assert_response_error(assert_account_response):
-        print("\n{0}- Fail [asserted_account_request]. Response status: {1}. Response message: {2}".format(text.Red,
+        print("\n{0}- Fail [assert_account_request]. Response status: {1}. Response message: {2}".format(text.Red,
                                                                                                 assert_account_response.status_code,
                                                                                                 assert_account_response.text))
         return False
