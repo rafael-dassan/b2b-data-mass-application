@@ -353,6 +353,21 @@ def print_available_options(selection_structure):
             selection = input(text.default_text_color + '\nPlease select: ')
     elif selection_structure == '3':
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
+        print(text.default_text_color + str(1), text.Yellow + 'Generate GET token')
+        print(text.default_text_color + str(2), text.Yellow + 'Generate Root token')
+        print(text.default_text_color + str(3), text.Yellow + 'Generate Inclusion token')
+        print(text.default_text_color + str(4), text.Yellow + 'Generate Basic token')
+        selection = input(text.default_text_color + '\nPlease select: ')
+        while not validate_option_request_selection(selection):
+            print(text.Red + '\n- Invalid option\n')
+            print(text.default_text_color + str(0), text.Yellow + 'Close application')
+            print(text.default_text_color + str(1), text.Yellow + 'Generate GET token')
+            print(text.default_text_color + str(2), text.Yellow + 'Generate Root token')
+            print(text.default_text_color + str(3), text.Yellow + 'Generate Inclusion token')
+            print(text.default_text_color + str(4), text.Yellow + 'Generate Basic token')
+            selection = input(text.default_text_color + '\nPlease select: ')
+    elif selection_structure == '4':
+        print(text.default_text_color + str(0), text.Yellow + 'Close application')
         print(text.default_text_color + str(1), text.Yellow + 'List categories')
         print(text.default_text_color + str(2), text.Yellow + 'Associate product to category')
         print(text.default_text_color + str(3), text.Yellow + 'Create category')
@@ -364,7 +379,7 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(2), text.Yellow + 'Associate product to category')
             print(text.default_text_color + str(3), text.Yellow + 'Create category')
             selection = input(text.default_text_color + '\nPlease select: ')
-    elif selection_structure == '4':
+    elif selection_structure == '5':
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
         print(text.default_text_color + str(1), text.Yellow + 'Create User')
         print(text.default_text_color + str(2), text.Yellow + 'Delete User')
@@ -375,7 +390,7 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(1), text.Yellow + 'Create User')
             print(text.default_text_color + str(2), text.Yellow + 'Delete User')
             selection = input(text.default_text_color + '\nPlease select: ')
-    elif selection_structure == '5':
+    elif selection_structure == '6':
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
         print(text.default_text_color + str(1), text.Yellow + 'Create Attribute')
         print(text.default_text_color + str(2), text.Yellow + 'Create Category')
@@ -396,7 +411,7 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(6), text.Yellow + 'Create Product')
             print(text.default_text_color + str(7), text.Yellow + 'Create Legacy Attributes')
             selection = input(text.default_text_color + '\nPlease select: ')
-    elif selection_structure == '6':
+    elif selection_structure == '7':
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
         print(text.default_text_color + str(1), text.Yellow + 'Search a specific attribute')
         print(text.default_text_color + str(2), text.Yellow + 'Search all attributes')
@@ -431,22 +446,24 @@ def print_welcome_script():
 # Print structure menu
 def print_structure_menu():
     print(text.default_text_color + str(1), text.Yellow + 'Data creation - Microservice')
-    print(text.default_text_color + str(2), text.Yellow + 'Data searching - Microservice')
-    print(text.default_text_color + str(3), text.Yellow + 'Data creation - Magento')
-    print(text.default_text_color + str(4), text.Yellow + 'Data creation - IAM')
-    print(text.default_text_color + str(5), text.Yellow + 'Data creation - Supplier/PIM')
-    print(text.default_text_color + str(6), text.Yellow + 'Data searching - Supplier/PIM')
-    print(text.default_text_color + str(7), text.Yellow + 'Close application')
+    print(text.default_text_color + str(2), text.Yellow + 'Data searching - Microservice')    
+    print(text.default_text_color + str(3), text.Yellow + 'Token generator - Microservice')
+    print(text.default_text_color + str(4), text.Yellow + 'Data creation - Magento')
+    print(text.default_text_color + str(5), text.Yellow + 'Data creation - IAM')
+    print(text.default_text_color + str(6), text.Yellow + 'Data creation - Supplier/PIM')
+    print(text.default_text_color + str(7), text.Yellow + 'Data searching - Supplier/PIM')    
+    print(text.default_text_color + str(8), text.Yellow + 'Close application')
     structure = input(text.default_text_color + '\nPlease choose an option: ')
     while validate_structure(structure) is False:
         print(text.Red + '\n- Invalid option\n')
         print(text.default_text_color + str(1), text.Yellow + 'Data creation - Microservice')
-        print(text.default_text_color + str(2), text.Yellow + 'Data searching - Microservice')
-        print(text.default_text_color + str(3), text.Yellow + 'Data creation - Magento')
-        print(text.default_text_color + str(4), text.Yellow + 'Data creation - IAM')
-        print(text.default_text_color + str(5), text.Yellow + 'Data creation - Supplier/PIM')
-        print(text.default_text_color + str(6), text.Yellow + 'Data searching - Supplier/PIM')
-        print(text.default_text_color + str(7), text.Yellow + 'Close application')
+        print(text.default_text_color + str(2), text.Yellow + 'Data searching - Microservice') 
+        print(text.default_text_color + str(3), text.Yellow + 'Token generator - Microservice')
+        print(text.default_text_color + str(4), text.Yellow + 'Data creation - Magento')
+        print(text.default_text_color + str(5), text.Yellow + 'Data creation - IAM')
+        print(text.default_text_color + str(6), text.Yellow + 'Data creation - Supplier/PIM')
+        print(text.default_text_color + str(7), text.Yellow + 'Data searching - Supplier/PIM')
+        print(text.default_text_color + str(8), text.Yellow + 'Close application')
         structure = input(text.default_text_color + '\nPlease choose an option: ')
 
     return structure

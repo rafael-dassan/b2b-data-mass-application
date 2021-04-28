@@ -73,6 +73,7 @@ from data_mass.supplier_category import check_if_supplier_category_exist, \
     search_specific_category, display_specific_category, \
     search_all_category, display_all_category
 from data_mass.validations import validate_yes_no_option, is_number
+import pyperclip
 
 
 def show_menu():
@@ -107,17 +108,25 @@ def show_menu():
     elif selection_structure == '3':
         switcher = {
             '0': finish_application,
+            '1': token_generator_jwt,
+            '2': token_generator_root,
+            '3': token_generator_inclusion,
+            '4': token_generator_basic
+        }
+    elif selection_structure == '4':
+        switcher = {
+            '0': finish_application,
             '1': get_categories_menu,
             '2': associate_product_to_category_menu,
             '3': create_categories_menu
         }
-    elif selection_structure == '4':
+    elif selection_structure == '5':
         switcher = {
             '0': finish_application,
             '1': registration_user_iam,
             '2': delete_user_iam
         }
-    elif selection_structure == '5':
+    elif selection_structure == '6':
         switcher = {
             '0': finish_application,
             '1': create_attribute_menu,
@@ -128,7 +137,7 @@ def show_menu():
             '6': create_product_menu,
             '7': create_legacy_attributes
         }
-    elif selection_structure == '6':
+    elif selection_structure == '7':
         switcher = {
             '0': finish_application,
             '1': search_specific_attribute_menu,
@@ -1525,6 +1534,36 @@ def flow_update_invoice_payment_method(zone, environment, account_id):
         else:
             print(text.Green + '\n- Invoice payment method updated to {payment_method} for the invoice {invoice_id}'
                   .format(payment_method=payment_method, invoice_id=invoice_id))
+
+def token_generator_jwt():
+    zone = print_zone_menu_for_ms()
+    account_id = print_account_id_menu(zone)
+    token_generator(jwt=True, account_id=account_id)
+
+def token_generator_root():
+    token_generator(root=True)
+
+def token_generator_inclusion():
+    token_generator(inclusion=True)
+
+def token_generator_basic():
+    token_generator()
+
+def token_generator(jwt=False, root=False, inclusion=False, account_id=None):
+    token = ""
+    if jwt:
+        token = generate_hmac_jwt(account_id)
+    elif root:
+        token = "Basic cm9vdDpyb290"
+    elif inclusion:
+        token = "Basic cmVsYXk6TVVRd3JENVplSEtB"
+    else:
+        token = "Basic cmVsYXk6cmVsYXk="
+
+    
+    print(text.Yellow + '\n- Token generated: {0}'.format(token))
+    print(text.Green + '\n- The token is on your clipboard.')    
+    pyperclip.copy(token)
 
 
 def get_categories_menu():
