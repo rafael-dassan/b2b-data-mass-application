@@ -5,12 +5,15 @@ from gql.transport.exceptions import TransportQueryError
 from gql.transport.requests import RequestsHTTPTransport
 from tabulate import tabulate
 
+from data_mass.attribute_supplier import get_all_legacy_attributes, create_legacy_root_attribute, \
+    create_legacy_attribute_package, create_legacy_attribute_container
 from data_mass.classes.text import text
 from data_mass.common import get_supplier_base_url, get_header_request_supplier
 
 
-def create_root_category(environment):
-    name = 'DM CATEGORY ROOT ' + str(randint(1, 100000))
+def create_root_category(environment, name=None):
+    if name is None:
+        name = 'DM CATEGORY ROOT ' + str(randint(1, 100000))
     description = 'DM DESCRIPTION to ' + name
 
     # Select your transport with a defined url endpoint
@@ -451,3 +454,20 @@ def associate_all_legacy_attributes(environment, category_id, all_attributes):
                 root_abstract_attribute_id[attribute] = abstract_attribute_id
 
     return root_abstract_attribute_id, package_abstract_attribute_id, container_abstract_attribute_id
+
+
+def create_legacy_category(environment, category_name):
+    category_id = create_root_category(environment, category_name)
+    if category_id is False:
+        return False
+
+    all_attributes, has_all_attributes = get_all_legacy_attributes(environment)
+    if not has_all_attributes:
+        create_legacy_root_attribute(environment)
+        create_legacy_attribute_package(environment)
+        create_legacy_attribute_container(environment)
+
+    all_attributes_2, has_all_attributes = get_all_legacy_attributes(environment)
+    associate_all_legacy_attributes(environment, category_id, all_attributes_2)
+    return category_id
+

@@ -7,11 +7,13 @@ from data_mass.validations import validate_supplier_category_menu_structure, \
 def print_create_supplier_category_menu():
     print(text.default_text_color + str(1), text.Yellow + 'Create category root')
     print(text.default_text_color + str(2), text.Yellow + 'Create subCategory')
+    print(text.default_text_color + str(3), text.Yellow + 'Create legacy category')
     structure = input(text.default_text_color + '\nPlease select: ')
     while validate_supplier_category_menu_structure(structure) is False:
         print(text.Red + '\n- Invalid option')
         print(text.default_text_color + str(1), text.Yellow + 'Create category root')
         print(text.default_text_color + str(2), text.Yellow + 'Create subCategory')
+        print(text.default_text_color + str(3), text.Yellow + 'Create legacy category')
         structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure
