@@ -1,79 +1,148 @@
+from random import random, sample
+
+import click
+import pyperclip
+
 from data_mass.accounts import *
-from data_mass.attribute_supplier import create_attribute_enum, \
-    check_if_attribute_exist, create_attribute_group, \
-    create_attribute_primitive_type, delete_attribute_supplier, \
-    search_specific_attribute, display_specific_attribute, \
-    display_all_attribute, search_all_attribute, edit_attribute_type, create_legacy_root_attribute, \
-    create_legacy_attribute_package, create_legacy_attribute_container
+from data_mass.algo_selling import *
+from data_mass.attribute_supplier import (
+    check_if_attribute_exist,
+    create_attribute_enum,
+    create_attribute_group,
+    create_attribute_primitive_type,
+    create_legacy_attribute_container,
+    create_legacy_attribute_package,
+    create_legacy_root_attribute,
+    delete_attribute_supplier,
+    display_all_attribute,
+    display_specific_attribute,
+    edit_attribute_type,
+    search_all_attribute,
+    search_specific_attribute
+    )
+from data_mass.category_magento import *
+from data_mass.combos import *
 from data_mass.common import *
 from data_mass.credit import add_credit_to_account_microservice
 from data_mass.deals import *
 from data_mass.delivery_window import *
-from data_mass.algo_selling import *
+from data_mass.enforcement import *
 from data_mass.files import create_file_api
 from data_mass.invoices import *
-from data_mass.enforcement import *
-from data_mass.menus.account_menu import print_account_operations_menu, \
-    print_minimum_order_menu, print_account_status_menu, \
-    print_account_name_menu, print_account_enable_empties_loan_menu, \
-    print_alternative_delivery_date_menu, print_include_delivery_cost_menu, \
-    print_payment_method_menu, print_account_id_menu, \
-    print_get_account_operations_menu, delivery_window_menu
+from data_mass.menus.account_menu import (
+    delivery_window_menu,
+    print_account_enable_empties_loan_menu,
+    print_account_id_menu,
+    print_account_name_menu,
+    print_account_operations_menu,
+    print_account_status_menu,
+    print_alternative_delivery_date_menu,
+    print_get_account_operations_menu,
+    print_include_delivery_cost_menu,
+    print_minimum_order_menu,
+    print_payment_method_menu
+    )
 from data_mass.menus.algo_selling_menu import print_recommender_type_menu
-from data_mass.menus.deals_menu import print_deals_operations_menu, \
-    print_discount_percentage_menu, print_minimum_quantity_menu, \
-    print_max_quantity_menu, print_option_sku_menu, print_partial_free_good_menu, \
-    print_free_good_redemption_menu, print_free_good_quantity_menu, \
-    print_interactive_combos_quantity_range_menu, \
-    print_interactive_combos_quantity_range_menu_v2, \
-    print_stepped_free_good_ranges_menu, \
-    print_stepped_discount_ranges_menu, print_discount_range_menu
-from data_mass.menus.invoice_menu import print_invoice_operations_menu, \
-    print_invoice_status_menu, print_invoice_id_menu, \
-    print_invoice_payment_method_menu, print_invoice_status_menu_retriever
-from data_mass.menus.order_menu import print_order_operations_menu, \
-    print_allow_cancellable_order_menu, print_get_order_menu, \
-    print_order_id_menu, print_order_status_menu
-from data_mass.menus.product_menu import print_product_operations_menu, \
-    print_get_products_menu
-from data_mass.menus.inventory_menu import print_inventory_option_menu, \
+from data_mass.menus.deals_menu import (
+    print_deals_operations_menu,
+    print_discount_percentage_menu,
+    print_discount_range_menu,
+    print_free_good_quantity_menu,
+    print_free_good_redemption_menu,
+    print_interactive_combos_quantity_range_menu,
+    print_interactive_combos_quantity_range_menu_v2,
+    print_max_quantity_menu,
+    print_minimum_quantity_menu,
+    print_option_sku_menu,
+    print_partial_free_good_menu,
+    print_stepped_discount_ranges_menu,
+    print_stepped_free_good_ranges_menu
+    )
+from data_mass.menus.inventory_menu import (
+    print_inventory_option_menu,
     print_inventory_sku_quantity_menu
-from data_mass.menus.supplier_menu import print_create_supplier_category_menu, \
-    print_new_attribute, print_attribute_primitive, print_create_attribute_menu, \
-    print_min_cardinality, print_max_cardinality, print_new_page, print_attribute_type, \
-    print_environment_menu_supplier
-from data_mass.menus.rewards_menu import print_rewards_menu, \
-    print_rewards_transactions_menu, print_rewards_program_menu, \
-    print_rewards_challenges_menu
+    )
+from data_mass.menus.invoice_menu import (
+    print_invoice_id_menu,
+    print_invoice_operations_menu,
+    print_invoice_payment_method_menu,
+    print_invoice_status_menu,
+    print_invoice_status_menu_retriever
+    )
+from data_mass.menus.order_menu import (
+    print_allow_cancellable_order_menu,
+    print_get_order_menu,
+    print_order_id_menu,
+    print_order_operations_menu,
+    print_order_status_menu
+    )
+from data_mass.menus.product_menu import (
+    print_get_products_menu,
+    print_product_operations_menu
+    )
+from data_mass.menus.rewards_menu import (
+    print_rewards_challenges_menu,
+    print_rewards_menu,
+    print_rewards_program_menu,
+    print_rewards_transactions_menu
+    )
+from data_mass.menus.supplier_menu import (
+    print_attribute_primitive,
+    print_attribute_type,
+    print_create_attribute_menu,
+    print_create_supplier_category_menu,
+    print_environment_menu_supplier,
+    print_max_cardinality,
+    print_min_cardinality,
+    print_new_attribute,
+    print_new_page
+    )
 from data_mass.orders import *
-from data_mass.combos import *
-from data_mass.rewards.rewards import enroll_poc_to_program, \
-    disenroll_poc_from_program, associate_dt_combos_to_poc, \
-    display_program_rules_skus
-from data_mass.rewards.rewards_programs import create_new_program, \
-    patch_program_root_field, update_program_dt_combos, \
-    remove_program_dt_combos
-from data_mass.rewards.rewards_challenges import remove_challenge, \
-    create_take_photo_challenge, create_mark_complete_challenge, \
-    create_purchase_challenge
-from data_mass.rewards.rewards_transactions import create_redemption, \
-    create_rewards_offer, create_points_removal
-from data_mass.category_magento import *
-from data_mass.product.supplier import create_product_supplier
-from data_mass.product.products import *
 from data_mass.product.inventory import *
 from data_mass.product.magento import *
+from data_mass.product.products import *
+from data_mass.product.supplier import create_product_supplier
+from data_mass.rewards.rewards import (
+    associate_dt_combos_to_poc,
+    disenroll_poc_from_program,
+    display_program_rules_skus,
+    enroll_poc_to_program
+    )
+from data_mass.rewards.rewards_challenges import (
+    create_mark_complete_challenge,
+    create_purchase_challenge,
+    create_take_photo_challenge,
+    remove_challenge
+    )
+from data_mass.rewards.rewards_programs import (
+    create_new_program,
+    patch_program_root_field,
+    remove_program_dt_combos,
+    update_program_dt_combos
+    )
+from data_mass.rewards.rewards_transactions import (
+    create_points_removal,
+    create_redemption,
+    create_rewards_offer
+    )
+from data_mass.simulation import (
+    process_simulation_microservice,
+    request_order_simulation
+    )
+from data_mass.supplier_category import (
+    check_if_supplier_category_exist,
+    create_association_attribute_with_category,
+    create_legacy_category,
+    create_root_category,
+    create_sub_category_supplier,
+    display_all_category,
+    display_specific_category,
+    search_all_category,
+    search_specific_category
+    )
 from data_mass.user.creation import create_user
 from data_mass.user.deletion import delete_user_v3
-from data_mass.simulation import process_simulation_microservice, \
-    request_order_simulation
-from data_mass.supplier_category import check_if_supplier_category_exist, \
-    create_root_category, create_sub_category_supplier, \
-    create_association_attribute_with_category, \
-    search_specific_category, display_specific_category, \
-    search_all_category, display_all_category, create_legacy_category
-from data_mass.validations import validate_yes_no_option, is_number
-import pyperclip
+from data_mass.validations import is_number, validate_yes_no_option
 
 
 def show_menu():
@@ -239,10 +308,10 @@ def product_information_menu():
 
 
 def print_error_delivery_center_inventory(delivery_id: str):
-    print((
+    print(
         f'{text.Red}\n'
         f'Error while trying to retrive inventory for "{delivery_id}".'
-    ))
+    )
 
 
 def account_information_menu():
@@ -458,18 +527,19 @@ def order_menu():
         print_finish_application_menu()
 
     if operation != '2':
+        unique_sku = {item['sku'] for item in product_offers}
+        unique_sku = sample(list(unique_sku), len(unique_sku))
         order_status = print_order_status_menu()
-
-        quantity = int(input(text.default_text_color + 'Quantity of products you want to include in this order: '))
-        while not is_number(quantity):
-            quantity = int(input(text.default_text_color + 'Quantity of products you want to include in this order: '))
-
-        item_list = list()
-        while len(item_list) < quantity:
-            index_offers = randint(0, (len(product_offers) - 1))
-            sku = product_offers[index_offers]['sku']
-            data = {'sku': sku, 'itemQuantity': randint(0, 10)}
+        print(text.Green + f"The account has {len(unique_sku)} products associated!")
+        quantity = click.prompt(
+            f'{text.default_text_color} Quantity of products you want to include in this order',
+             type=click.IntRange(1, len(unique_sku)),
+        )
+        item_list = []
+        for sku in unique_sku[:quantity]:
+            data = {'sku': sku, 'itemQuantity': randint(0, 10)} 
             item_list.append(data)
+        
 
     return {
         '1': lambda: flow_create_order(zone, environment, account_id, delivery_center_id, order_status, item_list),
@@ -505,7 +575,7 @@ def flow_create_order(zone, environment, account_id, delivery_center_id, order_s
         print_finish_application_menu() 
 
     # Call function to configure prefix and order number size in the database sequence
-    elif False == configure_order_params(zone, environment, account_id, 8, 'DM-{zone}-'.format(zone=zone)):
+    elif False == configure_order_params(zone, environment, account_id, 8, f'DM-{zone}-'):
         print_finish_application_menu()
 
     order_items = request_order_simulation(zone, environment, account_id, delivery_center_id, item_list, None, None,
@@ -530,10 +600,10 @@ def flow_create_changed_order(zone, environment, account_id):
     if not order_data:
         print_finish_application_menu()
     elif order_data == 'empty':
-        print(text.Red + '\n- The account {account_id} does not have orders'.format(account_id=account_id))
+        print(text.Red + f'\n- The account {account_id} does not have orders')
         print_finish_application_menu()
     elif order_data == 'not_found':
-        print(text.Red + '\n- The order {order_id} does not exist'.format(order_id=order_id))
+        print(text.Red + f'\n- The order {order_id} does not exist')
         print_finish_application_menu()
 
     statuses = ['DENIED', 'CANCELLED', 'DELIVERED', 'PARTIAL_DELIVERY', 'PENDING_CANCELLATION', 'INVOICED',
@@ -551,7 +621,7 @@ def flow_create_changed_order(zone, environment, account_id):
 
     response = request_changed_order_creation(zone, environment, order_data)
     if response == 'success':
-        print(text.Green + '\n- The order {order_id} was changed successfully'.format(order_id=order_id))
+        print(text.Green + f'\n- The order {order_id} was changed successfully')
     else:
         print_finish_application_menu()
 
@@ -748,7 +818,7 @@ def flow_create_discount(zone, environment, account_id, sku):
 
     response = create_discount(account_id, sku, zone, environment, discount_value, minimum_quantity)
     if response:
-        print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
+        print(text.Green + f'\n- Deal {response} created successfully')
     else:
         print_finish_application_menu()
 
@@ -758,7 +828,7 @@ def flow_create_stepped_discount(zone, environment, account_id, sku):
 
     response = create_stepped_discount(account_id, sku, zone, environment, ranges)
     if response:
-        print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
+        print(text.Green + f'\n- Deal {response} created successfully')
     else:
         print_finish_application_menu()
 
@@ -773,7 +843,7 @@ def flow_create_stepped_discount_with_limit(zone, environment, account_id, sku):
     response = create_stepped_discount_with_limit(account_id, sku, zone, environment, default_index_range,
                                                   discount_range, max_quantity)
     if response:
-        print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
+        print(text.Green + f'\n- Deal {response} created successfully')
     else:
         print_finish_application_menu()
 
@@ -792,7 +862,7 @@ def flow_create_free_good(zone, environment, account_id, sku_list):
     response = create_free_good(account_id, sku_list, zone, environment, minimum_quantity, quantity,
                                 partial_free_good, need_to_buy_product)
     if response:
-        print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
+        print(text.Green + f'\n- Deal {response} created successfully')
     else:
         print_finish_application_menu()
 
@@ -802,7 +872,7 @@ def flow_create_stepped_free_good(zone, environment, account_id, sku):
 
     response = create_stepped_free_good(account_id, sku, zone, environment, ranges)
     if response:
-        print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
+        print(text.Green + f'\n- Deal {response} created successfully')
     else:
         print_finish_application_menu()
 
@@ -814,7 +884,7 @@ def flow_create_interactive_combos(zone, environment, account_id, sku):
     response = create_interactive_combos(account_id, sku, zone, environment, index_range)
 
     if response:
-        print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
+        print(text.Green + f'\n- Deal {response} created successfully')
     else:
         print_finish_application_menu()
 
@@ -826,7 +896,7 @@ def flow_create_interactive_combos_v2(zone, environment, account_id, sku):
     response = create_interactive_combos_v2(account_id, sku, zone, environment, index_range)
 
     if response:
-        print(text.Green + '\n- Deal {deal_id} created successfully'.format(deal_id=response))
+        print(text.Green + f'\n- Deal {response} created successfully')
     else:
         print_finish_application_menu()
 
@@ -993,7 +1063,7 @@ def flow_input_inventory_to_product(zone, environment):
 
     products = request_get_offers_microservice(account_id, zone, environment)
     if products == 'not_found':
-        print('\n{0}- [Catalog Service] There is no product associated with the account {1}'.format(text.Red, account_id))
+        print(f'\n{text.Red}- [Catalog Service] There is no product associated with the account {account_id}')
         print_finish_application_menu()
     elif not products:
         print_finish_application_menu()
@@ -1015,7 +1085,7 @@ def flow_input_inventory_to_product(zone, environment):
                                                    .get('sku'), inventory_information.get('quantity'))
 
     if inventory:
-        print('\n{0}- The inventory has been added successfully for the account {1}'.format(text.Green, account_id))
+        print(f'\n{text.Green}- The inventory has been added successfully for the account {account_id}')
     else:
         print_finish_application_menu()
 
@@ -1146,7 +1216,7 @@ def flow_input_empties_discounts(zone, environment):
 
     empty_sku = switcher.get(zone, False)
     if not empty_sku:
-        print(text.Red + '\n- Empties discounts it not enabled for {country}'.format(country=zone))
+        print(text.Red + f'\n- Empties discounts it not enabled for {zone}')
         print_finish_application_menu()
 
     while True:
@@ -1207,7 +1277,7 @@ def flow_create_account(zone, environment, account_id):
                                                 delivery_address, account_status, enable_empties_loan)
 
     if create_account_response:
-        print(text.Green + '\n- Your account {account_id} has been created successfully'.format(account_id=account_id))
+        print(text.Green + f'\n- Your account {account_id} has been created successfully')
 
         # Input default credit to the account so it won't be `null` in the Account Service database
         if False == add_credit_to_account_microservice(account_id, zone, environment, 0, 0):
@@ -1273,7 +1343,7 @@ def flow_create_credit_information(zone, environment, account_id):
     credit = add_credit_to_account_microservice(account_id, zone, environment, credit_info.get('credit'),
                                                 credit_info.get('balance'))
     if credit == 'success':
-        print(text.Green + '\n- Credit added successfully for the account {account_id}'.format(account_id=account_id))
+        print(text.Green + f'\n- Credit added successfully for the account {account_id}')
     else:
         print_finish_application_menu()
 
@@ -1487,7 +1557,7 @@ def flow_create_invoice(zone, environment, account_id):
 
     invoice_response = create_invoice_request(zone, environment, order_id, invoice_status, order_details, order_items)
     if invoice_response:
-        print(text.Green + '\n- Invoice {invoice_id} created successfully'.format(invoice_id=invoice_response))
+        print(text.Green + f'\n- Invoice {invoice_response} created successfully')
 
         # Generate files for bank_slip and invoice (NF) only for Brazil
         if zone == 'BR':
@@ -1560,7 +1630,7 @@ def token_generator(jwt=False, root=False, inclusion=False, account_id=None):
         token = "Basic cmVsYXk6cmVsYXk="
 
     
-    print(text.Yellow + '\n- Token generated: {0}'.format(token))
+    print(text.Yellow + f'\n- Token generated: {token}')
     print(text.Green + '\n- The token is on your clipboard.')    
     pyperclip.copy(token)
 
@@ -1745,7 +1815,7 @@ def create_credit_statement_menu():
 
     response = create_file_api(zone, environment, account_id, 'credit-statement', data)
     if response == 'success':
-        print(text.Green + '\n- Credit Statement created for the account {account_id}'.format(account_id=account_id))
+        print(text.Green + f'\n- Credit Statement created for the account {account_id}')
     else:
         print_finish_application_menu()
 
