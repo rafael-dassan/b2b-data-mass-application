@@ -554,7 +554,7 @@ def flow_create_order(zone, environment, account_id, delivery_center_id, order_s
         allow_order_cancel = 'N'
     
     # Create a dataflow to match business rules
-    if zone == 'PE' and environment == 'UAT':
+    if environment == 'UAT':
         
         order_prefix_params = get_order_prefix_params(zone)
 
