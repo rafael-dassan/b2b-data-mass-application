@@ -10,19 +10,30 @@ This repository contains the B2B Data Mass Script, aimed to those who want to cr
 *  [Git][GitDoc]
 *  [Python 3.7 or higher][Python]
 
-## Running the Script
-To launch the application menu, please follow the steps below after opening the Terminal:
-```sh
-cd <project-root-dir>
-```
-(Optional) To have an unexpected free environment, install the `virtualenv` package [using our guide](doc/USER_GUIDE.md#using-virtualenv).
+## Setting Up the Environment
+To maintain a pure and error-free Python environment for running Data Mass, follow the steps below:
 
-You may not have all required dependencies installed by default. Install them by using the pip command:
-```sh
-pip3 install .
+### Using script
+Change the permissions of the script:
+```bash
+chmod +x env-maker.sh
 ```
 
-And then you can finally execute the script:
+Run the script:
+```bash
+./env-maker.sh
+```
+
+Activate the virtualenv:
+```bash
+source venv/bin/activate
+```
+
+### Manually
+Follow the [virtualenv installation guide](doc/USER_GUIDE.md#using-virtualenv).
+
+## Running the Application
+After enabling the virtualenv, run the script:
 ```sh
 python3 -m data_mass.main
 ```

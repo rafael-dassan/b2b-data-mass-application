@@ -1,8 +1,10 @@
 """Package Installation."""
 import re
 from os.path import dirname, join
+from subprocess import call
 
 from setuptools import find_packages, setup
+from setuptools.command.install import install
 
 with open(join(dirname(__file__), "data_mass", "__init__.py")) as fp:
     for line in fp:
@@ -18,6 +20,14 @@ with open("requirements.txt") as f:
 
 with open("README.md") as f:
     long_description = f.read()
+
+
+class PostInstallCommand(install):
+    """Post-installation for installation mode."""
+    def run(self):
+        install.run(self)
+        call(["pre-commit", "install"], shell=True)
+
 
 extras = {
     "testing": [
@@ -76,6 +86,9 @@ setup(
     install_requires=requirements,
     extras_require=extras,
     python_requires=">=3.7.0",
+    cmdclass={
+        "install": PostInstallCommand,
+    },
     classifiers=[
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
