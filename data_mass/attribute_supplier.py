@@ -435,7 +435,7 @@ def get_all_legacy_attributes(environment):
 
         page_number += 1
 
-    return semantic_id_and_id
+    return semantic_id_and_id, has_all_attributes
 
 
 def populate_attributes(all_attributes, attribute_model, semantic_id_and_id):

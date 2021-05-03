@@ -1,5 +1,6 @@
-from datetime import datetime, timedelta
+from random import random, sample
 
+import click
 import pyperclip
 
 from data_mass.accounts import *
@@ -131,6 +132,7 @@ from data_mass.simulation import (
 from data_mass.supplier_category import (
     check_if_supplier_category_exist,
     create_association_attribute_with_category,
+    create_legacy_category,
     create_root_category,
     create_sub_category_supplier,
     display_all_category,
@@ -201,8 +203,7 @@ def show_menu():
             '3': attribute_associated_category_menu,
             '4': delete_attribute_menu,
             '5': edit_attribute_type_menu,
-            '6': create_product_menu,
-            '7': create_legacy_attributes
+            '6': create_product_menu
         }
     elif selection_structure == '7':
         switcher = {
@@ -526,18 +527,19 @@ def order_menu():
         print_finish_application_menu()
 
     if operation != '2':
+        unique_sku = {item['sku'] for item in product_offers}
+        unique_sku = sample(list(unique_sku), len(unique_sku))
         order_status = print_order_status_menu()
-
-        quantity = int(input(text.default_text_color + 'Quantity of products you want to include in this order: '))
-        while not is_number(quantity):
-            quantity = int(input(text.default_text_color + 'Quantity of products you want to include in this order: '))
-
-        item_list = list()
-        while len(item_list) < quantity:
-            index_offers = randint(0, (len(product_offers) - 1))
-            sku = product_offers[index_offers]['sku']
-            data = {'sku': sku, 'itemQuantity': randint(0, 10)}
+        print(text.Green + f"The account has {len(unique_sku)} products associated!")
+        quantity = click.prompt(
+            f'{text.default_text_color} Quantity of products you want to include in this order',
+             type=click.IntRange(1, len(unique_sku)),
+        )
+        item_list = []
+        for sku in unique_sku[:quantity]:
+            data = {'sku': sku, 'itemQuantity': randint(0, 10)} 
             item_list.append(data)
+        
 
     return {
         '1': lambda: flow_create_order(zone, environment, account_id, delivery_center_id, order_status, item_list),
@@ -1928,7 +1930,8 @@ def create_category_supplier_menu():
 
     switcher = {
         '1': 'ROOT',
-        '2': 'SUB'
+        '2': 'SUB',
+        '3': 'LEGACY'
     }
 
     supplier_option = switcher.get(selection_structure, False)
@@ -1936,7 +1939,6 @@ def create_category_supplier_menu():
     # Option to create a new program
     if supplier_option == 'ROOT':
         environment = print_environment_menu_supplier()
-
         create_category = create_root_category(environment)
 
         if create_category:
@@ -1958,6 +1960,20 @@ def create_category_supplier_menu():
         if create_sub_category:
             print(text.Green + '\n- [Category] The new subCategory has been successfully created. '
                                'ID: {category}'.format(category=create_sub_category))
+            print_finish_application_menu()
+        else:
+            print_finish_application_menu()
+    else:
+        environment = print_environment_menu_supplier()
+        category_name = input(text.default_text_color +
+                                    'Which name do you want input in this category (Default: Legacy Category): ')
+        if category_name == '':
+            category_name = 'Legacy Category'
+        legacy_category = create_legacy_category(environment, category_name)
+
+        if legacy_category:
+            print(text.Green + '\n- [Category] The new legacy category has been successfully created. '
+                               'ID: {category}'.format(category=legacy_category))
             print_finish_application_menu()
         else:
             print_finish_application_menu()
@@ -2096,18 +2112,6 @@ def create_product_menu():
         print_finish_application_menu()
     else:
         print_finish_application_menu()
-
-
-def create_legacy_attributes():
-    environment = print_environment_menu_supplier()
-
-    create_legacy_root_attribute(environment)
-    create_legacy_attribute_package(environment)
-    create_legacy_attribute_container(environment)
-
-    print(text.Green + '\n- Attributes created successfully.')
-
-    print_finish_application_menu()
 
 
 # Init

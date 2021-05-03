@@ -18,6 +18,7 @@ def create_product_supplier(environment, category_id):
     name = 'DM PRODUCT ' + str(randint(1, 100000))
     description = 'DM DESCRIPTION to ' + name
     var_name = 'DM VARIANT ' + str(randint(1, 100000))
+    skus = ['DM-SKU-' + str(randint(1, 100000))]
 
     all_attributes = get_all_legacy_attributes(environment)
 
@@ -42,7 +43,7 @@ def create_product_supplier(environment, category_id):
     mut = create_product_payload()
 
     params = {'name': name, 'description': description, 'category': category_id,
-              'attributes': attributes, 'varName': var_name}
+              'attributes': attributes, 'varName': var_name, 'skus': skus}
 
     # Execute the query on the transport
     try:
@@ -68,13 +69,14 @@ def create_product_payload():
               $category: ID!
               $varName: String!
               $attributes: [ConcreteAttributeInput!]!
+              $skus: [String!]!
             ) {
               createProduct(
                 input: {
                   name: $name
                   description: $description
                   categoryId: $category
-                  country: "BR"
+                  country: "DO"
                   images: ["http://test.com/1"]
                   attributes: 
                     $attributes
@@ -82,7 +84,7 @@ def create_product_payload():
                     {
                       name: $varName
                       images: ["http://testVariant.com/1"]
-                      skus: ["123"]
+                      skus: $skus
                       vendorId: "e437c69f-2f6e-4412-b78b-1845c8ac8838"
                       manufacturerId: "0c2e96b5-26ea-4698-80a7-86d658656572"
                       attributes: []

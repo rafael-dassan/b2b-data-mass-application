@@ -150,7 +150,7 @@ def validate_get_products(option):
 
 
 def validate_structure(option):
-    options = ['1', '2', '3', '4', '5', '6', '7']
+    options = ['1', '2', '3', '4', '5', '6', '7', '8']
     return option in options
 
 
@@ -220,8 +220,7 @@ def validate_supplier_menu_structure(selection):
        '3': True,
        '4': True,
        '5': True,
-       '6': True,
-       '7': True
+       '6': True
     }.get(selection, False)
 
 
@@ -238,7 +237,7 @@ def validate_attribute_menu_structure(selection, is_enum):
 
 
 def validate_supplier_category_menu_structure(selection):
-    option = ['1', '2']
+    option = ['1', '2', '3']
     return selection in option
 
 
