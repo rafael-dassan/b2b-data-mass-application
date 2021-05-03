@@ -54,4 +54,4 @@ python3 -m pip install .
 echo "${GREEN}Done!${RESET}"
 
 echo "${GREEN}Environment has been set up successfully!${RESET}"
-echo "| ${CYAN}NOTE: to start the virtualenv, run \"virtualenv $VIRTUALENV_DIR/bin/activate\".${RESET} |"
+echo "| ${CYAN}NOTE: to start the virtualenv, run \"source $VIRTUALENV_DIR/bin/activate\".${RESET} |"
