@@ -554,7 +554,7 @@ def flow_create_order(zone, environment, account_id, delivery_center_id, order_s
         allow_order_cancel = 'N'
     
     # Create a dataflow to match business rules
-    if zone == 'PE' and environment == 'UAT':
+    if environment == 'UAT':
         
         order_prefix_params = get_order_prefix_params(zone)
 
@@ -2101,10 +2101,10 @@ def edit_attribute_type_menu():
 
 def create_product_menu():
     category_id = input(text.default_text_color + 'Category ID the product will be linked with: ')
-
+    country = print_zone_menu_for_ms()
     environment = print_environment_menu_supplier()
 
-    product = create_product_supplier(environment, category_id)
+    product = create_product_supplier(environment, category_id, country)
     if product:
         print(
             text.Green + '\n- [Product] The new product has been successfully created. '

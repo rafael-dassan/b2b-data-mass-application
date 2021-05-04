@@ -1,14 +1,14 @@
 import json
 from random import randint
-from gql import gql, Client
+
+from gql import Client, gql
 from gql.transport.exceptions import TransportQueryError
 from gql.transport.requests import RequestsHTTPTransport
 from tabulate import tabulate
 
-from data_mass.attribute_supplier import get_all_legacy_attributes, create_legacy_root_attribute, \
-    create_legacy_attribute_package, create_legacy_attribute_container
+import data_mass.attribute_supplier
 from data_mass.classes.text import text
-from data_mass.common import get_supplier_base_url, get_header_request_supplier
+from data_mass.common import get_header_request_supplier, get_supplier_base_url
 
 
 def create_root_category(environment, name=None):
@@ -75,38 +75,41 @@ def create_sub_category_supplier(environment, parent):
 def create_sub_category_payload():
     return gql(
         """
-             mutation createCategory($name: String!, $description: String!, $parent: ID) {
-                  createCategory(input: {
-                        name: $name, 
-                        helpText: $description, 
-                        description: "Create Category"
-                        parentId: $parent
-                        }) {
-                            id
-                            name
-                            helpText
-                             description
-                        }}
-        """
-    )
+        mutation createCategory(
+        $name: String!,
+        $description: String!,
+        $parent: ID) {
+            createCategory(input:{
+                name: $name,
+                helpText: $description,
+                description: "Create Category"
+                parentId: $parent
+                }){
+                    id
+                    name
+                    helpText
+                    description
+               }}
+        """)
 
 
 def create_root_category_payload():
     return gql(
         """
-            mutation createCategory($name: String!, $description: String!) {
-                createCategory(input: {
-                    name: $name, 
-                    helpText: $description, 
+        mutation createCategory(
+            $name: String!,
+            $description: String!){
+                createCategory(input:{
+                    name: $name,
+                    helpText: $description,
                     description: "Create Category"
-                    }) {
+                    }){
                         id
                         name
                         helpText
                         description
                     }}
-    """
-    )
+    """)
 
 
 def check_if_supplier_category_exist(environment, category):
@@ -119,10 +122,11 @@ def check_if_supplier_category_exist(environment, category):
     client = Client(transport=transport, fetch_schema_from_transport=False)
 
     mut = gql("""
-        query category($id: ID!){  
-            category(id: $id) {
-                id
-                  }
+        query category(
+            $id: ID!){
+                category(id: $id){
+                    id
+                }
             }
     """)
 
@@ -136,7 +140,8 @@ def check_if_supplier_category_exist(environment, category):
         return False
 
 
-def create_association_attribute_with_category(environment, attribute_id, category_id, min_cardinality,
+def create_association_attribute_with_category(environment, attribute_id,
+                                               category_id, min_cardinality,
                                                max_cardinality):
     # Select your transport with a defined url endpoint
     base_url = get_supplier_base_url(environment)
@@ -148,7 +153,8 @@ def create_association_attribute_with_category(environment, attribute_id, catego
 
     mut = create_association_payload()
 
-    params = {"attribute_id": attribute_id, "category_id": category_id, "min_cardinality": min_cardinality,
+    params = {"attribute_id": attribute_id, "category_id": category_id,
+              "min_cardinality": min_cardinality,
               "max_cardinality": max_cardinality}
 
     try:
@@ -168,34 +174,35 @@ def create_association_attribute_with_category(environment, attribute_id, catego
 def create_association_payload():
     return gql(
         """
-               mutation associateAttribute($attribute_id: ID!, $category_id: ID!, $min_cardinality: NonNegativeInt!, $max_cardinality: NonNegativeInt!) { 
-                  associateAttribute(
-                    input: {
-                      attributeModelId: $attribute_id
-                      taxonomyNodeId: $category_id
-                      minCardinality: $min_cardinality
-                      maxCardinality: $max_cardinality
-                    }
-                  ) {
+            mutation associateAttribute(
+                $attribute_id: ID!,
+                $category_id: ID!,
+                $min_cardinality: NonNegativeInt!,
+                $max_cardinality: NonNegativeInt!){
+                    associateAttribute(input:{
+                        attributeModelId: $attribute_id
+                        taxonomyNodeId: $category_id
+                        minCardinality: $min_cardinality
+                        maxCardinality: $max_cardinality
+                }){
                     id
                     minCardinality
                     maxCardinality
-                    taxonomyNode {
-                      id
-                      name
-                      children{
+                    taxonomyNode{
+                        id
+                        name
+                        children{
                             id
                             name
                         }
                     }
-                    attributeModel {
-                      id
-                      name
+                    attributeModel{
+                        id
+                        name
                     }
-                  }
                 }
-    """
-    )
+        }
+    """)
 
 
 def search_specific_category(environment, category):
@@ -238,24 +245,26 @@ def create_search_specific_category_payload():
                   name
                 }
                attributes {
-                        ... on AbstractAttribute {
+                    ... on AbstractAttribute {
+                        id
+                        minCardinality
+                        maxCardinality
+                        attributeModel{
                             id
-                            minCardinality
-              	            maxCardinality
-                            __typename
+                            semanticId
                         }
-                        ... on ConcreteAttribute {
-                            id
-                            values
-                            __typename
-                        }
+                        __typename
                     }
+                    ... on ConcreteAttribute {
+                        id
+                        values
+                        __typename
+                    }
+                }
                 createdAt
               }
             }
-        '''
-
-    )
+        ''')
 
 
 def display_specific_category(category):
@@ -386,8 +395,7 @@ def search_all_category_payload():
                     createdAt
                     }
                 }
-        '''
-    )
+        ''')
 
 
 def display_all_category(category):
@@ -425,35 +433,45 @@ def display_all_category(category):
 
 
 def associate_all_legacy_attributes(environment, category_id, all_attributes):
-    attributes_to_be_associated = ['classification', 'brand-id', 'brand', 'sub-brand-name', 'minimum-order-quantity',
-                                   'is-alcoholic', 'is-narcotic', 'hidden', 'sales-ranking', 'pallet-quantity',
+    attributes_to_be_associated = ['classification', 'brand-id', 'brand',
+                                   'sub-brand-name', 'minimum-order-quantity',
+                                   'is-alcoholic', 'is-narcotic', 'hidden',
+                                   'sales-ranking', 'pallet-quantity',
                                    'package', 'container']
 
-    root_abstract_attribute_id = {}
-    package_abstract_attribute_id = None
-    container_abstract_attribute_id = None
+    root_abs_att_id = {}
+    package_abs_att_id = None
+    container_abs_att_id = None
 
     for attribute in attributes_to_be_associated:
-            if attribute == 'package':
-                package_abstract_attribute_id = create_association_attribute_with_category(environment,
-                                                                                           all_attributes[attribute],
-                                                                                           category_id, 0, 1)
-            elif attribute == 'container':
-                container_abstract_attribute_id = create_association_attribute_with_category(environment,
-                                                                                             all_attributes[attribute],
-                                                                                             category_id, 0, 1)
+        if attribute == 'package':
+            package_abs_att_id = \
+                create_association_attribute_with_category(environment,
+                                                           all_attributes[
+                                                               attribute],
+                                                           category_id, 0, 1)
+        elif attribute == 'container':
+            container_abs_att_id = \
+                create_association_attribute_with_category(
+                    environment,
+                    all_attributes[attribute],
+                    category_id, 0, 1)
+        else:
+            if attribute == 'brand-id':
+                abstract_attribute_id = \
+                    create_association_attribute_with_category(
+                        environment,
+                        all_attributes[attribute],
+                        category_id, 1, 1)
             else:
-                if attribute == 'brand-id':
-                    abstract_attribute_id = create_association_attribute_with_category(environment,
-                                                                                       all_attributes[attribute],
-                                                                                       category_id, 1, 1)
-                else:
-                    abstract_attribute_id = create_association_attribute_with_category(environment,
-                                                                                       all_attributes[attribute],
-                                                                                       category_id, 0, 1)
-                root_abstract_attribute_id[attribute] = abstract_attribute_id
+                abstract_attribute_id = \
+                    create_association_attribute_with_category(
+                        environment,
+                        all_attributes[attribute],
+                        category_id, 0, 1)
+            root_abs_att_id[attribute] = abstract_attribute_id
 
-    return root_abstract_attribute_id, package_abstract_attribute_id, container_abstract_attribute_id
+    return root_abs_att_id, package_abs_att_id, container_abs_att_id
 
 
 def create_legacy_category(environment, category_name):
@@ -461,13 +479,43 @@ def create_legacy_category(environment, category_name):
     if category_id is False:
         return False
 
-    all_attributes, has_all_attributes = get_all_legacy_attributes(environment)
+    all_attributes, has_all_attributes = \
+        data_mass.attribute_supplier.get_all_legacy_attributes(
+            environment)
     if not has_all_attributes:
-        create_legacy_root_attribute(environment)
-        create_legacy_attribute_package(environment)
-        create_legacy_attribute_container(environment)
+        data_mass.attribute_supplier.create_legacy_root_attribute(environment)
+        data_mass.attribute_supplier.create_legacy_attribute_package(
+            environment)
+        data_mass.attribute_supplier.create_legacy_attribute_container(
+            environment)
 
-    all_attributes_2, has_all_attributes = get_all_legacy_attributes(environment)
+    all_attributes_2, has_all_attributes = \
+        data_mass.attribute_supplier.get_all_legacy_attributes(
+            environment)
     associate_all_legacy_attributes(environment, category_id, all_attributes_2)
     return category_id
 
+
+def verify_if_category_has_all_legacy_category(environment, category):
+    all_attributes = ['classification', 'brand-id', 'brand', 'sub-brand-name',
+                      'minimum-order-quantity',
+                      'is-alcoholic', 'is-narcotic', 'hidden', 'sales-ranking',
+                      'pallet-quantity', 'unit-count',
+                      'item-count', 'package-id', 'package-name', 'pack',
+                      'pack-material-type', 'package', 'size',
+                      'container-name', 'unit-of-measurement',
+                      'container-material', 'returnable', 'container']
+
+    result = search_specific_category(environment, category)
+    category_result = json.loads(result)
+
+    attribute_semantic_id = list()
+    info = category_result['category']
+    attributes_info = info['attributes']
+    for i in range(len(attributes_info)):
+        attribute_model = attributes_info[i]['attributeModel']
+        attribute_semantic_id = attribute_model['semanticId']
+    if attribute_semantic_id in all_attributes:
+        return True
+    else:
+        return False

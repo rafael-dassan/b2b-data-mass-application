@@ -485,7 +485,7 @@ def populate_container_attribute_payload(abstract_container_attribute_id, all_at
             [
                 {"id": all_attributes['size'], "value": 15},
                 {"id": all_attributes['container-name'], "value": "container-name"},
-                {"id": all_attributes['unit-of-measurement'], "value": "ml"},
+                {"id": all_attributes['unit-of-measurement'], "value": "ML"},
                 {"id": all_attributes['container-material'], "value": "container-material"},
                 {"id": all_attributes['returnable'], "value": True}
             ]
