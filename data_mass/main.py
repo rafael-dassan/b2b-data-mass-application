@@ -1,8 +1,12 @@
+import argparse
+import sys
+from argparse import Namespace
 from random import random, sample
 
 import click
 import pyperclip
 
+from data_mass import __version__
 from data_mass.accounts import *
 from data_mass.algo_selling import *
 from data_mass.attribute_supplier import (
@@ -2107,10 +2111,26 @@ def create_product_menu():
         print_finish_application_menu()
 
 
-# Init
-try:
-    if __name__ == '__main__':
-        show_menu()
+def parse_args(args: list) -> Namespace:
+    """Takes argv and parses Data Mass options."""
 
-except KeyboardInterrupt:
-    sys.exit(0)
+    parser = argparse.ArgumentParser(
+        description="Data Mass Application"
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=__version__,
+        help="show program's version number and exit"
+    )
+
+    return parser.parse_args(args)
+
+
+if __name__ == "__main__":
+    parse_args(sys.argv[1:])
+
+    try:
+        show_menu()
+    except (KeyboardInterrupt, EOFError):
+        sys.exit(0)
