@@ -5,7 +5,6 @@ exclude =
     venv,
     accounts.py
     algo_selling.py,
-    attribute_supplier.py,
     category_magento.py
     combos.py,
     common.py,

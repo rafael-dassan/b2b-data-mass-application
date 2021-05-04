@@ -5,21 +5,6 @@ import pyperclip
 
 from data_mass.accounts import *
 from data_mass.algo_selling import *
-from data_mass.attribute_supplier import (
-    check_if_attribute_exist,
-    create_attribute_enum,
-    create_attribute_group,
-    create_attribute_primitive_type,
-    create_legacy_attribute_container,
-    create_legacy_attribute_package,
-    create_legacy_root_attribute,
-    delete_attribute_supplier,
-    display_all_attribute,
-    display_specific_attribute,
-    edit_attribute_type,
-    search_all_attribute,
-    search_specific_attribute
-    )
 from data_mass.category_magento import *
 from data_mass.combos import *
 from data_mass.common import *
@@ -129,7 +114,22 @@ from data_mass.simulation import (
     process_simulation_microservice,
     request_order_simulation
     )
-from data_mass.supplier_category import (
+from data_mass.supplier.attribute import (
+    check_if_attribute_exist,
+    create_attribute_enum,
+    create_attribute_group,
+    create_attribute_primitive_type,
+    create_legacy_attribute_container,
+    create_legacy_attribute_package,
+    create_legacy_root_attribute,
+    delete_attribute_supplier,
+    display_all_attribute,
+    display_specific_attribute,
+    edit_attribute_type,
+    search_all_attribute,
+    search_specific_attribute
+    )
+from data_mass.supplier.category import (
     check_if_supplier_category_exist,
     create_association_attribute_with_category,
     create_legacy_category,

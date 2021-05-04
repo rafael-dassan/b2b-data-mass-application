@@ -9,13 +9,12 @@ ignore=third_party
 # matches against base names, not paths.
 ignore-patterns=accounts.py
                 algo_selling.py,
-                attribute_supplier.py,
                 category_magento.py,
                 combos.py,
                 common.py,
                 credit.py,
                 deals.py,
-                delivery_window,
+                delivery_window.py,
                 main.py,
                 orders.py,
                 populate.py,

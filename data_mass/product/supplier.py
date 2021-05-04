@@ -6,15 +6,15 @@ from gql import Client, gql
 from gql.transport.exceptions import TransportQueryError
 from gql.transport.requests import RequestsHTTPTransport
 
-from data_mass.attribute_supplier import (
+from data_mass.classes.text import text
+from data_mass.common import get_header_request_supplier, get_supplier_base_url
+from data_mass.supplier.attribute import (
     create_root_attribute_payload,
     get_all_legacy_attributes,
     populate_container_attribute_payload,
     populate_package_attribute_payload
     )
-from data_mass.classes.text import text
-from data_mass.common import get_header_request_supplier, get_supplier_base_url
-from data_mass.supplier_category import (
+from data_mass.supplier.category import (
     associate_all_legacy_attributes,
     search_specific_category,
     verify_if_category_has_all_legacy_category
