@@ -551,44 +551,18 @@ def flow_create_order(zone, environment, account_id, delivery_center_id, order_s
         allow_order_cancel = 'N'
     
     # Create a dataflow to match business rules
-    if environment == 'UAT':
-        
-        order_prefix_params = get_order_prefix_params(zone)
-
-        if False == configure_order_params(zone, environment, account_id, order_prefix_params.get('order_number_size'),
-                                             order_prefix_params.get('prefix')):
-            print_finish_application_menu()
-
-        order_items = request_order_simulation(zone, environment, account_id, delivery_center_id, item_list, None, None,
-                                           'CASH', 0)
-        if not order_items:
-            print_finish_application_menu()
-
-        response = request_order_creation(account_id, delivery_center_id, zone, environment, allow_order_cancel,
-                                        order_items, order_status)
-        if response:
-            print(text.Green + '\n- Order ' + response.get('orderNumber') + ' created successfully')
-            
-        print_finish_application_menu() 
-
-    # Call function to configure prefix and order number size in the database sequence
-    elif False == configure_order_params(zone, environment, account_id, 8, f'DM-{zone}-'):
-        print_finish_application_menu()
 
     order_items = request_order_simulation(zone, environment, account_id, delivery_center_id, item_list, None, None,
-                                           'CASH', 0)
+                                        'CASH', 0)
     if not order_items:
         print_finish_application_menu()
 
     response = request_order_creation(account_id, delivery_center_id, zone, environment, allow_order_cancel,
-                                      order_items, order_status)
+                                    order_items, order_status)
     if response:
         print(text.Green + '\n- Order ' + response.get('orderNumber') + ' created successfully')
-        # Call function to re-configure prefix and order number size according to the zone's format
-        order_prefix_params = get_order_prefix_params(zone)
-        if False == configure_order_params(zone, environment, account_id, order_prefix_params.get('order_number_size'),
-                                             order_prefix_params.get('prefix')):
-            print_finish_application_menu()
+        
+    print_finish_application_menu() 
 
 
 def flow_create_changed_order(zone, environment, account_id):
