@@ -2118,7 +2118,6 @@ def parse_args(args: list) -> Namespace:
     parser = argparse.ArgumentParser(
         description="Data Mass Application"
     )
-
     parser.add_argument(
         "--version",
         action="version",
