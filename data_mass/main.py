@@ -1,8 +1,12 @@
+import argparse
+import sys
+from argparse import Namespace
 from random import random, sample
 
 import click
 import pyperclip
 
+from data_mass import __version__
 from data_mass.accounts import *
 from data_mass.algo_selling import *
 from data_mass.attribute_supplier import (
@@ -23,6 +27,7 @@ from data_mass.attribute_supplier import (
 from data_mass.category_magento import *
 from data_mass.combos import *
 from data_mass.common import *
+from data_mass.core.terminal import check_for_update
 from data_mass.credit import add_credit_to_account_microservice
 from data_mass.deals import *
 from data_mass.delivery_window import *
@@ -2107,10 +2112,37 @@ def create_product_menu():
         print_finish_application_menu()
 
 
-# Init
-try:
-    if __name__ == '__main__':
-        show_menu()
+def parse_args(args: list) -> Namespace:
+    """Takes argv and parses Data Mass options."""
 
-except KeyboardInterrupt:
-    sys.exit(0)
+    parser = argparse.ArgumentParser(
+        description="Data Mass Application"
+    )
+
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=__version__,
+        help="show program's version number and exit"
+    )
+
+    parser.add_argument(
+        "--ignore-auto-update",
+        default=False,
+        type=bool,
+        help="Ignore auto update script."
+    )
+
+    return parser.parse_args(args)
+
+
+if __name__ == "__main__":
+    arg = parse_args(sys.argv[1:])
+
+    if not arg.ignore_auto_update:
+        check_for_update()
+
+    try:
+        show_menu()
+    except (KeyboardInterrupt, EOFError):
+        sys.exit(0)
