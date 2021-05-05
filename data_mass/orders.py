@@ -14,56 +14,6 @@ from data_mass.common import update_value_to_json, \
 from data_mass.classes.text import text
 
 
-def configure_order_params(zone, environment, account_id, number_size, prefix):
-    """
-    Configure the fields prefix and order number size in the database sequence via Order Service
-    Args:
-        zone: e.g., AR, BR, CO, DO, MX, ZA
-        environment: e.g., DEV, SIT, UAT
-        account_id: POC unique identifier
-        number_size: order number size
-        prefix: order prefix
-    Returns: `success` or error message in case of failure
-    """
-
-    # Create file path
-    abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, 'data/configure_order_prefix_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
-
-    dict_values = {
-        'orderNumberSize': number_size,
-        'prefix': prefix
-    }
-
-    # Update the deal's values in runtime
-    for key in dict_values.keys():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
-
-    # Create body
-    request_body = convert_json_to_string(json_object)
-
-    # Define headers
-    request_headers = get_header_request(zone, True, False, False, False, account_id)
-    set_to_dictionary(request_headers, 'Authorization', generate_erp_token())
-
-    # Define url request 
-    request_url = get_microservice_base_url(environment) + '/order-service/configure'
-
-    # Send request
-    response = place_request('POST', request_url, request_body, request_headers)
-    
-    if response.status_code == 204:
-        return 'success'
-    else:
-        print(text.Red + '\n- [Order Service] Failure to configure order prefix and number size. Response Status: '
-              + str(response.status_code) + '. Response message ' + response.text)
-        return False
-
-
 def request_order_creation(account_id, delivery_center_id, zone, environment, allow_order_cancel, order_items,
                            order_status):
     """
@@ -181,57 +131,6 @@ def create_order_payload(account_id, delivery_center_id, allow_order_cancel, ord
         set_to_dictionary(json_object, 'cancellationReason', 'Order cancelled for testing purposes')
 
     return convert_json_to_string(json_object)
-
-
-def get_order_prefix_params(zone):
-    params = {
-        'AR': {
-            'order_number_size': 12,
-            'prefix': 'UAT'
-        },
-        'BR': {
-            'order_number_size': 8,
-            'prefix': '31'
-        },
-        'CA': {
-            'order_number_size': 7,
-            'prefix': 'UAT'
-        },
-        'CO': {
-            'order_number_size': 7,
-            'prefix': 'UAT'
-        },
-        'DO': {
-            'order_number_size': 7,
-            'prefix': 'UAT'
-        },
-        'EC': {
-            'order_number_size': 7,
-            'prefix': 'UAT'
-        },
-        'MX': {
-            'order_number_size': 7,
-            'prefix': '5'
-        },
-        'PA': {
-            'order_number_size': 7,
-            'prefix': 'UAT'
-        },
-        'PE': {
-            'order_number_size': 7,
-            'prefix': 'UAT'
-        },
-        'PY': {
-            'order_number_size': 7,
-            'prefix': 'UAT'
-        },
-        'ZA': {
-            'order_number_size': 7,
-            'prefix': 'UAT'
-        }
-    }
-
-    return params[zone]
 
 
 def request_changed_order_creation(zone, environment, order_data):
