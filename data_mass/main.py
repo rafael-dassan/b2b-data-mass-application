@@ -518,23 +518,35 @@ def order_menu():
     delivery_center_id = account[0]['deliveryCenterId']
 
     # Call function to check if the account has products inside
-    product_offers = request_get_offers_microservice(account_id, zone, environment)
+    product_offers = request_get_offers_microservice(
+        account_id=account_id,
+        zone=zone,
+        environment=environment
+    )
     if not product_offers:
         print_finish_application_menu()
     elif product_offers == 'not_found':
-        print(text.Red + '\n- There is no product associated with the account {account_id}'
-              .format(account_id=account_id))
+        print(
+            text.Red
+            + f'\n- There is no product associated '
+            'with the account {account_id}'
+        )
         print_finish_application_menu()
 
     if operation != '2':
         unique_sku = {item['sku'] for item in product_offers}
         unique_sku = sample(list(unique_sku), len(unique_sku))
         order_status = print_order_status_menu()
-        print(text.Green + f"The account has {len(unique_sku)} products associated!")
+        print(
+            text.Green
+            + f"The account has {len(unique_sku)} products associated!"
+        )
         quantity = click.prompt(
-            f'{text.default_text_color} Quantity of products you want to include in this order',
+            f'{text.default_text_color}'
+            'Quantity of products you want to include in this order',
              type=click.IntRange(1, len(unique_sku)),
         )
+
         item_list = []
         for sku in unique_sku[:quantity]:
             data = {'sku': sku, 'itemQuantity': randint(0, 10)} 
@@ -542,55 +554,142 @@ def order_menu():
         
 
     return {
-        '1': lambda: flow_create_order(zone, environment, account_id, delivery_center_id, order_status, item_list),
-        '2': lambda: flow_create_changed_order(zone, environment, account_id),
+        '1': lambda: flow_create_order(
+            zone,
+            environment,
+            account_id,
+            delivery_center_id,
+            order_status,
+            item_list
+        ),
+        '2': lambda: flow_create_changed_order(
+            zone,
+            environment,
+            account_id
+        ),
     }.get(operation, lambda: None)()
 
 
-def flow_create_order(zone, environment, account_id, delivery_center_id, order_status, item_list):
+def flow_create_order(
+    zone: str,
+    environment: str,
+    account_id: int,
+    delivery_center_id: int,
+    order_status: str,
+    item_list: list
+    ):
+    """
+    Create a dataflow to match business rules.
+
+    Args:
+        zone (str): [description]
+        environment (str): [description]
+        account_id (int): [description]
+        delivery_center_id (int): [description]
+        order_status (str): [description]
+        item_list (list): [description]
+    """
+
     if order_status == 'PLACED':
         allow_order_cancel = print_allow_cancellable_order_menu()
     else:
         allow_order_cancel = 'N'
     
-    # Create a dataflow to match business rules
     if environment == 'UAT':
         
         order_prefix_params = get_order_prefix_params(zone)
 
-        if False == configure_order_params(zone, environment, account_id, order_prefix_params.get('order_number_size'),
-                                             order_prefix_params.get('prefix')):
+        if not configure_order_params(
+            zone=zone,
+            environment=environment,
+            account_id=account_id,
+            number_size=order_prefix_params.get('order_number_size', None),
+            prefix=order_prefix_params.get('prefix', None)
+        ):
             print_finish_application_menu()
 
-        order_items = request_order_simulation(zone, environment, account_id, delivery_center_id, item_list, None, None,
-                                           'CASH', 0)
+        order_items = request_order_simulation(
+            zone=zone,
+            environment=environment,
+            account_id=account_id,
+            delivery_center_id=delivery_center_id,
+            items=item_list,
+            combos=None,
+            empties=None,
+            payment_method='CASH',
+            payment_term=0
+        )
         if not order_items:
             print_finish_application_menu()
 
-        response = request_order_creation(account_id, delivery_center_id, zone, environment, allow_order_cancel,
-                                        order_items, order_status)
+        response = request_order_creation(
+            account_id=account_id,
+            delivery_center_id=delivery_center_id,
+            zone=zone,
+            environment=environment,
+            allow_order_cancel=allow_order_cancel,
+            order_items=order_items,
+            order_status=order_status
+        )
         if response:
-            print(text.Green + '\n- Order ' + response.get('orderNumber') + ' created successfully')
+            print(
+                text.Green
+                + f'\n- Order {response.get("orderNumber")} '
+                'created successfully'
+            )
             
         print_finish_application_menu() 
 
-    # Call function to configure prefix and order number size in the database sequence
-    elif False == configure_order_params(zone, environment, account_id, 8, f'DM-{zone}-'):
+    # function to set prefix and order number size in the db_sequence
+    elif not configure_order_params(
+        zone=zone,
+        environment=environment,
+        account_id=account_id,
+        number_size=8,
+        prefix=f'DM-{zone}-'
+    ):
         print_finish_application_menu()
 
-    order_items = request_order_simulation(zone, environment, account_id, delivery_center_id, item_list, None, None,
-                                           'CASH', 0)
+    order_items = request_order_simulation(
+        zone=zone,
+        environment=environment,
+        account_id=account_id,
+        delivery_center_id=delivery_center_id,
+        items=item_list,
+        combos=[],
+        empties=[],
+        payment_method='CASH',
+        payment_term=0,
+    )
     if not order_items:
         print_finish_application_menu()
 
-    response = request_order_creation(account_id, delivery_center_id, zone, environment, allow_order_cancel,
-                                      order_items, order_status)
+    response = request_order_creation(
+        account_id=account_id,
+        delivery_center_id=delivery_center_id,
+        zone=zone,
+        environment=environment,
+        allow_order_cancel=allow_order_cancel,
+        order_items=order_items,
+        order_status=order_status
+    )
+
     if response:
-        print(text.Green + '\n- Order ' + response.get('orderNumber') + ' created successfully')
-        # Call function to re-configure prefix and order number size according to the zone's format
+        print(
+            text.Green 
+            + f'\n- Order {response.get("orderNumber")} created successfully'
+        )
+
+        # function to re-set prefix and order number 
+        # size according to the zone's format
         order_prefix_params = get_order_prefix_params(zone)
-        if False == configure_order_params(zone, environment, account_id, order_prefix_params.get('order_number_size'),
-                                             order_prefix_params.get('prefix')):
+        if not configure_order_params(
+            zone=zone,
+            environment=environment,
+            account_id=account_id,
+            number_size=order_prefix_params.get('order_number_size'),
+            prefix=order_prefix_params.get('prefix')
+        ):
             print_finish_application_menu()
 
 
@@ -606,29 +705,43 @@ def flow_create_changed_order(zone, environment, account_id):
         print(text.Red + f'\n- The order {order_id} does not exist')
         print_finish_application_menu()
 
-    statuses = ['DENIED', 'CANCELLED', 'DELIVERED', 'PARTIAL_DELIVERY', 'PENDING_CANCELLATION', 'INVOICED',
-                'IN_TRANSIT']
+    statuses = [
+        'DENIED',
+        'CANCELLED',
+        'DELIVERED',
+        'PARTIAL_DELIVERY',
+        'PENDING_CANCELLATION',
+        'INVOICED',
+        'IN_TRANSIT'
+    ]
 
     if order_data[0]['status'] in statuses:
-        print(text.Red + '\n- This order cannot be changed. Order status: {order_status}'
-              .format(order_status=order_data[0]['status']))
+        print(
+            text.Red
+             + '\n- This order cannot be changed. '
+             f'Order status: {order_data[0]["status"]}'
+        )
         print_finish_application_menu()
 
-    if len(order_data[0]['items']) == 1 and order_data[0]['items'][0]['quantity'] == 1:
-        print(text.Red + '\n- It\'s not possible to change this order because it has only one product with '
-                         'quantity equals 1')
+    if (
+        len(order_data[0]['items']) == 1 
+        and order_data[0]['items'][0]['quantity'] == 1
+    ):
+        print(text.Red 
+        + '\n- It\'s not possible to change this order because it has '
+        'only one product with quantity equals 1'
+        )
         print_finish_application_menu()
 
-    old_date = datetime.strptime(order_data[0]['delivery']['date'], "%Y-%m-%d")
-    old_date = datetime.date(old_date)
-    if old_date >= datetime.date(datetime.today()):
-        delta_date = int(input('Qty of days in front: '))
-        new_date = str(old_date + timedelta(delta_date))
-        order_data[0]['delivery']['date'] = new_date
+    date_entry = validate_user_entry_date()
+    order_data[0]['delivery']['date'] = date_entry
 
     response = request_changed_order_creation(zone, environment, order_data)
     if response == 'success':
-        print(text.Green + f'\n- The order {order_id} was changed successfully')
+        print(
+            text.Green 
+            + f'\n- The order {order_id} was changed successfully'
+        )
     else:
         print_finish_application_menu()
 
