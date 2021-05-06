@@ -174,10 +174,10 @@ def show_menu():
     elif selection_structure == '3':
         switcher = {
             '0': finish_application,
-            '1': token_generator_jwt,
-            '2': token_generator_root,
-            '3': token_generator_inclusion,
-            '4': token_generator_basic
+            # '1': token_generator_jwt,
+            '1': token_generator_root,
+            '2': token_generator_inclusion,
+            '3': token_generator_basic
         }
     elif selection_structure == '4':
         switcher = {
@@ -1592,7 +1592,9 @@ def token_generator_basic():
 def token_generator(jwt=False, root=False, inclusion=False, account_id=None):
     token = ""
     if jwt:
-        token = generate_hmac_jwt(account_id)
+        # TODO This feature is temporarily disabled for security reasons.
+        # token = generate_hmac_jwt(account_id)
+        pass
     elif root:
         token = "Basic cm9vdDpyb290"
     elif inclusion:
