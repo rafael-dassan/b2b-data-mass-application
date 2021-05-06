@@ -60,14 +60,16 @@ def populate_invoices(country, environment):
 
 
 def populate_challenges(country, environment):
-    logger.info("remove_rewards_enrollment for %s/%s", country, environment)
-    disenroll_pocs(country, environment, search_data_by(country, 'rewards_enroll'))
+    rewards_not_available_zones = ["CA", "PA", "PY"]
+    if country not in rewards_not_available_zones:
+        logger.info("remove_rewards_enrollment for %s/%s", country, environment)
+        disenroll_pocs(country, environment, search_data_by(country, 'rewards_enroll'))
 
-    logger.info("enroll_poc_rewards for %s/%s", country, environment)
-    enroll_poc_base(country, environment, search_data_by(country, 'rewards_enroll'))
+        logger.info("enroll_poc_rewards for %s/%s", country, environment)
+        enroll_poc_base(country, environment, search_data_by(country, 'rewards_enroll'))
 
-    logger.info("populate_rewards_challenges for %s/%s", country, environment)
-    populate_challenge_base(country, environment, search_data_by(country, 'rewards_enroll'))
+        logger.info("populate_rewards_challenges for %s/%s", country, environment)
+        populate_challenge_base(country, environment, search_data_by(country, 'rewards_enroll'))
 
 
 def categorize_and_enable_products_magento(country, environment):
