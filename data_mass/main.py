@@ -595,19 +595,6 @@ def flow_create_order(
     else:
         allow_order_cancel = 'N'
     
-    if environment == 'UAT':
-        
-        order_prefix_params = get_order_prefix_params(zone)
-
-        if not configure_order_params(
-            zone=zone,
-            environment=environment,
-            account_id=account_id,
-            number_size=order_prefix_params.get('order_number_size', None),
-            prefix=order_prefix_params.get('prefix', None)
-        ):
-            print_finish_application_menu()
-
         order_items = request_order_simulation(
             zone=zone,
             environment=environment,
@@ -631,66 +618,15 @@ def flow_create_order(
             order_items=order_items,
             order_status=order_status
         )
+
         if response:
             print(
-                text.Green
+                text.Green 
                 + f'\n- Order {response.get("orderNumber")} '
                 'created successfully'
             )
-            
-        print_finish_application_menu() 
 
-    # function to set prefix and order number size in the db_sequence
-    elif not configure_order_params(
-        zone=zone,
-        environment=environment,
-        account_id=account_id,
-        number_size=8,
-        prefix=f'DM-{zone}-'
-    ):
         print_finish_application_menu()
-
-    order_items = request_order_simulation(
-        zone=zone,
-        environment=environment,
-        account_id=account_id,
-        delivery_center_id=delivery_center_id,
-        items=item_list,
-        combos=[],
-        empties=[],
-        payment_method='CASH',
-        payment_term=0,
-    )
-    if not order_items:
-        print_finish_application_menu()
-
-    response = request_order_creation(
-        account_id=account_id,
-        delivery_center_id=delivery_center_id,
-        zone=zone,
-        environment=environment,
-        allow_order_cancel=allow_order_cancel,
-        order_items=order_items,
-        order_status=order_status
-    )
-
-    if response:
-        print(
-            text.Green 
-            + f'\n- Order {response.get("orderNumber")} created successfully'
-        )
-
-        # function to re-set prefix and order number 
-        # size according to the zone's format
-        order_prefix_params = get_order_prefix_params(zone)
-        if not configure_order_params(
-            zone=zone,
-            environment=environment,
-            account_id=account_id,
-            number_size=order_prefix_params.get('order_number_size'),
-            prefix=order_prefix_params.get('prefix')
-        ):
-            print_finish_application_menu()
 
 
 def flow_create_changed_order(zone, environment, account_id):
