@@ -1682,19 +1682,32 @@ def create_categories_menu():
         print_finish_application_menu()
 
     category = [category for category in categories if category['name'] == category_name]
+
     if category:
         category = category[0]
-        print("{text_green}{success}".format(text_green=text.Green, success="Category already exists"))
+        print(f"{text.Green}Category already exists")
     else:
         # Create category
-        category = create_category(country, environment, category_name, parent_id)
-        if isinstance(category, str):
-            print("{text_red}{not_found}".format(text_red=text.Red, not_found="Fail to create category"))
-            print_finish_application_menu()
-        else:
-            print("{text_green}{success}".format(text_green=text.Green, success="Success to create category"))
+        response = create_category(
+            country=country,
+            environment=environment,
+            category_name=category_name,
+            parent_id=parent_id
+        )
 
-    print("- {id}, {name}".format(id=category['id'], name=category['name']))
+        category = loads(response.text)
+
+        if response.status_code == 200:
+            print(f"{text.Green}Success in creating category.")
+        else:
+            print(f"{text.Red}Fail to create category: \n")
+            print(f"Status Code: {response.status_code} \n")
+            print(f"Response: {category}")
+
+            print_finish_application_menu()
+
+    print(f"Id: {category['id']}")
+    print(f"Name: {category['name']}")
 
 
 def order_information_menu():

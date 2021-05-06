@@ -2,28 +2,32 @@
 import json
 import os
 import sys
-from datetime import date
 import time as t
+from datetime import date
 from time import time
 from uuid import uuid1
 
-# Third party imports
-from jsonpath_rw import Index, Fields
-from jsonpath_rw_ext import parse
+import jwt
 import requests
+# Third party imports
+from jsonpath_rw import Fields, Index
+from jsonpath_rw_ext import parse
 from requests import request
 from tabulate import tabulate
-import jwt
 
 # Local application imports
 from data_mass.classes.text import text
 from data_mass.logger import log_to_file
-from data_mass.validations import is_number, validate_zone_for_ms, \
-    validate_environment, validate_structure, \
-    validate_zone_for_interactive_combos_ms, \
-    validate_option_request_selection, \
-    validate_supplier_menu_structure, \
-    validate_supplier_search_menu_structure
+from data_mass.validations import (
+    is_number,
+    validate_environment,
+    validate_option_request_selection,
+    validate_structure,
+    validate_supplier_menu_structure,
+    validate_supplier_search_menu_structure,
+    validate_zone_for_interactive_combos_ms,
+    validate_zone_for_ms
+    )
 
 
 # Validate option menu selection
@@ -82,7 +86,7 @@ def place_request(request_method, request_url, request_body, request_headers):
         # Send request
         response = request(request_method, request_url, data=request_body, headers=request_headers)
     except requests.exceptions.RequestException as e:
-        print('\n{0}{1}'.format(text.Red, str(e)))
+        print(f'\n{text.Red}{str(e)}')
         finish_application()
 
     log_to_file(
@@ -502,7 +506,7 @@ def validate_combo_structure(option):
 def print_zone_menu_for_ms():
     zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
     while validate_zone_for_ms(zone.upper()) is False:
-        print(text.Red + '\n- {0} is not a valid zone\n'.format(zone.upper()))
+        print(text.Red + f'\n- {zone.upper()} is not a valid zone\n')
         zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
 
     return zone.upper()
@@ -512,7 +516,7 @@ def print_zone_menu_for_ms():
 def print_zone_for_interactive_combos_menu_for_ms():
     zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
     while not validate_zone_for_interactive_combos_ms(zone.upper()):
-        print(text.Red + '\n- {0} is not a valid zone\n'.format(zone.upper()))
+        print(text.Red + f'\n- {zone.upper()} is not a valid zone\n')
         zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
 
     return zone.upper()
@@ -522,7 +526,7 @@ def print_zone_for_interactive_combos_menu_for_ms():
 def print_environment_menu():
     environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
     while validate_environment(environment.upper()) is False:
-        print(text.Red + '\n- {0} is not a valid environment\n'.format(environment.upper()))
+        print(text.Red + f'\n- {environment.upper()} is not a valid environment\n')
         environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
 
     return environment.upper()
@@ -532,7 +536,7 @@ def print_environment_menu():
 def print_environment_menu_user_creation():
     environment = input(text.default_text_color + "Environment (e.g., SIT, UAT): ")
     while not validate_environment_user_creation(environment.upper()):
-        print(text.Red + "\n- {0} is not a valid environment")
+        print(text.Red + f"\n- {environment} is not a valid environment")
         environment = input(text.default_text_color + "Environment (e.g., SIT, UAT): ")
 
     return environment.upper()
@@ -961,7 +965,7 @@ def generate_hmac_jwt(account_id, app_claim=None, expire_months=1):
         set_to_dictionary(json_object, 'app', app_claim)
 
     encoded = jwt.encode(json_object, '20735d31-46b5-411d-af02-47897a01c0c9', algorithm='HS256')
-    return 'Bearer {0}'.format(encoded)
+    return f'Bearer {encoded}'
 
 
 def generate_erp_token(expire_months=1):
@@ -985,7 +989,7 @@ def generate_erp_token(expire_months=1):
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
     encoded = jwt.encode(json_object, '20735d31-46b5-411d-af02-47897a01c0c9', algorithm='HS256')
-    return 'Bearer {0}'.format(encoded)
+    return f'Bearer {encoded}'
 
 
 # Return base URL for Supplier
