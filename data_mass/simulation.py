@@ -12,7 +12,8 @@ from data_mass.common import (
     get_microservice_base_url,
     place_request,
     update_value_to_json,
-    validate_user_entry_date
+    validate_user_entry_date,
+    validate_yes_no_change_date
     )
 
 
@@ -57,7 +58,13 @@ def request_order_simulation(
         get_microservice_base_url(environment, False) + "/cart-service/v2"
     )
 
-    date_entry = validate_user_entry_date()
+    option_change_date = validate_yes_no_change_date()
+    if option_change_date.upper() == "Y": 
+        date_entry = validate_user_entry_date(
+            'New Date entry for Delivery Date (Y-m-d)'
+        )
+    else:
+        date_entry = None
 
     # Inputs for default payload simulation
     dict_values = {

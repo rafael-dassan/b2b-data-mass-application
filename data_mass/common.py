@@ -666,17 +666,43 @@ def print_input_text(input_text):
             return input_str
 
 
-def validate_user_entry_date():
+def validate_yes_no_change_date():
+    """
+    Validate user input for change date.
+
+    Returns:
+        option(str): Y or N depending on user input.
+    """
+    option = input(
+        text.default_text_color 
+        + '\nNew Date entry for Delivery Date? y/N: '
+        )
+
+    while (option.upper() in ["Y", "N"]) is False:
+        print(text.Red + '\n- Invalid option')
+        option = input(
+            text.default_text_color 
+            + '\nNew Date entry for Delivery Date? y/N: '    
+        )
+
+    if option.upper() == "Y": 
+        return option.upper()
+
+    return option.upper()
+
+
+def validate_user_entry_date(text:str = "New Date entry"):
     """
     Validate user input for date using format of Y-m-d.
 
+    Args:
+        text (str, optional): Validate user input date and print the passed,
+        or defaults to "New Date entry".
     Returns:
         new_date(str): a str valid date.
+
     """
-    date = prompt(
-        'New Date entry (Y-m-d)',
-        type=click.DateTime(formats=["%Y-%m-%d"])
-    )
+    date = prompt(text, type=click.DateTime(formats=["%Y-%m-%d"]))
 
     new_date = str(datetime.date(date))
     return new_date

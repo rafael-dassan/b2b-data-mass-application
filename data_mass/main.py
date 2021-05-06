@@ -573,8 +573,8 @@ def order_menu():
 def flow_create_order(
     zone: str,
     environment: str,
-    account_id: int,
-    delivery_center_id: int,
+    account_id: str,
+    delivery_center_id: str,
     order_status: str,
     item_list: list
     ):
@@ -582,12 +582,12 @@ def flow_create_order(
     Create a dataflow to match business rules.
 
     Args:
-        zone (str): [description]
-        environment (str): [description]
-        account_id (int): [description]
-        delivery_center_id (int): [description]
-        order_status (str): [description]
-        item_list (list): [description]
+        zone(str): e.g., AR, BR, DO, etc
+        environment(str): e.g., DEV, SIT, UAT
+        account_id(str): POC unique identifier
+        delivery_center_id(str): POC's delivery center
+        order_status (str): order status e.g. Placed, Pending, Confirmed, etc
+        item_list(list): list of items
     """
 
     if order_status == 'PLACED':
@@ -595,41 +595,54 @@ def flow_create_order(
     else:
         allow_order_cancel = 'N'
     
-        order_items = request_order_simulation(
-            zone=zone,
-            environment=environment,
-            account_id=account_id,
-            delivery_center_id=delivery_center_id,
-            items=item_list,
-            combos=None,
-            empties=None,
-            payment_method='CASH',
-            payment_term=0
-        )
-        if not order_items:
-            print_finish_application_menu()
-
-        response = request_order_creation(
-            account_id=account_id,
-            delivery_center_id=delivery_center_id,
-            zone=zone,
-            environment=environment,
-            allow_order_cancel=allow_order_cancel,
-            order_items=order_items,
-            order_status=order_status
-        )
-
-        if response:
-            print(
-                text.Green 
-                + f'\n- Order {response.get("orderNumber")} '
-                'created successfully'
-            )
-
+    order_items = request_order_simulation(
+        zone=zone,
+        environment=environment,
+        account_id=account_id,
+        delivery_center_id=delivery_center_id,
+        items=item_list,
+        combos=[],
+        empties=[],
+        payment_method='CASH',
+        payment_term=0
+    )
+    if not order_items:
         print_finish_application_menu()
 
+    response = request_order_creation(
+        account_id=account_id,
+        delivery_center_id=delivery_center_id,
+        zone=zone,
+        environment=environment,
+        allow_order_cancel=allow_order_cancel,
+        order_items=order_items,
+        order_status=order_status
+    )
 
-def flow_create_changed_order(zone, environment, account_id):
+    if response:
+        print(
+            text.Green 
+            + f'\n- Order {response.get("orderNumber")} '
+            'created successfully'
+        )
+
+    print_finish_application_menu()
+
+
+def flow_create_changed_order(
+    zone: str,
+    environment: str,
+    account_id: int
+    ):
+    """
+    Create a dataflow to match business rules.
+
+    Args:
+        zone(str): e.g., AR, BR, DO, etc
+        environment(str): e.g., DEV, SIT, UAT
+        account_id(int): POC unique identifier
+    """
+
     order_id = print_order_id_menu()
     order_data = check_if_order_exists(account_id, zone, environment, order_id)
     if not order_data:
@@ -669,7 +682,18 @@ def flow_create_changed_order(zone, environment, account_id):
         )
         print_finish_application_menu()
 
-    date_entry = validate_user_entry_date()
+    print(
+        text.Green
+        + f"The Delivery date is {order_data[0]['delivery']['date']}!"
+        )
+    option_change_date = validate_yes_no_change_date()
+    if option_change_date.upper() == "Y": 
+        date_entry = validate_user_entry_date(
+            'New Date entry for Delivery Date (Y-m-d)'
+        )
+    else:
+        date_entry = None
+
     order_data[0]['delivery']['date'] = date_entry
 
     response = request_changed_order_creation(zone, environment, order_data)
