@@ -31,18 +31,32 @@ def request_order_simulation(
 ):
     """
     Request order simulation through Cart Service
-    Args:
-        zone: e.g., AR, BR, DO, etc
-        environment: e.g., DEV, SIT, UAT
-        account_id: POC unique identifier
-        delivery_center_id: POC's delivery center
-        items: list of items
-        combos: list of combos
-        empties: list of empties
-        payment_method: desired payment method (default is CASH)
-        payment_term: payment terms according to the payment method
 
-    Returns: response payload in case of success or `false` in case of failure
+    Parameters
+    ----------
+    zone : str
+        e.g., AR, BR, DO, etc
+    environment : str
+        e.g., DEV, SIT, UAT
+    account_id : int
+        POC unique identifier
+    delivery_center_id : int
+        POC's delivery center
+    items : list
+        list of items
+    combos : list
+        list of combos
+    empties : list
+        list of empties
+    payment_method : str
+        desired payment method (default is CASH)
+    payment_term : bool
+        payment terms according to the payment method
+
+    Returns
+    -------
+    str or Bool
+        response payload in case of success or `false` in case of failure
     """
     if empties is None:
         empties = []

@@ -670,8 +670,10 @@ def validate_yes_no_change_date():
     """
     Validate user input for change date.
 
-    Returns:
-        option(str): Y or N depending on user input.
+    Returns
+    -------
+    str
+        Y or N depending on user input.
     """
     option = input(
         text.default_text_color 
@@ -695,12 +697,16 @@ def validate_user_entry_date(text:str = "New Date entry"):
     """
     Validate user input for date using format of Y-m-d.
 
-    Args:
-        text (str, optional): Validate user input date and print the passed,
-        or defaults to "New Date entry".
-    Returns:
-        new_date(str): a str valid date.
+    Parameters
+    ----------
+    text : str, optional
+        Validate user input date and print the passed,
+        by default "New Date entry"
 
+    Returns
+    -------
+    str
+        str valid date.
     """
     date = prompt(text, type=click.DateTime(formats=["%Y-%m-%d"]))
 
