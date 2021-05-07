@@ -52,10 +52,7 @@ def create_category(country, environment, category_name, parent_id, custom_attri
     Return category object
     """
     response = request_create_category(country, environment, category_name, parent_id, custom_attributes)
-    if response.status_code == 200:
-        return loads(response.text)
-    else:
-        return False
+    return response
 
 
 def request_associate_product_to_category(country, environment, product_sku, category_id):

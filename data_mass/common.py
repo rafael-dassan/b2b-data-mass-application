@@ -539,7 +539,7 @@ def print_environment_menu():
 def print_environment_menu_user_creation():
     environment = input(text.default_text_color + "Environment (e.g., SIT, UAT): ")
     while not validate_environment_user_creation(environment.upper()):
-        print(text.Red + "\n- {0} is not a valid environment")
+        print(text.Red + f"\n- {environment} is not a valid environment")
         environment = input(text.default_text_color + "Environment (e.g., SIT, UAT): ")
 
     return environment.upper()
