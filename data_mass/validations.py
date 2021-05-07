@@ -89,7 +89,7 @@ def validate_zone_for_interactive_combos_ms(zone):
         'DO': True,
         'CA': True,
         'PA': True,
-        'PY': False
+        'PY': True
     }.get(zone, False)
 
 
@@ -104,7 +104,7 @@ def validate_zone_for_ms(zone):
         'MX': True,
         'PA': True,
         'PE': True,
-        'PY': False,
+        'PY': True,
         'ZA': True
     }.get(zone, False)
 
