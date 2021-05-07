@@ -1,6 +1,7 @@
 # Standard library imports
 import json
 import os
+from datetime import datetime, timedelta
 from json import loads
 
 from tabulate import tabulate
@@ -61,10 +62,11 @@ def request_order_simulation(
     option_change_date = validate_yes_no_change_date()
     if option_change_date.upper() == "Y": 
         date_entry = validate_user_entry_date(
-            'New Date entry for Delivery Date (Y-m-d)'
+            'Enter Date entry for Delivery Date (Y-m-d)'
         )
     else:
-        date_entry = None
+        tomorrow = datetime.today() + timedelta(1)
+        date_entry = str(datetime.date(tomorrow))
 
     # Inputs for default payload simulation
     dict_values = {

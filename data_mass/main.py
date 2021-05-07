@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from random import random, sample
 
 import click
@@ -647,60 +648,65 @@ def flow_create_changed_order(
     order_data = check_if_order_exists(account_id, zone, environment, order_id)
     if not order_data:
         print_finish_application_menu()
-    elif order_data == 'empty':
-        print(text.Red + f'\n- The account {account_id} does not have orders')
+    elif order_data == "empty":
+        print(text.Red + f"\n- The account {account_id} does not have orders")
         print_finish_application_menu()
-    elif order_data == 'not_found':
-        print(text.Red + f'\n- The order {order_id} does not exist')
+    elif order_data == "not_found":
+        print(text.Red + f"\n- The order {order_id} does not exist")
         print_finish_application_menu()
 
     statuses = [
-        'DENIED',
-        'CANCELLED',
-        'DELIVERED',
-        'PARTIAL_DELIVERY',
-        'PENDING_CANCELLATION',
-        'INVOICED',
-        'IN_TRANSIT'
+        "DENIED",
+        "CANCELLED",
+        "DELIVERED",
+        "PARTIAL_DELIVERY",
+        "PENDING_CANCELLATION",
+        "INVOICED",
+        "IN_TRANSIT",
     ]
 
-    if order_data[0]['status'] in statuses:
+    if order_data[0]["status"] in statuses:
         print(
-            text.Red
-             + '\n- This order cannot be changed. '
-             f'Order status: {order_data[0]["status"]}'
+            text.Red + "\n- This order cannot be changed. "
+            f'Order status: {order_data[0]["status"]}'
         )
         print_finish_application_menu()
 
     if (
-        len(order_data[0]['items']) == 1 
-        and order_data[0]['items'][0]['quantity'] == 1
+        len(order_data[0]["items"]) == 1
+        and order_data[0]["items"][0]["quantity"] == 1
     ):
-        print(text.Red 
-        + '\n- It\'s not possible to change this order because it has '
-        'only one product with quantity equals 1'
+        print(
+            text.Red
+            + "\n- It's not possible to change this order because it has "
+            "only one product with quantity equals 1"
         )
         print_finish_application_menu()
 
+    delivery_date = (
+        order_data[0]["delivery"]["date"]
+        if order_data[0]["delivery"]["date"]
+        else ""
+    )
+
     print(
-        text.Green
-        + f"The Delivery date is {order_data[0]['delivery']['date']}!"
-        )
+        text.Green + "The Delivery-Date is " + f"{text.Blue}{delivery_date}!"
+    )
     option_change_date = validate_yes_no_change_date()
-    if option_change_date.upper() == "Y": 
+    if option_change_date.upper() == "Y":
         date_entry = validate_user_entry_date(
-            'New Date entry for Delivery Date (Y-m-d)'
+            "Change Date for Delivery-Date (Y-m-d)?"
         )
     else:
-        date_entry = None
+        tomorrow = datetime.today() + timedelta(1)
+        date_entry = str(datetime.date(tomorrow))
 
-    order_data[0]['delivery']['date'] = date_entry
+    order_data[0]["delivery"]["date"] = date_entry
 
     response = request_changed_order_creation(zone, environment, order_data)
-    if response == 'success':
+    if response == "success":
         print(
-            text.Green 
-            + f'\n- The order {order_id} was changed successfully'
+            text.Green + f"\n- The order {order_id} was changed successfully"
         )
     else:
         print_finish_application_menu()
