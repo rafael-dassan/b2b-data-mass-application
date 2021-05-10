@@ -1570,8 +1570,8 @@ def flow_update_invoice_payment_method(zone, environment, account_id):
         print_finish_application_menu()
     else:
         payment_method = print_invoice_payment_method_menu()
-        invoice_response = update_invoice_request(zone, environment, invoice_id, payment_method,
-                                                  response['data'][0]['status'], account_id)
+        invoice_response = update_invoice_request(zone, environment, account_id, invoice_id, payment_method,
+                                                  response['data'][0]['status'])
         if not invoice_response:
             print_finish_application_menu()
         else:
