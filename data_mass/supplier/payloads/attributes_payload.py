@@ -1,5 +1,5 @@
 from gql import gql
-from graphql import DocumentNode
+from gql.gql import DocumentNode
 
 
 def create_primitive_attribute_payload():

@@ -13,6 +13,3 @@ gql~=3.0.0a5
 pre-commit==2.12.0
 pyperclip>=1.8.2
 click>=7.1.2
-pip~=20.2.4
-wheel~=0.35.1
-setuptools~=47.1.0
