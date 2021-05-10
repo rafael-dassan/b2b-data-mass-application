@@ -15,7 +15,7 @@ from data_mass.supplier.attribute import (
     create_legacy_root_attribute,
     get_all_legacy_attributes
     )
-from data_mass.supplier.documents import (
+from data_mass.supplier.payloads.categories_payload import (
     create_association_payload,
     create_root_category_payload,
     create_search_specific_category_payload,

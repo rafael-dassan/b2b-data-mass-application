@@ -13,7 +13,7 @@ from tabulate import tabulate
 from data_mass.classes.text import text
 from data_mass.common import get_header_request_supplier, get_supplier_base_url
 from data_mass.menus.supplier_menu import print_primitive_type
-from data_mass.supplier.documents import (
+from data_mass.supplier.payloads.attributes_payload import (
     create_edit_enum_attribute,
     create_edit_group_attribute,
     create_edit_primitive_attribute,

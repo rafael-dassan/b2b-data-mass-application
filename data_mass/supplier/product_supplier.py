@@ -1,8 +1,7 @@
 import json
-from datetime import datetime, timedelta
 from random import randint
 
-from gql import Client, gql
+from gql import Client
 from gql.transport.exceptions import TransportQueryError
 from gql.transport.requests import RequestsHTTPTransport
 
@@ -15,13 +14,36 @@ from data_mass.supplier.attribute import (
     populate_package_attribute_payload
     )
 from data_mass.supplier.category import (
-    associate_all_legacy_attributes,
     search_specific_category,
     verify_if_category_has_all_legacy_category
     )
+from data_mass.supplier.payloads.products_payloads import (
+    create_product_payload
+    )
 
 
-def create_product_supplier(environment, category_id, country):
+def create_product_supplier(environment: str, category_id: str, country: str):
+    """
+        Create a product with legacy_category
+
+        Parameters
+        ----------
+        environment : str
+        category_id : str
+        country : str
+
+        Returns
+        -------
+        bool
+        `False`, when a `TransportQueryError` occurs.
+        str
+        The attribute id.
+
+        Raises
+         ------
+        TransportQueryError
+            When a `gql` occurs.
+        """
     name = 'DM PRODUCT ' + str(randint(1, 100000))
     description = 'DM DESCRIPTION to ' + name
     var_name = 'DM VARIANT ' + str(randint(1, 100000))
@@ -35,7 +57,9 @@ def create_product_supplier(environment, category_id, country):
     else:
         category_model = json.loads(category)
         info = category_model['category']
-        has_all_legacy_attribute = verify_if_category_has_all_legacy_category(environment, category_id)
+        has_all_legacy_attribute = \
+            verify_if_category_has_all_legacy_category(environment,
+                                                       category_id)
 
         root_abstract_attribute_id = {}
         package_abstract_attribute_id = None
@@ -51,28 +75,36 @@ def create_product_supplier(environment, category_id, country):
                 elif attribute_semantic_id == 'container':
                     container_abstract_attribute_id = attributes_info[i]['id']
                 else:
-                    root_abstract_attribute_id[attribute_semantic_id] = attributes_info[i]['id']
+                    root_abstract_attribute_id[attribute_semantic_id] = \
+                        attributes_info[i]['id']
 
-            package_group_payload = populate_package_attribute_payload(package_abstract_attribute_id, all_attributes)
-            container_group_payload = populate_container_attribute_payload(container_abstract_attribute_id,
-                                                                           all_attributes)
+            package_group_payload = populate_package_attribute_payload(
+                package_abstract_attribute_id, all_attributes)
+            container_group_payload = populate_container_attribute_payload(
+                container_abstract_attribute_id,
+                all_attributes)
 
-            attributes = create_root_attribute_payload(root_abstract_attribute_id)
+            attributes = create_root_attribute_payload(
+                root_abstract_attribute_id)
             attributes.append(package_group_payload)
             attributes.append(container_group_payload)
 
             # Select your transport with a defined url endpoint
             base_url = get_supplier_base_url(environment)
             base_header = get_header_request_supplier()
-            transport = RequestsHTTPTransport(url=base_url, headers=base_header)
+            transport = RequestsHTTPTransport(url=base_url,
+                                              headers=base_header)
 
             # Create a GraphQL client using the defined transport
-            client = Client(transport=transport, fetch_schema_from_transport=False)
+            client = Client(transport=transport,
+                            fetch_schema_from_transport=False)
 
             mut = create_product_payload()
 
-            params = {'name': name, 'description': description, 'category': category_id,
-                      'attributes': attributes, 'varName': var_name, 'skus': skus, 'country': country}
+            params = {'name': name, 'description': description,
+                      'category': category_id,
+                      'attributes': attributes, 'varName': var_name,
+                      'skus': skus, 'country': country}
 
             # Execute the query on the transport
             try:
@@ -88,46 +120,8 @@ def create_product_supplier(environment, category_id, country):
                 print(text.Red + str(e))
                 return False
         else:
-            print(text.Red + "\n [Category] - This category doesn't have all the legacy attributes or has more"
-                             " attributes than the item contract")
+            print(
+                text.Red + "\n [Category] - This category doesn't have all "
+                           "the legacy attributes or has more"
+                           " attributes than the item contract")
             return False
-
-
-def create_product_payload():
-    return gql(
-        '''
-        mutation createProduct(
-              $name: String!
-              $description: String!
-              $category: ID!
-              $varName: String!
-              $attributes: [ConcreteAttributeInput!]!
-              $skus: [String!]!
-              $country: String!
-            ) {
-              createProduct(
-                input: {
-                  name: $name
-                  description: $description
-                  categoryId: $category
-                  country: $country
-                  images: ["http://test.com/1"]
-                  attributes: 
-                    $attributes
-                  variants: [
-                    {
-                      name: $varName
-                      images: ["http://testVariant.com/1"]
-                      skus: $skus
-                      vendorId: "e437c69f-2f6e-4412-b78b-1845c8ac8838"
-                      manufacturerId: "0c2e96b5-26ea-4698-80a7-86d658656572"
-                      attributes: []
-                    }
-                  ]
-                }
-              ) {
-                id
-              }
-            }
-        '''
-    )

@@ -1,4 +1,4 @@
-from random import random, sample
+from random import sample
 
 import click
 import pyperclip
@@ -86,7 +86,6 @@ from data_mass.orders import *
 from data_mass.product.inventory import *
 from data_mass.product.magento import *
 from data_mass.product.products import *
-from data_mass.product.supplier import create_product_supplier
 from data_mass.rewards.rewards import (
     associate_dt_combos_to_poc,
     disenroll_poc_from_program,
@@ -119,9 +118,6 @@ from data_mass.supplier.attribute import (
     create_attribute_enum,
     create_attribute_group,
     create_attribute_primitive_type,
-    create_legacy_attribute_container,
-    create_legacy_attribute_package,
-    create_legacy_root_attribute,
     delete_attribute_supplier,
     display_all_attribute,
     display_specific_attribute,
@@ -140,6 +136,7 @@ from data_mass.supplier.category import (
     search_all_category,
     search_specific_category
     )
+from data_mass.supplier.product_supplier import create_product_supplier
 from data_mass.user.creation import create_user
 from data_mass.user.deletion import delete_user_v3
 from data_mass.validations import is_number, validate_yes_no_option
