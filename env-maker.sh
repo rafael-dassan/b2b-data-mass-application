@@ -103,6 +103,11 @@ else:
     print("pip install .")
 
 EOF
+    if [ ! -d ".git/hooks" ]; then
+      echo "Creating directory .git/hooks..."
+      mkdir .git/hooks
+    fi
+
     mv post-merge .git/hooks/
     chmod +x .git/hooks/post-merge
 fi
