@@ -255,11 +255,10 @@ def create_challenge_payload(
     if execution_method in ["PURCHASE", "PURCHASE_MULTIPLE"]:
         sku_count = 4 if len(zone_skus_list) > 4 else len(zone_skus_list)
 
-        # TODO
-        challenge_sku_list = list()
-        for i in range(sku_count):
+        challenge_sku_list = []
+        for index in range(sku_count):
             dict_challenge_sku = {
-                'sku': zone_skus_list[i],
+                'sku': zone_skus_list[index],
                 'quantity': randint(2, 5)
             }
             challenge_sku_list.append(dict_challenge_sku)
@@ -334,15 +333,13 @@ def remove_challenge(zone: str, environment: str):
     """
     response_all_challenges = get_all_challenges(zone, environment)
 
-    # TODO: if there's no challenge, skip input text
     if response_all_challenges is None:
         print("There's no challenge avaliable.")
-
-    json_all_challenges = json.loads(response_all_challenges.text)
-    display_all_challenges_info(json_all_challenges)
-
-    challenge_id = print_input_text('\nPlease inform the Challenge ID')
-    delete_challenge(challenge_id, zone, environment)
+    else:
+        challenge_id = print_input_text('\nPlease inform the Challenge ID')
+        json_all_challenges = json.loads(response_all_challenges.text)
+        display_all_challenges_info(json_all_challenges)
+        delete_challenge(challenge_id, zone, environment)
 
 
 def delete_challenge(
@@ -435,7 +432,7 @@ def get_all_challenges(zone: str, environment: str) -> Union[None, Response]:
 
     if response.status_code == 200:
         json_data = json.loads(response.text)
-        if len(json_data) > 0:
+        if json_data:
             return response
 
         print((

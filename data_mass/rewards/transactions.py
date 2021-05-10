@@ -134,11 +134,9 @@ def create_points_removal(
         "\nPlease inform the points amount (greater than zero)"
     )
 
-    while int(points_amount) <= 0:
+    while points_amount <= 0:
         print(text.Red + '\nInvalid value!! Must be greater than zero!!')
-
-        # TODO
-        _ = print_input_number(
+        points_amount = print_input_number(
             "\nPlease inform the new balance amount (greater than zero)"
         )
 
