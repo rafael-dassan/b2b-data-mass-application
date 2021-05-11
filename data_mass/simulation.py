@@ -76,7 +76,7 @@ def request_order_simulation(
     option_change_date = validate_yes_no_change_date()
     if option_change_date.upper() == "Y": 
         date_entry = validate_user_entry_date(
-            'Enter Date entry for Delivery Date (Y-m-d)'
+            'Enter Date for Delivery-Date (YYYY-mm-dd)'
         )
     else:
         tomorrow = datetime.today() + timedelta(1)

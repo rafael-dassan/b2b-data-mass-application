@@ -704,10 +704,12 @@ def flow_create_changed_order(
     print(
         text.Green + "The Delivery-Date is " + f"{text.Blue}{delivery_date}!"
     )
-    option_change_date = validate_yes_no_change_date()
+    option_change_date = validate_yes_no_change_date(
+        question="Change Delivery Date? y/N: "
+    )
     if option_change_date.upper() == "Y":
         date_entry = validate_user_entry_date(
-            "Change Date for Delivery-Date (Y-m-d)?"
+            "Change Delivery-Date (YYYY-mm-dd)!"
         )
     else:
         tomorrow = datetime.today() + timedelta(1)

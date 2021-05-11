@@ -666,26 +666,28 @@ def print_input_text(input_text):
             return input_str
 
 
-def validate_yes_no_change_date():
+def validate_yes_no_change_date(
+    question: str = "New Date entry for Delivery Date? y/N:"
+    ):
     """
     Validate user input for change date.
+
+    Parameters
+    ----------
+    question: str, optional
+        Verify if user would change the date,
+        by default "New Date entry for Delivery Date? y/N:"
 
     Returns
     -------
     str
         Y or N depending on user input.
     """
-    option = input(
-        text.default_text_color 
-        + '\nNew Date entry for Delivery Date? y/N: '
-        )
+    option = input(f'\n{text.default_text_color}{question}')
 
     while (option.upper() in ["Y", "N"]) is False:
         print(text.Red + '\n- Invalid option')
-        option = input(
-            text.default_text_color 
-            + '\nNew Date entry for Delivery Date? y/N: '    
-        )
+        option = input(f'\n{text.default_text_color}{question}')
 
     if option.upper() == "Y": 
         return option.upper()
@@ -699,7 +701,7 @@ def validate_user_entry_date(text:str = "New Date entry"):
 
     Parameters
     ----------
-    text : str, optional
+    text: str, optional
         Validate user input date and print the passed,
         by default "New Date entry"
 
