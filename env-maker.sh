@@ -16,6 +16,9 @@ RECOMMENDED_VERSION="3.9"
 CURRENT_VERSION=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')
 VIRTUALENV_DIR=${1:-venv}
 SHOULD_INSTALL="1"
+POST_MERGE_HOOK_FILE=".git/hooks/post-merge"
+REMOTE_BRANCH_LAST_COMMIT=$(git rev-parse origin/master)
+SHOW_VIRTUALENV_MESSAGE="1"
 
 # Colors
 RED=`tput setaf 1`
@@ -53,14 +56,21 @@ if [ ! -d "venv" ] || [ ! -d $VIRTUALENV_DIR ]; then
     echo "${GREEN}pip was successfully upgraded!${RESET}"
 
     echo "${GREEN}Environment has been set up successfully!${RESET}"
+else
+    echo "${RED}You already have a virtualenv configured!${RESET}"
+    echo "${RED}To enable a virtualenv run: \"source $VIRTUALENV_DIR/bin/activate\".${RESET}"
+    echo "${RED}Or, if you want to create a new one, delete the current virtualenv (rm -rf \"${VIRTUALENV_DIR}\") and run the script again.${RESET}"
+
+    echo "${CYAN}Skipping virtualenv configuration.${RESET}"
+    source "${VIRTUALENV_DIR}/bin/activate"
+    SHOW_VIRTUALENV_MESSAGE="0"
 fi
 
 echo "${CYAN}Fetching Data Mass updates...${RESET}"
-# git fetch
+git fetch
+echo "${GREEN}Done!${RESET}"
 
-REMOTE=$(git rev-parse origin/master)
-
-if [[ ! $(git log | grep ${REMOTE}) ]]; then
+if [[ ! $(git log | grep ${REMOTE_BRANCH_LAST_COMMIT}) ]]; then
     echo "${RED}Your version of Data Mass is out of date.${RESET}"
 
     if [[ $({ git diff --name-only ; git diff --name-only --staged ; } | sort | uniq) ]]; then
@@ -78,13 +88,16 @@ if [[ ! $(git log | grep ${REMOTE}) ]]; then
     git pull --rebase origin master
     echo "${GREEN}Done!${RESET}"
 
-    if [[ $(ls .git/hooks | grep "post-merge") ]]; then
+    if [[ -f "$POST_MERGE_HOOK_FILE" ]]; then
         SHOULD_INSTALL="0"
     fi
 fi
 
-if [ ! -d ".git/hooks/post-merge" ]; then
-cat << EOF > post-merge
+if [[ ! -f "$POST_MERGE_HOOK_FILE" ]]; then
+mkdir --parents .git/hooks
+
+echo "${CYAN}Creating \"post-merge\" hook on ${POST_MERGE_HOOK_FILE}.${RESET}"
+cat << EOF > "$POST_MERGE_HOOK_FILE"
 #!/usr/bin/env python3
 import sys
 from subprocess import call
@@ -103,8 +116,8 @@ else:
     print("pip install .")
 
 EOF
-    mv post-merge .git/hooks/
     chmod +x .git/hooks/post-merge
+    echo "${GREEN}Done!${RESET}"
 fi
 
 if [ $SHOULD_INSTALL == "1" ]; then
@@ -113,4 +126,7 @@ if [ $SHOULD_INSTALL == "1" ]; then
     echo "${GREEN}Done!${RESET}"
 fi
 
-echo "${CYAN}NOTE: to start the virtualenv, run \"source $VIRTUALENV_DIR/bin/activate\".${RESET}"
+
+if [ $SHOW_VIRTUALENV_MESSAGE == "1" ]; then
+    echo "${CYAN}NOTE: to start the virtualenv, run \"source $VIRTUALENV_DIR/bin/activate\".${RESET}"
+fi
