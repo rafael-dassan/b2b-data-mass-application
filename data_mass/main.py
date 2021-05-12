@@ -5,7 +5,7 @@ import pyperclip
 
 from data_mass.accounts import *
 from data_mass.algo_selling import *
-from data_mass.attribute_supplier import (
+from data_mass.supplier.attribute import (
     check_if_attribute_exist,
     create_attribute_enum,
     create_attribute_group,
@@ -101,7 +101,7 @@ from data_mass.orders import *
 from data_mass.product.inventory import *
 from data_mass.product.magento import *
 from data_mass.product.products import *
-from data_mass.product.supplier import create_product_supplier
+from data_mass.supplier.product import create_product_supplier
 from data_mass.rewards.rewards import (
     associate_dt_combos_to_poc,
     disenroll_poc_from_program,
@@ -129,7 +129,7 @@ from data_mass.simulation import (
     process_simulation_microservice,
     request_order_simulation
     )
-from data_mass.supplier_category import (
+from data_mass.supplier.category import (
     check_if_supplier_category_exist,
     create_association_attribute_with_category,
     create_legacy_category,
@@ -2096,10 +2096,9 @@ def create_product_menu():
         print_finish_application_menu()
 
 
-# Init
-try:
-    if __name__ == '__main__':
+if __name__ == '__main__':
+    try:
         show_menu()
 
-except KeyboardInterrupt:
-    sys.exit(0)
+    except (KeyboardInterrupt, EOFError):
+        sys.exit(0)
