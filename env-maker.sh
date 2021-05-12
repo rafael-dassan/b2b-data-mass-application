@@ -31,7 +31,7 @@ function python3_exists() {
     command -v python3 || { echo "0"; }
 }
 
-if [[ $MINIMUM_TARGET_VERSION > $CURRENT_VERSION ]] || [ "$(python3_exists)" == 0 ]; then
+if [[ $MINIMUM_TARGET_VERSION -ge $CURRENT_VERSION ]] || [ "$(python3_exists)" == 0 ]; then
     echo "${RED}The minimum Python version (which is $MINIMUM_TARGET_VERSION) isn't installed.${RESET}";
     echo "${CYAN}Installing Python version $RECOMMENDED_VERSION, which is the recommended one...${RESET}";
     sudo apt install python+="$TARGET_VERSION"
@@ -94,7 +94,7 @@ if [[ ! $(git log | grep ${REMOTE_BRANCH_LAST_COMMIT}) ]]; then
 fi
 
 if [[ ! -f "$POST_MERGE_HOOK_FILE" ]]; then
-mkdir --parents .git/hooks
+mkdir -p .git/hooks
 
 echo "${CYAN}Creating \"post-merge\" hook on ${POST_MERGE_HOOK_FILE}.${RESET}"
 cat << EOF > "$POST_MERGE_HOOK_FILE"
