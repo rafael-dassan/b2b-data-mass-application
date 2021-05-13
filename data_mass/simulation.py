@@ -1,33 +1,61 @@
 # Standard library imports
 import json
-from json import loads
 import os
+from datetime import datetime, timedelta
+from json import loads
 
-# Third party imports
 from tabulate import tabulate
 
-# Local application imports
-from data_mass.common import get_header_request, update_value_to_json, \
-    convert_json_to_string, place_request, get_microservice_base_url
 from data_mass.classes.text import text
+from data_mass.common import (
+    convert_json_to_string,
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+    update_value_to_json
+    )
 
 
-def request_order_simulation(zone, environment, account_id, delivery_center_id, items, combos, empties, payment_method,
-                             payment_term):
+def request_order_simulation(
+    zone: str,
+    environment: str,
+    account_id: int,
+    delivery_center_id: int,
+    items: list,
+    combos: list,
+    empties: list,
+    payment_method: str,
+    payment_term: bool,
+    delivery_date: str
+):
     """
     Request order simulation through Cart Service
-    Args:
-        zone: e.g., AR, BR, DO, etc
-        environment: e.g., DEV, SIT, UAT
-        account_id: POC unique identifier
-        delivery_center_id: POC's delivery center
-        items: array of items
-        combos: array of combos
-        empties: array of empties
-        payment_method: desired payment method (default is CASH)
-        payment_term: payment terms according to the payment method
 
-    Returns: response payload in case of success or `false` in case of failure
+    Parameters
+    ----------
+    zone : str
+        e.g., AR, BR, DO, etc
+    environment : str
+        e.g., DEV, SIT, UAT
+    account_id : int
+        POC unique identifier
+    delivery_center_id : int
+        POC's delivery center
+    items : list
+        list of items
+    combos : list
+        list of combos
+    empties : list
+        list of empties
+    payment_method : str
+        desired payment method (default is CASH)
+    payment_term : bool
+        payment terms according to the payment method
+
+    Returns
+    -------
+    str or Bool
+        response payload in case of success or `false` in case of failure
     """
     if empties is None:
         empties = []
@@ -35,26 +63,33 @@ def request_order_simulation(zone, environment, account_id, delivery_center_id, 
         combos = []
 
     # Define headers
-    request_headers = get_header_request(zone, True, False, False, False, account_id)
+    request_headers = get_header_request(
+        zone, True, False, False, False, account_id
+    )
 
     # Define URL Microservice
-    request_url = get_microservice_base_url(environment, False) + '/cart-service/v2'
+    request_url = (
+        get_microservice_base_url(environment, False) + "/cart-service/v2"
+    )
+
 
     # Inputs for default payload simulation
     dict_values = {
-        'accountId': account_id,
-        'deliveryCenterId': delivery_center_id,
-        'paymentMethod': payment_method,
-        'paymentTerm': int(payment_term),
-        'lineItems': items,
-        'combos': combos,
-        'deliveryDate': None,
-        'empties': empties
+        "accountId": account_id,
+        "deliveryCenterId": delivery_center_id,
+        "paymentMethod": payment_method,
+        "paymentTerm": int(payment_term),
+        "lineItems": items,
+        "combos": combos,
+        "deliveryDate": delivery_date,
+        "empties": empties,
     }
 
     # Create file path
     abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, 'data/order_simulation_microservice_payload.json')
+    file_path = os.path.join(
+        abs_path, "data/order_simulation_microservice_payload.json"
+    )
 
     # Load JSON file
     with open(file_path) as file:
@@ -67,25 +102,32 @@ def request_order_simulation(zone, environment, account_id, delivery_center_id, 
     request_body = convert_json_to_string(json_object)
 
     # Send request
-    response = place_request('POST', request_url, request_body, request_headers)
+    response = place_request(
+        "POST", request_url, request_body, request_headers
+    )
     if response.status_code == 200:
         return loads(response.text)
     else:
-        print(text.Red + '\n- [Cart Service] Failure to simulate the order. Response Status: {response_status}. '
-                         'Response message: {response_message}'
-              .format(response_status=response.status_code, response_message=response.text))
+        print(
+            text.Red
+            + "\n- [Cart Service] Failure to simulate the order."
+            f"Response Status: {response.status_code}. "
+            f"Response message: {response.text}"
+        )
         return False
 
 
 # Order simulation by Microservice
 def process_simulation_microservice(order_simulation):
-    summary_order_values = [{
-        "Subtotal": order_simulation["subtotal"],
-        "TaxAmount": order_simulation["taxAmount"],
-        "DepositAmount": order_simulation["deposit"],
-        "DiscountAmount": order_simulation["discountAmount"],
-        "Total": order_simulation["total"],
-    }]
+    summary_order_values = [
+        {
+            "Subtotal": order_simulation["subtotal"],
+            "TaxAmount": order_simulation["taxAmount"],
+            "DepositAmount": order_simulation["deposit"],
+            "DiscountAmount": order_simulation["discountAmount"],
+            "Total": order_simulation["total"],
+        }
+    ]
 
     summary_items_values = []
     for item in order_simulation["lineItems"]:
@@ -102,7 +144,7 @@ def process_simulation_microservice(order_simulation):
         }
 
         summary_items_values.append(item_values)
-        
+
     summary_combo_values = []
     for item in order_simulation["combos"]:
         item_values = {
@@ -118,20 +160,24 @@ def process_simulation_microservice(order_simulation):
 
         summary_combo_values.append(item_values)
 
-    print_summary_order_simulation(summary_order_values, summary_items_values, summary_combo_values)
+    print_summary_order_simulation(
+        summary_order_values, summary_items_values, summary_combo_values
+    )
 
 
 # Print Summary order simulation
-def print_summary_order_simulation(summary_order_values, summary_items_values, summary_combo_values):
+def print_summary_order_simulation(
+    summary_order_values, summary_items_values, summary_combo_values
+):
     print(text.White + "Order Summary ")
-    print(tabulate(summary_order_values, headers='keys', tablefmt="grid"))
-    
+    print(tabulate(summary_order_values, headers="keys", tablefmt="grid"))
+
     if len(summary_items_values) >= 1:
         print("\n")
         print(text.White + "Order Items Summary ")
-        print(tabulate(summary_items_values, headers='keys', tablefmt="grid"))
+        print(tabulate(summary_items_values, headers="keys", tablefmt="grid"))
 
     if len(summary_combo_values) >= 1:
         print("\n")
         print(text.White + "Order Combo Summary ")
-        print(tabulate(summary_combo_values, headers='keys', tablefmt="grid"))
+        print(tabulate(summary_combo_values, headers="keys", tablefmt="grid"))

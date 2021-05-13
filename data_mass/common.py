@@ -3,12 +3,15 @@ import json
 import os
 import sys
 import time as t
-from datetime import date
+from datetime import date, datetime
 from time import time
 from uuid import uuid1
 
+import click
 import jwt
 import requests
+from click.termui import prompt
+from dateutil.parser import parse
 # Third party imports
 from jsonpath_rw import Fields, Index
 from jsonpath_rw_ext import parse
@@ -661,6 +664,56 @@ def print_input_text(input_text):
 
         if not is_blank(input_str):
             return input_str
+
+
+def validate_yes_no_change_date(
+    question: str = "New Date entry for Delivery Date? y/N:"
+    ):
+    """
+    Validate user input for change date.
+
+    Parameters
+    ----------
+    question: str, optional
+        Verify if user would change the date,
+        by default "New Date entry for Delivery Date? y/N:"
+
+    Returns
+    -------
+    str
+        Y or N depending on user input.
+    """
+    option = input(f'\n{text.default_text_color}{question}')
+
+    while (option.upper() in ["Y", "N"]) is False:
+        print(text.Red + '\n- Invalid option')
+        option = input(f'\n{text.default_text_color}{question}')
+
+    if option.upper() == "Y": 
+        return option.upper()
+
+    return option.upper()
+
+
+def validate_user_entry_date(text:str = "New Date entry"):
+    """
+    Validate user input for date using format of Y-m-d.
+
+    Parameters
+    ----------
+    text: str, optional
+        Validate user input date and print the passed,
+        by default "New Date entry"
+
+    Returns
+    -------
+    str
+        str valid date.
+    """
+    date = prompt(text, type=click.DateTime(formats=["%Y-%m-%d"]))
+
+    new_date = str(datetime.date(date))
+    return new_date
 
 
 def validate_country_menu_in_user_create_iam(zone):

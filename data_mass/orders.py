@@ -1,21 +1,39 @@
 # Standard library imports
 import json
-from json import loads
 import os
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
+from json import loads
 
 # Third party imports
 from tabulate import tabulate
 
-# Local application imports
-from data_mass.common import update_value_to_json, \
-    convert_json_to_string, get_header_request, get_microservice_base_url, \
-    place_request, set_to_dictionary, find_values, generate_erp_token
 from data_mass.classes.text import text
+# Local application imports
+from data_mass.common import (
+    convert_json_to_string,
+    find_values,
+    generate_erp_token,
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+    set_to_dictionary,
+    update_value_to_json,
+    validate_user_entry_date,
+    validate_yes_no_change_date
+    )
 
 
-def request_order_creation(account_id, delivery_center_id, zone, environment, allow_order_cancel, order_items,
-                           order_status):
+def request_order_creation(
+    account_id,
+    delivery_center_id,
+    zone,
+    environment, 
+    allow_order_cancel, 
+    order_items, 
+    order_status,
+    delivery_date
+):
+
     """
     Create an order through the Order Service
     Args:
@@ -29,6 +47,7 @@ def request_order_creation(account_id, delivery_center_id, zone, environment, al
 
     Returns: new json_data if success or error message in case of failure
     """
+
     # Define headers
     request_headers = get_header_request(zone, True, False, False, False, account_id)
 
@@ -36,7 +55,7 @@ def request_order_creation(account_id, delivery_center_id, zone, environment, al
     request_url = get_microservice_base_url(environment) + '/order-service'
 
     # Get body
-    request_body = create_order_payload(account_id, delivery_center_id, allow_order_cancel, order_items, order_status)
+    request_body = create_order_payload(account_id, delivery_center_id, allow_order_cancel, order_items, order_status, delivery_date)
 
     # Send request
     response = place_request('POST', request_url, request_body, request_headers)
@@ -51,7 +70,14 @@ def request_order_creation(account_id, delivery_center_id, zone, environment, al
         return False
 
 
-def create_order_payload(account_id, delivery_center_id, allow_order_cancel, order_items, order_status):
+def create_order_payload(
+    account_id,
+    delivery_center_id, 
+    allow_order_cancel, 
+    order_items, 
+    order_status,
+    delivery_date
+):
     """
     Create payload for order creation
     Args:
@@ -64,13 +90,6 @@ def create_order_payload(account_id, delivery_center_id, allow_order_cancel, ord
     """
     # Sets the format of the placement date of the order (current date and time)
     placement_date = datetime.now().strftime('%Y-%m-%dT%H:%M:%S') + '+00:00'
-
-    if order_status == 'DELIVERED':
-        # Sets the format of the delivery date of the order (current date and time less one day)
-        delivery_date = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
-    else:
-        # Sets the format of the delivery date of the order (current date and time more one day)
-        delivery_date = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
 
     # Sets the format of the cancellable date of the order (current date and time more ten days)
     cancellable_date = (datetime.now() + timedelta(days=10)).strftime('%Y-%m-%dT%H:%M:%S') + '+00:00'
@@ -350,10 +369,10 @@ def check_if_order_exists(account_id, zone, environment, order_id, order_status=
 
     if order_status is not None:
         # Get base URL
-        request_url = '{0}/order-service/v1?orderIds={1}&orderStatus={2}&accountId={3}'.format(get_microservice_base_url(environment),
+        request_url = '{}/order-service/v1?orderIds={}&orderStatus={}&accountId={}'.format(get_microservice_base_url(environment),
                                                                                                order_id, order_status, account_id)
     else:
-        request_url = '{0}/order-service/v1?orderIds={1}&&accountId={2}'.format(get_microservice_base_url(environment), order_id,
+        request_url = '{}/order-service/v1?orderIds={}&&accountId={}'.format(get_microservice_base_url(environment), order_id,
                                                                                 account_id)
 
     # Place request
@@ -368,7 +387,7 @@ def check_if_order_exists(account_id, zone, environment, order_id, order_status=
                   .format(account_id=account_id))
             return 'not_found'
         else:
-            print(text.Red + '\n- [Order Service] The order {order_id} does not exist'.format(order_id=order_id))
+            print(text.Red + f'\n- [Order Service] The order {order_id} does not exist')
             return 'not_found'
     else:
         print(text.Red + '\n- [Order Service] Failure to retrieve order information. Response Status: '
@@ -465,7 +484,7 @@ def request_get_order_by_date_updated(zone, environment, account_id, order_prefi
     updated_since = datetime.now().strftime('%Y-%m-%d') + 'T00:00:00.000Z'
 
     # Get base URL
-    request_url = get_microservice_base_url(environment) + '/order-service/v1?updatedSince={0}&accountId={1}&sort={2}'\
+    request_url = get_microservice_base_url(environment) + '/order-service/v1?updatedSince={}&accountId={}&sort={}'\
         .format(updated_since, account_id, 'DESC')
 
     # Place request
@@ -474,7 +493,7 @@ def request_get_order_by_date_updated(zone, environment, account_id, order_prefi
     json_data = loads(response.text)
     if response.status_code == 200 and len(json_data) != 0:
         for i in range(len(json_data)):
-            if '{0}-{1}'.format(order_prefix, zone) in json_data[i]['orderNumber']:
+            if f'{order_prefix}-{zone}' in json_data[i]['orderNumber']:
                 return json_data
     else:
         print(text.Red + '\n- [Order Service] Failure to retrieve order information. Response Status: '

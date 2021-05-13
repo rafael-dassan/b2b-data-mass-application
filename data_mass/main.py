@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from random import random, sample
 
 import click
@@ -518,23 +519,35 @@ def order_menu():
     delivery_center_id = account[0]['deliveryCenterId']
 
     # Call function to check if the account has products inside
-    product_offers = request_get_offers_microservice(account_id, zone, environment)
+    product_offers = request_get_offers_microservice(
+        account_id=account_id,
+        zone=zone,
+        environment=environment
+    )
     if not product_offers:
         print_finish_application_menu()
     elif product_offers == 'not_found':
-        print(text.Red + '\n- There is no product associated with the account {account_id}'
-              .format(account_id=account_id))
+        print(
+            text.Red
+            + f'\n- There is no product associated '
+            'with the account {account_id}'
+        )
         print_finish_application_menu()
 
     if operation != '2':
         unique_sku = {item['sku'] for item in product_offers}
         unique_sku = sample(list(unique_sku), len(unique_sku))
         order_status = print_order_status_menu()
-        print(text.Green + f"The account has {len(unique_sku)} products associated!")
+        print(
+            text.Green
+            + f"The account has {len(unique_sku)} products associated!"
+        )
         quantity = click.prompt(
-            f'{text.default_text_color} Quantity of products you want to include in this order',
+            f'{text.default_text_color}'
+            'Quantity of products you want to include in this order',
              type=click.IntRange(1, len(unique_sku)),
         )
+
         item_list = []
         for sku in unique_sku[:quantity]:
             data = {'sku': sku, 'itemQuantity': randint(0, 10)} 
@@ -542,60 +555,185 @@ def order_menu():
         
 
     return {
-        '1': lambda: flow_create_order(zone, environment, account_id, delivery_center_id, order_status, item_list),
-        '2': lambda: flow_create_changed_order(zone, environment, account_id),
+        '1': lambda: flow_create_order(
+            zone,
+            environment,
+            account_id,
+            delivery_center_id,
+            order_status,
+            item_list
+        ),
+        '2': lambda: flow_create_changed_order(
+            zone,
+            environment,
+            account_id
+        ),
     }.get(operation, lambda: None)()
 
 
-def flow_create_order(zone, environment, account_id, delivery_center_id, order_status, item_list):
+def flow_create_order(
+    zone: str,
+    environment: str,
+    account_id: str,
+    delivery_center_id: str,
+    order_status: str,
+    item_list: list
+    ):
+    """
+    Create a dataflow to match business rules.
+
+    Parameters
+    ----------
+    zone : str
+        e.g., AR, BR, DO, etc
+    environment : str
+        e.g., DEV, SIT, UAT
+    account_id : str
+        POC unique identifier
+    delivery_center_id : str
+        POC's delivery center
+    order_status : str
+        order status e.g. Placed, Pending, Confirmed, etc
+    item_list : list
+        list of items
+    """
+
     if order_status == 'PLACED':
         allow_order_cancel = print_allow_cancellable_order_menu()
     else:
         allow_order_cancel = 'N'
-    
-    # Create a dataflow to match business rules
 
-    order_items = request_order_simulation(zone, environment, account_id, delivery_center_id, item_list, None, None,
-                                        'CASH', 0)
+
+    if order_status == 'DELIVERED':
+        # Sets the format of the delivery date of the order (current date and time less one day)
+        delivery_date = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+    else:
+        option_change_date = validate_yes_no_change_date()
+        if option_change_date.upper() == "Y": 
+            delivery_date = validate_user_entry_date(
+                'Enter Date for Delivery-Date (YYYY-mm-dd)'
+        )
+        else:
+            tomorrow = datetime.today() + timedelta(1)
+            delivery_date = str(datetime.date(tomorrow)) 
+
+    order_items = request_order_simulation(
+        zone=zone,
+        environment=environment,
+        account_id=account_id,
+        delivery_center_id=delivery_center_id,
+        items=item_list,
+        combos=[],
+        empties=[],
+        payment_method='CASH',
+        payment_term=0,
+        delivery_date=delivery_date
+    )
     if not order_items:
         print_finish_application_menu()
 
-    response = request_order_creation(account_id, delivery_center_id, zone, environment, allow_order_cancel,
-                                    order_items, order_status)
+    response = request_order_creation(
+        account_id=account_id,
+        delivery_center_id=delivery_center_id,
+        zone=zone,
+        environment=environment,
+        allow_order_cancel=allow_order_cancel,
+        order_items=order_items,
+        order_status=order_status,
+        delivery_date=delivery_date
+    )
+
     if response:
-        print(text.Green + '\n- Order ' + response.get('orderNumber') + ' created successfully')
-        
-    print_finish_application_menu() 
+        print(
+            text.Green 
+            + f'\n- Order {response.get("orderNumber")} '
+            'created successfully'
+        )
+
+    print_finish_application_menu()
 
 
-def flow_create_changed_order(zone, environment, account_id):
+def flow_create_changed_order(
+    zone: str,
+    environment: str,
+    account_id: int
+    ):
+    """
+    Create a dataflow to match business rules.
+
+    Parameters
+    ----------
+    zone : str
+        e.g., AR, BR, DO, etc
+    environment : str
+        e.g., DEV, SIT, UAT
+    account_id : int
+        POC unique identifier
+    """
+
     order_id = print_order_id_menu()
     order_data = check_if_order_exists(account_id, zone, environment, order_id)
     if not order_data:
         print_finish_application_menu()
-    elif order_data == 'empty':
-        print(text.Red + f'\n- The account {account_id} does not have orders')
+    elif order_data == "empty":
+        print(text.Red + f"\n- The account {account_id} does not have orders")
         print_finish_application_menu()
-    elif order_data == 'not_found':
-        print(text.Red + f'\n- The order {order_id} does not exist')
-        print_finish_application_menu()
-
-    statuses = ['DENIED', 'CANCELLED', 'DELIVERED', 'PARTIAL_DELIVERY', 'PENDING_CANCELLATION', 'INVOICED',
-                'IN_TRANSIT']
-
-    if order_data[0]['status'] in statuses:
-        print(text.Red + '\n- This order cannot be changed. Order status: {order_status}'
-              .format(order_status=order_data[0]['status']))
+    elif order_data == "not_found":
+        print(text.Red + f"\n- The order {order_id} does not exist")
         print_finish_application_menu()
 
-    if len(order_data[0]['items']) == 1 and order_data[0]['items'][0]['quantity'] == 1:
-        print(text.Red + '\n- It\'s not possible to change this order because it has only one product with '
-                         'quantity equals 1')
+    statuses = [
+        "DENIED",
+        "CANCELLED",
+        "DELIVERED",
+        "PARTIAL_DELIVERY",
+        "PENDING_CANCELLATION",
+        "INVOICED",
+        "IN_TRANSIT",
+    ]
+
+    if order_data[0]["status"] in statuses:
+        print(
+            text.Red + "\n- This order cannot be changed. "
+            f'Order status: {order_data[0]["status"]}'
+        )
         print_finish_application_menu()
+
+    if (
+        len(order_data[0]["items"]) == 1
+        and order_data[0]["items"][0]["quantity"] == 1
+    ):
+        print(
+            text.Red
+            + "\n- It's not possible to change this order because it has "
+            "only one product with quantity equals 1"
+        )
+        print_finish_application_menu()
+
+    delivery_date = (
+        order_data[0]["delivery"]["date"]
+        if order_data[0]["delivery"]["date"]
+        else ""
+    )
+
+    print(
+        text.Green + "The Delivery-Date is " + f"{text.Blue}{delivery_date}!"
+    )
+    option_change_date = validate_yes_no_change_date(
+        question="Change Delivery Date? y/N: "
+    )
+    if option_change_date.upper() == "Y":
+        delivery_date = validate_user_entry_date(
+            "Change Delivery-Date (YYYY-mm-dd)!"
+        )
+
+    order_data[0]["delivery"]["date"] = delivery_date
 
     response = request_changed_order_creation(zone, environment, order_data)
-    if response == 'success':
-        print(text.Green + f'\n- The order {order_id} was changed successfully')
+    if response == "success":
+        print(
+            text.Green + f"\n- The order {order_id} was changed successfully"
+        )
     else:
         print_finish_application_menu()
 
