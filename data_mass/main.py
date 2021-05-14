@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from math import inf
 from random import random, sample
 
 import click
@@ -6,21 +7,6 @@ import pyperclip
 
 from data_mass.accounts import *
 from data_mass.algo_selling import *
-from data_mass.attribute_supplier import (
-    check_if_attribute_exist,
-    create_attribute_enum,
-    create_attribute_group,
-    create_attribute_primitive_type,
-    create_legacy_attribute_container,
-    create_legacy_attribute_package,
-    create_legacy_root_attribute,
-    delete_attribute_supplier,
-    display_all_attribute,
-    display_specific_attribute,
-    edit_attribute_type,
-    search_all_attribute,
-    search_specific_attribute
-    )
 from data_mass.category_magento import *
 from data_mass.combos import *
 from data_mass.common import *
@@ -102,7 +88,6 @@ from data_mass.orders import *
 from data_mass.product.inventory import *
 from data_mass.product.magento import *
 from data_mass.product.products import *
-from data_mass.product.supplier import create_product_supplier
 from data_mass.rewards.rewards import (
     associate_dt_combos_to_poc,
     disenroll_poc_from_program,
@@ -126,11 +111,27 @@ from data_mass.rewards.rewards_transactions import (
     create_redemption,
     create_rewards_offer
     )
+from data_mass.rewards.rewards_utils import flow_create_order_rewards
 from data_mass.simulation import (
     process_simulation_microservice,
     request_order_simulation
     )
-from data_mass.supplier_category import (
+from data_mass.supplier.attribute import (
+    check_if_attribute_exist,
+    create_attribute_enum,
+    create_attribute_group,
+    create_attribute_primitive_type,
+    create_legacy_attribute_container,
+    create_legacy_attribute_package,
+    create_legacy_root_attribute,
+    delete_attribute_supplier,
+    display_all_attribute,
+    display_specific_attribute,
+    edit_attribute_type,
+    search_all_attribute,
+    search_specific_attribute
+    )
+from data_mass.supplier.category import (
     check_if_supplier_category_exist,
     create_association_attribute_with_category,
     create_legacy_category,
@@ -141,9 +142,12 @@ from data_mass.supplier_category import (
     search_all_category,
     search_specific_category
     )
+from data_mass.supplier.product import create_product_supplier
 from data_mass.user.creation import create_user
 from data_mass.user.deletion import delete_user_v3
 from data_mass.validations import is_number, validate_yes_no_option
+
+TEXT_GREEN = text.Green
 
 
 def show_menu():
@@ -354,7 +358,8 @@ def create_rewards_to_account():
         switcher = {
             '1': 'CREATE_REDEMPTION',
             '2': 'CREATE_REWARDS_OFFER',
-            '3': 'CREATE_POINTS_REMOVAL'
+            '3': 'CREATE_POINTS_REMOVAL',
+            '4': 'CREATE_ORDER_REWARDS'
         }
     elif selection_structure == '7':
         selection_structure = print_rewards_challenges_menu()
@@ -477,6 +482,46 @@ def create_rewards_to_account():
             
         print_finish_application_menu()
 
+    elif reward_option == 'CREATE_ORDER_REWARDS':
+        account_id = print_account_id_menu(zone)
+        if not account_id:
+            print_finish_application_menu()
+
+        account = check_account_exists_microservice(
+            account_id=account_id,
+            zone=zone,
+            environment=environment
+        )
+        if not account:
+            print_finish_application_menu()
+
+        # check_if_account is valid for the rewards
+        
+        delivery_center_id = account[0]['deliveryCenterId']
+
+        qty_orders = click.prompt(
+            'Please entet the quantity of orders to create',
+            type=click.IntRange(0, inf)
+        )
+        print(qty_orders)
+
+        flow_create_order_rewards(
+            zone=zone,
+            environment=environment,
+            account_id=account_id,
+            delivery_center_id=delivery_center_id,
+            order_status=order_status,
+            item_list=item_list,
+            quantity_orders=qty_orders
+            )
+        if response:
+            print(
+                TEXT_GREEN
+                + f"\n- Order {response.get('orderNumber')} created successfully"
+            )
+            
+        print_finish_application_menu()
+
     # Option to create a TAKE_PHOTO challenge for zone
     elif reward_option == 'CREATE_TAKE_PHOTO':
         create_take_photo_challenge(zone, environment)
@@ -529,8 +574,8 @@ def order_menu():
     elif product_offers == 'not_found':
         print(
             text.Red
-            + f'\n- There is no product associated '
-            'with the account {account_id}'
+            + '\n- There is no product associated'
+            f'with the account {account_id}'
         )
         print_finish_application_menu()
 
@@ -539,20 +584,19 @@ def order_menu():
         unique_sku = sample(list(unique_sku), len(unique_sku))
         order_status = print_order_status_menu()
         print(
-            text.Green
+            TEXT_GREEN
             + f"The account has {len(unique_sku)} products associated!"
         )
         quantity = click.prompt(
             f'{text.default_text_color}'
             'Quantity of products you want to include in this order',
-             type=click.IntRange(1, len(unique_sku)),
+            type=click.IntRange(1, len(unique_sku)),
         )
 
         item_list = []
         for sku in unique_sku[:quantity]:
             data = {'sku': sku, 'itemQuantity': randint(0, 10)} 
             item_list.append(data)
-        
 
     return {
         '1': lambda: flow_create_order(
@@ -597,13 +641,26 @@ def flow_create_order(
     item_list : list
         list of items
     """
-    
 
     if order_status == 'PLACED':
         allow_order_cancel = print_allow_cancellable_order_menu()
     else:
         allow_order_cancel = 'N'
-    
+
+
+    if order_status == 'DELIVERED':
+        # Sets the format of the delivery date of the order (current date and time less one day)
+        delivery_date = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+    else:
+        option_change_date = validate_yes_no_change_date()
+        if option_change_date.upper() == "Y": 
+            delivery_date = validate_user_entry_date(
+                'Enter Date for Delivery-Date (YYYY-mm-dd)'
+        )
+        else:
+            tomorrow = datetime.today() + timedelta(1)
+            delivery_date = str(datetime.date(tomorrow)) 
+
     order_items = request_order_simulation(
         zone=zone,
         environment=environment,
@@ -613,7 +670,8 @@ def flow_create_order(
         combos=[],
         empties=[],
         payment_method='CASH',
-        payment_term=0
+        payment_term=0,
+        delivery_date=delivery_date
     )
     if not order_items:
         print_finish_application_menu()
@@ -625,7 +683,8 @@ def flow_create_order(
         environment=environment,
         allow_order_cancel=allow_order_cancel,
         order_items=order_items,
-        order_status=order_status
+        order_status=order_status,
+        delivery_date=delivery_date
     )
 
     if response:
@@ -708,20 +767,15 @@ def flow_create_changed_order(
         question="Change Delivery Date? y/N: "
     )
     if option_change_date.upper() == "Y":
-        date_entry = validate_user_entry_date(
+        delivery_date = validate_user_entry_date(
             "Change Delivery-Date (YYYY-mm-dd)!"
         )
-    else:
-        tomorrow = datetime.today() + timedelta(1)
-        date_entry = str(datetime.date(tomorrow))
 
-    order_data[0]["delivery"]["date"] = date_entry
+    order_data[0]["delivery"]["date"] = delivery_date
 
     response = request_changed_order_creation(zone, environment, order_data)
-    if response == "success":
-        print(
-            text.Green + f"\n- The order {order_id} was changed successfully"
-        )
+    if response == 'success':
+        print(TEXT_GREEN + f'\n- The order {order_id} was changed successfully')
     else:
         print_finish_application_menu()
 
@@ -918,7 +972,7 @@ def flow_create_discount(zone, environment, account_id, sku):
 
     response = create_discount(account_id, sku, zone, environment, discount_value, minimum_quantity)
     if response:
-        print(text.Green + f'\n- Deal {response} created successfully')
+        print(TEXT_GREEN + f'\n- Deal {response} created successfully')
     else:
         print_finish_application_menu()
 
@@ -928,7 +982,7 @@ def flow_create_stepped_discount(zone, environment, account_id, sku):
 
     response = create_stepped_discount(account_id, sku, zone, environment, ranges)
     if response:
-        print(text.Green + f'\n- Deal {response} created successfully')
+        print(TEXT_GREEN + f'\n- Deal {response} created successfully')
     else:
         print_finish_application_menu()
 
@@ -943,7 +997,7 @@ def flow_create_stepped_discount_with_limit(zone, environment, account_id, sku):
     response = create_stepped_discount_with_limit(account_id, sku, zone, environment, default_index_range,
                                                   discount_range, max_quantity)
     if response:
-        print(text.Green + f'\n- Deal {response} created successfully')
+        print(TEXT_GREEN + f'\n- Deal {response} created successfully')
     else:
         print_finish_application_menu()
 
@@ -962,7 +1016,7 @@ def flow_create_free_good(zone, environment, account_id, sku_list):
     response = create_free_good(account_id, sku_list, zone, environment, minimum_quantity, quantity,
                                 partial_free_good, need_to_buy_product)
     if response:
-        print(text.Green + f'\n- Deal {response} created successfully')
+        print(TEXT_GREEN + f'\n- Deal {response} created successfully')
     else:
         print_finish_application_menu()
 
@@ -972,7 +1026,7 @@ def flow_create_stepped_free_good(zone, environment, account_id, sku):
 
     response = create_stepped_free_good(account_id, sku, zone, environment, ranges)
     if response:
-        print(text.Green + f'\n- Deal {response} created successfully')
+        print(TEXT_GREEN + f'\n- Deal {response} created successfully')
     else:
         print_finish_application_menu()
 
@@ -984,7 +1038,7 @@ def flow_create_interactive_combos(zone, environment, account_id, sku):
     response = create_interactive_combos(account_id, sku, zone, environment, index_range)
 
     if response:
-        print(text.Green + f'\n- Deal {response} created successfully')
+        print(TEXT_GREEN + f'\n- Deal {response} created successfully')
     else:
         print_finish_application_menu()
 
@@ -996,7 +1050,7 @@ def flow_create_interactive_combos_v2(zone, environment, account_id, sku):
     response = create_interactive_combos_v2(account_id, sku, zone, environment, index_range)
 
     if response:
-        print(text.Green + f'\n- Deal {response} created successfully')
+        print(TEXT_GREEN + f'\n- Deal {response} created successfully')
     else:
         print_finish_application_menu()
 
@@ -1057,10 +1111,10 @@ def input_combos_menu():
         update_combo = update_combo_consumption(abi_id, zone, environment, combo_id)
 
         if combo and update_combo:
-            print(text.Green + '\n- Combo consumption for ' + combo_id + ' was successfully updated')
+            print(TEXT_GREEN + '\n- Combo consumption for ' + combo_id + ' was successfully updated')
 
     if selection_structure != '5' and response:
-        print(text.Green + '\n- Combo ' + response + ' successfully registered')
+        print(TEXT_GREEN + '\n- Combo ' + response + ' successfully registered')
 
     print_finish_application_menu()
 
@@ -1087,7 +1141,7 @@ def flow_create_product(zone, environment):
     if not response:
         print_finish_application_menu()
     else:
-        print(text.Green + '\n- The product {sku} - {product_name} was created successfully'
+        print(TEXT_GREEN + '\n- The product {sku} - {product_name} was created successfully'
               .format(sku=response.get('sku'), product_name=response.get('name')))
 
 
@@ -1185,7 +1239,7 @@ def flow_input_inventory_to_product(zone, environment):
                                                    .get('sku'), inventory_information.get('quantity'))
 
     if inventory:
-        print(f'\n{text.Green}- The inventory has been added successfully for the account {account_id}')
+        print(f'\n{TEXT_GREEN}- The inventory has been added successfully for the account {account_id}')
     else:
         print_finish_application_menu()
 
@@ -1206,7 +1260,7 @@ def flow_input_sku_limit(zone, environment):
     # Call function to display the SKUs on the screen
     enforcement = display_available_products(account_id, zone, environment, delivery_center_id)
     if enforcement:
-            print(text.Green + '\n- The SKU Limit has been added successfully for the account {account_id}'
+            print(TEXT_GREEN + '\n- The SKU Limit has been added successfully for the account {account_id}'
                 .format(account_id=account_id))
     elif enforcement == 'error_len':
             print(text.Red + '\n- There are no products available for the account {account_id}'
@@ -1260,14 +1314,14 @@ def flow_input_recommended_products_to_account(zone, environment):
 
 def flow_input_products_quick_order(zone, environment, account_id, items):
     if 'success' == request_quick_order(zone, environment, account_id, items):
-        print(text.Green + '\n- Quick order items added successfully')
+        print(TEXT_GREEN + '\n- Quick order items added successfully')
     else:
         print_finish_application_menu()
 
 
 def flow_input_products_up_sell(zone, environment, account_id, items):
     if 'success' == request_sell_up(zone, environment, account_id, items):
-        print(text.Green + '\n- Up sell items added successfully')
+        print(TEXT_GREEN + '\n- Up sell items added successfully')
         print(text.Yellow + '- Up sell trigger: Add 3 of any products to the cart / Cart viewed with a product inside')
     else:
         print_finish_application_menu()
@@ -1275,14 +1329,14 @@ def flow_input_products_up_sell(zone, environment, account_id, items):
 
 def flow_input_products_forgotten_items(zone, environment, account_id, items):
     if 'success' == request_forgotten_items(zone, environment, account_id, items):
-        print(text.Green + '\n- Forgotten items added successfully')
+        print(TEXT_GREEN + '\n- Forgotten items added successfully')
     else:
         print_finish_application_menu()
 
 
 def flow_input_all_recommendation_use_cases(zone, environment, account_id, items):
     if 'success' == create_all_recommendations(zone, environment, account_id, items):
-        print(text.Green + '\n- All recommendation use cases were added (quick order, up sell and forgotten items)')
+        print(TEXT_GREEN + '\n- All recommendation use cases were added (quick order, up sell and forgotten items)')
         print(text.Yellow + '- Up sell trigger: Add 3 of any products to the cart / Cart viewed with a product inside')
     else:
         print_finish_application_menu()
@@ -1290,7 +1344,7 @@ def flow_input_all_recommendation_use_cases(zone, environment, account_id, items
 
 def flow_input_combo_quick_order(zone, environment, account_id):
     if 'success' == input_combos_quick_order(zone, environment, account_id):
-        print(text.Green + '\n- Combos for quick order added successfully')
+        print(TEXT_GREEN + '\n- Combos for quick order added successfully')
     else:
         print_finish_application_menu()
 
@@ -1330,7 +1384,7 @@ def flow_input_empties_discounts(zone, environment):
     if not response:
         print_finish_application_menu()
     else:
-        print(text.Green + '\n- Discount value for the empty SKU added successfully')
+        print(TEXT_GREEN + '\n- Discount value for the empty SKU added successfully')
 
 
 def account_menu():
@@ -1377,7 +1431,7 @@ def flow_create_account(zone, environment, account_id):
                                                 delivery_address, account_status, enable_empties_loan)
 
     if create_account_response:
-        print(text.Green + f'\n- Your account {account_id} has been created successfully')
+        print(TEXT_GREEN + f'\n- Your account {account_id} has been created successfully')
 
         # Input default credit to the account so it won't be `null` in the Account Service database
         if False == add_credit_to_account_microservice(account_id, zone, environment, 0, 0):
@@ -1411,7 +1465,7 @@ def flow_create_delivery_window(zone, environment, account_id, option):
                                                               is_alternative_delivery_date, option)
 
     if delivery_window == 'success':
-        print(text.Green + '\n- Delivery window created successfully for the account {account_id}'
+        print(TEXT_GREEN + '\n- Delivery window created successfully for the account {account_id}'
               .format(account_id=account_id))
 
         # Check if delivery cost (interest) should be included
@@ -1422,7 +1476,7 @@ def flow_create_delivery_window(zone, environment, account_id, option):
                 delivery_cost = create_delivery_fee_microservice(zone, environment, account_data,
                                                                  delivery_cost_values)
                 if delivery_cost == 'success':
-                    print(text.Green + '\n- Delivery cost (interest) added successfully for the account {account_id}'
+                    print(TEXT_GREEN + '\n- Delivery cost (interest) added successfully for the account {account_id}'
                           .format(account_id=account_id))
             else:
                 print_finish_application_menu()
@@ -1443,7 +1497,7 @@ def flow_create_credit_information(zone, environment, account_id):
     credit = add_credit_to_account_microservice(account_id, zone, environment, credit_info.get('credit'),
                                                 credit_info.get('balance'))
     if credit == 'success':
-        print(text.Green + f'\n- Credit added successfully for the account {account_id}')
+        print(TEXT_GREEN + f'\n- Credit added successfully for the account {account_id}')
     else:
         print_finish_application_menu()
 
@@ -1465,7 +1519,7 @@ def flow_update_account_name(zone, environment, account_id):
                                                 account_data['hasEmptiesLoan'])
 
     if create_account_response:
-        print(text.Green + '\n- Account name updated for the account {account_id}'
+        print(TEXT_GREEN + '\n- Account name updated for the account {account_id}'
               .format(account_id=account_id))
     else:
         print_finish_application_menu()
@@ -1488,7 +1542,7 @@ def flow_update_account_status(zone, environment, account_id):
                                                 account_data['hasEmptiesLoan'])
 
     if create_account_response:
-        print(text.Green + '\n- Account status updated to {account_status} for the account {account_id}'
+        print(TEXT_GREEN + '\n- Account status updated to {account_status} for the account {account_id}'
               .format(account_status=account_status, account_id=account_id))
     else:
         print_finish_application_menu()
@@ -1514,7 +1568,7 @@ def flow_update_account_minimum_order(zone, environment, account_id):
                                                 account_data['hasEmptiesLoan'])
 
     if create_account_response:
-        print(text.Green + '\n- Minimum order updated for the account {account_id}'
+        print(TEXT_GREEN + '\n- Minimum order updated for the account {account_id}'
               .format(account_id=account_id))
     else:
         print_finish_application_menu()
@@ -1537,7 +1591,7 @@ def flow_update_account_payment_method(zone, environment, account_id):
                                                 account_data['hasEmptiesLoan'])
 
     if create_account_response:
-        print(text.Green + '\n- Payment method updated for the account {account_id}'
+        print(TEXT_GREEN + '\n- Payment method updated for the account {account_id}'
               .format(account_id=account_id))
     else:
         print_finish_application_menu()
@@ -1596,7 +1650,7 @@ def registration_user_iam():
 
     status_response = create_user(environment, country, email, password, account_id, tax_id)
     if status_response == "success":
-        print(text.Green + "\n- User IAM created successfully")
+        print(TEXT_GREEN + "\n- User IAM created successfully")
     else:
         print(text.Red + "\n- Something went wrong when creating a new user, please try again")
         print_finish_application_menu()
@@ -1615,7 +1669,7 @@ def delete_user_iam():
 
     status_response = delete_user_v3(environment, country, email)
     if status_response == "success":
-        print(text.Green + "\n- User IAM deleted successfully")
+        print(TEXT_GREEN + "\n- User IAM deleted successfully")
     elif status_response == "partial":
         print(text.Magenta + "\n- User IAM deleted partially")
     else:
@@ -1657,7 +1711,7 @@ def flow_create_invoice(zone, environment, account_id):
 
     invoice_response = create_invoice_request(zone, environment, order_id, invoice_status, order_details, order_items)
     if invoice_response:
-        print(text.Green + f'\n- Invoice {invoice_response} created successfully')
+        print(TEXT_GREEN + f'\n- Invoice {invoice_response} created successfully')
 
         # Generate files for bank_slip and invoice (NF) only for Brazil
         if zone == 'BR':
@@ -1684,7 +1738,7 @@ def flow_update_invoice_status(zone, environment, account_id):
         if not invoice_response:
             print_finish_application_menu()
         else:
-            print(text.Green + '\n- Invoice status updated to {invoice_status} for the invoice {invoice_id}'
+            print(TEXT_GREEN + '\n- Invoice status updated to {invoice_status} for the invoice {invoice_id}'
                   .format(invoice_status=status, invoice_id=invoice_id))
 
 
@@ -1701,7 +1755,7 @@ def flow_update_invoice_payment_method(zone, environment, account_id):
         if not invoice_response:
             print_finish_application_menu()
         else:
-            print(text.Green + '\n- Invoice payment method updated to {payment_method} for the invoice {invoice_id}'
+            print(TEXT_GREEN + '\n- Invoice payment method updated to {payment_method} for the invoice {invoice_id}'
                   .format(payment_method=payment_method, invoice_id=invoice_id))
 
 def token_generator_jwt():
@@ -1733,7 +1787,7 @@ def token_generator(jwt=False, root=False, inclusion=False, account_id=None):
 
     
     print(text.Yellow + f'\n- Token generated: {token}')
-    print(text.Green + '\n- The token is on your clipboard.')    
+    print(TEXT_GREEN + '\n- The token is on your clipboard.')    
     pyperclip.copy(token)
 
 
@@ -1788,7 +1842,7 @@ def associate_product_to_category_menu():
             print("\n{text_red}- {fail}".format(text_red=text.Red, fail="Fail to associate product to category"))
             print_finish_application_menu()
 
-    print("\n{text_green}{success}".format(text_green=text.Green,
+    print("\n{text_green}{success}".format(text_green=TEXT_GREEN,
                                          success="Success to enable and to associate product to category"))
 
 
@@ -1814,7 +1868,7 @@ def create_categories_menu():
 
     if category:
         category = category[0]
-        print(f"{text.Green}Category already exists")
+        print(f"{TEXT_GREEN}Category already exists")
     else:
         # Create category
         response = create_category(
@@ -1827,7 +1881,7 @@ def create_categories_menu():
         category = loads(response.text)
 
         if response.status_code == 200:
-            print(f"{text.Green}Success in creating category.")
+            print(f"{TEXT_GREEN}Success in creating category.")
         else:
             print(f"{text.Red}Fail to create category: \n")
             print(f"Status Code: {response.status_code} \n")
@@ -1930,7 +1984,7 @@ def create_credit_statement_menu():
 
     response = create_file_api(zone, environment, account_id, 'credit-statement', data)
     if response == 'success':
-        print(text.Green + f'\n- Credit Statement created for the account {account_id}')
+        print(TEXT_GREEN + f'\n- Credit Statement created for the account {account_id}')
     else:
         print_finish_application_menu()
 
@@ -1965,7 +2019,7 @@ def create_attribute_menu():
         create_att = create_attribute_primitive_type(environment, type_option)
 
         if create_att:
-            print(text.Green + '\n- [Attribute] The new {attribute_type} has been successfully created. '
+            print(TEXT_GREEN + '\n- [Attribute] The new {attribute_type} has been successfully created. '
                               'ID: {attribute}'.format(attribute_type=str(type_option),
                                                        attribute=create_att))
             print_finish_application_menu()
@@ -1985,7 +2039,7 @@ def create_attribute_menu():
         create_enum = create_attribute_enum(environment, type_option)
 
         if create_enum:
-            print(text.Green + '\n- [Attribute] The new {attribute_type} has been successfully created. '
+            print(TEXT_GREEN + '\n- [Attribute] The new {attribute_type} has been successfully created. '
                                'ID: {attribute}'.format(attribute_type=str(type_option),
                                                         attribute=create_enum))
             print_finish_application_menu()
@@ -1998,7 +2052,7 @@ def create_attribute_menu():
         create_group = create_attribute_group(environment, list_att)
 
         if create_group:
-            print(text.Green + '\n- [Attribute] The new {attribute_type} has been successfully created. '
+            print(TEXT_GREEN + '\n- [Attribute] The new {attribute_type} has been successfully created. '
                                'ID: {attribute}'.format(attribute_type=str(supplier_option),
                                                         attribute=create_group))
             print_finish_application_menu()
@@ -2050,7 +2104,7 @@ def create_category_supplier_menu():
         create_category = create_root_category(environment)
 
         if create_category:
-            print(text.Green + '\n- [Category] The new root category has been successfully created. '
+            print(TEXT_GREEN + '\n- [Category] The new root category has been successfully created. '
                                'ID: {category}'.format(category=create_category))
             print_finish_application_menu()
         else:
@@ -2066,7 +2120,7 @@ def create_category_supplier_menu():
             print_finish_application_menu()
 
         if create_sub_category:
-            print(text.Green + '\n- [Category] The new subCategory has been successfully created. '
+            print(TEXT_GREEN + '\n- [Category] The new subCategory has been successfully created. '
                                'ID: {category}'.format(category=create_sub_category))
             print_finish_application_menu()
         else:
@@ -2080,7 +2134,7 @@ def create_category_supplier_menu():
         legacy_category = create_legacy_category(environment, category_name)
 
         if legacy_category:
-            print(text.Green + '\n- [Category] The new legacy category has been successfully created. '
+            print(TEXT_GREEN + '\n- [Category] The new legacy category has been successfully created. '
                                'ID: {category}'.format(category=legacy_category))
             print_finish_application_menu()
         else:
@@ -2101,7 +2155,7 @@ def attribute_associated_category_menu():
             max_cardinality = print_max_cardinality()
             association = create_association_attribute_with_category(environment, attribute_id, category_id, min_cardinality, max_cardinality)
             if association:
-                print(text.Green + '\n- [Association] The new association between attribute and categoty has been successfully created. '
+                print(TEXT_GREEN + '\n- [Association] The new association between attribute and categoty has been successfully created. '
                                    'ID: {association}'.format(association=association))
                 print_finish_application_menu()
             else:
@@ -2120,7 +2174,7 @@ def delete_attribute_menu():
         delete = delete_attribute_supplier(environment, attribute_id)
         if delete:
             print(
-                text.Green + '\n- [Delete Attribute] The attribute: {attribute} has been successfully deleted. '
+                TEXT_GREEN + '\n- [Delete Attribute] The attribute: {attribute} has been successfully deleted. '
                 .format(attribute=delete))
             print_finish_application_menu()
         else:
@@ -2200,7 +2254,7 @@ def edit_attribute_type_menu():
     result = edit_attribute_type(environment, attribute_id, attribute_type, values)
     if result:
         print(
-            text.Green + '\n- [Edit Attribute] The attribute: {attribute} has been successfully edit to the new type. '
+            TEXT_GREEN + '\n- [Edit Attribute] The attribute: {attribute} has been successfully edit to the new type. '
             .format(attribute=attribute_id))
         print_finish_application_menu()
     else:
@@ -2215,17 +2269,16 @@ def create_product_menu():
     product = create_product_supplier(environment, category_id, country)
     if product:
         print(
-            text.Green + '\n- [Product] The new product has been successfully created. '
+            TEXT_GREEN + '\n- [Product] The new product has been successfully created. '
                          'ID: {product}'.format(product=product))
         print_finish_application_menu()
     else:
         print_finish_application_menu()
 
 
-# Init
-try:
-    if __name__ == '__main__':
+if __name__ == '__main__':
+    try:
         show_menu()
 
-except KeyboardInterrupt:
-    sys.exit(0)
+    except (KeyboardInterrupt, EOFError):
+        sys.exit(0)

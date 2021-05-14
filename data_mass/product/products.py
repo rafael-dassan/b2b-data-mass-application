@@ -15,14 +15,14 @@ from data_mass.common import (
     get_header_request,
     get_microservice_base_url,
     place_request,
-    update_value_to_json,
-)
+    update_value_to_json
+    )
 from data_mass.menus.product_menu import (
     print_is_alcoholic_menu,
     print_is_narcotic_menu,
     print_is_returnable_menu,
-    print_product_quantity_menu,
-)
+    print_product_quantity_menu
+    )
 
 ZONES_NEW_ENDPOINT = ["AR", "PY", "PA"]
 ZONES_DIFF_CONTRACT = ["AR", "PY"]
@@ -146,7 +146,7 @@ def add_products_to_account_microservice(
             slice_array_products(product_qty, all_products_zone),
         )
     )
-
+    print(products_data)
     # Associate products to an account
     result = request_post_products_account_microservice(
         abi_id, zone, environment, delivery_center_id, products_data

@@ -12,9 +12,7 @@ from data_mass.common import (
     get_header_request,
     get_microservice_base_url,
     place_request,
-    update_value_to_json,
-    validate_user_entry_date,
-    validate_yes_no_change_date
+    update_value_to_json
     )
 
 
@@ -28,6 +26,7 @@ def request_order_simulation(
     empties: list,
     payment_method: str,
     payment_term: bool,
+    delivery_date: str
 ):
     """
     Request order simulation through Cart Service
@@ -73,14 +72,6 @@ def request_order_simulation(
         get_microservice_base_url(environment, False) + "/cart-service/v2"
     )
 
-    option_change_date = validate_yes_no_change_date()
-    if option_change_date.upper() == "Y": 
-        date_entry = validate_user_entry_date(
-            'Enter Date for Delivery-Date (YYYY-mm-dd)'
-        )
-    else:
-        tomorrow = datetime.today() + timedelta(1)
-        date_entry = str(datetime.date(tomorrow))
 
     # Inputs for default payload simulation
     dict_values = {
@@ -90,7 +81,7 @@ def request_order_simulation(
         "paymentTerm": int(payment_term),
         "lineItems": items,
         "combos": combos,
-        "deliveryDate": date_entry,
+        "deliveryDate": delivery_date,
         "empties": empties,
     }
 
