@@ -6,21 +6,6 @@ import pyperclip
 
 from data_mass.accounts import *
 from data_mass.algo_selling import *
-from data_mass.supplier.attribute import (
-    check_if_attribute_exist,
-    create_attribute_enum,
-    create_attribute_group,
-    create_attribute_primitive_type,
-    create_legacy_attribute_container,
-    create_legacy_attribute_package,
-    create_legacy_root_attribute,
-    delete_attribute_supplier,
-    display_all_attribute,
-    display_specific_attribute,
-    edit_attribute_type,
-    search_all_attribute,
-    search_specific_attribute
-    )
 from data_mass.category_magento import *
 from data_mass.combos import *
 from data_mass.common import *
@@ -102,7 +87,6 @@ from data_mass.orders import *
 from data_mass.product.inventory import *
 from data_mass.product.magento import *
 from data_mass.product.products import *
-from data_mass.supplier.product import create_product_supplier
 from data_mass.rewards.rewards import (
     associate_dt_combos_to_poc,
     disenroll_poc_from_program,
@@ -130,6 +114,21 @@ from data_mass.simulation import (
     process_simulation_microservice,
     request_order_simulation
     )
+from data_mass.supplier.attribute import (
+    check_if_attribute_exist,
+    create_attribute_enum,
+    create_attribute_group,
+    create_attribute_primitive_type,
+    create_legacy_attribute_container,
+    create_legacy_attribute_package,
+    create_legacy_root_attribute,
+    delete_attribute_supplier,
+    display_all_attribute,
+    display_specific_attribute,
+    edit_attribute_type,
+    search_all_attribute,
+    search_specific_attribute
+    )
 from data_mass.supplier.category import (
     check_if_supplier_category_exist,
     create_association_attribute_with_category,
@@ -141,6 +140,7 @@ from data_mass.supplier.category import (
     search_all_category,
     search_specific_category
     )
+from data_mass.supplier.product import create_product_supplier
 from data_mass.user.creation import create_user
 from data_mass.user.deletion import delete_user_v3
 from data_mass.validations import is_number, validate_yes_no_option
@@ -1941,7 +1941,7 @@ def create_credit_statement_menu():
     }
 
     response = create_file_api(zone, environment, account_id, 'credit-statement', data)
-    if response == 'success':
+    if response:
         print(text.Green + f'\n- Credit Statement created for the account {account_id}')
     else:
         print_finish_application_menu()

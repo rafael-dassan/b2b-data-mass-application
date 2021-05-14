@@ -1,74 +1,127 @@
-# Standard library imports
+import os
 from random import randint
 
-# Third party imports
 from requests import request
 
-# Local application imports
 from data_mass.classes.text import text
-from data_mass.common import get_header_request, \
-    get_microservice_base_url, set_to_dictionary, \
-    remove_from_dictionary
+from data_mass.common import (
+    get_header_request,
+    get_microservice_base_url,
+    remove_from_dictionary,
+    set_to_dictionary
+    )
 from data_mass.logger import log_to_file
 
 
-def create_file_api(zone, environment, account_id, purpose, data):
+def create_file_api(
+    zone: str,
+    environment: str,
+    account_id: str,
+    purpose: str,
+    data: dict
+) -> bool:
     """
-    Create file through the File Management Service
-    Args:
-        zone: e.g., ZA, BR
-        environment: e.g., DEV, SIT, UAT
-        account_id: POC unique identifier
-        purpose: e.g., invoice, bank-slip, credit-statement
-        data: specific file data according to the purpose
+    Create file through the File Management Service.
+    Parameters
+    ----------
+    zone: str
+        e.g., ZA, BR.
+    environment: str
+        e.g., DEV, SIT, UAT.
+    account_id: str
+        POC unique identifier.
+    purpose: str
+        e.g., invoice, bank-slip, credit-statement.
+    data: dict
+        Specific file data according to the purpose.
 
-    Returns: `false` in case of failure
+    Returns
+    -------
+    bool
+        `False` in case of failure, otherwise, `True`.
     """
-    file = {'file': ('random-file.pdf', open('data/files/random-file.pdf', 'rb'), 'application/pdf')}
-    file_id = str(randint(1, 100000))
+    path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(path, 'data/files/random-file.pdf')
+    content = open(file_path, "rb")
+
+    files = {"file": ("random-file.pdf", content, "application/pdf")}
     metadata = get_file_metadata(account_id, purpose, data)
-    title = '{file_id}-{purpose}-{account_id}'.format(file_id=file_id, purpose=purpose, account_id=account_id)
+    title = f"{randint(1, 100000)}-{purpose}-{account_id}"
 
     # Define headers
-    request_headers = get_header_request(zone, True, False, False, False, account_id)
-    set_to_dictionary(request_headers, 'linkExpirationTime', str(-1))
-    set_to_dictionary(request_headers, 'metadata', metadata)
-    set_to_dictionary(request_headers, 'purpose', purpose)
-    set_to_dictionary(request_headers, 'title', title)
-    set_to_dictionary(request_headers, 'expiresAt', '')
-    remove_from_dictionary(request_headers, 'Content-Type')
+    request_headers = get_header_request(
+        zone,
+        True,
+        False,
+        False,
+        False,
+        account_id
+    )
+    set_to_dictionary(request_headers, "linkExpirationTime", str(-1))
+    set_to_dictionary(request_headers, "metadata", metadata)
+    set_to_dictionary(request_headers, "purpose", purpose)
+    set_to_dictionary(request_headers, "title", title)
+    set_to_dictionary(request_headers, "expiresAt", "")
+    remove_from_dictionary(request_headers, "Content-Type")
 
     # Define url request
-    request_url = get_microservice_base_url(environment) + '/files/upload'
+    request_url = get_microservice_base_url(environment) + "/files/upload"
 
     # Send request
-    response = request('POST', request_url, files=file, headers=request_headers)
+    response = request(
+        "POST",
+        request_url,
+        files=files,
+        headers=request_headers
+    )
     log_to_file(
-        request_method='POST',
+        request_method="POST",
         request_url=request_url,
-        request_body='random-file.pdf',
+        request_body="random-file.pdf",
         request_headers=request_headers,
         status_code=response.status_code,
         response_body=response.text,
     )
 
     if response.status_code == 200:
-        return 'success'
+        return True
     else:
-        print(text.Red + '\n- [File Management Service] Failure to create file. Response Status: '
-                         '{response_status}. Response message: {response_message}'
-              .format(response_status=response.status_code, response_message=response.text))
+        print(
+            f"{text.Red}"
+            "- [File Management Service] Failure to create file.\n"
+            f"Response Status: {response.status_code}\n"
+            f"Response message: {response.text}"
+        )
+
         return False
 
 
-def get_file_metadata(account_id, purpose, data):
+def get_file_metadata(account_id: str, purpose: str, data: dict) -> str:
+    """
+    Get metadata from a file.
+
+    Parameters
+    ----------
+    account_id : str
+    purpose : str
+    data : dict
+
+    Returns
+    -------
+    str
+        `Purpose` property from metadata.
+    """
+    invoice_id = data.get("invoice_id")
+    month = data.get("month")
+    year = data.get("year")
+
     metadata = {
-        'invoice': 'accountId:{account_id}, invoiceId:{invoice_id}'
-            .format(account_id=account_id, invoice_id=data.get('invoice_id')),
-        'bank-slip': 'accountId:{account_id}, invoiceId:{invoice_id}'
-            .format(account_id=account_id, invoice_id=data.get('invoice_id')),
-        'credit-statement': 'accountId:{account_id}, date:{month}/{year}, creditBalance:123.05'
-            .format(account_id=account_id, month=data.get('month'), year=data.get('year'))
+        "invoice": f"accountId:{account_id}, invoiceId:{invoice_id}",
+        "bank-slip": f"accountId:{account_id}, invoiceId:{invoice_id}",
+        "credit-statement": (
+            f"accountId:{account_id}, "
+            f"date:{month}/{year}, creditBalance:123.05"
+        )
     }
 
     return metadata[purpose]
