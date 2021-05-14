@@ -442,9 +442,9 @@ def generate_combos_information(zone_dt_combos):
 
     combos_list = list()
     for dt_combo in zone_dt_combos:
-        dic_combos  = {
-            'comboId' : dt_combo['id'],
-            'points' : randrange(500, 5000, 100)
+        dic_combos = {
+            'comboId': dt_combo['id'],
+            'points': randrange(500, 5000, 100)
         }
         combos_list.append(dic_combos)
 
@@ -567,7 +567,20 @@ def generate_categories_information(zone):
         category_info.append('Gana 1 punto por cada S/ 1.00 de compra en estos productos')
         category_info.append('COMPRA AHORA')
         category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/pe/core-brands.png')
+    elif zone == 'PY':
+        # Premium category
+        category_info.append('168')
+        category_info.append('11')
+        category_info.append('Gana 10 puntos por cada Gs.100.00 de compra en estos productos')
+        category_info.append('COMPRA AHORA')
+        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/py/premium-brands.png')
 
+        # Core category
+        category_info.append('167')
+        category_info.append('4')
+        category_info.append('Gana 1 punto por cada Gs.1.00 de compra en estos productos')
+        category_info.append('COMPRA AHORA')
+        category_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/py/core-brands.png')
 
     return category_info
 
@@ -576,7 +589,7 @@ def generate_categories_information(zone):
 def generate_terms_information(zone):
     terms_info = list()
     
-    if zone == 'DO' or zone == 'CO' or zone == 'AR' or zone == 'MX' or zone == 'EC' or zone == 'PE':
+    if zone == 'DO' or zone == 'CO' or zone == 'AR' or zone == 'MX' or zone == 'EC' or zone == 'PE' or zone == 'PY':
         terms_info.append('https://cdn-b2b-abi.global.ssl.fastly.net/terms/terms-co.html')
         terms_info.append('Términos iniciales introducidos al programa')
     elif zone == 'BR':
@@ -586,4 +599,4 @@ def generate_terms_information(zone):
         terms_info.append('https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/terms/terms-za.html')
         terms_info.append('Initial terms added to the program')
 
-    return terms_info    
+    return terms_info

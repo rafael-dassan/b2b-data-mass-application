@@ -247,6 +247,7 @@ Example:
  ┃ ┣ 📜order.csv
  ┃ ┣ 📜product.csv
  ┃ ┣ 📜recommendation.csv
+ ┃ ┣ 📜rewards_enroll.csv
  ┃ ┣ 📜stepped_discount.csv
  ┃ ┣ 📜stepped_free_good.csv
  ┃ ┗ 📜user.csv
