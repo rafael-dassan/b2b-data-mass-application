@@ -46,8 +46,9 @@ Para usar o modo de desenvolvimento*:
 python3 setup.py install develop
 ```
 
-\** Nota: se você não estiver usando o virtualenv, é recomendado usar o sinalizador `--user`.
-\* [Mais detalhe pode ser encontrado na documentação oficial](https://setuptools.readthedocs.io/en/latest/userguide/development_mode.html).
+\* Nota: se você não estiver usando o virtualenv, é recomendado usar o sinalizador `--user`.
+
+\** [Mais detalhe pode ser encontrado na documentação oficial](https://setuptools.readthedocs.io/en/latest/userguide/development_mode.html).
 
 ## Executando a Aplicação
 Para iniciar a aplicação, execute:

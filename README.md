@@ -49,6 +49,7 @@ python3 setup.py install develop
 ```
 
 \** Note: if you are not using virtualenv, it's recommended to use the `--user` flag.
+
 \** [More detail can be found in the official documentation](https://setuptools.readthedocs.io/en/latest/userguide/development_mode.html).
 
 ## Running the Application
