@@ -823,10 +823,6 @@ def request_empties_discounts_creation(
         "prices[0].minimumPrice": discount_value,
     }
 
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
-
     # Update JSON values
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])

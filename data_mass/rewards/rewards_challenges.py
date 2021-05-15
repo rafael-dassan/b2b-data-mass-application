@@ -108,7 +108,7 @@ def create_challenge_payload(challenge_id, execution_method, zone_skus_list=None
     }
 
     for key in dict_challenge.keys():
-        json_object = update_value_to_json(challenge_payload_template, key, dict_challenge[key])
+        json_object = update_value_to_json(json_data, key, dict_challenge[key])
 
     if execution_method == 'TAKE_PHOTO':
         good_photo = 'https://b2bstaticwebsagbdev.blob.core.windows.net/challenge-uat/DO/good-examples-photo-challenge/cooler_cerveza_ok.png'
@@ -158,7 +158,7 @@ def remove_challenge(zone, environment):
 
     if response_all_challenges is None: return None
 
-    json_all_challenges = loads(response_all_challenges.text)
+    json_all_challenges = json.loads(response_all_challenges.text)
     display_all_challenges_info(json_all_challenges)
 
     challenge_id = print_input_text('\nPlease inform the Challenge ID')
@@ -198,7 +198,7 @@ def get_all_challenges(zone, environment):
     response = place_request('GET', request_url, '', header_request)
 
     if response.status_code == 200:
-        json_data = loads(response.text)
+        json_data = json.loads(response.text)
         if len(json_data) > 0:
             return response
         else:

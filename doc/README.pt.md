@@ -36,7 +36,7 @@ Após ter ativado o virtualenv, instale a aplicação:
 python3 -m pip install .
 ```
 
-Para usar como package:
+Para usar como package*:
 ```sh
 python3 setup.py install
 ```
@@ -46,6 +46,7 @@ Para usar o modo de desenvolvimento*:
 python3 setup.py install develop
 ```
 
+\** Nota: se você não estiver usando o virtualenv, é recomendado usar o sinalizador `--user`.
 \* [Mais detalhe pode ser encontrado na documentação oficial](https://setuptools.readthedocs.io/en/latest/userguide/development_mode.html).
 
 ## Executando a Aplicação

@@ -122,7 +122,13 @@ fi
 
 if [ $SHOULD_INSTALL == "1" ]; then
     echo "${CYAN}Installing Data Mass...${RESET}"
-    python3 setup.py install
+
+    if [[ $(pip -V | grep ${VIRTUALENV_DIR}) ]]; then
+        python3 setup.py install --force
+    else
+        python3 setup.py install --user --force
+    fi
+
     python3 -m pip install .
     echo "${GREEN}Done!${RESET}"
 fi

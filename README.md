@@ -38,17 +38,18 @@ After enabling the virtualenv, install the application:
 python3 -m pip install .
 ```
 
-To use as a package:
+To use as a package*:
 ```sh
 python3 setup.py install
 ```
 
-To use development mode*:
+To use development mode**:
 ```sh
 python3 setup.py install develop
 ```
 
-\* [More detail can be found in the official documentation](https://setuptools.readthedocs.io/en/latest/userguide/development_mode.html).
+\** Note: if you are not using virtualenv, it's recommended to use the `--user` flag.
+\** [More detail can be found in the official documentation](https://setuptools.readthedocs.io/en/latest/userguide/development_mode.html).
 
 ## Running the Application
 To start the application, run:
