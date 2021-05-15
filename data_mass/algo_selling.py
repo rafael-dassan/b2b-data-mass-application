@@ -1,20 +1,23 @@
-# Standard library imports
 import json
-from json import loads
 import os
-from time import time
+from json import loads
 from random import randint
+from time import time
 from uuid import uuid1
 
-# Third party imports
+import pkg_resources
 from tabulate import tabulate
 
-# Local application imports
-from data_mass.common import update_value_to_json, \
-    create_list, convert_json_to_string, \
-    get_microservice_base_url, place_request, \
-    get_header_request, set_to_dictionary
 from data_mass.classes.text import text
+from data_mass.common import (
+    convert_json_to_string,
+    create_list,
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+    set_to_dictionary,
+    update_value_to_json
+    )
 
 
 def create_all_recommendations(zone, environment, account_id, products):
@@ -60,7 +63,7 @@ def create_quick_order_payload(account_id, zone, product_list):
         index = index + 1
 
     dict_values = {
-        'recommendationId': 'DM-{0}-{1}'.format(zone, str(randint(1, 100000))),
+        'recommendationId': f'DM-{zone}-{str(randint(1, 100000))}',
         'useCase': 'QUICK_ORDER',
         'useCaseId': account_id,
         'descriptions[0].language': language,
@@ -72,11 +75,8 @@ def create_quick_order_payload(account_id, zone, product_list):
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_beer_recommender_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    content = pkg_resources.resource_string("data_mass", "data/create_beer_recommender_payload.json") 
+    json_data = json.loads(content.decode("utf-8"))
 
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
@@ -119,7 +119,7 @@ def create_forgotten_items_payload(account_id, zone, product_list):
         index = index + 1
 
     dict_values = {
-        'recommendationId': 'DM-{0}-{1}'.format(zone, str(randint(1, 100000))),
+        'recommendationId': f'DM-{zone}-{str(randint(1, 100000))}',
         'useCase': 'FORGOTTEN_ITEMS',
         'useCaseId': account_id,
         'descriptions[0].language': language,
@@ -129,13 +129,8 @@ def create_forgotten_items_payload(account_id, zone, product_list):
     }
     set_to_dictionary(dict_values, 'items', items)
 
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_beer_recommender_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    content = pkg_resources.resource_string("data_mass", "data/create_beer_recommender_payload.json") 
+    json_data = json.loads(content.decode("utf-8"))
 
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
@@ -178,21 +173,20 @@ def create_upsell_payload(account_id, zone, product_list):
         index = index + 1
 
     dict_values = {
-        'recommendationId': 'DM-{0}-{1}'.format(zone, str(randint(1, 100000))),
+        'recommendationId': f'DM-{zone}-{str(randint(1, 100000))}',
         'descriptions[0].language': language,
         'descriptions[0].text': text,
         'descriptions[0].description': text_description,
         'useCaseId': account_id
     }
     set_to_dictionary(dict_values, 'items', items)
-    
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_beer_recommender_sell_up_payload.json')
 
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    # get data from Data Mass files
+    content = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_beer_recommender_sell_up_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
@@ -220,8 +214,8 @@ def request_quick_order(zone, environment, account_id, products):
     if response.status_code == 202:
         return 'success'
     else:
-        print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: {0}. '
-                         'Response message: {1}'.format(response.status_code, response.text))
+        print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: {}. '
+                         'Response message: {}'.format(response.status_code, response.text))
         return False
 
 
@@ -241,8 +235,8 @@ def request_forgotten_items(zone, environment, account_id, products):
     if response.status_code == 202:
         return 'success'
     else:
-        print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: {0}. '
-                         'Response message: {1}'.format(response.status_code, response.text))
+        print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: {}. '
+                         'Response message: {}'.format(response.status_code, response.text))
         return False
 
 
@@ -262,8 +256,8 @@ def request_sell_up(zone, environment, account_id, products):
     if response.status_code == 202:
         return 'success'
     else:
-        print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: {0}. '
-                         'Response message: {1}'.format(response.status_code, response.text))
+        print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: {}. '
+                         'Response message: {}'.format(response.status_code, response.text))
         return False
 
 
@@ -304,8 +298,8 @@ def get_header_request_recommender(zone, environment):
 def get_recommendation_by_account(account_id, zone, environment, use_case):
     headers = get_header_request(zone, True, False, False, False, account_id)
 
-    request_url = get_microservice_base_url(environment, True) + '/global-recommendation/?useCase={0}&useCaseId=' \
-                                                                   '{1}&useCaseType=ACCOUNT'.format(use_case, account_id)
+    request_url = get_microservice_base_url(environment, True) + '/global-recommendation/?useCase={}&useCaseId=' \
+                                                                   '{}&useCaseType=ACCOUNT'.format(use_case, account_id)
 
     response = place_request('GET', request_url, '', headers)
 
@@ -316,12 +310,12 @@ def get_recommendation_by_account(account_id, zone, environment, use_case):
         if len(content) != 0:
             return recommendation_data
         elif len(content) == 0:
-            print(text.Yellow + '\n- [Global Recommendation Service] The account {0} does not have recommendation type'
-                                ' {1}'.format(account_id, use_case))
+            print(text.Yellow + '\n- [Global Recommendation Service] The account {} does not have recommendation type'
+                                ' {}'.format(account_id, use_case))
             return 'not_found'
     else:
-        print(text.Red + '\n- [Global Recommendation Service] Failure to retrieve recommendation. Response Status: {0}.'
-                         ' Response message: {1}'.format(response.status_code, response.text))
+        print(text.Red + '\n- [Global Recommendation Service] Failure to retrieve recommendation. Response Status: {}.'
+                         ' Response message: {}'.format(response.status_code, response.text))
         return False
 
 
@@ -336,15 +330,15 @@ def delete_recommendation_by_id(environment, recommendation_data):
                          'OIl19.Hpthi-Joez6m2lNiOpC6y1hfPOT5nvMtYdNnp5NqVTM'
     }
 
-    request_url = get_microservice_base_url(environment, True) + '/global-recommendation/{0}'.format(recommendation_id)
+    request_url = get_microservice_base_url(environment, True) + f'/global-recommendation/{recommendation_id}'
 
     response = place_request('DELETE', request_url, '', headers)
 
     if response.status_code == 202:
         return 'success'
     else:
-        print(text.Red + '\n- [Global Recommendation Service] Failure to delete recommendation. Response Status: {0}.'
-                         ' Response message: {1}'.format(response.status_code, response.text))
+        print(text.Red + '\n- [Global Recommendation Service] Failure to delete recommendation. Response Status: {}.'
+                         ' Response message: {}'.format(response.status_code, response.text))
         return False
 
 
@@ -418,7 +412,7 @@ def input_combos_quick_order(zone, environment, account_id):
         # Retrieve combos type discount of the account
         request_headers = get_header_request(zone, True, False, False, False, account_id)
 
-        request_url = get_microservice_base_url(environment, True) + '/combos/?accountID={0}&types=D&includeDeleted' \
+        request_url = get_microservice_base_url(environment, True) + '/combos/?accountID={}&types=D&includeDeleted' \
                                                                        '=false&includeDisabled=false'.format(account_id)
 
         response = place_request('GET', request_url, '', request_headers)
@@ -437,8 +431,8 @@ def input_combos_quick_order(zone, environment, account_id):
                 }
                 combos_id.append(dict_combos)
         else:
-            print(text.Red + '\n- [Combos Service] Failure to retrieve combos. Response Status: {0}. Response message:'
-                             ' {1}'.format(response.status_code, response.text))
+            print(text.Red + '\n- [Combos Service] Failure to retrieve combos. Response Status: {}. Response message:'
+                             ' {}'.format(response.status_code, response.text))
             return False
 
         updated_recommendation = update_value_to_json(account_recommendation, 'content[0].combos', combos_id)
@@ -456,6 +450,6 @@ def input_combos_quick_order(zone, environment, account_id):
         if response.status_code == 202:
             return 'success'
         else:
-            print(text.Red + '\n- [Recommendation Relay Service] Failure to retrieve combos. Response Status: {0}. '
-                             'Response message: {1}'.format(response.status_code, response.text))
+            print(text.Red + '\n- [Recommendation Relay Service] Failure to retrieve combos. Response Status: {}. '
+                             'Response message: {}'.format(response.status_code, response.text))
             return False

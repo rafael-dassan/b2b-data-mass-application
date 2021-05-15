@@ -1,17 +1,28 @@
 # Standard library imports
-from json import loads
-from datetime import timedelta, datetime, timezone
+import json
+from datetime import datetime, timedelta, timezone
 from random import randint, randrange
 
-# Local application imports
-from data_mass.common import get_header_request, \
-    get_microservice_base_url, update_value_to_json, convert_json_to_string, \
-    place_request, print_input_text, set_to_dictionary
-from data_mass.classes.text import text
-from data_mass.rewards.rewards_utils import generate_id, \
-    create_product_list_from_zone, display_all_challenges_info, \
-    get_payload, format_datetime_to_str
+import pkg_resources
 
+from data_mass.classes.text import text
+# Local application imports
+from data_mass.common import (
+    convert_json_to_string,
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+    print_input_text,
+    set_to_dictionary,
+    update_value_to_json
+    )
+from data_mass.rewards.rewards_utils import (
+    create_product_list_from_zone,
+    display_all_challenges_info,
+    format_datetime_to_str,
+    generate_id,
+    get_payload
+    )
 
 APP_ADMIN = 'membership'
 
@@ -47,14 +58,14 @@ def create_mark_complete_challenge(zone, environment, challenge_id=None, is_expi
 
 
 def create_purchase_challenge(zone, environment, is_multiple, challenge_id=None, is_expired=False):
-    print(text.Yellow + '\n- [Products] Verifying the list of available products for "{}" zone.'.format(zone))
+    print(text.Yellow + f'\n- [Products] Verifying the list of available products for "{zone}" zone.')
     zone_skus_list = create_product_list_from_zone(zone, environment)
 
     if zone_skus_list is None:
         return None
     
     if len(zone_skus_list) == 0:
-        print(text.Red + '\n- [Rewards] There are no products available for "{}" zone.'.format(zone))
+        print(text.Red + f'\n- [Rewards] There are no products available for "{zone}" zone.')
         return None
 
     if challenge_id is None:
@@ -74,7 +85,12 @@ def create_purchase_challenge(zone, environment, is_multiple, challenge_id=None,
 
 
 def create_challenge_payload(challenge_id, execution_method, zone_skus_list=None, start_date_timedelta=0, end_date_timedelta=180):
-    challenge_payload_template = get_payload('../data/create_rewards_challenges_payload.json')
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_rewards_challenges_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     start_date = datetime.now(timezone.utc) + timedelta(days=start_date_timedelta)
     start_date = format_datetime_to_str(start_date)
@@ -127,7 +143,7 @@ def put_challenge(challenge_id, request_body, zone, environment):
     response = place_request('PUT', request_url, request_body, request_headers)
 
     if response.status_code == 200:
-        print(text.Green + '\n- [Rewards] The challenge "{}" was successfully created.'.format(challenge_id))
+        print(text.Green + f'\n- [Rewards] The challenge "{challenge_id}" was successfully created.')
 
     else:
         print(text.Red + '\n- [Rewards] Failure when creating the challenge "{}".  \n- Response Status: "{}". \n- Response message "{}".'
@@ -159,10 +175,10 @@ def delete_challenge(challenge_id, zone, environment):
     response = place_request('DELETE', request_url, '', request_headers)
 
     if response.status_code == 204:
-        print(text.Green + '\n- [Rewards] The challenge "{}" was successfully deleted.'.format(challenge_id))
+        print(text.Green + f'\n- [Rewards] The challenge "{challenge_id}" was successfully deleted.')
 
     elif response.status_code == 404:
-        print(text.Red + '\n- [Rewards] The challenge "{}" was not found.'.format(challenge_id))
+        print(text.Red + f'\n- [Rewards] The challenge "{challenge_id}" was not found.')
 
     else:
         print(text.Red + '\n- [Rewards] Failure when deleting the challenge "{}".  \n- Response Status: "{}". \n- Response message "{}".'
@@ -186,7 +202,7 @@ def get_all_challenges(zone, environment):
         if len(json_data) > 0:
             return response
         else:
-            print(text.Red + '\n- [Rewards] There are no challenges available in "{}" zone.'.format(zone))
+            print(text.Red + f'\n- [Rewards] There are no challenges available in "{zone}" zone.')
 
     else:
         print(text.Red + '\n- [Rewards] Failure when getting all challenges in "{}" zone. \n- Response Status: "{}". \n- Response message '
@@ -210,7 +226,7 @@ def get_specific_challenge(challenge_id, zone, environment):
         return response
     
     elif response.status_code == 404:
-        print(text.Red + '\n- [Rewards] The challenge "{}" was not found.'.format(challenge_id))
+        print(text.Red + f'\n- [Rewards] The challenge "{challenge_id}" was not found.')
 
     else:
         print(text.Red + '\n- [Rewards] Failure when getting the challenge "{}" information. \n- Response Status: "{}". \n- Response message "{}".'

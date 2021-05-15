@@ -1,18 +1,32 @@
 # Standard library imports
 import json
-from json import loads
 import os
+from json import loads
 from random import randint, randrange
 
-# Local application imports
-from data_mass.common import get_header_request, \
-    get_microservice_base_url, update_value_to_json, convert_json_to_string, \
-    place_request, print_input_number, print_input_text, set_to_dictionary
+import pkg_resources
+
 from data_mass.classes.text import text
-from data_mass.rewards.rewards_utils import display_all_programs_info, \
-    build_request_url_with_projection_query, get_dt_combos_from_zone, \
-    create_product_list_from_zone, get_payload, print_input_decision, \
-    print_input_combo_qty
+# Local application imports
+from data_mass.common import (
+    convert_json_to_string,
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+    print_input_number,
+    print_input_text,
+    set_to_dictionary,
+    update_value_to_json
+    )
+from data_mass.rewards.rewards_utils import (
+    build_request_url_with_projection_query,
+    create_product_list_from_zone,
+    display_all_programs_info,
+    get_dt_combos_from_zone,
+    get_payload,
+    print_input_combo_qty,
+    print_input_decision
+    )
 
 APP_ADMIN = 'membership'
 
@@ -20,14 +34,14 @@ APP_ADMIN = 'membership'
 def create_new_program(zone, environment):
     
     # Verify if the zone already have a reward program created
-    response_all_programs = get_all_programs(zone, environment, set(["DEFAULT"]))
+    response_all_programs = get_all_programs(zone, environment, {"DEFAULT"})
     if response_all_programs is None:
         return None
 
     DM_program = get_DM_rewards_program_for_zone(loads(response_all_programs.text))
     if DM_program is not None:
         DM_program_id = DM_program['id']
-        print(text.Yellow + '\n- [Rewards] This zone already have a reward program created - Program ID: "{}"'.format(DM_program_id))
+        print(text.Yellow + f'\n- [Rewards] This zone already have a reward program created - Program ID: "{DM_program_id}"')
         return None
 
     response_zone_dt_combos = get_dt_combos_from_zone(zone, environment)
@@ -67,7 +81,12 @@ def create_new_program(zone, environment):
 
     print(text.default_text_color + '\nCreating new Rewards program in ' + zone + ' - ' + environment + '. Please wait...')
 
-    json_data = get_payload('../data/create_rewards_program_payload.json')
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_rewards_program_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     dict_values = {
         'name': new_program_id,
@@ -116,7 +135,7 @@ def create_new_program(zone, environment):
 
 
 def update_program_dt_combos(zone, environment):
-    all_programs = get_all_programs(zone, environment, set(["COMBOS"]))
+    all_programs = get_all_programs(zone, environment, {"COMBOS"})
     if all_programs is None:
         return None
 
@@ -133,7 +152,7 @@ def update_program_dt_combos(zone, environment):
                 break
         
         if selected_program is None:
-            print(text.Red + '\n- Program "{}" not found!!'.format(program_id))
+            print(text.Red + f'\n- Program "{program_id}" not found!!')
 
     # Get all the DT combos of the specified zone
     response_combos_from_zone = get_dt_combos_from_zone(zone, environment)
@@ -176,7 +195,7 @@ def update_program_dt_combos(zone, environment):
 
 
 def remove_program_dt_combos(zone, environment):
-    all_programs = get_all_programs(zone, environment, set(["COMBOS"]))
+    all_programs = get_all_programs(zone, environment, {"COMBOS"})
     if all_programs is None:
         return None
 
@@ -193,7 +212,7 @@ def remove_program_dt_combos(zone, environment):
                 break
         
         if selected_program is None:
-            print(text.Red + '\n- Program "{}" not found!!'.format(program_id))
+            print(text.Red + f'\n- Program "{program_id}" not found!!')
 
     # Get all the DT combos of the specified zone
     response_combos_from_zone = get_dt_combos_from_zone(zone, environment)
@@ -224,7 +243,7 @@ def remove_program_dt_combos(zone, environment):
 # Patches the selected program root field
 def patch_program_root_field(zone, environment, field):
 
-    all_programs = get_all_programs(zone, environment, set(["DEFAULT"]))
+    all_programs = get_all_programs(zone, environment, {"DEFAULT"})
 
     if all_programs is not None:
 
@@ -292,7 +311,7 @@ def get_all_programs(zone, environment, projections=set()):
         if len(json_data) > 0:
             return response
         else:
-            print(text.Red + '\n- [Rewards] There are no Reward programs available in "{}" zone.'.format(zone))
+            print(text.Red + f'\n- [Rewards] There are no Reward programs available in "{zone}" zone.')
 
     else:
         print(text.Red + '\n- [Rewards] Failure when getting all programs in "{}" zone. \n- Response Status: "{}". \n- Response message '
@@ -318,7 +337,7 @@ def get_specific_program(program_id, zone, environment, projections=set()):
         return response
     
     elif response.status_code == 404:
-        print(text.Red + '\n- [Rewards] The Rewards program "{}" does not exist.'.format(program_id))
+        print(text.Red + f'\n- [Rewards] The Rewards program "{program_id}" does not exist.')
 
     else:
         print(text.Red + '\n- [Rewards] Failure when getting the program "{}" information. \n- Response Status: "{}". \n- Response message "{}".'
@@ -338,10 +357,10 @@ def patch_program(program_id, zone, environment, request_body):
     response = place_request('PATCH', request_url, request_body, request_headers)
 
     if response.status_code == 200:
-        print(text.Green + '\n- [Rewards] The Rewards program "{}" has been successfully updated.'.format(program_id))
+        print(text.Green + f'\n- [Rewards] The Rewards program "{program_id}" has been successfully updated.')
 
     elif response.status_code == 404:
-        print(text.Red + '\n- [Rewards] The Rewards program "{}" does not exist.'.format(program_id))
+        print(text.Red + f'\n- [Rewards] The Rewards program "{program_id}" does not exist.')
 
     else:
         print(text.Red + '\n- [Rewards] Failure when updating the program "{}" configuration. \n- Response Status: "{}". \n- Response message "{}".'
@@ -361,7 +380,7 @@ def put_programs(program_id, zone, environment, request_body):
     response = place_request('PUT', request_url, request_body, request_headers)
 
     if response.status_code == 200:
-        print(text.Green + '\n- [Rewards] The Rewards program "{}" has been successfully created.'.format(program_id))
+        print(text.Green + f'\n- [Rewards] The Rewards program "{program_id}" has been successfully created.')
 
     else:
         print(text.Red + '\n- [Rewards] Failure when creating the program "{}". \n- Response Status: "{}". \n- Response message "{}".'
@@ -373,17 +392,17 @@ def put_programs(program_id, zone, environment, request_body):
 def diff_combos_program_and_zone(program_dt_combos, zone_dt_combos, reason):
 
     program_combos_list = [ combo['comboId'] for combo in program_dt_combos ]
-    print(text.Yellow + '\n- Found "{}" DT combos configured for rewards program.'.format(str(len(program_combos_list))))
+    print(text.Yellow + f'\n- Found "{str(len(program_combos_list))}" DT combos configured for rewards program.')
 
     zone_combos_list = [ combo['id'] for combo in zone_dt_combos ]
-    print(text.Yellow + '\n- Found "{}" DT combos configured for the zone.'.format(str(len(zone_combos_list))))
+    print(text.Yellow + f'\n- Found "{str(len(zone_combos_list))}" DT combos configured for the zone.')
 
     if reason == 'inclusion':
         diff_combos_list = list(set(zone_combos_list) - set(program_combos_list))
-        print(text.Yellow + '\n- Found "{}" DT combos missing in the program configuration.'.format(str(len(diff_combos_list))))
+        print(text.Yellow + f'\n- Found "{str(len(diff_combos_list))}" DT combos missing in the program configuration.')
     else:
         diff_combos_list = list(set(program_combos_list) - set(zone_combos_list))
-        print(text.Yellow + '\n- Found "{}" nonexistent DT combos in the program configuration.'.format(str(len(diff_combos_list))))
+        print(text.Yellow + f'\n- Found "{str(len(diff_combos_list))}" nonexistent DT combos in the program configuration.')
     
     return diff_combos_list
 
@@ -399,10 +418,10 @@ def patch_program_combos(program_id, zone, environment, request_body):
     response = place_request('PATCH', request_url, request_body, request_headers)
 
     if response.status_code == 200:
-        print(text.Green + '\n- [Rewards] The combos for Rewards program "{}" have been successfully updated.'.format(program_id))
+        print(text.Green + f'\n- [Rewards] The combos for Rewards program "{program_id}" have been successfully updated.')
 
     elif response.status_code == 404:
-        print(text.Red + '\n- [Rewards] The Rewards program "{}" does not exist.'.format(program_id))
+        print(text.Red + f'\n- [Rewards] The Rewards program "{program_id}" does not exist.')
 
     else:
         print(text.Red + '\n- [Rewards] Failure when updating the program "{}" combos configuration. \n- Response Status: "{}". \n- Response message "{}".'
@@ -421,10 +440,10 @@ def delete_program_combo(program_id, combo_id, zone, environment):
     response = place_request('DELETE', request_url, '', request_headers)
 
     if response.status_code == 204:
-        print(text.Green + '\n- [Rewards] The combo "{}" have been successfully deleted from Rewards program "{}".'.format(combo_id, program_id))
+        print(text.Green + f'\n- [Rewards] The combo "{combo_id}" have been successfully deleted from Rewards program "{program_id}".')
 
     elif response.status_code == 404:
-        print(text.Red + '\n- [Rewards] The combo "{}" does not exist in Rewards program "{}".'.format(combo_id, program_id))
+        print(text.Red + f'\n- [Rewards] The combo "{combo_id}" does not exist in Rewards program "{program_id}".')
 
     else:
         print(text.Red + '\n- [Rewards] Failure when deleting the combo "{}" from Rewards program "{}". \n- Response Status: "{}". \n- Response message "{}".'

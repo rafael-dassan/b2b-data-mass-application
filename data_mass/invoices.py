@@ -1,24 +1,29 @@
 # Standard library imports
 import json
-from json import loads
-import os
 from random import randint
 
-# Local application imports
-from data_mass.common import update_value_to_json, \
-    set_to_dictionary, get_microservice_base_url, get_header_request, \
-    create_list, convert_json_to_string, place_request
+import pkg_resources
+
 from data_mass.classes.text import text
+# Local application imports
+from data_mass.common import (
+    convert_json_to_string,
+    create_list,
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+    set_to_dictionary,
+    update_value_to_json
+    )
 
 
 def create_invoice_request(zone, environment, order_id, status, order_details, order_items, invoice_id=None):
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_invoice_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_invoice_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     if invoice_id is None:
         invoice_id = 'DM-' + str(randint(1, 100000))
@@ -76,13 +81,12 @@ def create_invoice_request(zone, environment, order_id, status, order_details, o
 
 
 def update_invoice_request(zone, environment, account_id, invoice_id, payment_method, status):
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/update_invoice_status.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/update_invoice_status.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     dict_values = {
         'invoiceId': invoice_id,
@@ -125,11 +129,11 @@ def check_if_invoice_exists(account_id, invoice_id, zone, environment):
     # Place request
     response = place_request('GET', request_url, '', request_headers)
 
-    json_data = loads(response.text)
+    json_data = json.loads(response.text)
     if response.status_code == 200 and len(json_data['data']) != 0:
         return json_data
     elif response.status_code == 200 and len(json_data['data']) == 0:
-        print(text.Red + '\n- [Invoice Service] The invoice {invoice_id} does not exist'.format(invoice_id=invoice_id))
+        print(text.Red + f'\n- [Invoice Service] The invoice {invoice_id} does not exist')
         return False
     else:
         print(text.Red + '\n- [Invoice Service] Failure to retrieve the invoice {invoice_id}. Response status: '
@@ -145,7 +149,7 @@ def get_invoices(zone, account_id, environment):
 
     # Place request
     response = place_request('GET', request_url, '', header_request)
-    invoice_info = loads(response.text)
+    invoice_info = json.loads(response.text)
     if response.status_code == 200:
         return invoice_info
     else:
@@ -154,7 +158,7 @@ def get_invoices(zone, account_id, environment):
 
 def delete_invoice_by_id(zone, environment, invoice_id):
     # Get base URL
-    request_url = get_microservice_base_url(environment) + '/invoices-relay/id/{0}'.format(invoice_id)
+    request_url = get_microservice_base_url(environment) + f'/invoices-relay/id/{invoice_id}'
 
     # Get headers
     request_headers = get_header_request(zone, False, False, True, False)

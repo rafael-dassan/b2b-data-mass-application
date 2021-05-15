@@ -1,15 +1,21 @@
-# Standard library imports
 import json
-from json import loads
 import os
+from json import loads
 from random import randint
 
-# Local application imports
-from data_mass.common import get_microservice_base_url, \
-    update_value_to_json, convert_json_to_string, \
-    get_header_request, place_request, create_list
-from data_mass.product.products import get_sku_price
+import pkg_resources
+
 from data_mass.classes.text import text
+# Local application imports
+from data_mass.common import (
+    convert_json_to_string,
+    create_list,
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+    update_value_to_json
+    )
+from data_mass.product.products import get_sku_price
 
 
 def input_combo_type_discount(account_id, zone, environment, sku, discount_value, combo_id=None):
@@ -23,13 +29,12 @@ def input_combo_type_discount(account_id, zone, environment, sku, discount_value
     title = combo_info['title']
     description = combo_info['description']
 
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_combo_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    # get data from Data Mass files
+    content = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_combo_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     dict_values = {
         'accounts': [account_id],
@@ -50,7 +55,7 @@ def input_combo_type_discount(account_id, zone, environment, sku, discount_value
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
     # Get base URL
-    request_url = '{0}/combo-relay/accounts'.format(get_microservice_base_url(environment))
+    request_url = f'{get_microservice_base_url(environment)}/combo-relay/accounts'
 
     # Create body
     request_body = convert_json_to_string(json_object)
@@ -68,7 +73,7 @@ def input_combo_type_discount(account_id, zone, environment, sku, discount_value
         else:
             return False
     else:
-        print('\n{0}- [Combo Relay Service] Failure when creating a new combo. Response status: {1}. Response message: {2}'
+        print('\n{}- [Combo Relay Service] Failure when creating a new combo. Response status: {}. Response message: {}'
               .format(text.Red, create_combo_response.status_code, create_combo_response.text))
         return False
 
@@ -80,14 +85,13 @@ def input_combo_type_digital_trade(abi_id, zone, environment):
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/combo-relay/accounts'
-
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_combo_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_combo_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     combo_id = 'DM-DT-' + str(randint(1, 100000))
 
@@ -132,14 +136,13 @@ def input_combo_type_free_good(account_id, zone, environment, sku, combo_id=None
     combo_info = get_combo_information(zone, combo_id, 'FREE_GOOD')
     title = combo_info['title']
     description = combo_info['description']
-
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_combo_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_combo_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     dict_values = {
         'accounts': [account_id],
@@ -160,7 +163,7 @@ def input_combo_type_free_good(account_id, zone, environment, sku, combo_id=None
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
     # Get base URL
-    request_url = '{0}/combo-relay/accounts'.format(get_microservice_base_url(environment))
+    request_url = f'{get_microservice_base_url(environment)}/combo-relay/accounts'
 
     # Create body
     request_body = convert_json_to_string(json_object)
@@ -178,7 +181,7 @@ def input_combo_type_free_good(account_id, zone, environment, sku, combo_id=None
         else:
             return False
     else:
-        print('\n{0}- [Combo Relay Service] Failure when creating a new combo. Response status: {1}. Response message: {2}'
+        print('\n{}- [Combo Relay Service] Failure when creating a new combo. Response status: {}. Response message: {}'
               .format(text.Red, create_combo_response.status_code, create_combo_response.text))
         return False
 
@@ -191,14 +194,13 @@ def input_combo_only_free_good(account_id, zone, environment, sku, combo_id=None
     combo_info = get_combo_information(zone, combo_id, 'FREE_GOOD')
     title = combo_info['title']
     description = combo_info['description']
-
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_combo_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_combo_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     dict_values = {
         'accounts': [account_id],
@@ -217,7 +219,7 @@ def input_combo_only_free_good(account_id, zone, environment, sku, combo_id=None
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
     # Get base URL
-    request_url = '{0}/combo-relay/accounts'.format(get_microservice_base_url(environment))
+    request_url = f'{get_microservice_base_url(environment)}/combo-relay/accounts'
 
     # Create body
     request_body = convert_json_to_string(json_object)
@@ -235,7 +237,7 @@ def input_combo_only_free_good(account_id, zone, environment, sku, combo_id=None
         else:
             return False
     else:
-        print('\n{0}- [Combo Relay Service] Failure when creating a new combo. Response status: {1}. Response message: {2}'
+        print('\n{}- [Combo Relay Service] Failure when creating a new combo. Response status: {}. Response message: {}'
               .format(text.Red, create_combo_response.status_code, create_combo_response.text))
         return False
 
@@ -245,13 +247,12 @@ def update_combo_consumption(abi_id, zone, environment, combo_id):
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/combo-relay/consumption'
 
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/update_combo_consumption_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/update_combo_consumption_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     dict_values = {
         'accountId': abi_id,

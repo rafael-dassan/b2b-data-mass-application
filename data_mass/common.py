@@ -9,6 +9,7 @@ from uuid import uuid1
 
 import click
 import jwt
+import pkg_resources
 import requests
 from click.termui import prompt
 from dateutil.parser import parse
@@ -996,14 +997,13 @@ def is_string(item):
 def generate_hmac_jwt(account_id, app_claim=None, expire_months=1):
     now = int(t.time())
     expire_in = now + (2592000 * expire_months)
-
-    # Create file path
-    abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, 'data/create_jwt_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_jwt_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     dict_values = {
         'exp': expire_in,
@@ -1024,14 +1024,13 @@ def generate_hmac_jwt(account_id, app_claim=None, expire_months=1):
 def generate_erp_token(expire_months=1):
     now = int(t.time())
     expire_in = now + (2592000 * expire_months)
-
-    # Create file path
-    abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, 'data/create_erp_token_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_erp_token_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     dict_values = {
         'exp': expire_in,
