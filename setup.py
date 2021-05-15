@@ -11,8 +11,12 @@ class PostInstallCommand(install):
         call(["pre-commit", "install"])
 
 
+with open("requirements.txt") as f:
+    requirements = f.read().splitlines()
+
 setup(
     cmdclass={
         "install": PostInstallCommand,
-    }
+    },
+    install_requires=requirements
 )

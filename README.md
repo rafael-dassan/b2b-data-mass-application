@@ -35,6 +35,11 @@ Follow the [virtualenv installation guide](doc/USER_GUIDE.md#using-virtualenv).
 ## Installing the Application
 After enabling the virtualenv, install the application:
 ```sh
+pip3 install .
+```
+
+To use as a package:
+```sh
 python3 setup.py install
 ```
 
