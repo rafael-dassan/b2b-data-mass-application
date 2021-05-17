@@ -3,8 +3,9 @@ import json
 import os
 from datetime import datetime
 from json import dumps, loads
-from random import randint, uniform
+from random import randint, sample, uniform
 
+import click
 from tabulate import tabulate
 
 from data_mass.classes.text import text
@@ -17,6 +18,7 @@ from data_mass.common import (
     place_request,
     update_value_to_json
     )
+from data_mass.menus.order_menu import print_order_status_menu
 from data_mass.menus.product_menu import (
     print_is_alcoholic_menu,
     print_is_narcotic_menu,
@@ -26,6 +28,8 @@ from data_mass.menus.product_menu import (
 
 ZONES_NEW_ENDPOINT = ["AR", "PY", "PA"]
 ZONES_DIFF_CONTRACT = ["AR", "PY"]
+TEXT_GREEN = text.Green
+
 
 def generate_random_price_ids(qtd):
     if qtd < 1:
@@ -846,3 +850,43 @@ def request_empties_discounts_creation(
             )
         )
         return False
+
+
+def get_items_associated_account(
+    account_id: str,
+    zone: str,
+    environment: str,
+    operation: str,
+):
+    product_offers = request_get_offers_microservice(
+        account_id=account_id,
+        zone=zone,
+        environment=environment
+    )
+    if not product_offers or product_offers == 'not_found':
+        print(
+            text.Red
+            + '\n- There is no product associated'
+            f'with the account {account_id}'
+        )
+        return []
+
+    if operation != '2':
+        unique_sku = {item['sku'] for item in product_offers}
+        unique_sku = sample(list(unique_sku), len(unique_sku))
+        print(
+            TEXT_GREEN
+            + f"The account has {len(unique_sku)} products associated!"
+        )
+        quantity = click.prompt(
+            f'{text.default_text_color}'
+            'Quantity of products you want to include in this order',
+            type=click.IntRange(1, len(unique_sku)),
+        )
+
+        item_list = []
+        for sku in unique_sku[:quantity]:
+            data = {'sku': sku, 'itemQuantity': randint(0, 10)} 
+            item_list.append(data)
+
+        return item_list

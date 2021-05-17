@@ -11,7 +11,6 @@ from data_mass.common import (
     get_header_request,
     get_microservice_base_url,
     place_request,
-    print_finish_application_menu,
     print_input_number,
     update_value_to_json
     )
@@ -364,13 +363,14 @@ def print_input_decision(message):
 def put_orders_rewards(
     zone: str,
     environment: str,
-    account: dict,
+    account: list,
     item_list: list,
     dt_combos: list,
-    empties: str,
     pay_method: str,
     order_status: str,
     allow_order_cancel: str,
+    delivery_date: str,
+    empties: str = None,
     payment_term: int = 0
 ):
 
@@ -378,16 +378,17 @@ def put_orders_rewards(
     order_items = request_order_simulation(
         zone=zone,
         environment=environment,
-        account_id=account[0]['account_id'],
+        account_id=account[0]['accountId'],
         delivery_center_id=account[0]['deliveryCenterId'],
         items=item_list,
         combos=dt_combos if dt_combos else None,
-        empties=None,
+        empties=empties,
         payment_method=pay_method,
         payment_term=payment_term,
+        delivery_date=delivery_date
     )
     if not order_items:
-        print_finish_application_menu()
+        order_items = []
 
     response = request_order_creation(
         account_id=account[0]['account_id'],
@@ -397,6 +398,7 @@ def put_orders_rewards(
         allow_order_cancel=allow_order_cancel,
         order_items=order_items,
         order_status=order_status,
+        delivery_date=delivery_date
     )
 
     return response

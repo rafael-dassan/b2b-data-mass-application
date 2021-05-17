@@ -32,7 +32,7 @@ from data_mass.rewards.rewards_utils import (
 
 APP_B2B = "b2b"
 APP_ADMIN = "membership"
-CPU_COUNT = cpu_count // 2
+CPU_COUNT = cpu_count() // 2
 
 
 # Enroll POC to a zone's reward program
@@ -341,7 +341,7 @@ def get_rewards(account_id, zone, environment):
     elif response.status_code == 404 or response.status_code == 406:
         print(
             text.Red
-            + '\n- [Rewards] The account "{account_id}" is not enrolled '
+            + f'\n- [Rewards] The account "{account_id}" is not enrolled '
             'to any rewards program. \n- Please use the menu option '
             '"Enroll POC to a program" to enroll this account '
             'to a rewards program.'
@@ -418,9 +418,10 @@ def put_rewards(account_id, zone, environment):
 def flow_create_order_rewards(
     zone: str,
     environment: str,
-    account: dict,
+    account: list,
     item_list: list,
     order_status: str,
+    delivery_date: str,
     quantity_orders: int = 1,
 ):
     if order_status == "PLACED":
@@ -432,9 +433,10 @@ def flow_create_order_rewards(
     pay_method = account[0]["paymentMethods"]
 
     # TODO: DTcombos associated to the poc
-    dt_combos = get_dt_combos_from_zone(
+    get_dt_combos = get_dt_combos_from_zone(
         zone=zone, environment=environment, page_size=9999
     )
+    dt_combos = loads(get_dt_combos.text)
 
     # TODO: multprocess verificar
     pool_orders = Pool(CPU_COUNT)
@@ -442,14 +444,13 @@ def flow_create_order_rewards(
         put_orders_rewards(
             zone=zone,
             environment=environment,
-            account_id=account[0]["account_id"],
-            delivery_center_id=account[0]["deliveryCenterId"],
-            items=item_list,
-            combos=dt_combos if dt_combos else None,
-            empties=None,
-            payment_method=pay_method,
+            account=account,
+            item_list=item_list,
+            dt_combos=dt_combos if dt_combos else None,
+            pay_method=pay_method,
             order_status=order_status,
             allow_order_cancel=allow_order_cancel,
+            delivery_date=delivery_date
         ),
         range(quantity_orders),
     )

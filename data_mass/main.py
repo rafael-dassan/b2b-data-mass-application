@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 from math import inf
-from random import random, sample
 
 import click
 import pyperclip
@@ -92,7 +91,9 @@ from data_mass.rewards.rewards import (
     associate_dt_combos_to_poc,
     disenroll_poc_from_program,
     display_program_rules_skus,
-    enroll_poc_to_program
+    enroll_poc_to_program,
+    flow_create_order_rewards,
+    get_rewards
     )
 from data_mass.rewards.rewards_challenges import (
     create_mark_complete_challenge,
@@ -111,7 +112,6 @@ from data_mass.rewards.rewards_transactions import (
     create_redemption,
     create_rewards_offer
     )
-from data_mass.rewards.rewards_utils import flow_create_order_rewards
 from data_mass.simulation import (
     process_simulation_microservice,
     request_order_simulation
@@ -145,7 +145,7 @@ from data_mass.supplier.category import (
 from data_mass.supplier.product import create_product_supplier
 from data_mass.user.creation import create_user
 from data_mass.user.deletion import delete_user_v3
-from data_mass.validations import is_number, validate_yes_no_option
+from data_mass.validations import is_number
 
 TEXT_GREEN = text.Green
 
@@ -227,6 +227,28 @@ def show_menu():
         function()
 
     print_finish_application_menu()
+
+
+def print_finish_application_menu():
+    """
+    Print Finish Menu application and
+    Ask to the User if want to finish
+    """
+    option = input(
+        text.default_text_color 
+        + '\nDo you want to finish the application? y/N: '
+        )
+    while validate_yes_no_option(option.upper()) is False:
+        print(text.Red + '\n- Invalid option')
+        option = input(
+            text.default_text_color 
+            + '\nDo you want to finish the application? y/N: '
+            )
+
+    if option.upper() == 'Y':
+        finish_application()
+    else:
+        show_menu()
 
 
 def deals_information_menu():
@@ -498,9 +520,34 @@ def create_rewards_to_account():
         order_status = print_order_status_menu()
 
         # TODO:check_if_account is valid for the rewards
+        valid_acc = get_rewards(
+            account_id=account_id,
+            zone=zone,
+            environment=environment
+        )
+        if not valid_acc:
+            print_finish_application_menu()
+        
+        option_change_date = validate_yes_no_change_date()
+        if option_change_date.upper() == "Y": 
+            delivery_date = validate_user_entry_date(
+                'Enter Date for Delivery-Date (YYYY-mm-dd)'
+        )
+        else:
+            tomorrow = datetime.today() + timedelta(1)
+            delivery_date = str(datetime.date(tomorrow))
+
+        item_list = get_items_associated_account(
+            account_id=account_id,
+            zone=zone,
+            environment=environment,
+            operation=1 # operation 1 is creation
+        )
+        if not item_list:
+            print_finish_application_menu()
 
         qty_orders = click.prompt(
-            'Please entet the quantity of orders to create',
+            'Please enter the quantity of orders to create',
             type=click.IntRange(0, inf)
         )
         response = flow_create_order_rewards(
@@ -510,12 +557,14 @@ def create_rewards_to_account():
             item_list=item_list,
             order_status=order_status,
             quantity_orders=qty_orders,
+            delivery_date=delivery_date
             )
         if response:
             # TODO: points balance
             print(
                 TEXT_GREEN
-                + f"\n- Order {response.get('orderNumber')} created successfully"
+                + f"\n- Order {response.get('orderNumber')} created "
+                "successfully"
             )
             
         print_finish_application_menu()
@@ -556,45 +605,21 @@ def order_menu():
         print_finish_application_menu()
 
     # Call check account exists function
-    account = check_account_exists_microservice(account_id, zone, environment)
-    if not account:
-        print_finish_application_menu()
-    delivery_center_id = account[0]['deliveryCenterId']
-
-    # Call function to check if the account has products inside
-    product_offers = request_get_offers_microservice(
+    account = check_account_exists_microservice(
         account_id=account_id,
         zone=zone,
         environment=environment
     )
-    if not product_offers:
+    if not account:
         print_finish_application_menu()
-    elif product_offers == 'not_found':
-        print(
-            text.Red
-            + '\n- There is no product associated'
-            f'with the account {account_id}'
-        )
-        print_finish_application_menu()
+    delivery_center_id = account[0]['deliveryCenterId']
 
-    if operation != '2':
-        unique_sku = {item['sku'] for item in product_offers}
-        unique_sku = sample(list(unique_sku), len(unique_sku))
-        order_status = print_order_status_menu()
-        print(
-            TEXT_GREEN
-            + f"The account has {len(unique_sku)} products associated!"
-        )
-        quantity = click.prompt(
-            f'{text.default_text_color}'
-            'Quantity of products you want to include in this order',
-            type=click.IntRange(1, len(unique_sku)),
-        )
-
-        item_list = []
-        for sku in unique_sku[:quantity]:
-            data = {'sku': sku, 'itemQuantity': randint(0, 10)} 
-            item_list.append(data)
+    items_associated = get_items_associated_account(
+        account_id=account_id,
+        zone=zone,
+        environment=environment,
+        operation=operation
+    )
 
     return {
         '1': lambda: flow_create_order(
@@ -602,8 +627,8 @@ def order_menu():
             environment,
             account_id,
             delivery_center_id,
-            order_status,
-            item_list
+            items_associated.order_status,
+            items_associated.item_list
         ),
         '2': lambda: flow_create_changed_order(
             zone,
