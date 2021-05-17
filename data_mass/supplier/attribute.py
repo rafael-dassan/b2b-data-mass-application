@@ -2,12 +2,11 @@ import json
 import string
 from datetime import datetime, timedelta
 from random import randint
-from typing import Any, Union
+from typing import Any, Dict, Optional, Union, cast
 
-from gql import Client, gql
-from gql.gql import DocumentNode
-from gql.transport.exceptions import TransportQueryError
-from gql.transport.requests import RequestsHTTPTransport
+import gql  # type: ignore
+from gql.transport.exceptions import TransportQueryError  # type: ignore
+from gql.transport.requests import RequestsHTTPTransport  # type: ignore
 from tabulate import tabulate
 
 from data_mass.classes.text import text
@@ -32,7 +31,7 @@ from data_mass.supplier.gql.attributes import (
 
 def create_attribute_primitive_type(
         environment: str,
-        type_attribute: str) -> Union[bool, str]:
+        type_attribute: str) -> Optional[str]:
     """
     Create attribute using primitive type.
 
@@ -43,10 +42,10 @@ def create_attribute_primitive_type(
 
     Returns
     -------
-    bool
-        `False`, when a `TransportQueryError` occurs.
     str
         The attribute id.
+    None
+        When a `TransportQueryError` occurs.
 
     Raises
     ------
@@ -64,7 +63,7 @@ def create_attribute_primitive_type(
         headers=base_header
     )
 
-    client = Client(
+    client = gql.Client(
         transport=transport,
         fetch_schema_from_transport=False
     )
@@ -81,23 +80,22 @@ def create_attribute_primitive_type(
         response = client.execute(mut, variable_values=params)
         json_data = json.dumps(response)
 
+        # TODO: make it clearer what's going on here
         if json_data:
             json_split = json_data.rsplit()
             id_att = json_split[2]
             id_att1 = id_att.lstrip('"')
-            id_att2 = id_att1.rsplit('"', 1)[0]
-
-            return id_att2
-
+            id_att2: Any = id_att1.rsplit('"', 1)[0]
     except TransportQueryError as e:
+        id_att2 = None
         print(text.Red + str(e))
-
-        return False
+    finally:
+        return id_att2
 
 
 def create_attribute_enum(
         environment: str,
-        type_attribute: str) -> Union[bool, str]:
+        type_attribute: str) -> Optional[str]:
     """
     Create enum attribute.
 
@@ -108,10 +106,10 @@ def create_attribute_enum(
 
     Returns
     -------
-    bool
-        `False`, when a `TransportQueryError` occurs.
     str
         The attribute id.
+    None
+        When a `TransportQueryError` occurs.
 
     Raises
     ------
@@ -131,7 +129,7 @@ def create_attribute_enum(
     )
 
     # Create a GraphQL client using the defined transport
-    client = Client(
+    client = gql.Client(
         transport=transport,
         fetch_schema_from_transport=False
     )
@@ -166,30 +164,32 @@ def create_attribute_enum(
     try:
         response = client.execute(mut, variable_values=params)
         json_data = json.dumps(response)
-        if len(json_data) != 0:
+
+        # TODO: make it clearer what's going on here
+        if json_data:
             json_split = json_data.rsplit()
             id_att = json_split[2]
             id_att1 = id_att.lstrip('"')
-            id_att2 = id_att1.rsplit('"', 1)[0]
-            return id_att2
+            id_att2: Optional[str] = id_att1.rsplit('"', 1)[0]
     except TransportQueryError as e:
+        id_att2 = None
         print(text.Red + str(e))
-
-        return False
+    finally:
+        return id_att2
 
 
 def create_attribute_group(
         environment: str,
-        attributes: str) -> Union[bool, str]:
+        attributes: str) -> Optional[str]:
     """
     Creat attribute group.
 
     Returns
     -------
-    bool
-        `False`, when a `TransportQueryError` occurs.
     str
         The attribute id.
+    None
+        When a `TransportQueryError` occurs.
 
     Raises
     ------
@@ -205,7 +205,7 @@ def create_attribute_group(
     transport = RequestsHTTPTransport(url=base_url, headers=base_header)
 
     # Create a GraphQL client using the defined transport
-    client = Client(
+    client = gql.Client(
         transport=transport,
         fetch_schema_from_transport=False
     )
@@ -223,22 +223,23 @@ def create_attribute_group(
         response = client.execute(mut, variable_values=params)
         json_data = json.dumps(response)
 
-        if not json_data:
+        # TODO: make it clearer what's going on here
+        if json_data:
             json_split = json_data.rsplit()
             id_att = json_split[2]
             id_att1 = id_att.lstrip('"')
-            id_att2 = id_att1.rsplit('"', 1)[0]
-            return id_att2
+            id_att2: Any = id_att1.rsplit('"', 1)[0]
     except TransportQueryError as e:
+        id_att2 = None
         print(text.Red + str(e))
-
-        return False
+    finally:
+        return id_att2
 
 
 def create_legacy_attributes_by_type(
         environment: str,
         attribute_name_list: list,
-        attribute_type: str):
+        attribute_type: str) -> list:
     """
     Create legacy attributes by type.
 
@@ -304,7 +305,7 @@ def create_legacy_root_attribute(environment: str):
     )
 
 
-def create_legacy_attribute_package(environment: str) -> Union[bool, str]:
+def create_legacy_attribute_package(environment: str) -> Optional[str]:
     """
     Create legacy attribute packge.
 
@@ -314,10 +315,10 @@ def create_legacy_attribute_package(environment: str) -> Union[bool, str]:
 
     Returns
     -------
-    bool
-        `False`, when a `TransportQueryError` occurs.
     str
         The attribute id.
+    None
+        When a `TransportQueryError` occurs.
     """
     numeric_attributes = ["Unit Count", "Item Count"]
     attribute_type_numeric = "NUMERIC"
@@ -353,7 +354,7 @@ def create_legacy_attribute_package(environment: str) -> Union[bool, str]:
 
 
 def create_legacy_attribute_container(
-        environment: str) -> Union[bool, str]:
+        environment: str) -> Optional[str]:
     """
     Create legacy attribute container.
 
@@ -363,10 +364,10 @@ def create_legacy_attribute_container(
 
     Returns
     -------
-    bool
-        `False`, when a `TransportQueryError` occurs.
     str
         The attribute id.
+    None
+        `False`, when a `TransportQueryError` occurs.
     """
     numeric_attributes = ["Size"]
     attribute_type_numeric = "NUMERIC"
@@ -430,7 +431,7 @@ def create_legacy_attribute_container(
 def create_legacy_group_attribute(
         environment: str,
         name: str,
-        attributes: list) -> Union[bool, str]:
+        attributes: list) -> Optional[str]:
     """
     Create legacy group attribute.
 
@@ -442,10 +443,10 @@ def create_legacy_group_attribute(
 
     Returns
     -------
-    bool
-        `False`, when a `TransportQueryError` occurs.
     str
         The attribute id.
+    None
+        `False`, when a `TransportQueryError` occurs.
 
     Raises
     ------
@@ -463,7 +464,7 @@ def create_legacy_group_attribute(
     )
 
     # Create a GraphQL client using the defined transport
-    client = Client(
+    client = gql.Client(
         transport=transport,
         fetch_schema_from_transport=False
     )
@@ -481,17 +482,17 @@ def create_legacy_group_attribute(
         response = client.execute(mut, variable_values=params)
         json_data = json.dumps(response)
 
+        # TODO: make it clearer what's going on here
         if json_data:
             json_split = json_data.rsplit()
             id_att = json_split[2]
             id_att1 = id_att.lstrip('"')
-            id_att2 = id_att1.rsplit('"', 1)[0]
-
-            return id_att2
+            id_att2: Any = id_att1.rsplit('"', 1)[0]
     except TransportQueryError as e:
+        id_att2 = None
         print(text.Red + str(e))
-
-        return False
+    finally:
+        return id_att2
 
 
 def check_if_attribute_exist(
@@ -507,10 +508,10 @@ def check_if_attribute_exist(
 
     Returns
     -------
-    bool
-        `False`, when a `TransportQueryError` occurs.
     str
         The response.
+    None
+        When a `TransportQueryError` occurs.
 
     Raises
     ------
@@ -524,7 +525,7 @@ def check_if_attribute_exist(
         headers=base_header
     )
 
-    client = Client(
+    client = gql.Client(
         transport=transport,
         fetch_schema_from_transport=False
     )
@@ -565,10 +566,10 @@ def delete_attribute_supplier(
 
     Returns
     -------
-    bool
-        `False`, when a `TransportQueryError` occurs.
     str
         The response.
+    None
+        When a `TransportQueryError` occurs.
     """
     base_url = get_supplier_base_url(environment)
     base_header = get_header_request_supplier()
@@ -578,7 +579,7 @@ def delete_attribute_supplier(
     )
 
     # Create a GraphQL client using the defined transport
-    client = Client(
+    client = gql.Client(
         transport=transport,
         fetch_schema_from_transport=False
     )
@@ -594,18 +595,19 @@ def delete_attribute_supplier(
     params = {"id": attribute}
     try:
         response = client.execute(mut, variable_values=params)
-        json_data = json.dumps(response)
+        json_data: Any = json.dumps(response)
 
         return json_data
     except TransportQueryError as e:
+        json_data = None
         print(text.Red + str(e))
-
-        return False
+    finally:
+        return json_data
 
 
 def search_specific_attribute(
         environment: str,
-        attribute: list) -> Union[bool, str]:
+        attribute: list) -> Optional[str]:
     """
     Search specific attribute.
 
@@ -616,10 +618,10 @@ def search_specific_attribute(
 
     Returns
     -------
-    bool
-        `False`, when a `TransportQueryError` occurs.
     str
         The response.
+    None
+        `False`, when a `TransportQueryError` occurs.
     """
     base_url = get_supplier_base_url(environment)
     base_header = get_header_request_supplier()
@@ -629,7 +631,7 @@ def search_specific_attribute(
     )
 
     # Create a GraphQL client using the defined transport
-    client = Client(
+    client = gql.Client(
         transport=transport,
         fetch_schema_from_transport=False
     )
@@ -642,18 +644,17 @@ def search_specific_attribute(
             document=mut,
             variable_values=params
         )
-        json_data = json.dumps(response)
-
-        return json_data
+        json_data: Any = json.dumps(response)
     except TransportQueryError as e:
+        json_data = None
         print(text.Red + str(e))
-
-        return False
+    finally:
+        return json_data
 
 
 def search_all_attribute(
         environment: str,
-        page_number: int) -> Union[bool, str]:
+        page_number: int) -> Optional[str]:
     """
     Search all attribute.
 
@@ -664,34 +665,33 @@ def search_all_attribute(
 
     Returns
     -------
-    bool
-        `False`, when a `TransportQueryError` occurs.
     str
         The response.
+    None
+        `False`, when a `TransportQueryError` occurs.
     """
     base_url = get_supplier_base_url(environment)
     base_header = get_header_request_supplier()
     transport = RequestsHTTPTransport(url=base_url, headers=base_header)
 
     # Create a GraphQL client using the defined transport
-    client = Client(transport=transport, fetch_schema_from_transport=False)
+    client = gql.Client(transport=transport, fetch_schema_from_transport=False)
 
     mut = create_search_all_attribute_payload()
     params = {"page": page_number}
     try:
         response = client.execute(mut, variable_values=params)
-        json_data = json.dumps(response)
-
-        return json_data
+        json_data: Any = json.dumps(response)
     except TransportQueryError as e:
+        json_data = None
         print(text.Red + str(e))
-
-        return False
+    finally:
+        return json_data
 
 
 def search_all_legacy_attributes(
         environment: str,
-        page_number: int) -> Union[DocumentNode, bool]:
+        page_number: int) -> Optional[Dict]:
     """
     Search all legacy attributes.
 
@@ -702,9 +702,9 @@ def search_all_legacy_attributes(
 
     Returns
     -------
-    DocumentNode
-        The `gql` DocumentNode.
-    bool:
+    dict
+        The `gql` response as dict.
+    None
         Does not contains any legacy attribute.
     """
     base_url = get_supplier_base_url(environment)
@@ -715,7 +715,7 @@ def search_all_legacy_attributes(
     )
 
     # Create a GraphQL client using the defined transport
-    client = Client(
+    client = gql.Client(
         transport=transport,
         fetch_schema_from_transport=False
     )
@@ -724,12 +724,11 @@ def search_all_legacy_attributes(
     params = {"page": page_number}
     try:
         response = client.execute(mut, variable_values=params)
-
-        return response
     except TransportQueryError as e:
+        response = None
         print(text.Red + str(e))
-
-        return False
+    finally:
+        return response
 
 
 def get_all_legacy_attributes(environment: str) -> tuple:
@@ -772,12 +771,13 @@ def get_all_legacy_attributes(environment: str) -> tuple:
         "container"
     ]
 
-    semantic_id_and_id = {}
+    semantic_id_and_id: Dict[str, str] = {}
     has_all_attributes = False
     page_number = 0
 
     while not has_all_attributes and page_number < 50:
         result = search_all_legacy_attributes(environment, page_number)
+        result = cast(dict, result)
 
         for attribute_model in result['attributeModels']:
             populate_attributes(
@@ -871,7 +871,7 @@ def validate_if_contains_all_legacy_attributes(
 
 def populate_package_attribute_payload(
         abstract_package_attribute_id: str,
-        all_attributes: list) -> dict:
+        all_attributes: dict) -> Dict[str, Any]:
     """
     Populate package attribute payload.
 
@@ -922,7 +922,7 @@ def populate_package_attribute_payload(
 
 def populate_container_attribute_payload(
         abstract_container_attribute_id: str,
-        all_attributes: list) -> dict:
+        all_attributes: dict) -> Dict[str, Any]:
     """
     Populate container attribute payload.
 
@@ -1055,6 +1055,7 @@ def display_specific_attribute(attribute: str):
         }
         metadata.append(metadata_info)
     elif info['attributeType'] == 'GROUP':
+        # TODO: is this `i` really necessary?
         for i in range(len(metadata_att)):
             sub_attributes = metadata_att['subAttributes']
             for sub_attribute in sub_attributes:
@@ -1072,50 +1073,52 @@ def display_specific_attribute(attribute: str):
     print(tabulate(metadata, headers='keys', tablefmt='grid'))
 
 
-def display_all_attribute(attributes: Any):
+def display_all_attribute(attributes: str):
     """
     Display all attributes.
 
     Parameters
     ----------
-    attributes : Any
+    attributes : str
     """
     attribute_model = json.loads(attributes)
     info = attribute_model['attributeModels']
-    information_att = list()
+    information_att = []
 
-    if len(info) == 0:
-        info_attribute = {
-            'Attribute Info': 'None'
-        }
+    if not info:
+        info_attribute: Dict[str, Any] = {'Attribute Info': None}
         information_att.append(info_attribute)
     else:
+        metadata_info: Dict[str, Any] = {}
+
+        # TODO: validate if we can access by object, not index
         for i in range(len(info)):
             metadata_att = info[i]['metadata']
+
             if metadata_att is None:
-                metadata_info = {
-                    'None'
-                }
+                metadata_info = {}
             elif info[i]['attributeType'] == 'ENUM':
                 metadata_info = {
                     'Type': metadata_att['primitiveType'],
                     'Value': metadata_att['values']
                 }
             elif info[i]['attributeType'] == 'GROUP':
+                # TODO: is this `x` really necessary?
                 for x in range(len(metadata_att)):
                     sub_attributes = metadata_att['subAttributes']
+
                     for sub_attribute in sub_attributes:
                         metadata_info = {
                             'Attribute ID': sub_attribute['id'],
                             'Attribute Name': sub_attribute['name'],
                             'Attribute Type': sub_attribute['attributeType']
                         }
-            metadata = metadata_info
+
             info_attribute = {
                 'ID': info[i]['id'],
                 'Name': info[i]['name'],
                 'Attribute Type': info[i]['attributeType'],
-                'Metadata': metadata
+                'Metadata': metadata_info
             }
             information_att.append(info_attribute)
 
@@ -1127,7 +1130,7 @@ def edit_attribute_type(
         environment: str,
         attribute_id: str,
         attribute_type: str,
-        values: list) -> Union[bool, str]:
+        values: list) -> Optional[str]:
     """
     Edit attribute type.
 
@@ -1142,7 +1145,7 @@ def edit_attribute_type(
     -------
     str
         The id of the category.
-    bool
+    None
         Whenever a `gql` occours.
 
     Raises
@@ -1158,7 +1161,7 @@ def edit_attribute_type(
     )
 
     # Create a GraphQL client using the defined transport
-    client = Client(
+    client = gql.Client(
         transport=transport,
         fetch_schema_from_transport=False
     )
@@ -1173,7 +1176,7 @@ def edit_attribute_type(
             type_prim = 'DATE'
 
         mut = create_edit_primitive_attribute()
-        params = {
+        params: Dict[str, Union[str, list]] = {
             "id": attribute_id,
             "type": type_prim
         }
@@ -1210,19 +1213,20 @@ def edit_attribute_type(
 
     try:
         response = client.execute(mut, variable_values=params)
-        json_data = json.dumps(response)
+        json_data: Any = json.dumps(response)
 
         return json_data
     except TransportQueryError as e:
+        json_data = None
         print(text.Red + str(e))
-
-        return False
+    finally:
+        return json_data
 
 
 def create_legacy_attribute_primitive_type(
         environment: str,
         name: str,
-        attribute_type: str) -> Union[bool, str]:
+        attribute_type: str) -> Optional[str]:
     """
     Create legacy attribute primitive type.
 
@@ -1236,7 +1240,7 @@ def create_legacy_attribute_primitive_type(
     -------
     str
         The id of the category.
-    bool
+    None
         Whenever a `gql` occours.
 
     Raises
@@ -1255,7 +1259,7 @@ def create_legacy_attribute_primitive_type(
     )
 
     # Create a GraphQL client using the defined transport
-    client = Client(
+    client = gql.Client(
         transport=transport,
         fetch_schema_from_transport=False
     )
@@ -1273,18 +1277,17 @@ def create_legacy_attribute_primitive_type(
         response = client.execute(mut, variable_values=params)
         json_data = json.dumps(response)
 
-        if len(json_data) != 0:
+        # TODO: make it clearer what's going on here
+        if json_data:
             json_split = json_data.rsplit()
             id_att = json_split[2]
             id_att1 = id_att.lstrip('"')
-            id_att2 = id_att1.rsplit('"', 1)[0]
-
-            return id_att2
-
+            id_att2: Any = id_att1.rsplit('"', 1)[0]
     except TransportQueryError as e:
+        id_att2 = None
         print(text.Red + str(e))
-
-        return False
+    finally:
+        return id_att2
 
 
 def create_legacy_attribute_enum_type(
@@ -1322,7 +1325,7 @@ def create_legacy_attribute_enum_type(
     transport = RequestsHTTPTransport(url=base_url, headers=base_header)
 
     # Create a GraphQL client using the defined transport
-    client = Client(
+    client = gql.Client(
         transport=transport,
         fetch_schema_from_transport=False
     )
@@ -1340,7 +1343,9 @@ def create_legacy_attribute_enum_type(
     try:
         response = client.execute(mut, variable_values=params)
         json_data = json.dumps(response)
-        if len(json_data) != 0:
+
+        # TODO: make it clearer what's going on here
+        if json_data:
             json_split = json_data.rsplit()
             id_att = json_split[2]
             id_att1 = id_att.lstrip('"')

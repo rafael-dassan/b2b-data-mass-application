@@ -3,6 +3,7 @@ import json
 import os
 from datetime import datetime, timedelta
 from json import loads
+from typing import Union
 
 import pkg_resources
 from tabulate import tabulate
@@ -14,21 +15,21 @@ from data_mass.common import (
     get_microservice_base_url,
     place_request,
     update_value_to_json
-    )
+)
 
 
 def request_order_simulation(
     zone: str,
     environment: str,
-    account_id: int,
-    delivery_center_id: int,
+    account_id: str,
+    delivery_center_id: str,
     items: list,
     combos: list,
     empties: list,
     payment_method: str,
-    payment_term: bool,
+    payment_term: int,
     delivery_date: str
-):
+) -> Union[str, bool]:
     """
     Request order simulation through Cart Service
 
@@ -38,9 +39,9 @@ def request_order_simulation(
         e.g., AR, BR, DO, etc
     environment : str
         e.g., DEV, SIT, UAT
-    account_id : int
+    account_id : str
         POC unique identifier
-    delivery_center_id : int
+    delivery_center_id : str
         POC's delivery center
     items : list
         list of items
@@ -55,8 +56,10 @@ def request_order_simulation(
 
     Returns
     -------
-    str or Bool
-        response payload in case of success or `false` in case of failure
+    str or bool
+        Response payload in case of success.
+    bool
+        `False` in case of failure.
     """
     if empties is None:
         empties = []

@@ -12,7 +12,6 @@ import jwt
 import pkg_resources
 import requests
 from click.termui import prompt
-from dateutil.parser import parse
 # Third party imports
 from jsonpath_rw import Fields, Index
 from jsonpath_rw_ext import parse
@@ -31,7 +30,7 @@ from data_mass.validations import (
     validate_supplier_search_menu_structure,
     validate_zone_for_interactive_combos_ms,
     validate_zone_for_ms
-    )
+)
 
 
 # Validate option menu selection
@@ -668,8 +667,7 @@ def print_input_text(input_text):
 
 
 def validate_yes_no_change_date(
-    question: str = "New Date entry for Delivery Date? y/N:"
-    ):
+    question: str = "New Date entry for Delivery Date? y/N:"):
     """
     Validate user input for change date.
 

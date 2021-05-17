@@ -1,5 +1,5 @@
 import json
-import os
+from typing import Dict, Union
 
 import pkg_resources
 from tabulate import tabulate
@@ -13,11 +13,11 @@ from data_mass.common import (
     place_request,
     set_to_dictionary,
     update_value_to_json
-    )
+)
 from data_mass.menus.account_menu import (
     print_minimum_order_type_menu,
     print_minimum_order_value_menu
-    )
+)
 
 COUNTRY_SEGMENT_VERIFICATION = ["PY"]
 
@@ -25,7 +25,7 @@ COUNTRY_SEGMENT_VERIFICATION = ["PY"]
 def check_account_exists_microservice(
         account_id: int,
         zone: str,
-        environment: str):
+        environment: str) -> Union[bool, list]:
     """
     Check if a given `accout_id` exists in the microservice.
 
@@ -37,8 +37,10 @@ def check_account_exists_microservice(
 
     Returns
     -------
-    bool or json
-        `False` if not exists, else the account data.
+    bool
+        `False` if account does not exists.
+    list
+        The account data (when exists).
     """
     request_headers = get_header_request(
         zone=zone,
@@ -61,18 +63,21 @@ def check_account_exists_microservice(
     json_data = json.loads(response.text)
 
     if response.status_code == 200 and len(json_data) != 0:
-        if (
-            zone in COUNTRY_SEGMENT_VERIFICATION
-            and not (json_data[0]["segment"] == 'DM-SEG'
-                and json_data[0]["subSegment"] == 'DM-SUBSEG'
-            )
-        ):
+        is_dm_segment = json_data[0]["segment"] == 'DM-SEG'
+        is_dm_subsegment = json_data[0]["subSegment"] == 'DM-SUBSEG'
+
+        if (zone in COUNTRY_SEGMENT_VERIFICATION and
+                not (is_dm_segment and is_dm_subsegment)):
             print(
                 f"{text.Red}\n-"
-                f" [Account Service]"
+                " [Account Service]"
                 f" The account {account_id} was not created by Data Mass."
-                f" Response message: "
-                "https://ab-inbev.atlassian.net/secure/RapidBoard.jspa?rapidView=1565&modal=detail&selectedIssue=BEESDM-81"
+                " For more details: "
+                "https://ab-inbev.atlassian.net/secure"
+                "/RapidBoard.jspa"
+                "?rapidView=1565"
+                "&modal=detail"
+                "&selectedIssue=BEESDM-81"
             )
 
             return False
@@ -106,8 +111,8 @@ def create_account_ms(
         zone: str,
         environment: str,
         delivery_address: dict,
-        account_status: str = 'ACTIVE',
-        enable_empties_loan: bool = False):
+        account_status: str = "ACTIVE",
+        enable_empties_loan: bool = False) -> bool:
     """
     Create account on the microservice.
 
@@ -168,7 +173,10 @@ def create_account_ms(
     request_headers = get_header_request(zone, False, True, False, False)
     request_url = get_microservice_base_url(environment) + '/account-relay/'
 
-    content = pkg_resources.resource_string("data_mass", "data/create_account_payload.json") 
+    content = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_account_payload.json"
+    )
     json_data = json.loads(content.decode("utf-8"))
 
     for key in dict_values.keys():
@@ -197,7 +205,7 @@ def create_account_ms(
         return False
 
 
-def display_account_information(account: str):
+def display_account_information(account: dict):
     """
     Display account information.
 
@@ -206,16 +214,16 @@ def display_account_information(account: str):
     account: str
         All account data
     """
-    account_data = account[0]
+    delivery_window = account['deliveryWindows']
+    delivery_window_information = []
 
-    delivery_window = account_data['deliveryWindows']
-    delivery_window_information = list()
-    if len(delivery_window) == 0:
+    if not delivery_window:
         account_delivery_window_values = {
             'Delivery Windows': 'None'
         }
         delivery_window_information.append(account_delivery_window_values)
     else:
+        # TODO: interate by items, not index
         for i in range(len(delivery_window)):
             account_delivery_window_values = {
                 'Start Date': delivery_window[i]['startDate'],
@@ -225,13 +233,13 @@ def display_account_information(account: str):
             }
             delivery_window_information.append(account_delivery_window_values)
 
-    liquor_license = account_data['liquorLicense']
-    if len(liquor_license) == 0:
+    liquor_license = account['liquorLicense']
+    if not liquor_license:
         liquor_license = 'None'
     else:
         liquor_license = liquor_license[0]['number']
 
-    challenge_ids = account_data['challengeIds']
+    challenge_ids = account['challengeIds']
     if challenge_ids is None:
         challenge_ids = 'None'
     else:
@@ -240,8 +248,8 @@ def display_account_information(account: str):
             .replace(']', '')\
             .replace('\'', '')
 
-    payment_methods = account_data['paymentMethods']
-    if len(payment_methods) == 0:
+    payment_methods = account['paymentMethods']
+    if not payment_methods:
         payment_methods = 'None'
     else:
         payment_methods = str(payment_methods)\
@@ -249,8 +257,8 @@ def display_account_information(account: str):
             .replace(']', '')\
             .replace('\'', '')
 
-    minimum_order_information = list()
-    minimum_order = account_data['minimumOrder']
+    minimum_order_information = []
+    minimum_order = account['minimumOrder']
     if minimum_order is None:
         minimum_order_values = {
             'Minimum Order': 'None'
@@ -262,8 +270,8 @@ def display_account_information(account: str):
         }
     minimum_order_information.append(minimum_order_values)
 
-    maximum_order_information = list()
-    maximum_order = account_data['maximumOrder']
+    maximum_order_information = []
+    maximum_order = account['maximumOrder']
     if maximum_order is None:
         maximum_order_values = {
             'Maximum Order': 'None'
@@ -275,31 +283,31 @@ def display_account_information(account: str):
         }
     maximum_order_information.append(maximum_order_values)
 
-    basic_information = list()
+    basic_information = []
     account_values = {
-        'Account ID': account_data['accountId'],
-        'Name': account_data['name'],
-        'Status': account_data['status'],
-        'Tax ID': account_data['taxId'],
+        'Account ID': account['accountId'],
+        'Name': account['name'],
+        'Status': account['status'],
+        'Tax ID': account['taxId'],
         'Challenge IDs': challenge_ids,
         'Liquor License Number': liquor_license,
         'Payment Methods': payment_methods
     }
     basic_information.append(account_values)
 
-    credit_information = list()
-    credit = account_data['credit']
+    credit_information = []
+    credit = account['credit']
     if credit is None:
         account_credit_values = {
             'Credit': 'None'
         }
     else:
         account_credit_values = {
-            'Credit Balance': account_data['credit']['balance'],
-            'Credit Overdue': account_data['credit']['overdue'],
-            'Credit Available': account_data['credit']['available'],
-            'Credit Total': account_data['credit']['total'],
-            'Credit Consumption': account_data['credit']['consumption']
+            'Credit Balance': account['credit']['balance'],
+            'Credit Overdue': account['credit']['overdue'],
+            'Credit Available': account['credit']['available'],
+            'Credit Total': account['credit']['total'],
+            'Credit Consumption': account['credit']['consumption']
         }
     credit_information.append(account_credit_values)
 
@@ -339,20 +347,39 @@ def display_account_information(account: str):
     ))
 
 
-def get_minimum_order_info():
+def get_minimum_order_info() -> list:
+    """
+    Get minimum order from user.
+
+    Returns
+    -------
+    list
+        A list of minimum orders.
+    """
     minimum_order_type = print_minimum_order_type_menu()
     minimum_order_value = print_minimum_order_value_menu()
 
-    minimum_order_values = list()
+    minimum_order_values = []
     minimum_order_values.append(minimum_order_type)
     minimum_order_values.append(minimum_order_value)
 
     return minimum_order_values
 
 
-def get_delivery_cost_values(option):
-    min_value = 0
-    tax_value = 0
+def get_delivery_cost_values(option: str) -> Dict[str, str]:
+    """
+    Get delivery cost values.
+
+    Parameters
+    ----------
+    option : str
+
+    Returns
+    -------
+    dict
+        A dict with `min_order_value` and `fee_value` keys.
+    """
+    min_value = tax_value = "0"
 
     if option.upper() == 'Y':
         min_value = input(
@@ -373,7 +400,7 @@ def get_delivery_cost_values(option):
     return delivery_cost_values
 
 
-def get_credit_info():
+def get_credit_info() -> dict:
     """
     Prompts to the user for credit information.
 
@@ -399,7 +426,7 @@ def get_credit_info():
     return credit_info
 
 
-def get_minimum_order_list(minimum_order_values: dict):
+def get_minimum_order_list(minimum_order_values: dict) -> list:
     """
     Convert minimum order to list.
 
@@ -422,17 +449,19 @@ def get_minimum_order_list(minimum_order_values: dict):
     return minimum_order
 
 
-def return_payment_term_bank_slip(days: int = 5):
+def return_payment_term_bank_slip(days: int = 5) -> list:
     """
     Return payment term value for `BANK_SLIP` payment method.
 
     Parameters
     ----------
     days : int
+        Default to 5.
 
     Returns
     -------
     list
+        A list of payment term.
     """
     term_periods = []
 
@@ -451,7 +480,20 @@ def return_payment_term_bank_slip(days: int = 5):
     return [list_payment_term]
 
 
-def get_account_delivery_address(zone):
+def get_account_delivery_address(zone: str) -> Dict[str, str]:
+    """
+    Get mock data to represente account delivery address.
+
+    Parameters
+    ----------
+    zone : str
+
+    Returns
+    -------
+    Dict[str, str]
+        A satic mocked address with `address`, `city`,\
+        `state` and `zipcode` keys.
+    """
     params = {
         'AR': {
             'address': 'Guaiviravi 1486',

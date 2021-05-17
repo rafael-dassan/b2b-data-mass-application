@@ -9,7 +9,7 @@ from data_mass.user.utils import (
     get_cookies,
     get_cookies_header,
     merge_cookies
-    )
+)
 
 
 def assert_logon_request(user_name, password, params, authorize_response):
@@ -135,16 +135,20 @@ def assert_otp_request(email, params, confirmed_email_response):
     assert_otp_response = place_request("GET", url, data, headers)
 
     if assert_otp_response.status_code != 200:
-        print("\n{0}- Fail [assert_otp_request]. Response status: {1}. Response message: {2}".format(text.Red),
-              assert_otp_response.status_code, assert_otp_response.text)
+        print(
+            f"\n{text.Red}"
+            "- Fail [assert_otp_request]. "
+            f"Response status: {assert_otp_response.status_code}. "
+            f"Response message: {assert_otp_response.text}"
+        )
         return False
-    else:
-        return {
-            "CSRF": confirmed_email_response["CSRF"],
-            "API": confirmed_email_response["API"],
-            "TRANS_ID": confirmed_email_response["TRANS_ID"],
-            "COOKIES": merge_cookies(confirmed_email_response["COOKIES"], get_cookies(assert_otp_response))
-        }
+
+    return {
+        "CSRF": confirmed_email_response["CSRF"],
+        "API": confirmed_email_response["API"],
+        "TRANS_ID": confirmed_email_response["TRANS_ID"],
+        "COOKIES": merge_cookies(confirmed_email_response["COOKIES"], get_cookies(assert_otp_response))
+    }
 
 
 def assert_name_request(email, params, confirmed_otp_response):

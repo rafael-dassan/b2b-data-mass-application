@@ -1,9 +1,9 @@
 """Supplier Atribute GQL Documents handler."""
-from gql import gql
-from gql.gql import DocumentNode
+from gql import gql  # type: ignore
+from gql.gql import DocumentNode  # type: ignore
 
 
-def create_primitive_attribute_payload():
+def create_primitive_attribute_payload() -> DocumentNode:
     """
     Create primitive attribute payload.
 

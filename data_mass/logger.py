@@ -1,7 +1,6 @@
 import logging
 import re
 import subprocess
-
 from datetime import datetime
 from os import makedirs, name
 from os.path import abspath, dirname, exists, join
@@ -14,7 +13,7 @@ def log_to_file(
         request_url: str,
         request_body: str,
         request_headers: str,
-        status_code: str,
+        status_code: int,
         response_body: str):
     """
     Log all requests to a specific file named
@@ -51,13 +50,13 @@ def log_to_file(
     logging.getLogger("urllib3").setLevel(logging.WARNING)
     logging.getLogger("chardet.charsetprober").setLevel(logging.WARNING)
 
-    logging.debug((
+    logging.debug(
         f"Starting new HTTPS connection: {request_method} {request_url}\n"
         f"Request headers: {request_headers}\n"
         f"Request body: {request_body}\n"
         f"Response code: {status_code}\n"
         f"Response body: {response_body}\n"
-    ))
+    )
 
 
 def create_today_directory() -> str:

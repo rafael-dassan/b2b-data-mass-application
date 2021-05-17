@@ -14,14 +14,14 @@ from data_mass.supplier.attribute import (
     create_legacy_attribute_package,
     create_legacy_root_attribute,
     get_all_legacy_attributes
-    )
+)
 from data_mass.supplier.gql.categories import (
     create_association_payload,
     create_root_category_payload,
     create_search_specific_category_payload,
     create_sub_category_payload,
     search_all_category_payload
-    )
+)
 
 
 def create_root_category(
@@ -69,7 +69,7 @@ def create_root_category(
         response = client.execute(mut, variable_values=params)
         json_data = json.dumps(response)
 
-        if len(json_data) != 0:
+        if json_data:
             json_split = json_data.rsplit()
             id_cat = json_split[2]
             id_cat1 = id_cat.lstrip('"')
@@ -135,7 +135,7 @@ def create_sub_category_supplier(
         response = client.execute(mut, variable_values=params)
         json_data = json.dumps(response)
 
-        if len(json_data) != 0:
+        if json_data:
             json_split = json_data.rsplit()
             id_cat = json_split[2]
             id_cat1 = id_cat.lstrip('"')
@@ -258,7 +258,8 @@ def create_association_attribute_with_category(
     try:
         response = client.execute(mut, variable_values=params)
         json_data = json.dumps(response)
-        if len(json_data) != 0:
+
+        if json_data:
             json_split = json_data.rsplit()
             id_abs = json_split[2]
             id_abs1 = id_abs.lstrip('"')
@@ -350,7 +351,7 @@ def display_specific_category(category: Any):
     ancestors = info['ancestors']
     ancestors_list = []
 
-    if len(ancestors) == 0:
+    if not ancestors:
         ancestors_info = {
             "Ancestors": "None"
         }
@@ -366,7 +367,7 @@ def display_specific_category(category: Any):
     attributes = info["attributes"]
     attributes_list = []
 
-    if len(attributes) == 0:
+    if not attributes:
         attributes_info = {"Attributes": "None"}
         attributes_list.append(attributes_info)
     for a in range(len(attributes)):
