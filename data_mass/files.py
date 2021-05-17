@@ -1,6 +1,6 @@
-import os
 from random import randint
 
+import pkg_resources
 from requests import request
 
 from data_mass.classes.text import text
@@ -40,9 +40,11 @@ def create_file_api(
     bool
         `False` in case of failure, otherwise, `True`.
     """
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/files/random-file.pdf')
-    content = open(file_path, "rb")
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/files/random-file.pdf"
+    )
 
     files = {"file": ("random-file.pdf", content, "application/pdf")}
     metadata = get_file_metadata(account_id, purpose, data)

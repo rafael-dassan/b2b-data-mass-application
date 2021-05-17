@@ -4,6 +4,7 @@ import os
 from datetime import datetime, timedelta
 from json import loads
 
+import pkg_resources
 # Third party imports
 from tabulate import tabulate
 
@@ -93,14 +94,13 @@ def create_order_payload(
 
     # Sets the format of the cancellable date of the order (current date and time more ten days)
     cancellable_date = (datetime.now() + timedelta(days=10)).strftime('%Y-%m-%dT%H:%M:%S') + '+00:00'
-
-    # Create file path
-    abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, 'data/create_order_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_order_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     line_items = order_items.get('lineItems')
     item_list = list()

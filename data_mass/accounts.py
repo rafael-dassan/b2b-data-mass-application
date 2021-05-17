@@ -1,23 +1,23 @@
 import json
 import os
 
+import pkg_resources
 from tabulate import tabulate
 
+from data_mass.classes.text import text
 from data_mass.common import (
+    convert_json_to_string,
+    create_list,
     get_header_request,
     get_microservice_base_url,
     place_request,
-    update_value_to_json,
-    create_list,
-    convert_json_to_string,
-    set_to_dictionary
-)
-from data_mass.classes.text import text
+    set_to_dictionary,
+    update_value_to_json
+    )
 from data_mass.menus.account_menu import (
     print_minimum_order_type_menu,
     print_minimum_order_value_menu
-)
-
+    )
 
 COUNTRY_SEGMENT_VERIFICATION = ["PY"]
 
@@ -67,33 +67,33 @@ def check_account_exists_microservice(
                 and json_data[0]["subSegment"] == 'DM-SUBSEG'
             )
         ):
-            print((
+            print(
                 f"{text.Red}\n-"
                 f" [Account Service]"
                 f" The account {account_id} was not created by Data Mass."
                 f" Response message: "
                 "https://ab-inbev.atlassian.net/secure/RapidBoard.jspa?rapidView=1565&modal=detail&selectedIssue=BEESDM-81"
-            ))
+            )
 
             return False
         return json_data
 
     elif response.status_code == 200 and len(json_data) == 0:
-        print((
+        print(
             f"{text.Red}\n- "
             f"[Account Service] "
             f"The account {account_id} does not exist"
-        ))
+        )
 
         return False
     else:
-        print((
+        print(
             f"{text.Red}\n-"
             f" [Account Service]"
             f" Failure to retrieve the account {account_id}."
             f" Response Status: {str(response.status_code)}."
             f" Response message: {response.text}"
-        ))
+        )
 
         return False
 
@@ -166,14 +166,10 @@ def create_account_ms(
         set_to_dictionary(dict_values, 'minimumOrder', minimum_order)
 
     request_headers = get_header_request(zone, False, True, False, False)
-
     request_url = get_microservice_base_url(environment) + '/account-relay/'
 
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_account_payload.json')
-
-    with open(file_path) as file:
-        json_data = json.load(file)
+    content = pkg_resources.resource_string("data_mass", "data/create_account_payload.json") 
+    json_data = json.loads(content.decode("utf-8"))
 
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
@@ -191,12 +187,12 @@ def create_account_ms(
     if response.status_code == 202:
         return True
     else:
-        print((
+        print(
             f"\n- [Account Relay Service]"
             f" Failure to create the account {account_id}."
             f" Response status {str(response.status_code)}."
             f" Response message: {response.text}"
-        ))
+        )
 
         return False
 
@@ -359,15 +355,15 @@ def get_delivery_cost_values(option):
     tax_value = 0
 
     if option.upper() == 'Y':
-        min_value = input((
+        min_value = input(
             f"{text.default_text_color} "
             f"Define the minimum order value to not pay any delivery fee: "
-        ))
+        )
 
-        tax_value = input((
+        tax_value = input(
             f"{text.default_text_color} "
             f"Define the delivery fee value: "
-        ))
+        )
 
     delivery_cost_values = {
         'min_order_value': min_value,
@@ -386,14 +382,14 @@ def get_credit_info():
     dict
         The credit info.
     """
-    credit = input((
+    credit = input(
         f"{text.default_text_color} "
         "Desired credit available (Default 5000): "
-    ))
-    balance = input((
+    )
+    balance = input(
         f"{text.default_text_color} "
         "Desired credit balance (Default 15000): "
-    ))
+    )
 
     credit_info = {
         'credit': credit,

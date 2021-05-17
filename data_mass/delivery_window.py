@@ -1,17 +1,22 @@
 # Standard library imports
-import os
-import json
-import sys
-from datetime import timedelta, datetime
-from PyQt5.QtWidgets import QApplication
 import calendar
+import json
+import os
+import sys
+from datetime import datetime, timedelta
 
-# Local application imports
-from data_mass.common import update_value_to_json, \
-    get_header_request, get_microservice_base_url, \
-    place_request
+import pkg_resources
+from PyQt5.QtWidgets import QApplication
+
 from data_mass.classes.text import text
 from data_mass.classes.window import window
+# Local application imports
+from data_mass.common import (
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+    update_value_to_json
+    )
 
 
 # Create payload for delivery date
@@ -25,14 +30,13 @@ def get_microservice_payload_post_delivery_date(account_data, is_alternative_del
         'id': str(index) + "_" + account_data['accountId'],
         'startDate': dates_list['startDate']
     }
-
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_delivery_window_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_delivery_window_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     # Update the delivery window values in runtime
     for key in dict_values.keys():
@@ -61,14 +65,13 @@ def get_microservice_payload_post_delivery_fee(account_data, include_delivery_co
             }
         }
     }
-
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_delivery_fee_interest_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_delivery_fee_interest_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     # Update the delivery window values in runtime
     for key in dict_values.keys():

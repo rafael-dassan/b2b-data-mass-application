@@ -1,3 +1,0 @@
-# Required libraries to develop Data Mass Script.
-pylint==2.7.4
-flake8==3.9.1

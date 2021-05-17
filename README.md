@@ -32,8 +32,28 @@ source venv/bin/activate
 ### Manually
 Follow the [virtualenv installation guide](doc/USER_GUIDE.md#using-virtualenv).
 
+## Installing the Application
+After enabling the virtualenv, install the application:
+```sh
+python3 -m pip install .
+```
+
+To use as a package*:
+```sh
+python3 setup.py install
+```
+
+To use development mode**:
+```sh
+python3 setup.py install develop
+```
+
+\* Note: if you are not using virtualenv, it's recommended to use the `--user` flag.
+
+\** [More detail can be found in the official documentation](https://setuptools.readthedocs.io/en/latest/userguide/development_mode.html).
+
 ## Running the Application
-After enabling the virtualenv, run the script:
+To start the application, run:
 ```sh
 python3 -m data_mass.main
 ```
