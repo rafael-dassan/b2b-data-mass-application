@@ -495,26 +495,24 @@ def create_rewards_to_account():
         if not account:
             print_finish_application_menu()
 
-        # check_if_account is valid for the rewards
-        
-        delivery_center_id = account[0]['deliveryCenterId']
+        order_status = print_order_status_menu()
+
+        # TODO:check_if_account is valid for the rewards
 
         qty_orders = click.prompt(
             'Please entet the quantity of orders to create',
             type=click.IntRange(0, inf)
         )
-        print(qty_orders)
-
-        flow_create_order_rewards(
+        response = flow_create_order_rewards(
             zone=zone,
             environment=environment,
-            account_id=account_id,
-            delivery_center_id=delivery_center_id,
-            order_status=order_status,
+            account=account,
             item_list=item_list,
-            quantity_orders=qty_orders
+            order_status=order_status,
+            quantity_orders=qty_orders,
             )
         if response:
+            # TODO: points balance
             print(
                 TEXT_GREEN
                 + f"\n- Order {response.get('orderNumber')} created successfully"

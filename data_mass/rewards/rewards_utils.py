@@ -15,8 +15,6 @@ from data_mass.common import (
     print_input_number,
     update_value_to_json
     )
-from data_mass.menus.account_menu import print_payment_method_menu
-from data_mass.menus.order_menu import print_allow_cancellable_order_menu
 from data_mass.orders import request_order_creation
 from data_mass.product.products import request_get_products_microservice
 from data_mass.simulation import request_order_simulation
@@ -363,48 +361,37 @@ def print_input_decision(message):
     return decision.upper()
 
 
-def flow_create_order_rewards(
+def put_orders_rewards(
     zone: str,
     environment: str,
-    account_id: str,
-    delivery_center_id: str,
-    order_status: str,
+    account: dict,
     item_list: list,
-    quantity_orders: int = 1,
+    dt_combos: list,
+    empties: str,
+    pay_method: str,
+    order_status: str,
+    allow_order_cancel: str,
+    payment_term: int = 0
 ):
-    if order_status == "PLACED":
-        allow_order_cancel = print_allow_cancellable_order_menu()
-    else:
-        allow_order_cancel = "N"
-
-    # choose payment method as the account permits
-    pay_method = print_payment_method_menu(zone)
-
-    # TODO: DTcombos associated to the poc
-    dt_combos = get_dt_combos_from_zone(
-        zone=zone, environment=environment, page_size=9999
-    )
-
-    # TODO: points balance
 
     # Create a dataflow to match business rules
     order_items = request_order_simulation(
         zone=zone,
         environment=environment,
-        account_id=account_id,
-        delivery_center_id=delivery_center_id,
+        account_id=account[0]['account_id'],
+        delivery_center_id=account[0]['deliveryCenterId'],
         items=item_list,
         combos=dt_combos if dt_combos else None,
         empties=None,
         payment_method=pay_method,
-        payment_term=0,
+        payment_term=payment_term,
     )
     if not order_items:
         print_finish_application_menu()
 
     response = request_order_creation(
-        account_id=account_id,
-        delivery_center_id=delivery_center_id,
+        account_id=account[0]['account_id'],
+        delivery_center_id=account[0]['deliveryCenterId'],
         zone=zone,
         environment=environment,
         allow_order_cancel=allow_order_cancel,
