@@ -11,14 +11,12 @@ from data_mass.common import (
     get_header_request,
     get_microservice_base_url,
     place_request,
+    print_finish_application_menu,
     print_input_number,
     update_value_to_json
     )
-from data_mass.main import (
-    print_allow_cancellable_order_menu,
-    print_finish_application_menu
-    )
 from data_mass.menus.account_menu import print_payment_method_menu
+from data_mass.menus.order_menu import print_allow_cancellable_order_menu
 from data_mass.orders import request_order_creation
 from data_mass.product.products import request_get_products_microservice
 from data_mass.simulation import request_order_simulation

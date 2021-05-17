@@ -1597,19 +1597,6 @@ def flow_update_account_payment_method(zone, environment, account_id):
         print_finish_application_menu()
 
 
-# Print Finish Menu application
-def print_finish_application_menu():
-    option = input(text.default_text_color + '\nDo you want to finish the application? y/N: ')
-    while validate_yes_no_option(option.upper()) is False:
-        print(text.Red + '\n- Invalid option')
-        option = input(text.default_text_color + '\nDo you want to finish the application? y/N: ')
-
-    if option.upper() == 'Y':
-        finish_application()
-    else:
-        show_menu()
-
-
 # Validate if chosen sku is valid
 def validateSkuChosen(sku, listSkuOffers):
     countItems = 0
