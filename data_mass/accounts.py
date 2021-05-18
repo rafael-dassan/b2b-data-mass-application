@@ -129,11 +129,10 @@ def create_account_ms(
         Whenever an account is successfully created.
     """
     payment_term = None
-    if zone == 'BR' and 'BANK_SLIP' in payment_method:
+    if zone == "BR" and "BANK_SLIP" in payment_method:
         payment_term = return_payment_term_bank_slip()
 
     dict_values = {
-        'accountId': account_id,
         'challengeIds': [account_id],
         'deliveryCenterId': account_id,
         'deliveryScheduleId': account_id,
@@ -151,36 +150,45 @@ def create_account_ms(
         'hasEmptiesLoan': enable_empties_loan
     }
 
+    if zone == "US":
+        schema = "data/create_account_us_payload.json"
+        dict_values.update({"vendorAccountId": account_id})
+    else:
+        schema = "data/create_account_payload.json"
+        dict_values.update({"accountId": account_id})
+
+    content = pkg_resources.resource_string("data_mass", schema)
+
     if minimum_order is not None:
         set_to_dictionary(
             dict_values,
-            'minimumOrder.type',
+            "minimumOrder.type",
             minimum_order[0]
         )
         set_to_dictionary(
             dict_values,
-            'minimumOrder.value',
+            "minimumOrder.value",
             int(minimum_order[1])
         )
     else:
-        set_to_dictionary(dict_values, 'minimumOrder', minimum_order)
+        dict_values.update({"minimumOrder": minimum_order})
 
-    request_headers = get_header_request(zone, False, True, False, False)
+    request_headers = get_header_request(
+        zone=zone,
+        use_jwt_auth=True,
+        use_root_auth=True,
+        use_inclusion_auth=False,
+        sku_product=False,
+    )
     request_url = get_microservice_base_url(environment) + '/account-relay/'
 
-    content = pkg_resources.resource_string("data_mass", "data/create_account_payload.json") 
-    json_data = json.loads(content.decode("utf-8"))
-
-    for key in dict_values.keys():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
-
-    list_dict_values = create_list(json_object)
-    request_body = convert_json_to_string(list_dict_values)
+    body = json.loads(content.decode("utf-8"))
+    body.update(dict_values)
 
     response = place_request(
-        request_method='POST',
+        request_method="POST",
         request_url=request_url,
-        request_body=request_body,
+        request_body=json.dumps(body),
         request_headers=request_headers
     )
 
@@ -188,6 +196,7 @@ def create_account_ms(
         return True
     else:
         print(
+            f"{text.Red}"
             f"\n- [Account Relay Service]"
             f" Failure to create the account {account_id}."
             f" Response status {str(response.status_code)}."
@@ -451,7 +460,7 @@ def return_payment_term_bank_slip(days: int = 5):
     return [list_payment_term]
 
 
-def get_account_delivery_address(zone):
+def get_account_delivery_address(zone: str) -> dict:
     params = {
         'AR': {
             'address': 'Guaiviravi 1486',
@@ -518,6 +527,12 @@ def get_account_delivery_address(zone):
             'city': 'Blood River',
             'state': 'KwaZulu-Natal',
             'zipcode': '3024'
+        },
+        'US': {
+            'address': 'McDowell Street, 1639',
+            'city': 'Nashville',
+            'state': 'Tennessee',
+            'zipcode': 'N/A'
         }
     }
 

@@ -1,0 +1,81 @@
+{
+  "vendorAccountId": "string",
+  "challengeIds": [
+    "string"
+  ],
+  "channel": "string",
+  "contacts": [
+    {
+      "type": "PHONE",
+      "value": "13111111111"
+    }
+  ],
+  "customerAccountId": "string",
+  "deliveryAddress": {
+    "address": "string",
+    "city": "string",
+    "latitude": "string",
+    "longitude": "string",
+    "state": "string",
+    "zipcode": "string"
+  },
+  "deliveryCenterId": "string",
+  "deliveryRegion": "string",
+  "deliveryRoute": "string",
+  "deliveryScheduleId": "string",
+  "erpSalesCenter": "string",
+  "hasEmptiesLoan": true,
+  "hasOrderNumberRequirement": false,
+  "hasOverprice": true,
+  "liquorLicense": [
+    {
+      "description": "string",
+      "expirationDate": "string",
+      "number": "string",
+      "status": "VALID",
+      "type": "PERMANENT"
+    }
+  ],
+  "maximumOrder": {
+    "paymentMethods": "CASH",
+    "type": "PRODUCT_QUANTITY",
+    "value": 20
+  },
+  "minimumOrder": {
+    "paymentMethods": "CASH",
+    "type": "PRODUCT_QUANTITY",
+    "value": 20
+  },
+  "name": "string",
+  "owner": {
+    "email": "test@mailinator.com",
+    "firstName": "TEST OWNER FIRST NAME",
+    "lastName": "TEST OWNER LAST NAME",
+    "phone": "11999999999"
+  },
+  "paymentMethods": [
+    "CREDIT"
+  ],
+  "paymentTerms": [
+    {
+      "termPeriods": [
+        {
+          "days": 0
+        }
+      ],
+      "type": "CREDIT"
+    }
+  ],
+  "potential": "string",
+  "priceListId": "string",
+  "salesRepresentative": {
+    "email": "string",
+    "name": "string",
+    "phone": "string"
+  },
+  "salesRoute": "string",
+  "segment": "string",
+  "status": "BLOCKED",
+  "subSegment": "string",
+  "taxId": "string"
+}

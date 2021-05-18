@@ -105,7 +105,8 @@ def validate_zone_for_ms(zone):
         'PA': True,
         'PE': True,
         'PY': True,
-        'ZA': True
+        'US': True,
+        'ZA': True,
     }.get(zone, False)
 
 
