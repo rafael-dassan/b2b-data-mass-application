@@ -2,6 +2,7 @@ from data_mass.classes.text import text
 from data_mass.validations import (
     validate_rewards,
     validate_rewards_challenges,
+    validate_rewards_orders,
     validate_rewards_programs,
     validate_rewards_transactions
     )
@@ -42,6 +43,10 @@ def reward_options_menu():
         TEXT_COLOR_DEFAULT + str(7),
         f"{TEXT_COLOR_YELLOW} Create/Delete Rewards challenges",
     )
+    print(
+        TEXT_COLOR_DEFAULT + str(8),
+        f"{TEXT_COLOR_YELLOW} Create Orders with Rewards",
+    )
 
 
 def print_rewards_menu():
@@ -79,7 +84,6 @@ def rewards_transactions_options_menu():
         TEXT_COLOR_DEFAULT + str(3),
         f"{TEXT_COLOR_YELLOW} Create a POINTS_REMOVAL transaction to a POC",
     )
-    print(TEXT_COLOR_DEFAULT + str(4), f"{TEXT_COLOR_YELLOW} Create an ORDER")
 
 
 def print_rewards_transactions_menu():
@@ -186,3 +190,33 @@ def print_rewards_challenges_menu():
         structure = input(TEXT_COLOR_DEFAULT + "\nPlease select: ")
 
     return structure
+
+
+def rewards_orders_option_menu():
+    """
+    Print rewards orders menu.
+    """
+    print(
+        TEXT_COLOR_DEFAULT + str(1),
+        f"{TEXT_COLOR_YELLOW} Create an ORDER",
+    )
+
+
+def print_rewards_orders_menu():
+    """
+    Get user input option for orders menu.
+
+    Returns
+    -------
+    str
+        input option by the user.
+    """
+    rewards_orders_option_menu()
+    structure = input(TEXT_COLOR_DEFAULT + "\nPlease select: ")
+    while validate_rewards_orders(structure) is False:
+        print(text.Red + "\n- Invalid option")
+        rewards_orders_option_menu()
+        structure = input(TEXT_COLOR_DEFAULT + "\nPlease select: ")
+
+    return structure
+    

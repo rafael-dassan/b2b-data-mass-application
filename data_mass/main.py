@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from math import inf
 
 import click
 import pyperclip
@@ -69,6 +68,7 @@ from data_mass.menus.product_menu import (
 from data_mass.menus.rewards_menu import (
     print_rewards_challenges_menu,
     print_rewards_menu,
+    print_rewards_orders_menu,
     print_rewards_program_menu,
     print_rewards_transactions_menu
     )
@@ -380,8 +380,7 @@ def create_rewards_to_account():
         switcher = {
             '1': 'CREATE_REDEMPTION',
             '2': 'CREATE_REWARDS_OFFER',
-            '3': 'CREATE_POINTS_REMOVAL',
-            '4': 'CREATE_ORDER_REWARDS'
+            '3': 'CREATE_POINTS_REMOVAL'
         }
     elif selection_structure == '7':
         selection_structure = print_rewards_challenges_menu()
@@ -391,6 +390,11 @@ def create_rewards_to_account():
             '3': 'CREATE_PURCHASE',
             '4': 'CREATE_PURCHASE_MULTIPLE',
             '5': 'DELETE_CHALLENGE'
+        }
+    elif selection_structure == '8':
+        selection_structure = print_rewards_orders_menu()
+        switcher = {
+            '1': 'CREATE_ORDER_REWARDS'
         }
     else:
         switcher = {
@@ -541,14 +545,13 @@ def create_rewards_to_account():
             account_id=account_id,
             zone=zone,
             environment=environment,
-            operation=1 # operation 1 is creation
         )
         if not item_list:
             print_finish_application_menu()
 
         qty_orders = click.prompt(
-            'Please enter the quantity of orders to create',
-            type=click.IntRange(0, inf)
+            'Please enter the quantity of orders to create (max. 20)',
+            type=click.IntRange(0, 20)
         )
         response = flow_create_order_rewards(
             zone=zone,
@@ -614,21 +617,22 @@ def order_menu():
         print_finish_application_menu()
     delivery_center_id = account[0]['deliveryCenterId']
 
-    items_associated = get_items_associated_account(
-        account_id=account_id,
-        zone=zone,
-        environment=environment,
-        operation=operation
-    )
+    if operation != '2':
+        order_status = print_order_status_menu()
+        items_associated = get_items_associated_account(
+            account_id=account_id,
+            zone=zone,
+            environment=environment,
+        )
 
     return {
         '1': lambda: flow_create_order(
-            zone,
-            environment,
-            account_id,
-            delivery_center_id,
-            items_associated.order_status,
-            items_associated.item_list
+            zone=zone,
+            environment=environment,
+            account_id=account_id,
+            delivery_center_id=delivery_center_id,
+            order_status=order_status,
+            item_list=items_associated
         ),
         '2': lambda: flow_create_changed_order(
             zone,

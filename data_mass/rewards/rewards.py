@@ -1,6 +1,6 @@
 from json import loads
 from multiprocessing import Pool, cpu_count
-from random import randint
+from random import choice, randint
 
 from tabulate import tabulate
 
@@ -431,7 +431,7 @@ def flow_create_order_rewards(
         allow_order_cancel = "N"
 
     # get payment method as the account permits
-    pay_method = account[0]["paymentMethods"]
+    pay_method = choice(account[0]["paymentMethods"])
 
     # TODO: DTcombos associated to the poc
     get_combos = get_rewards_combos_by_account(
@@ -441,7 +441,15 @@ def flow_create_order_rewards(
     )
     if not get_combos:
         return []
+
     dt_combos = loads(get_combos.text).get('combos', [])
+    combos = [
+        {
+            "comboId": dt_combo["id"],
+            "quantity": dt_combo["redeemLimit"]
+         }
+        for dt_combo in dt_combos
+    ]
 
     # TODO: multiprocess verificar
     pool_orders = Pool(CPU_COUNT)
@@ -451,7 +459,7 @@ def flow_create_order_rewards(
             environment=environment,
             account=account,
             item_list=item_list,
-            dt_combos=dt_combos if dt_combos else [],
+            dt_combos=combos if combos else [],
             pay_method=pay_method,
             order_status=order_status,
             allow_order_cancel=allow_order_cancel,
@@ -460,5 +468,5 @@ def flow_create_order_rewards(
         range(quantity_orders),
     )
     if orders:
-        return orders
+        return orders.get()
     return []

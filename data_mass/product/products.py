@@ -18,7 +18,6 @@ from data_mass.common import (
     place_request,
     update_value_to_json
     )
-from data_mass.menus.order_menu import print_order_status_menu
 from data_mass.menus.product_menu import (
     print_is_alcoholic_menu,
     print_is_narcotic_menu,
@@ -856,7 +855,6 @@ def get_items_associated_account(
     account_id: str,
     zone: str,
     environment: str,
-    operation: str,
 ):
     product_offers = request_get_offers_microservice(
         account_id=account_id,
@@ -871,22 +869,21 @@ def get_items_associated_account(
         )
         return []
 
-    if operation != '2':
-        unique_sku = {item['sku'] for item in product_offers}
-        unique_sku = sample(list(unique_sku), len(unique_sku))
-        print(
-            TEXT_GREEN
-            + f"The account has {len(unique_sku)} products associated!"
-        )
-        quantity = click.prompt(
-            f'{text.default_text_color}'
-            'Quantity of products you want to include in this order',
-            type=click.IntRange(1, len(unique_sku)),
-        )
+    unique_sku = {item['sku'] for item in product_offers}
+    unique_sku = sample(list(unique_sku), len(unique_sku))
+    print(
+        TEXT_GREEN
+        + f"The account has {len(unique_sku)} products associated!"
+    )
+    quantity = click.prompt(
+        f'{text.default_text_color}'
+        'Quantity of products you want to include in this order',
+        type=click.IntRange(1, len(unique_sku)),
+    )
 
-        item_list = []
-        for sku in unique_sku[:quantity]:
-            data = {'sku': sku, 'itemQuantity': randint(0, 10)} 
-            item_list.append(data)
+    item_list = []
+    for sku in unique_sku[:quantity]:
+        data = {'sku': sku, 'itemQuantity': randint(0, 10)} 
+        item_list.append(data)
 
-        return item_list
+    return item_list

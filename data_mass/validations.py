@@ -163,7 +163,7 @@ def validate_structure(option):
 
 
 def validate_rewards(selection):
-    options = ["1", "2", "3", "4", "5", "6", "7"]
+    options = ["1", "2", "3", "4", "5", "6", "7", "8"]
     return selection in options
 
 
@@ -195,6 +195,11 @@ def validate_order_status(option):
 def validate_order_sub_menu(option):
     options = ["1", "2"]
     return option in options
+
+
+def validate_rewards_orders(selection):
+    options = ["1"]
+    return selection in options
 
 
 # Validate option menu selection
