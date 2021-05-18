@@ -360,7 +360,7 @@ def print_input_decision(message):
     return decision.upper()
 
 
-def put_orders_rewards(
+def post_orders_rewards(
     zone: str,
     environment: str,
     account: list,
@@ -370,7 +370,7 @@ def put_orders_rewards(
     order_status: str,
     allow_order_cancel: str,
     delivery_date: str,
-    empties: str = None,
+    empties: str = [],
     payment_term: int = 0
 ):
 
@@ -381,17 +381,17 @@ def put_orders_rewards(
         account_id=account[0]['accountId'],
         delivery_center_id=account[0]['deliveryCenterId'],
         items=item_list,
-        combos=dt_combos if dt_combos else None,
+        combos=dt_combos if dt_combos else [],
         empties=empties,
         payment_method=pay_method,
         payment_term=payment_term,
         delivery_date=delivery_date
     )
     if not order_items:
-        order_items = []
+        return []
 
     response = request_order_creation(
-        account_id=account[0]['account_id'],
+        account_id=account[0]['accountId'],
         delivery_center_id=account[0]['deliveryCenterId'],
         zone=zone,
         environment=environment,

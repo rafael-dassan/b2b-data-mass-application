@@ -110,7 +110,7 @@ def request_order_simulation(
     else:
         print(
             text.Red
-            + "\n- [Cart Service] Failure to simulate the order."
+            + "\n- [Cart Service] Failure to simulate the order. "
             f"Response Status: {response.status_code}. "
             f"Response message: {response.text}"
         )

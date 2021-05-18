@@ -23,11 +23,12 @@ from data_mass.rewards.rewards_programs import (
     )
 from data_mass.rewards.rewards_utils import (
     get_dt_combos_from_zone,
+    get_rewards_combos_by_account,
     make_account_eligible,
     post_combo_relay_account,
+    post_orders_rewards,
     print_input_combo_qty,
-    print_input_decision,
-    put_orders_rewards
+    print_input_decision
     )
 
 APP_B2B = "b2b"
@@ -429,24 +430,28 @@ def flow_create_order_rewards(
     else:
         allow_order_cancel = "N"
 
-    # choose payment method as the account permits
+    # get payment method as the account permits
     pay_method = account[0]["paymentMethods"]
 
     # TODO: DTcombos associated to the poc
-    get_dt_combos = get_dt_combos_from_zone(
-        zone=zone, environment=environment, page_size=9999
+    get_combos = get_rewards_combos_by_account(
+        account_id=account[0]['accountId'],
+        zone=zone,
+        environment=environment
     )
-    dt_combos = loads(get_dt_combos.text)
+    if not get_combos:
+        return []
+    dt_combos = loads(get_combos.text).get('combos', [])
 
-    # TODO: multprocess verificar
+    # TODO: multiprocess verificar
     pool_orders = Pool(CPU_COUNT)
     orders = pool_orders.apply_async(
-        put_orders_rewards(
+        post_orders_rewards(
             zone=zone,
             environment=environment,
             account=account,
             item_list=item_list,
-            dt_combos=dt_combos if dt_combos else None,
+            dt_combos=dt_combos if dt_combos else [],
             pay_method=pay_method,
             order_status=order_status,
             allow_order_cancel=allow_order_cancel,
@@ -454,5 +459,6 @@ def flow_create_order_rewards(
         ),
         range(quantity_orders),
     )
-
-    return orders.get()
+    if orders:
+        return orders
+    return []

@@ -102,7 +102,7 @@ def create_order_payload(
     with open(file_path) as file:
         json_data = json.load(file)
 
-    line_items = order_items.get('lineItems')
+    line_items = order_items.get('lineItems', [])
     item_list = list()
     for i in range(len(line_items)):
         item_values = {
