@@ -52,11 +52,14 @@ def request_order_creation(
     # Define headers
     request_headers = get_header_request(zone, True, False, False, False, account_id)
 
-    # Define url request 
-    request_url = get_microservice_base_url(environment) + '/order-service'
+    # Define url request
+    if order_status == 'PENDING':
+        request_url = 'https://services-uat.bees-platform.dev/v1/checkout-service/v2'
+        request_body = create_pending_payload(account_id, delivery_date)
 
-    # Get body
-    request_body = create_order_payload(account_id, delivery_center_id, allow_order_cancel, order_items, order_status, delivery_date)
+    else: 
+        request_url = get_microservice_base_url(environment) + '/order-service'
+        request_body = create_order_payload(account_id, delivery_center_id, allow_order_cancel, order_items, order_status, delivery_date)
 
     # Send request
     response = place_request('POST', request_url, request_body, request_headers)
@@ -69,6 +72,34 @@ def request_order_creation(
                          'Response message {response_message}'
               .format(response_status=response.status_code, response_message=response.text))
         return False
+
+def create_pending_payload(
+    account_id,
+    delivery_date
+):
+
+    # Sets the format of the placement date of the order (current date and time)
+    placement_date = datetime.now().strftime('%Y-%m-%dT%H:%M:%S') + '+00:00'
+
+    # Sets the format of the cancellable date of the order (current date and time more ten days)
+    cancellable_date = (datetime.now() + timedelta(days=10)).strftime('%Y-%m-%dT%H:%M:%S') + '+00:00'
+
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_pending_order_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
+    
+    # dict_values = {
+    #     'accountId': account_id,
+    #     'delivery.date': delivery_date,
+    # }
+
+    # for key in dict_values.keys():
+    #     json_object = update_value_to_json(json_data, key, dict_values[key])
+
+    return convert_json_to_string(json_data)
 
 
 def create_order_payload(
@@ -103,7 +134,7 @@ def create_order_payload(
     json_data = json.loads(content.decode("utf-8"))
 
     line_items = order_items.get('lineItems')
-    item_list = list()
+    item_list = []
     for i in range(len(line_items)):
         item_values = {
             'price': line_items[i]['price'],

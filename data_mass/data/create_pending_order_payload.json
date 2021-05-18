@@ -1,0 +1,21 @@
+{
+  "accountId": "12312312312",
+  "channel": "B2B_WEB",
+  "delivery": {
+    "date": "2025-05-05",
+    "note": "string"
+  },
+  "empties": {
+    "hasEmpties": false
+  },
+  "items": [
+    {
+      "id": "my_id",
+      "quantity": 8
+    }
+  ],
+  "note": "string",
+  "paymentMethod": "CASH",
+  "poNumber": "string",
+  "userId": "string"
+}
