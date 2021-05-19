@@ -373,6 +373,39 @@ def post_orders_rewards(
     empties: str = [],
     payment_term: int = 0
 ):
+    """
+    Post methods for orders rewards.
+
+    Parameters
+    ----------
+    zone : str
+        e.g., AR, BR, DO, etc
+    environment : str
+        e.g., DEV, SIT, UAT
+    account : list
+        list with account infos.
+    item_list : list
+        list o skus to be used in creation.
+    dt_combos : list
+        [description]
+    pay_method : str
+        [description]
+    order_status : str
+        how order should be entered eg. Placed, Pending, Confirmed, etc.
+    allow_order_cancel : str
+        [description]
+    delivery_date : str
+        date of order to be delivered.
+    empties : str, optional
+        [description], by default []
+    payment_term : int, optional
+        [description], by default 0
+
+    Returns
+    -------
+    list
+        response from http method.
+    """
 
     # Create a dataflow to match business rules
     order_items = request_order_simulation(

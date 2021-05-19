@@ -1,5 +1,4 @@
 from json import loads
-from multiprocessing import Pool, cpu_count
 from random import choice, randint
 
 from tabulate import tabulate
@@ -33,7 +32,6 @@ from data_mass.rewards.rewards_utils import (
 
 APP_B2B = "b2b"
 APP_ADMIN = "membership"
-CPU_COUNT = cpu_count() // 2
 
 
 # Enroll POC to a zone's reward program
@@ -425,6 +423,31 @@ def flow_create_order_rewards(
     delivery_date: str,
     quantity_orders: int = 1,
 ):
+    """
+    Flow to create orders with the multiprocess and combos.
+
+    Parameters
+    ----------
+    zone : str
+        e.g., AR, BR, DO, etc
+    environment : str
+        e.g., DEV, SIT, UAT
+    account_id : str
+        POC unique identifier
+    item_list : list
+        list o skus to be used in creation.
+    order_status : str
+        how order should be entered eg. Placed, Pending, Confirmed, etc.
+    delivery_date : str
+        date of order to be delivered.
+    quantity_orders : int, optional
+        how many orders to be created, by default 1
+
+    Returns
+    -------
+    list
+        list of orders created or an empty list.
+    """
     if order_status == "PLACED":
         allow_order_cancel = print_allow_cancellable_order_menu()
     else:
@@ -451,10 +474,9 @@ def flow_create_order_rewards(
         for dt_combo in dt_combos
     ]
 
-    # TODO: multiprocess verificar
-    pool_orders = Pool(CPU_COUNT)
-    orders = pool_orders.apply_async(
-        post_orders_rewards(
+    orders = []
+    for _ in range(quantity_orders):
+        order = post_orders_rewards(
             zone=zone,
             environment=environment,
             account=account,
@@ -464,9 +486,9 @@ def flow_create_order_rewards(
             order_status=order_status,
             allow_order_cancel=allow_order_cancel,
             delivery_date=delivery_date
-        ),
-        range(quantity_orders),
-    )
+        )
+        orders.append(order)
+
     if orders:
-        return orders.get()
+        return orders
     return []

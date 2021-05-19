@@ -563,12 +563,16 @@ def create_rewards_to_account():
             delivery_date=delivery_date
             )
         if response:
-            # TODO: points balance
-            print(
-                TEXT_GREEN
-                + f"\n- Order {response.get('orderNumber')} created "
-                "successfully"
-            )
+            if len(response) > 1:
+                print(f"Orders created: ")
+                for order in response:
+                    print(order.get("orderNumber"))
+            else:
+                print(
+                    TEXT_GREEN
+                    + f"\n- Order {response} created "
+                    "successfully"
+                )
             
         print_finish_application_menu()
 
