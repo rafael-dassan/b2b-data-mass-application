@@ -806,13 +806,10 @@ def request_empties_discounts_creation(
         + "/cart-calculation-relay/v2/prices"
     )
 
-    # Create file path
-    abs_path = os.path.abspath(os.path.dirname("__main__"))
-    
     # get data from Data Mass files
     content: bytes = pkg_resources.resource_string(
         "data_mass",
-        "data/reate_empties_discounts_payload.json"
+        "data/create_empties_discounts_payload.json"
     )
     json_data = json.loads(content.decode("utf-8"))
 
