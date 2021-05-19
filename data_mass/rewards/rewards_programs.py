@@ -1,5 +1,8 @@
-from json import loads
+# Standard library imports
+import json
 from random import randint, randrange
+
+import pkg_resources
 
 from data_mass.classes.text import text
 from data_mass.common import (
@@ -34,7 +37,7 @@ def create_new_program(zone, environment):
         return None
 
     DM_program = get_DM_rewards_program_for_zone(
-        loads(response_all_programs.text)
+        json.loads(response_all_programs.text)
     )
     if DM_program is not None:
         DM_program_id = DM_program["id"]
@@ -75,7 +78,7 @@ def create_new_program(zone, environment):
     else:
         initial_balance = 0
 
-    zone_dt_combos = loads(response_zone_dt_combos.text)
+    zone_dt_combos = json.loads(response_zone_dt_combos.text)
 
     premium_rule_skus = product_list_from_zone[0:10]
     core_rule_skus = product_list_from_zone[10:20]
@@ -94,7 +97,12 @@ def create_new_program(zone, environment):
         + ". Please wait..."
     )
 
-    json_data = get_payload("../data/create_rewards_program_payload.json")
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_rewards_program_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     dict_values = {
         "name": new_program_id,
@@ -160,7 +168,7 @@ def update_program_dt_combos(zone, environment):
     if all_programs is None:
         return None
 
-    json_all_programs = loads(all_programs.text)
+    json_all_programs = json.loads(all_programs.text)
     display_all_programs_info(json_all_programs)
 
     selected_program = None
@@ -181,7 +189,7 @@ def update_program_dt_combos(zone, environment):
     if response_combos_from_zone is None:
         return None
 
-    json_combos_from_zone = loads(response_combos_from_zone.text)
+    json_combos_from_zone = json.loads(response_combos_from_zone.text)
     zone_dt_combos = json_combos_from_zone["combos"]
 
     # Get the DT combos configured in the rewards program
@@ -231,7 +239,7 @@ def remove_program_dt_combos(zone, environment):
     if all_programs is None:
         return None
 
-    json_all_programs = loads(all_programs.text)
+    json_all_programs = json.loads(all_programs.text)
     display_all_programs_info(json_all_programs)
 
     selected_program = None
@@ -252,7 +260,7 @@ def remove_program_dt_combos(zone, environment):
     if response_combos_from_zone is None:
         return None
 
-    json_combos_from_zone = loads(response_combos_from_zone.text)
+    json_combos_from_zone = json.loads(response_combos_from_zone.text)
     zone_dt_combos = json_combos_from_zone["combos"]
 
     # Get the DT combos configured in the rewards program
@@ -289,7 +297,7 @@ def patch_program_root_field(zone, environment, field):
         initial_balance = True if field == "initial_balance" else False
         redeem_limit = True if field == "redeem_limit" else False
 
-        json_all_programs = loads(all_programs.text)
+        json_all_programs = json.loads(all_programs.text)
         display_all_programs_info(
             json_all_programs, initial_balance, redeem_limit
         )
@@ -377,7 +385,7 @@ def get_all_programs(zone, environment, projections=set()):
     response = place_request("GET", request_url, "", header_request)
 
     if response.status_code == 200:
-        json_data = loads(response.text)
+        json_data = json.loads(response.text)
         if len(json_data) > 0:
             return response
         else:
@@ -656,8 +664,8 @@ def generate_combos_information(zone_dt_combos):
     combos_list = list()
     for dt_combo in zone_dt_combos:
         dic_combos = {
-            "comboId": dt_combo["id"],
-            "points": randrange(500, 5000, 100),
+            'comboId': dt_combo['id'],
+            'points': randrange(500, 5000, 100)
         }
         combos_list.append(dic_combos)
 

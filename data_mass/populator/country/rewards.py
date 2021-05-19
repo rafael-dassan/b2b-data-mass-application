@@ -64,8 +64,6 @@ def populate_challenge(country, environment, challenge_id=None):
     logger.debug("Adding MARK_COMPLETE challenges")
     # Create an Available MARK_COMPLETE challenge
     create_mark_complete_challenge(country, environment)
-    # Create an available MARK_COMPLETE challenge for regression testing with specific ID
-    create_mark_complete_challenge(country, environment, challenge_id)
     # Create an Expired MARK_COMPLETE challenge
     create_mark_complete_challenge(country, environment, None, True)
 
@@ -80,3 +78,10 @@ def populate_challenge(country, environment, challenge_id=None):
     create_purchase_challenge(country, environment, True)
     # Create an Expired PURCHASE_MULTIPLE challenge
     create_purchase_challenge(country, environment, True, None, True)
+
+    # Create an available PURCHASE challenge for regression testing with specific ID for PY
+    if country == 'PY':
+        create_purchase_challenge(country, environment, False, challenge_id, False)
+    else:
+        # Create an available MARK_COMPLETE challenge for regression testing with specific ID for all zones
+        create_mark_complete_challenge(country, environment, challenge_id, False)

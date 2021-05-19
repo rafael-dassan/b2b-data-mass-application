@@ -422,7 +422,7 @@ def flow_create_order_rewards(
     order_status: str,
     delivery_date: str,
     quantity_orders: int = 1,
-):
+) -> list:
     """
     Flow to create orders with the multiprocess and combos.
 
@@ -446,7 +446,7 @@ def flow_create_order_rewards(
     Returns
     -------
     list
-        list of orders created or an empty list.
+        list of orders created or an empty list if error.
     """
     if order_status == "PLACED":
         allow_order_cancel = print_allow_cancellable_order_menu()

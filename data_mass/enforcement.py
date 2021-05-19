@@ -1,24 +1,26 @@
 # Standard library imports
-from json import loads
-import os
 import json
-from multiprocessing import Pool
 from itertools import repeat
+from multiprocessing import Pool
 
+import pkg_resources
 
-# Third party imports
-from tabulate import tabulate
-
-# Local application imports
-from data_mass.common import convert_json_to_string, \
-    get_header_request, get_microservice_base_url, \
-    place_request, return_first_and_last_date_year_payload, \
-    update_value_to_json
-from data_mass.product.products import request_get_account_product_assortment, \
-    check_item_enabled, get_sku_name, \
-    request_get_products_microservice
 from data_mass.classes.text import text
-
+# Local application imports
+from data_mass.common import (
+    convert_json_to_string,
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+    return_first_and_last_date_year_payload,
+    update_value_to_json
+    )
+from data_mass.product.products import (
+    check_item_enabled,
+    get_sku_name,
+    request_get_account_product_assortment,
+    request_get_products_microservice
+    )
 
 
 # Show all available SKUs of the account in the screen
@@ -63,7 +65,7 @@ def display_available_products(account_id, zone, environment, delivery_center_id
                     sku_id = input(text.default_text_color + '\n Type here the SKU from the list above you want to add '
                                                              'SKU Limit: ')
 
-                    while validate_sku(sku_id.strip(), enabled_skus) != True:
+                    while not validate_sku(sku_id.strip(), enabled_skus):
                         print(text.Red + '\n- Invalid SKU. Please check the list above and try again.')
                         sku_id = input(
                             text.default_text_color + '\n Type here the SKU from the list above you want to add '
@@ -76,8 +78,12 @@ def display_available_products(account_id, zone, environment, delivery_center_id
                         sku_quantity = input(
                             text.default_text_color + '\n Type here the quantity you want to add to it: ')
 
-                    update_sku_limit = update_sku_limit_enforcement_microservice(zone, environment, account_id,
-                                                                                sku_id, sku_quantity)
+                    update_sku_limit = update_sku_limit_enforcement_microservice(
+                        zone,
+                        environment,
+                        account_id,
+                        sku_id, sku_quantity
+                    )
 
                 if update_sku_limit:
                     return True
@@ -112,13 +118,12 @@ def update_sku_limit_enforcement_microservice(zone, environment, account_id, sku
     # Define headers
     request_headers = get_header_request(zone, False, False, False, False)
 
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/update_sku_limit_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/update_sku_limit_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     # Update the deal's values in runtime
     for key in dict_values.keys():

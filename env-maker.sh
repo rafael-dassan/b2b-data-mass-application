@@ -122,6 +122,7 @@ fi
 
 if [ $SHOULD_INSTALL == "1" ]; then
     echo "${CYAN}Installing Data Mass...${RESET}"
+
     python3 -m pip install .
     echo "${GREEN}Done!${RESET}"
 fi

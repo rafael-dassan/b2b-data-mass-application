@@ -1,17 +1,19 @@
+import json
 import os
 from json import dumps, load, loads
 from typing import Optional
 
+import pkg_resources
 from tabulate import tabulate
 
 from data_mass.classes.text import text
 from data_mass.common import (
+    convert_json_to_string,
     get_header_request,
     get_microservice_base_url,
-    convert_json_to_string,
     place_request,
-    update_value_to_json,
-)
+    update_value_to_json
+    )
 
 
 def request_inventory_creation(
@@ -145,14 +147,13 @@ def get_inventory_payload(
                 'quantity': quantity
             }
             inventory_list.append(default_inventory)
-
-    # Create file path
-    abs_path = os.path.abspath(os.path.dirname("__main__"))
-    file_path = os.path.join(abs_path, 'data_mass/data/create_inventory_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = load(file)
+    
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_inventory_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     dict_values = {
         'fulfillmentCenterId': delivery_center_id,

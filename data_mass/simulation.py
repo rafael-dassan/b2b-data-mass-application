@@ -4,6 +4,7 @@ import os
 from datetime import datetime, timedelta
 from json import loads
 
+import pkg_resources
 from tabulate import tabulate
 
 from data_mass.classes.text import text
@@ -84,16 +85,13 @@ def request_order_simulation(
         "deliveryDate": delivery_date,
         "empties": empties,
     }
-
-    # Create file path
-    abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(
-        abs_path, "data/order_simulation_microservice_payload.json"
+    
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/order_simulation_microservice_payload.json"
     )
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    json_data = json.loads(content.decode("utf-8"))
 
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])

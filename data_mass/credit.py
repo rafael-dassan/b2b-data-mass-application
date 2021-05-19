@@ -2,11 +2,18 @@
 import json
 import os
 
-# Local application imports
-from data_mass.common import get_header_request, \
-    get_microservice_base_url, update_value_to_json, \
-    create_list, convert_json_to_string, place_request
+import pkg_resources
+
 from data_mass.classes.text import text
+# Local application imports
+from data_mass.common import (
+    convert_json_to_string,
+    create_list,
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+    update_value_to_json
+    )
 
 
 # Include credit for account in microservice
@@ -35,14 +42,13 @@ def add_credit_to_account_microservice(account_id, zone, environment, credit, ba
         'balance': balance,
         'total': credit + balance
     }
-
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_credit_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_credit_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     # Update the credit values in runtime
     for key in dict_values.keys():

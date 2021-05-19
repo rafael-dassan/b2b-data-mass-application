@@ -372,7 +372,7 @@ def post_orders_rewards(
     delivery_date: str,
     empties: list = [],
     payment_term: bool = 0
-) -> list:
+):
     """
     Post methods for orders rewards.
 
@@ -403,8 +403,8 @@ def post_orders_rewards(
 
     Returns
     -------
-    list
-        response from http method or None.
+    Object
+        Response from HTTP method or None.
     """
 
     order_items = request_order_simulation(

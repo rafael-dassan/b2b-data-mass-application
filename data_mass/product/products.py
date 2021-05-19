@@ -6,6 +6,7 @@ from json import dumps, loads
 from random import randint, sample, uniform
 
 import click
+import pkg_resources
 from tabulate import tabulate
 
 from data_mass.classes.text import text
@@ -466,14 +467,13 @@ def get_body_price_microservice_request_v2(
         "prices[0].taxes[0].value": str(price_values.get("tax")),
         "prices[0].validFrom": datetime.now().strftime("%Y-%m-%d"),
     }
-
-    # Create file path
-    abs_path = os.path.abspath(os.path.dirname("__init__"))
-    file_path = os.path.join(abs_path, "data_mass/data/create_sku_price_payload_v2.json")
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_sku_price_payload_v2.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     if zone not in ZONES_DIFF_CONTRACT:
         del json_data["prices"][0]["validFrom"]
@@ -551,14 +551,13 @@ def create_product(zone, environment, product_data):
     request_url = "{0}/item-relay/items".format(
         get_microservice_base_url(environment, False)
     )
-
-    # Create file path
-    abs_path = os.path.abspath(os.path.dirname("__main__"))
-    file_path = os.path.join(abs_path, "data_mass/data/create_item_payload.json")
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_item_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     # Update JSON values
     for key in product_data.keys():
@@ -661,14 +660,13 @@ def set_item_enabled(zone, environment, product_data):
     request_url = "{0}/items/{1}".format(
         get_microservice_base_url(environment, False), product_data.get("sku")
     )
-
-    # Create file path
-    abs_path = os.path.abspath(os.path.dirname("__main__"))
-    file_path = os.path.join(abs_path, "data_mass/data/update_item_payload.json")
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
+    
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/update_item_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     dict_values = {
         "itemName": product_data.get("name"),
@@ -813,7 +811,13 @@ def request_empties_discounts_creation(
 
     # Create file path
     abs_path = os.path.abspath(os.path.dirname("__main__"))
-    file_path = os.path.join(abs_path, "data_mass/data/create_empties_discounts_payload.json")
+    
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/reate_empties_discounts_payload.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
 
     dict_values = {
         "accounts": [account_id],
@@ -821,10 +825,6 @@ def request_empties_discounts_creation(
         "prices[0].basePrice": discount_value,
         "prices[0].minimumPrice": discount_value,
     }
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
 
     # Update JSON values
     for key in dict_values.keys():

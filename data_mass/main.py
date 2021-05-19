@@ -121,9 +121,6 @@ from data_mass.supplier.attribute import (
     create_attribute_enum,
     create_attribute_group,
     create_attribute_primitive_type,
-    create_legacy_attribute_container,
-    create_legacy_attribute_package,
-    create_legacy_root_attribute,
     delete_attribute_supplier,
     display_all_attribute,
     display_specific_attribute,
@@ -804,8 +801,10 @@ def flow_create_changed_order(
     order_data[0]["delivery"]["date"] = delivery_date
 
     response = request_changed_order_creation(zone, environment, order_data)
-    if response == 'success':
-        print(TEXT_GREEN + f'\n- The order {order_id} was changed successfully')
+    if response == "success":
+        print(
+            text.Green + f"\n- The order {order_id} was changed successfully"
+        )
     else:
         print_finish_application_menu()
 
@@ -2000,8 +1999,11 @@ def create_credit_statement_menu():
     }
 
     response = create_file_api(zone, environment, account_id, 'credit-statement', data)
-    if response == 'success':
-        print(TEXT_GREEN + f'\n- Credit Statement created for the account {account_id}')
+    if response:
+        print(
+            text.Green
+            + f'\n- Credit Statement created for the account {account_id}'
+        )
     else:
         print_finish_application_menu()
 

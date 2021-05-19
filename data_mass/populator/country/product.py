@@ -1,6 +1,9 @@
-from data_mass.product.products import create_product, request_get_offers_microservice
-from data_mass.product.magento import enable_product
 from data_mass.populator.log import *
+from data_mass.product.magento import enable_product
+from data_mass.product.products import (
+    create_product,
+    request_get_offers_microservice
+    )
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +75,7 @@ def enable_product_magento(country, environment, product_sku):
         - environment: (e.g, UAT,SIT)
         - product: product to enable
     """
-    if False == enable_product(country, environment, product_sku):
+    if not enable_product(country, environment, product_sku):
         logger.error(log(Message.PRODUCT_ENABLE_ERROR, {"sku": product_sku}))
 
 

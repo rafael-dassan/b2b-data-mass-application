@@ -1,30 +1,61 @@
-# Local application imports
-from data_mass.common import get_magento_base_url, \
-    get_magento_datamass_access_token, place_request, \
-    convert_json_to_string
+"""Handle Product Creation on Magento Service."""
+from requests import Response
+
+from data_mass.common import (
+    convert_json_to_string,
+    get_magento_base_url,
+    get_magento_datamass_access_token,
+    place_request
+    )
 
 
-def enable_product(country, environment, product_sku):
-    """Enable product
-    Input Arguments:
-        - Country (BR, DO, AR, ZA, CO)
-        - Environment (UAT, SIT)
-        - Product SKU
-        - Category ID
-    Return str (success: product enabled has been succeeded)
+def enable_product(country: str, environment: str, product_sku: str):
+    """
+    Enable product.
+
+    Parameters
+    ----------
+    country: str
+        One of BR, DO, AR, ZA or CO.
+    environment: str
+        One of UAT or SIT.
+    product_sku: str
+        The product SKU.
+
+    Returns
+    -------
+    bool
+        Whenever a product has been successfully enabled.
     """
     response = request_enable_product(country, environment, product_sku)
     if response.status_code == 200:
-        return 'success'
-    else:
-        return False
+        return True
+
+    return False
 
 
-def request_enable_product(country, environment, product_sku):
+def request_enable_product(
+        country: str,
+        environment: str,
+        product_sku: str) -> Response:
+    """
+    Enable Product on Magento.
+
+    Parameters
+    ----------
+    country : str
+    environment : str
+    product_sku : str
+
+    Returns
+    -------
+    Response
+        The response.
+    """
     # Get header request
-    url = "{url_base}/rest/V1/products/{product_sku}".format(
-        url_base=get_magento_base_url(environment, country), product_sku=product_sku)
-    
+    base_rul = get_magento_base_url(environment, country)
+    url = f"{base_rul}/rest/V1/products/{product_sku}"
+
     # Get base URL
     access_token = get_magento_datamass_access_token(environment, country)
 
@@ -32,8 +63,8 @@ def request_enable_product(country, environment, product_sku):
     headers = {
         "Content-Type": "application/json",
         "x-access-token": access_token
-        }
-    
+    }
+
     data = {
         "product": {
             "sku": product_sku,
@@ -42,4 +73,12 @@ def request_enable_product(country, environment, product_sku):
     }
 
     # Send request
-    return place_request("PUT", url, convert_json_to_string(data), headers)
+    data = convert_json_to_string(data)
+    response = place_request(
+        request_method="PUT",
+        request_url=url,
+        request_body=data,
+        request_headers=headers
+    )
+
+    return response
