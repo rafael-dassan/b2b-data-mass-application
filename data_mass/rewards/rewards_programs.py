@@ -440,7 +440,7 @@ def get_specific_program(program_id, zone, environment, projections=set()):
     else:
         print(
             text.Red
-            + '\n- [Rewards] Failure when getting the program "{program_id}" '
+            + f'\n- [Rewards] Failure when getting the program "{program_id}" '
             f'information. \n- Response Status: "{str(response.status_code)}".'
             f' \n- Response message "{response.text}".'
         )

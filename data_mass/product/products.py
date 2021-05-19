@@ -150,7 +150,7 @@ def add_products_to_account_microservice(
             slice_array_products(product_qty, all_products_zone),
         )
     )
-    print(products_data)
+
     # Associate products to an account
     result = request_post_products_account_microservice(
         abi_id, zone, environment, delivery_center_id, products_data
