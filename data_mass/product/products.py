@@ -855,7 +855,25 @@ def get_items_associated_account(
     account_id: str,
     zone: str,
     environment: str,
-):
+) -> list:
+    """
+    Get items associated in the POC.
+
+    Parameters
+    ----------
+    account_id : str
+        POC unique identifier
+    zone : str
+        e.g., AR, BR, DO, etc
+    environment : str
+        e.g., DEV, SIT, UAT
+
+    Returns
+    -------
+    list
+        list of dict with sku and quantity of products
+        associated in the account.
+    """
     product_offers = request_get_offers_microservice(
         account_id=account_id,
         zone=zone,

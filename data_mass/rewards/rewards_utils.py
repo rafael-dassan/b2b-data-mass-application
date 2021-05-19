@@ -370,9 +370,9 @@ def post_orders_rewards(
     order_status: str,
     allow_order_cancel: str,
     delivery_date: str,
-    empties: str = [],
-    payment_term: int = 0
-):
+    empties: list = [],
+    payment_term: bool = 0
+) -> list:
     """
     Post methods for orders rewards.
 
@@ -387,27 +387,26 @@ def post_orders_rewards(
     item_list : list
         list o skus to be used in creation.
     dt_combos : list
-        [description]
+        list of digital trade combos to be used.
     pay_method : str
-        [description]
+        desired payment method.
     order_status : str
         how order should be entered eg. Placed, Pending, Confirmed, etc.
     allow_order_cancel : str
-        [description]
+        order could be cancellable ?
     delivery_date : str
         date of order to be delivered.
-    empties : str, optional
-        [description], by default []
-    payment_term : int, optional
-        [description], by default 0
+    empties : list, optional
+        list of empties, by default []
+    payment_term : bool, optional
+        payment terms according to the payment method, by default 0
 
     Returns
     -------
     list
-        response from http method.
+        response from http method or None.
     """
 
-    # Create a dataflow to match business rules
     order_items = request_order_simulation(
         zone=zone,
         environment=environment,
@@ -421,7 +420,7 @@ def post_orders_rewards(
         delivery_date=delivery_date
     )
     if not order_items:
-        return []
+        return None
 
     response = request_order_creation(
         account_id=account[0]['accountId'],
@@ -433,5 +432,7 @@ def post_orders_rewards(
         order_status=order_status,
         delivery_date=delivery_date
     )
+    if not response:
+        return None
 
     return response

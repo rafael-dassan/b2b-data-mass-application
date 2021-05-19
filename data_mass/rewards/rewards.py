@@ -453,10 +453,8 @@ def flow_create_order_rewards(
     else:
         allow_order_cancel = "N"
 
-    # get payment method as the account permits
     pay_method = choice(account[0]["paymentMethods"])
 
-    # TODO: DTcombos associated to the poc
     get_combos = get_rewards_combos_by_account(
         account_id=account[0]['accountId'],
         zone=zone,
@@ -490,5 +488,5 @@ def flow_create_order_rewards(
         orders.append(order)
 
     if orders:
-        return orders
+        return [orderid.get("orderNumber") for orderid in orders]
     return []

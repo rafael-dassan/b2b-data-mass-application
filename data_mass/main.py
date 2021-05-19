@@ -523,7 +523,6 @@ def create_rewards_to_account():
 
         order_status = print_order_status_menu()
 
-        # TODO:check_if_account is valid for the rewards
         valid_acc = get_rewards(
             account_id=account_id,
             zone=zone,
@@ -564,13 +563,13 @@ def create_rewards_to_account():
             )
         if response:
             if len(response) > 1:
-                print(f"Orders created: ")
+                print(TEXT_GREEN + f"Orders created successfully: ")
                 for order in response:
-                    print(order.get("orderNumber"))
+                    print(f'- {order}')
             else:
                 print(
                     TEXT_GREEN
-                    + f"\n- Order {response} created "
+                    + f"\n- Order {response[0]} created "
                     "successfully"
                 )
             
