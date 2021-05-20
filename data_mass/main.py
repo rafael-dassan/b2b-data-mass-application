@@ -597,7 +597,6 @@ def flow_create_order(
     item_list : list
         list of items
     """
-
     if order_status == 'PLACED':
         allow_order_cancel = print_allow_cancellable_order_menu()
     else:
@@ -1392,7 +1391,7 @@ def flow_create_account(zone, environment, account_id):
         print(text.Green + f'\n- Your account {account_id} has been created successfully')
 
         # Input default credit to the account so it won't be `null` in the Account Service database
-        if False == add_credit_to_account_microservice(account_id, zone, environment, 0, 0):
+        if not add_credit_to_account_microservice(account_id, zone, environment, 0, 0):
             print_finish_application_menu()
     else:
         print_finish_application_menu()

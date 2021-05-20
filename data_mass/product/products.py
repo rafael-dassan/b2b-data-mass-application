@@ -58,7 +58,7 @@ def request_post_price_microservice(
     sku_product: str,
     product_price_id: str,
     price_values: dict,
-):
+) -> bool:
     """
     Define price for a specific product via Pricing Engine Relay Service
     Args:
@@ -70,38 +70,48 @@ def request_post_price_microservice(
         price_values: price values dict, including tax, base price and deposit
     Returns: `success` in case of successful response or `false` in case of failure
     """
-
     request_headers = get_header_request(zone)
+    base_url = get_microservice_base_url(environment, False)
 
     if zone in ZONES_NEW_ENDPOINT:
-        request_url = get_microservice_base_url(environment, False) + "/price-relay/v1"
+        request_url = f"{base_url}/price-relay/v2"
         request_body = get_body_price_microservice_request_v2(
-            account_id, sku_product, product_price_id, price_values, zone
+            account_id,
+            sku_product,
+            product_price_id,
+            price_values,
+            zone
         )
+    elif zone == "US":
+        request_url = f"{base_url}/price-relay/v2"
+        content: bytes = pkg_resources.resource_string(
+            "data_mass",
+            "data/create_sku_price_payload_v2.json"
+        )
+        request_body = content
     else:
-        request_url = (
-            get_microservice_base_url(environment, False)
-            + "/cart-calculation-relay/v2/prices"
-        )
+        request_url = f"{base_url}/cart-calculation-relay/v2/prices"
         request_body = get_body_price_microservice_request_v2(
-            account_id, sku_product, product_price_id, price_values
+            account_id,
+            sku_product,
+            product_price_id,
+            price_values
         )
 
     # Send request
     response = place_request("PUT", request_url, request_body, request_headers)
+
     if response.status_code == 202:
-        return "success"
-    else:
-        print(
-            text.Red
-            + "\n- [Pricing Engine Relay Service] Failure to define price for the SKU {sku}. Response "
-            "status: {response_status}. Response message: {response_message}".format(
-                sku=sku_product,
-                response_status=response.status_code,
-                response_message=response.text,
-            )
-        )
-        return False
+        return True
+
+    print(
+        f"{text.Red}\n"
+        f"- [Pricing Engine Relay Service] Failure to define price for the SKU {sku_product}. Response:\n"
+        f"Status: {response.status_code}\n"
+        f"Response message: {response.text}\n"
+    )
+
+    return False
 
 
 def generate_price_values(zone, product):

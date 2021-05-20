@@ -3,9 +3,9 @@ import json
 import os
 from datetime import datetime, timedelta
 from json import loads
+from typing import Any, Optional
 
 import pkg_resources
-# Third party imports
 from tabulate import tabulate
 
 from data_mass.classes.text import text
@@ -25,85 +25,125 @@ from data_mass.common import (
 
 
 def request_order_creation(
-    account_id,
-    delivery_center_id,
-    zone,
-    environment, 
-    allow_order_cancel, 
-    order_items, 
-    order_status,
-    delivery_date
-):
-
+    account_id: str,
+    delivery_center_id: str,
+    zone: str,
+    environment: str, 
+    allow_order_cancel: str, 
+    order_items: list, 
+    order_status: str,
+    delivery_date: str) -> Optional[Any]:
     """
-    Create an order through the Order Service
-    Args:
-        account_id: POC unique identifier
-        delivery_center_id: POC's delivery center
-        zone: e.g., AR, BR, CO, DO, MX, ZA
-        environment: e.g., DEV, SIT, UAT
-        order_status: e.g., PLACED, CANCELLED, etc
-        order_items: list of SKUs
-        allow_order_cancel: `Y` or `N`
+    Create an order through the Order Service.
 
-    Returns: new json_data if success or error message in case of failure
+    Parameters
+    ----------
+    account_id : str
+        POC unique identifier.
+    delivery_center_id : str
+        POC's delivery center.
+    zone : str
+        One of AR, BR, CO, DO, MX, ZA, ES and US.
+    environment : str
+        One of DEV, SIT and UAT.
+    allow_order_cancel : str
+        One of `Y` or `N`.
+    order_items : list
+        List of SKUs
+    order_status : str
+        PLACED, CANCELLED, etc.
+    delivery_date : str
+        The delivery date.
+
+    Returns
+    -------
+    Optional[Any]
+        A deserialized s \
+        (a str, bytes or bytearray instance containing a JSON document)\
+        to a Python object.
     """
 
     # Define headers
-    request_headers = get_header_request(zone, True, False, False, False, account_id)
+    request_headers = get_header_request(
+        zone,
+        True,
+        False,
+        False,
+        False,
+        account_id
+    )
+    request_headers.update({"Authorization": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJCVVdYcTRLanhPMUwxdTFTaENJVVNrdEk5aXRreFJ0X1Zzb3luelVvVGFFIn0.eyJleHAiOjE2MjE0Njg0NTgsImlhdCI6MTYyMTQ2NDg1OCwianRpIjoiZmQ1MTY5MWUtYmIxOC00ODEzLWI0OWMtMGQ4M2FkODgwZjhkIiwiaXNzIjoiaHR0cDovL2tleWNsb2FrLXNlcnZpY2UvYXV0aC9yZWFsbXMvYmVlcy1yZWFsbSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiI3NGM2OThlOS01ZDE5LTRjM2ItODdiZC00ZDExNDM3MDhlOTciLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiI5MGFiMjNmOC03OTQ1LTRiODMtODllYy00NTFhNDVjNmE4NGQiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6Im9wZW5pZCBlbWFpbCBwcm9maWxlIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJjbGllbnRJZCI6IjkwYWIyM2Y4LTc5NDUtNGI4My04OWVjLTQ1MWE0NWM2YTg0ZCIsImNsaWVudEhvc3QiOiIxMjcuMC4wLjEiLCJyb2xlcyI6WyJXcml0ZSIsIlJlYWQiXSwidmVuZG9ySWQiOiI1ODg3MGNiYy03ODA5LTRlMTgtYmE1OS05ODZiNDk5MmM4NDIiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtOTBhYjIzZjgtNzk0NS00YjgzLTg5ZWMtNDUxYTQ1YzZhODRkIiwiY2xpZW50QWRkcmVzcyI6IjEyNy4wLjAuMSJ9.D28yVX_C5HR5XbHyKfQbhDr_ikxCPXGuR1SxOgU_0dnBldpSdVELmBCr8ueeHrigQ2e3Tufmv5YyADpl0Kx2OEJS0JSP4Ha7uCflwR3DHO_nm7S4EEXkjPzHTbXtfN6EkB53a6ORZ0bwdnldX0pxOeuMjJVtMO6TVfgCVOckCk88q6VWzILLDo-mF6TilVIN7K4-8VmDCwW3yWkPA1FL2zS6hi4s971Hu2Qedj3W-H8fmotUDFF_9A6if-JxxI07zvYC2lIUTBT3BAhZ5lWw9O8k7GCiV01bsBbuC4UhmIMGCwC9pdA2fU97VD07dRSsWGr7knkOJVaTI2zFCerTfw"})
 
-    # Define url request 
-    request_url = get_microservice_base_url(environment) + '/order-service'
+    base_url = get_microservice_base_url(environment)
+
+    # Define url request
+    if zone == "US":
+        request_url = f"{base_url}/order-service"
+    else:
+        request_url = f"{base_url}/order-service"
 
     # Get body
-    request_body = create_order_payload(account_id, delivery_center_id, allow_order_cancel, order_items, order_status, delivery_date)
+    request_body = create_order_payload(
+        account_id,
+        delivery_center_id,
+        allow_order_cancel,
+        order_items, order_status,
+        delivery_date
+    )
 
     # Send request
-    response = place_request('POST', request_url, request_body, request_headers)
-
+    response = place_request("POST", request_url, request_body, request_headers)
     json_data = loads(response.text)
-    if response.status_code == 200 and len(json_data) != 0:
+
+    if response.status_code == 200 and json_data:
         return json_data
-    else:
-        print(text.Red + '\n- [Order Service] Failure to create an order. Response Status: {response_status}. '
-                         'Response message {response_message}'
-              .format(response_status=response.status_code, response_message=response.text))
-        return False
+
+    print(
+        f"{text.Red}"
+        "[Order Service] Failure to create an order.\n"
+        f"Response Status: {response.status_code}."
+        f"Response message {response.text}"
+    )
+
+    return None
 
 
 def create_order_payload(
-    account_id,
-    delivery_center_id, 
-    allow_order_cancel, 
-    order_items, 
-    order_status,
-    delivery_date
-):
+    account_id: str,
+    delivery_center_id: str, 
+    allow_order_cancel: str, 
+    order_items: list, 
+    order_status: str,
+    delivery_date: str,
+    is_v2: Optional[bool] = False) -> str:
     """
-    Create payload for order creation
-    Args:
-        account_id: POC unique identifier
-        delivery_center_id: POC's delivery center
-        order_items: list of SKUs
-        allow_order_cancel: `Y` or `N`
-        order_status: e.g., PLACED, CANCELLED, etc
-    Returns: order payload
+    Create payload for order creation.
+
+    Parameters
+    ----------
+    account_id : str
+    delivery_center_id : str
+    allow_order_cancel : str
+    order_items : list
+    order_status : str
+    delivery_date : str
+    zone : Optional[bool], optional
+        By default `False`.
+
+    Returns
+    -------
+    str
+        The payload as string.
     """
     # Sets the format of the placement date of the order (current date and time)
     placement_date = datetime.now().strftime('%Y-%m-%dT%H:%M:%S') + '+00:00'
 
     # Sets the format of the cancellable date of the order (current date and time more ten days)
     cancellable_date = (datetime.now() + timedelta(days=10)).strftime('%Y-%m-%dT%H:%M:%S') + '+00:00'
-    
-    # get data from Data Mass files
-    content: bytes = pkg_resources.resource_string(
-        "data_mass",
-        "data/create_order_payload.json"
-    )
-    json_data = json.loads(content.decode("utf-8"))
 
     line_items = order_items.get('lineItems')
-    item_list = list()
+    item_list = []
+
     for i in range(len(line_items)):
         item_values = {
             'price': line_items[i]['price'],
@@ -125,7 +165,6 @@ def create_order_payload(
 
     dict_values = {
         'accountId': account_id,
-        'deliveryCenter': delivery_center_id,
         'delivery.date': delivery_date,
         'deposit': order_items.get('deposit'),
         'discount': order_items.get('discountAmount'),
@@ -138,18 +177,39 @@ def create_order_payload(
         'status': order_status
     }
 
-    for key in dict_values.keys():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
+    if is_v2:
+        payload_path = "data/create_order_payload_v2.json"
+        dict_values.update({
+            "deliveryCenterId": delivery_center_id,
+            "vendor": {
+                "accountId": account_id,
+                "id": "58870cbc-7809-4e18-ba59-986b4992c842"
+            }
+        })
+    else:
+        payload_path = "data/create_order_payload.json"
+        dict_values.update({
+            "deliveryCenter": delivery_center_id,
+        })
 
-    set_to_dictionary(json_object, 'items', item_list)
+    # get data from Data Mass files
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        payload_path
+    )
+    json_data: dict = json.loads(content.decode("utf-8"))
+    json_data.update(dict_values)
 
     if order_status == 'PLACED':
         if allow_order_cancel == 'Y':
-            set_to_dictionary(json_object, 'cancellableUntil', cancellable_date)
-    elif order_status == 'CANCELLED':
-        set_to_dictionary(json_object, 'cancellationReason', 'Order cancelled for testing purposes')
+            dict_values.update({"cancellableUntil": cancellable_date})
 
-    return convert_json_to_string(json_object)
+    elif order_status == 'CANCELLED':
+        dict_values.update({
+            "cancellationReason": "Order cancelled for testing purposes"
+        })
+
+    return convert_json_to_string(json_data)
 
 
 def request_changed_order_creation(zone, environment, order_data):

@@ -80,47 +80,84 @@ def get_microservice_payload_post_delivery_fee(account_data, include_delivery_co
     return json_object
 
 
-# Create delivery date in microservice
-def create_delivery_window_microservice(zone, environment, account_data, is_alternative_delivery_date, option):
+def create_delivery_window_microservice(
+    zone: str,
+    environment: str,
+    account_data: dict,
+    is_alternative_delivery_date: bool,
+    option: str) -> bool:
+    """
+    Create delivery date in microservice.
+
+    Parameters
+    ----------
+    zone : str
+    environment : str
+    account_data : dict
+    is_alternative_delivery_date : bool
+    option : str
+
+    Returns
+    -------
+    bool
+        Whenever a post request was successfully completed.
+    """
     # Get headers
     request_headers = get_header_request(zone, False, True, False, False)
+    request_headers.update({"Authorization": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJCVVdYcTRLanhPMUwxdTFTaENJVVNrdEk5aXRreFJ0X1Zzb3luelVvVGFFIn0.eyJleHAiOjE2MjE0NTM5MzcsImlhdCI6MTYyMTQ1MDMzNywianRpIjoiYWZlMzdjNDktNTgyZi00ZWI0LWI2NGYtMjcyODNlODE0NGEyIiwiaXNzIjoiaHR0cDovL2tleWNsb2FrLXNlcnZpY2UvYXV0aC9yZWFsbXMvYmVlcy1yZWFsbSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiI3NGM2OThlOS01ZDE5LTRjM2ItODdiZC00ZDExNDM3MDhlOTciLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiI5MGFiMjNmOC03OTQ1LTRiODMtODllYy00NTFhNDVjNmE4NGQiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6Im9wZW5pZCBlbWFpbCBwcm9maWxlIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJjbGllbnRJZCI6IjkwYWIyM2Y4LTc5NDUtNGI4My04OWVjLTQ1MWE0NWM2YTg0ZCIsImNsaWVudEhvc3QiOiIxMjcuMC4wLjEiLCJyb2xlcyI6WyJXcml0ZSIsIlJlYWQiXSwidmVuZG9ySWQiOiI1ODg3MGNiYy03ODA5LTRlMTgtYmE1OS05ODZiNDk5MmM4NDIiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtOTBhYjIzZjgtNzk0NS00YjgzLTg5ZWMtNDUxYTQ1YzZhODRkIiwiY2xpZW50QWRkcmVzcyI6IjEyNy4wLjAuMSJ9.KZBTbdyMYwXvdcG1Hg7ajVXC-iIsXF5QA8B6tU5zN5zun2PKI2jbHgIUCUEJloe7bw2D1y2OT82izv204uz3Zao9kBX85OTzhRUFGLXdw2I2yMDd9zxPiBbscoezk5WP_ug_LFHY4t7QqFujZpBl1jiRShcxxV34MvwGuhmK8tvSUkDT86Y51CMDWtdiwhREm68qevuMWHTguynhwynjTaP5fPds4DTfPUJR0cOtXQTEKVxuNBoIT8V0Oc2gOELyet2ZzGanZcoZgo-MnXug9tXD1KefQxJS0WYKJgvwb79US-he5BVvRshQFMFWoTYawz8M4trTVyr9K1K32lvr3A"})
 
     # Get base URL
-    request_url = get_microservice_base_url(environment) + '/account-relay/delivery-windows'
+    ms_base_url = get_microservice_base_url(environment)
+    request_url = f"{ms_base_url}/account-relay/delivery-windows"
 
     # Return list of dates
     dates_list = return_dates_payload(option)
     if not dates_list:
         return False
-    else:
-        index = 0
-        request_body = list()
-        while index <= (len(dates_list) - 1):
-            # Force mixed values if it's is_alternative_delivery_date
-            if is_alternative_delivery_date:
-                if (index % 2) == 0:
-                    option_is_alternative_delivery_date = True
-                else:
-                    option_is_alternative_delivery_date = False
+    
+    index = 0
+    request_body = []
+
+    while index <= (len(dates_list) - 1):
+        # Force mixed values if it's is_alternative_delivery_date
+        if is_alternative_delivery_date:
+            if (index % 2) == 0:
+                option_is_alternative_delivery_date = True
             else:
-                option_is_alternative_delivery_date = is_alternative_delivery_date
+                option_is_alternative_delivery_date = False
+        else:
+            option_is_alternative_delivery_date = is_alternative_delivery_date
 
-            # Get body request
-            temporary_body = get_microservice_payload_post_delivery_date(account_data,
-                                                                         option_is_alternative_delivery_date,
-                                                                         dates_list[index], index)
-            request_body.append(temporary_body)
-            index = index + 1
+        # Get body request
+        temporary_body = get_microservice_payload_post_delivery_date(
+            account_data,
+            option_is_alternative_delivery_date,
+            dates_list[index],
+            index
+        )
 
-        # Place request
-        response = place_request('POST', request_url, json.dumps(request_body), request_headers)
-        if response.status_code != 202:
-            print(
-                text.Red + '\n- [Account Relay Service] Failure to create delivery window. Response Status: {response_status}. Response message: {response_message}'.format(
-                    response_status=str(response.status_code), response_message=response.text))
-            return False
+        request_body.append(temporary_body)
+        index = index + 1
 
-        return 'success'
+    # Place request
+    response = place_request(
+        request_method="POST",
+        request_url=request_url,
+        request_body=json.dumps(request_body),
+        request_headers=request_headers
+    )
+
+    if response.status_code != 202:
+        print(
+            f"{text.Green}"
+            "- [Account Relay Service] Failure to create delivery window.\n"
+            f"Response Status: {response.status_code}.\n"
+            f"Response message: {response.text}"
+        )
+
+        return False
+
+    return True
 
 
 # Return payload next date for delivery date

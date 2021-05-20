@@ -3,7 +3,7 @@
   "challengeIds": [
     "string"
   ],
-  "channel": "string",
+  "channel": null,
   "contacts": [
     {
       "type": "PHONE",
@@ -14,23 +14,23 @@
   "deliveryAddress": {
     "address": "string",
     "city": "string",
-    "latitude": "string",
-    "longitude": "string",
+    "latitude": null,
+    "longitude": null,
     "state": "string",
     "zipcode": "string"
   },
   "deliveryCenterId": "string",
-  "deliveryRegion": "string",
-  "deliveryRoute": "string",
-  "deliveryScheduleId": "string",
-  "erpSalesCenter": "string",
+  "deliveryRegion": null,
+  "deliveryRoute": null,
+  "deliveryScheduleId": "2021-12-12",
+  "erpSalesCenter": null,
   "hasEmptiesLoan": true,
   "hasOrderNumberRequirement": false,
   "hasOverprice": true,
   "liquorLicense": [
     {
-      "description": "string",
-      "expirationDate": "string",
+      "description": null,
+      "expirationDate": "2021-12-12",
       "number": "string",
       "status": "VALID",
       "type": "PERMANENT"
@@ -66,16 +66,16 @@
       "type": "CREDIT"
     }
   ],
-  "potential": "string",
-  "priceListId": "string",
+  "potential": "DM-POTENT",
+  "priceListId": "",
   "salesRepresentative": {
-    "email": "string",
-    "name": "string",
-    "phone": "string"
+    "email": "test@zone.com",
+    "name": "BEES BDR",
+    "phone": "11000000000"
   },
   "salesRoute": "string",
-  "segment": "string",
+  "segment": "DM-SEG",
   "status": "BLOCKED",
-  "subSegment": "string",
+  "subSegment": "DM-SUBSEG",
   "taxId": "string"
 }
