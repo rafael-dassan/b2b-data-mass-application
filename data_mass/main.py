@@ -547,7 +547,7 @@ def create_rewards_to_account():
 
         qty_orders = click.prompt(
             'Please enter the quantity of orders to create (max. 20)',
-            type=click.IntRange(0, 20)
+            type=click.IntRange(1, 20)
         )
         response = flow_create_order_rewards(
             zone=zone,
@@ -1315,8 +1315,10 @@ def flow_input_recommended_products_to_account(zone, environment):
     if not product_offers:
         print_finish_application_menu()
     elif product_offers == 'not_found':
-        print(text.Red + '\n- [Catalog Service] There is no product associated with the account {account_id}'
-              .format(account_id=account_id))
+        print(text.Red
+            + f'\n- [Catalog Service] There is no product '
+            f'associated with the account {account_id}'
+        )
         print_finish_application_menu()
 
     items = list()

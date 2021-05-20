@@ -33,18 +33,6 @@ def generate_id():
     return epoch_id
 
 
-def get_payload(file_path):
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, file_path)
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
-
-    return json_data
-
-
 def format_datetime_to_str(date):
     return date.strftime("%Y-%m-%dT%H:%M:%S.%f") + "Z"
 
@@ -114,7 +102,7 @@ def get_rewards_combos_by_account(account_id, zone, environment):
     elif response.status_code == 404:
         print(
             text.Red
-            + '\n- [Rewards] The account "{account_id}" is not enrolled to any'
+            + f'\n- [Rewards] The account "{account_id}" is not enrolled to any'
             " rewards program."
             '\n- Please use the menu option "Enroll POC to a program" to '
             "enroll this account to a rewards program."
@@ -234,7 +222,7 @@ def display_all_programs_info(
 ):
     all_programs_dictionary = dict()
 
-    print(text.Yellow + "\nExisting Reward programs:")
+    print(text.Yellow + "\nExisting Reward programs: ")
     for program in list_all_programs:
         all_programs_dictionary.setdefault("Program ID", []).append(
             program["id"]

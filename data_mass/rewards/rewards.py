@@ -32,6 +32,7 @@ from data_mass.rewards.rewards_utils import (
 
 APP_B2B = "b2b"
 APP_ADMIN = "membership"
+COUNTRIES_USE_DTCOMBO_ITEMS = ['BR', 'EC', 'MX', 'PE']
 
 
 # Enroll POC to a zone's reward program
@@ -464,13 +465,22 @@ def flow_create_order_rewards(
         return []
 
     dt_combos = loads(get_combos.text).get('combos', [])
-    combos = [
-        {
-            "comboId": dt_combo["id"],
-            "quantity": dt_combo["redeemLimit"]
-         }
-        for dt_combo in dt_combos
-    ]
+    if zone in COUNTRIES_USE_DTCOMBO_ITEMS:
+        combos = []
+        for item in item_list:
+            item["comboType"] = dt_combos[0]["type"]
+            item["comboId"] = dt_combos[0]["id"]
+            item["itemQuantity"] = dt_combos[0]["redeemLimit"]
+    else:
+        combos = [
+            {
+                "item": item_list,
+                "comboId": dt_combo["id"],
+                "quantity": dt_combo["redeemLimit"]
+            }
+            for dt_combo in dt_combos
+        ]
+
 
     orders = []
     for _ in range(quantity_orders):

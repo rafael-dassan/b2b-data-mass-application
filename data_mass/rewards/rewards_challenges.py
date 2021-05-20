@@ -20,8 +20,7 @@ from data_mass.rewards.rewards_utils import (
     create_product_list_from_zone,
     display_all_challenges_info,
     format_datetime_to_str,
-    generate_id,
-    get_payload
+    generate_id
     )
 
 APP_ADMIN = 'membership'

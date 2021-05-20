@@ -20,7 +20,6 @@ from data_mass.rewards.rewards_utils import (
     create_product_list_from_zone,
     display_all_programs_info,
     get_dt_combos_from_zone,
-    get_payload,
     print_input_combo_qty,
     print_input_decision
     )
@@ -483,9 +482,9 @@ def patch_program(program_id, zone, environment, request_body):
     else:
         print(
             text.Red
-            + '\n- [Rewards] Failure when updating the program "{program_id}" '
-            'configuration.'
-            f' \n- Response Status: "{str(response.status_code)}". '
+            + f'\n- [Rewards] Failure when updating the program '
+            f'"{program_id}" configuration.'
+            f'\n- Response Status: "{str(response.status_code)}". '
             f'\n- Response message "{response.text}".'
         )
 
@@ -518,8 +517,9 @@ def put_programs(program_id, zone, environment, request_body):
     else:
         print(
             text.Red
-            + '\n- [Rewards] Failure when creating the program "{program_id}".'
-            '\n- Response Status: "{str(response.status_code)}". '
+            + f'\n- [Rewards] Failure when creating the program '
+            f'"{program_id}".'
+            f'\n- Response Status: "{str(response.status_code)}". '
             f'\n- Response message "{response.text}".'
         )
 
@@ -600,7 +600,7 @@ def patch_program_combos(program_id, zone, environment, request_body):
     else:
         print(
             text.Red
-            + '\n- [Rewards] Failure when updating the program "{program_id}" '
+            + f'\n- [Rewards] Failure when updating the program "{program_id}" '
             'combos configuration. '
             f'\n- Response Status: "{str(response.status_code)}". '
             f'\n- Response message "{response.text}".'
@@ -643,7 +643,7 @@ def delete_program_combo(program_id, combo_id, zone, environment):
     else:
         print(
             text.Red
-            + '\n- [Rewards] Failure when deleting the combo "{combo_id}" '
+            + f'\n- [Rewards] Failure when deleting the combo "{combo_id}" '
             f'from Rewards program "{program_id}". '
             f'\n- Response Status: "{str(response.status_code)}". '
             f'\n- Response message "{response.text}".'
