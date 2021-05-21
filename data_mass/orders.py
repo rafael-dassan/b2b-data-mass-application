@@ -21,7 +21,7 @@ from data_mass.common import (
     update_value_to_json,
     validate_user_entry_date,
     validate_yes_no_change_date
-    )
+)
 
 
 def request_order_creation(
@@ -100,9 +100,9 @@ def request_order_creation(
         return json_data
 
     print(
-        f"{text.Red}"
+        f"{text.Red}\n"
         "[Order Service] Failure to create an order.\n"
-        f"Response Status: {response.status_code}."
+        f"Response Status: {response.status_code}.\n"
         f"Response message {response.text}"
     )
 

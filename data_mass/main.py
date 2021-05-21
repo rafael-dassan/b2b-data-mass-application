@@ -6,7 +6,7 @@ import pyperclip
 
 from data_mass.accounts import *
 from data_mass.algo_selling import *
-from data_mass.category_magento import *
+from data_mass.category.magento import *
 from data_mass.combos import *
 from data_mass.common import *
 from data_mass.credit import add_credit_to_account_microservice
@@ -27,7 +27,7 @@ from data_mass.menus.account_menu import (
     print_include_delivery_cost_menu,
     print_minimum_order_menu,
     print_payment_method_menu
-    )
+)
 from data_mass.menus.algo_selling_menu import print_recommender_type_menu
 from data_mass.menus.deals_menu import (
     print_deals_operations_menu,
@@ -43,35 +43,35 @@ from data_mass.menus.deals_menu import (
     print_partial_free_good_menu,
     print_stepped_discount_ranges_menu,
     print_stepped_free_good_ranges_menu
-    )
+)
 from data_mass.menus.inventory_menu import (
     print_inventory_option_menu,
     print_inventory_sku_quantity_menu
-    )
+)
 from data_mass.menus.invoice_menu import (
     print_invoice_id_menu,
     print_invoice_operations_menu,
     print_invoice_payment_method_menu,
     print_invoice_status_menu,
     print_invoice_status_menu_retriever
-    )
+)
 from data_mass.menus.order_menu import (
     print_allow_cancellable_order_menu,
     print_get_order_menu,
     print_order_id_menu,
     print_order_operations_menu,
     print_order_status_menu
-    )
+)
 from data_mass.menus.product_menu import (
     print_get_products_menu,
     print_product_operations_menu
-    )
+)
 from data_mass.menus.rewards_menu import (
     print_rewards_challenges_menu,
     print_rewards_menu,
     print_rewards_program_menu,
     print_rewards_transactions_menu
-    )
+)
 from data_mass.menus.supplier_menu import (
     print_attribute_primitive,
     print_attribute_type,
@@ -82,7 +82,7 @@ from data_mass.menus.supplier_menu import (
     print_min_cardinality,
     print_new_attribute,
     print_new_page
-    )
+)
 from data_mass.orders import *
 from data_mass.product.inventory import *
 from data_mass.product.magento import *
@@ -92,28 +92,28 @@ from data_mass.rewards.rewards import (
     disenroll_poc_from_program,
     display_program_rules_skus,
     enroll_poc_to_program
-    )
+)
 from data_mass.rewards.rewards_challenges import (
     create_mark_complete_challenge,
     create_purchase_challenge,
     create_take_photo_challenge,
     remove_challenge
-    )
+)
 from data_mass.rewards.rewards_programs import (
     create_new_program,
     patch_program_root_field,
     remove_program_dt_combos,
     update_program_dt_combos
-    )
+)
 from data_mass.rewards.rewards_transactions import (
     create_points_removal,
     create_redemption,
     create_rewards_offer
-    )
+)
 from data_mass.simulation import (
     process_simulation_microservice,
     request_order_simulation
-    )
+)
 from data_mass.supplier.attribute import (
     check_if_attribute_exist,
     create_attribute_enum,
@@ -128,7 +128,7 @@ from data_mass.supplier.attribute import (
     edit_attribute_type,
     search_all_attribute,
     search_specific_attribute
-    )
+)
 from data_mass.supplier.category import (
     check_if_supplier_category_exist,
     create_association_attribute_with_category,
@@ -139,7 +139,7 @@ from data_mass.supplier.category import (
     display_specific_category,
     search_all_category,
     search_specific_category
-    )
+)
 from data_mass.supplier.product import create_product_supplier
 from data_mass.user.creation import create_user
 from data_mass.user.deletion import delete_user_v3
@@ -514,8 +514,10 @@ def order_menu():
 
     # Call check account exists function
     account = check_account_exists_microservice(account_id, zone, environment)
+
     if not account:
         print_finish_application_menu()
+
     delivery_center_id = account[0]['deliveryCenterId']
 
     # Call function to check if the account has products inside
@@ -1092,9 +1094,13 @@ def product_menu():
 
 
 def flow_create_product(zone, environment):
-    item_data = get_item_input_data()
+    item_data = get_item_input_data(zone)
 
-    response = create_product(zone, environment, item_data)
+    if zone == "US":
+        response = create_product_v2(zone, environment, item_data)
+    else:
+        response = create_product(zone, environment, item_data)
+
     if not response:
         print_finish_application_menu()
     else:

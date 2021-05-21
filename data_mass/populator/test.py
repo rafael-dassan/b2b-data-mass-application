@@ -1,23 +1,41 @@
 import logging
 
 from data_mass.common import block_print
-from data_mass.populator.country.category import associate_products_to_category_magento
-from data_mass.populator.country.combo import populate_combo_discount, \
-    populate_combo_free_good, populate_combo_only_free_good
-from data_mass.populator.country.deal import populate_stepped_discount_with_limit, \
-    populate_discount, populate_stepped_discount, populate_free_good, \
+from data_mass.populator.country.account import populate_poc
+from data_mass.populator.country.category import (
+    associate_products_to_category_magento
+)
+from data_mass.populator.country.combo import (
+    populate_combo_discount,
+    populate_combo_free_good,
+    populate_combo_only_free_good
+)
+from data_mass.populator.country.deal import (
+    populate_discount,
+    populate_free_good,
+    populate_stepped_discount,
+    populate_stepped_discount_with_limit,
     populate_stepped_free_good
-from data_mass.populator.country.rewards import enroll_poc, populate_challenge
-from data_mass.populator.helpers.database_helper import delete_from_database_by_account, \
-    get_database_params
-from data_mass.populator.preconditions import delete_deal, delete_invoice, delete_recommendation
+)
 from data_mass.populator.country.invoice import populate_invoice
 from data_mass.populator.country.order import populate_order
-from data_mass.populator.country.product import enable_product_magento, populate_product
-from data_mass.populator.country.user_iam import populate_user_iam_b2c
-from data_mass.populator.log import *
-from data_mass.populator.country.account import populate_poc
+from data_mass.populator.country.product import (
+    enable_product_magento,
+    populate_product
+)
 from data_mass.populator.country.recommendation import populate_recommendation
+from data_mass.populator.country.rewards import enroll_poc, populate_challenge
+from data_mass.populator.country.user_iam import populate_user_iam_b2c
+from data_mass.populator.helpers.database_helper import (
+    delete_from_database_by_account,
+    get_database_params
+)
+from data_mass.populator.log import *
+from data_mass.populator.preconditions import (
+    delete_deal,
+    delete_invoice,
+    delete_recommendation
+)
 
 logger = logging.getLogger(__name__)
 
@@ -146,6 +164,7 @@ def get_email_param(country):
         'PA': 'test-populator-pa@mailinator.com',
         'PE': 'test-populator-pe@mailinator.com',
         'PY': 'test-populator-py@mailinator.com',
+        'US': 'test-populator-us@mailinator.com',
         'ZA': 'test-populator-za@mailinator.com'
     }.get(country, False)
 

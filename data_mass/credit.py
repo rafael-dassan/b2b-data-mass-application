@@ -13,7 +13,7 @@ from data_mass.common import (
     get_microservice_base_url,
     place_request,
     update_value_to_json
-    )
+)
 
 
 def add_credit_to_account_microservice(

@@ -14,19 +14,20 @@ from data_mass.common import (
     place_request,
     set_to_dictionary,
     update_value_to_json
-    )
+)
 from data_mass.menus.account_menu import (
     print_minimum_order_type_menu,
     print_minimum_order_value_menu
-    )
+)
 
 COUNTRY_SEGMENT_VERIFICATION = ["PY"]
 
 
 def check_account_exists_microservice(
-        account_id: int,
+        account_id: str,
         zone: str,
-        environment: str) -> bool:
+        environment: str,
+        vendor_id: str = None) -> bool:
     """
     Check if a given `accout_id` exists in the microservice.
 
@@ -55,6 +56,20 @@ def check_account_exists_microservice(
     base_url = get_microservice_base_url(environment=environment)
     # request_url = f"{base_url}/accounts?accountId={account_id}"
     request_url = f"{base_url}/accounts?vendorAccountId={account_id}&vendorId=vendor777"
+    
+    # base_url = get_microservice_base_url(environment=environment)
+    # request_url = f"{base_url}/accounts?accountId={account_id}"
+    
+    # if zone == "US" and vendor_id is None:
+    #     print("Generic print here.")
+
+    # if zone == "US":
+    #     request_url = (
+    #         f"{base_url}"
+    #         "/accounts"
+    #         f"?vendorAccountId={account_id}"
+    #         f"&vendorId={vendor_id}"
+    #     )   
     
     response = place_request(
         request_method='GET',

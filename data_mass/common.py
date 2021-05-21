@@ -31,7 +31,7 @@ from data_mass.validations import (
     validate_supplier_search_menu_structure,
     validate_zone_for_interactive_combos_ms,
     validate_zone_for_ms
-    )
+)
 
 
 # Validate option menu selection
@@ -162,6 +162,7 @@ def get_microservice_base_url(environment, is_v1=True):
         env_name = 'SIT' if (environment != 'SIT' and environment != 'UAT') else environment
         context = '/v1' if is_v1 else '/api'
         return f"https://services-{env_name.lower()}.bees-platform.dev{context}"
+    #todo   #return "https://bees-services-sit.eastus2.cloudapp.azure.com/api/price-relay/v2"
 
 
 
@@ -720,16 +721,17 @@ def validate_user_entry_date(text:str = "New Date entry"):
 
 def validate_country_menu_in_user_create_iam(zone):
     switcher = {
-        'BR': True,
-        'CO': True,
-        'DO': True,
-        'MX': True,
-        'EC': True,
-        'PE': True,
-        'ZA': True,
-        'AR': True,
-        'CA': True,
-        'PA': True
+        "BR": True,
+        "CO": True,
+        "DO": True,
+        "MX": True,
+        "EC": True,
+        "PE": True,
+        "ZA": True,
+        "AR": True,
+        "CA": True,
+        "US": True,
+        "PA": True
     }
     return switcher.get(zone, False)
 

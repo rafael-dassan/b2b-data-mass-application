@@ -17,13 +17,13 @@ from data_mass.common import (
     get_microservice_base_url,
     place_request,
     update_value_to_json
-    )
+)
 from data_mass.menus.product_menu import (
     print_is_alcoholic_menu,
     print_is_narcotic_menu,
     print_is_returnable_menu,
     print_product_quantity_menu
-    )
+)
 
 ZONES_NEW_ENDPOINT = ["AR", "PY", "PA"]
 ZONES_DIFF_CONTRACT = ["AR", "PY"]
@@ -82,13 +82,6 @@ def request_post_price_microservice(
             price_values,
             zone
         )
-    elif zone == "US":
-        request_url = f"{base_url}/price-relay/v2"
-        content: bytes = pkg_resources.resource_string(
-            "data_mass",
-            "data/create_sku_price_payload_v2.json"
-        )
-        request_body = content
     else:
         request_url = f"{base_url}/cart-calculation-relay/v2/prices"
         request_body = get_body_price_microservice_request_v2(
@@ -166,41 +159,56 @@ def add_products_to_account_microservice(
     return result
 
 
-def request_get_products_microservice(zone, environment, page_size=100000):
+def request_get_products_microservice(
+    zone: str,
+    environment: str,
+    page_size: int = 100000) -> list:
     """
-    Get all available products for a specific zone via Item Service
-    Args:
-        zone: e.g., AR, BR, CO, DO, MX, ZA
-        environment: e.g., DEV, SIT, UAT
-        page_size: page size for searching products in the microservice
-    Returns: array of items in case of success or `false` in case of failure
-    """
+    Get all available products for a specific zone via Item Service.
 
+    Parameters
+    ----------
+    zone : str
+        One of `[AR, BR, CO, DO, MX, ZA, US]`.
+    environment : str
+        e.g., DEV, SIT, UAT.
+    page_size : int
+        Page size for searching products in the microservice.\
+        Default to `100000`.
+
+    Returns
+    -------
+    list
+        array of items in case of success or `false` in case of failure
+    """
     # Get headers
     request_headers = get_header_request(zone, True, False, False, False)
 
     # Get base URL
+    base_url = get_microservice_base_url(environment)
     request_url = (
-        get_microservice_base_url(environment)
-        + "/items/?includeDeleted=false&includeDisabled=false&pageSize="
-        + str(page_size)
+        f"{base_url}"
+        "/items/?"
+        "includeDeleted=false"
+        "&includeDisabled=false"
+        f"&pageSize={page_size}"
     )
 
     # Send request
     response = place_request("GET", request_url, "", request_headers)
-
     json_data = loads(response.text)
+
     if response.status_code == 200:
         return json_data["items"]
-    else:
-        print(
-            text.Red
-            + "\n- [Item Service] Failure to retrieve products. Response Status: {response_status}. "
-            "Response message: {response_message}".format(
-                response_status=response.status_code, response_message=response.text
-            )
-        )
-        return False
+
+    print(
+        f"{text.Red}"
+        "\n- [Item Service] Failure to retrieve products.\n"
+        f"Response Status: {response.status_code}.\n"
+        f"Response message: {response.text}\n"
+    )
+
+    return []
 
 
 # Make the necessary requests to add a product in a microservice-based zone
@@ -307,6 +315,109 @@ def get_body_price_inclusion_microservice_request(delivery_center_id):
     body_price_inclusion = dumps({"deliveryCenters": [delivery_center_id]})
 
     return body_price_inclusion
+
+
+from typing import Any
+
+
+def get_avaliable_categories(
+    account_id: str,
+    zone: str,
+    environment: str,
+    include_empties: bool = False,
+    category_type: str = "MOBILE") -> Any:
+    """
+    Get avaliable categories using microservice.
+
+    Parameters
+    ----------
+    account_id : str
+    zone : str
+    environment : str
+    include_empties : bool
+        Default by `False`.
+    category_type : str
+        Default by `MOBILE`
+    
+    Returns
+    -------
+    Any
+        The response content.
+    """
+    headers: dict = get_header_request(zone)
+    from os import environ
+
+    headers.update({
+        "custId": account_id,
+        "regionId": zone,
+        "Authorization": environ["TOKEN"]
+    })
+
+    base_url = get_microservice_base_url(zone)
+    request_url = (
+        f"{base_url}"
+        "/catalog-service"
+        "/categories"
+        f"/includeEmpties={include_empties}"
+        f"&categoryType={category_type}"
+    )
+    
+    response = place_request(
+        request_method="GET",
+        request_url=request_url,
+        request_body="",
+        request_headers=headers
+    )
+    
+    if response.status_code == 200:
+        return json.loads(response.text)
+
+    print(f"{text.Red}Generic message.")
+    return None
+
+
+def get_avaliable_items(
+    account_id: str,
+    zone: str,
+    environment: str) -> Any:
+    """
+    Get avaliable items using microservice.
+
+    Parameters
+    ----------
+    account_id : str
+    zone : str
+    environment : str
+
+    Returns
+    -------
+    Any
+        The response content.
+    """
+    headers: dict = get_header_request(zone)
+    from os import environ
+
+    headers.update({
+        "custId": account_id,
+        "regionId": zone,
+        "Authorization": environ["TOKEN"]
+    })
+
+    base_url = get_microservice_base_url(zone)
+    request_url = f"{base_url}/catalog-service/items"
+
+    response = place_request(
+        request_method="GET",
+        request_url=request_url,
+        request_body="",
+        request_headers=headers
+    )
+
+    if response.status_code == 200:
+        return json.loads(response.text)
+
+    print(f"{text.Red}Generic message.")
+    return None
 
 
 def request_get_offers_microservice(account_id, zone, environment):
@@ -541,63 +652,193 @@ def request_get_account_product_assortment(
         return False
 
 
-def create_product(zone, environment, product_data):
+def create_product(
+    zone: str,
+    environment: str,
+    product_data: dict) -> dict:
     """
-    Create or update an product via Item Relay Service
-    Args:
-        zone: e.g., AR, BR, CO, DO, MX, ZA
-        environment: e.g., DEV, SIT, UAT
-        product_data: all necessary and relevant SKU data
-    Returns: product_data in case of success or `false` in case of failure
-    """
+    Create or update an product via Item Relay Service.
 
+    Parameters
+    ----------
+    zone : str
+        e.g., AR, BR, CO, DO, MX, ZA.
+    environment : str
+        e.g., DEV, SIT, UAT.
+    product_data : str
+        All necessary and relevant SKU data.
+
+    Returns
+    -------
+    dict
+        `product_data in case of success or `None` in case of failure.
+    """
     # Define headers
     request_headers = get_header_request(zone, False, True, False)
+    from os import environ
+    request_headers.update({"Authorization": environ["TOKEN"]})
 
     # Get base URL
-    request_url = "{0}/item-relay/items".format(
-        get_microservice_base_url(environment, False)
-    )
-    
+    base_url = get_microservice_base_url(environment, False)
+    request_url = f"{base_url}/item-relay/items"
+
     # get data from Data Mass files
     content: bytes = pkg_resources.resource_string(
         "data_mass",
         "data/create_item_payload.json"
     )
-    json_data = json.loads(content.decode("utf-8"))
-
-    # Update JSON values
-    for key in product_data.keys():
-        json_object = update_value_to_json(json_data, key, product_data[key])
-
-    # Create body
-    list_dict_values = create_list(json_object)
-    request_body = convert_json_to_string(list_dict_values)
+    body: dict = json.loads(content.decode("utf-8"))
+    body.update(product_data)
 
     # Place request
-    response = place_request("PUT", request_url, request_body, request_headers)
+    response = place_request(
+        request_method="PUT",
+        request_url=request_url,
+        request_body=json.dumps([body]),
+        request_headers=request_headers
+    )
 
     if response.status_code == 202:
-        update_item_response = set_item_enabled(zone, environment, product_data)
-        get_item_response = check_item_enabled(
-            product_data.get("sku"), zone, environment
+        update_item_response = set_item_enabled(
+            zone,
+            environment,
+            product_data
         )
+        get_item_response = check_item_enabled(
+            product_data.get("sku"),
+            zone,
+            environment
+        )
+
         if update_item_response and get_item_response:
             return product_data
-    else:
-        print(
-            "\n{0}- [Item Relay Service] Failure to update an item. Response Status: {1}. Response message: {2}".format(
-                text.Red, response.status_code, response.text
-            )
+    print(
+        f"\n{text.Red}- [Item Relay Service] Failure to update an item.\n"
+        f"Response Status: {response.status_code}.\n"
+        f"Response message: {response.text}\n"
+    )
+
+    return None
+
+
+def create_product_v2(
+    zone: str,
+    environment: str,
+    product_data: dict,
+    vendor_item_id: str = "") -> dict:
+    """
+    Create product using ms version 2.
+
+    Parameters
+    ----------
+    zone : str
+    environment : str
+    product_data : dict
+    vendor_item_id : str, optional
+        Required if the target zone is US. 
+
+    Returns
+    -------
+    dict
+        The API response.
+    """
+    request_headers = get_header_request(zone, False, True, False)
+    from os import environ
+    request_headers.update({"Authorization": environ["TOKEN"]})
+
+    # Get base URL
+    base_url = get_microservice_base_url(environment, False)
+    request_url = f"{base_url}/item-relay/v2/items"
+
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/update_item_payload_v2.json"
+    )
+    body: dict = json.loads(content.decode("utf-8"))
+
+    product_data.update({
+        "sku": product_data.get("sku"),
+        "name": product_data.get("name"),
+        "brandId": str(randint(1, 1000)),
+        "package": {
+            "count": 1,
+            "id": "01",
+            "itemCount": 12,
+            "name": "CD",
+            "pack": "string"
+        },
+        "container": {
+            "name": product_data["container.name"],
+            "size": product_data["container.size"],
+            "returnable": product_data["container.returnable"],
+            "unitOfMeasurement": product_data["container.unitOfMeasurement"]
+        }
+    })
+    body.update(product_data)
+
+    # Place request
+    response = place_request(
+        request_method="PUT",
+        request_url=request_url,
+        request_body=json.dumps([body]),
+        request_headers=request_headers
+    )
+
+    if response.status_code == 202:
+        update_item_response = set_item_enabled(
+            zone,
+            environment,
+            product_data
         )
-        return False
+        get_item_response = check_item_enabled(
+            product_data.get("sku"),
+            zone,
+            environment
+        )
+
+        if update_item_response and get_item_response:
+            return product_data
+    print(
+        f"\n{text.Red}- [Item Relay Service] Failure to update an item.\n"
+        f"Response Status: {response.status_code}.\n"
+        f"Response message: {response.text}\n"
+    )
+
+    return None
 
 
-def get_item_input_data():
+def delete_item_v2(
+    zone: str,
+    environment: str,
+    vendor_item_id: str) -> bool:
+    """
+    Delete a item from microservice.
+
+    Parameters
+    ----------
+    zone : str
+    environment : str
+    vendor_item_id : str
+
+    Returns
+    -------
+    bool
+        Whnenever a deletions works it out.
+    """
+    request_headers = get_header_request(zone, False, True, False)
+    from os import environ
+    request_headers.update({"Authorization": environ["TOKEN"]})
+
+    # Get base URL
+    base_url = get_microservice_base_url(environment, False)
+    request_url = f"{base_url}/item-relay/v2/items"
+
+def get_item_input_data(zone: str):
     """
     Get input data from the user
     Returns: a dictionary containing the customized product data
     """
+    zone = zone.upper()
     sku_identifier = input("{0}SKU identifier: ".format(text.default_text_color))
     # Create random value for the SKU identifier if the entry is empty
     if len(sku_identifier) == 0:
@@ -607,6 +848,10 @@ def get_item_input_data():
     brand_name = input(
         "{0}Brand name (e.g., SKOL, PRESIDENTE): ".format(text.default_text_color)
     ).upper()
+
+    if zone == "US":
+        vendor_item_id = input(f"{text.default_text_color}Vendor Item Id: ")
+
     container_name = input(
         "{0}Container name (e.g., BOTTLE, PET, CAN): ".format(text.default_text_color)
     ).upper()
@@ -648,64 +893,111 @@ def get_item_input_data():
         "isAlcoholic": is_alcoholic,
     }
 
+    if zone == "US":
+        item_data.update({
+            "sourceData": {
+                "vendorItemId": vendor_item_id
+            }
+        })
+
     return item_data
 
 
-def set_item_enabled(zone, environment, product_data):
+def set_item_enabled(
+    zone: str,
+    environment: str,
+    product_data: dict) -> bool:
     """
-    Update an item via Item Service
-    Args:
-        zone: e.g., AR, BR, CO, DO, MX, ZA
-        environment: e.g., DEV, SIT, UAT
-        product_data: all necessary and relevant SKU data
-    Returns: `success` when the item is updated successfully or `false` in case of failure
+    Update an item via Item Service.
+
+    Parameters
+    ----------
+    zone : str
+        One of `[AR, BR, CO, DO, MX, ZA]`.
+    environment : str
+        One of `[DEV, SIT, UAT]`.
+    product_data : str
+        All necessary and relevant SKU data.
+
+    Returns
+    -------
+    Whenever the item is updated successfully or not.
     """
     # Define headers
     request_headers = get_header_request(zone, True, False, False)
+    from os import environ
+
+    request_headers.update({"Authorization": environ["TOKEN"]})
+    sku = product_data.get("sku")
 
     # Get base URL
-    request_url = "{0}/items/{1}".format(
-        get_microservice_base_url(environment, False), product_data.get("sku")
-    )
+    base_url = get_microservice_base_url(environment, False)
+    request_url = f"{base_url}/items/{sku}"
     
+    if zone == "US":
+        request_url = f"{base_url}/item-relay/v2/items"
+        payload_path = "data/update_item_payload_v2.json"
+
+        product_data.update({
+        "sku": product_data.get("sku"),
+        "name": product_data.get("name"),
+        "brandId": str(randint(1, 1000)),
+        "package": {
+            "count": 1,
+            "id": "01",
+            "itemCount": 12,
+            "name": "CD",
+            "pack": "string"
+        },
+        "container": {
+            "name": product_data["container.name"],
+            "size": product_data["container.size"],
+            "returnable": product_data["container.returnable"],
+            "unitOfMeasurement": product_data["container.unitOfMeasurement"]
+        }
+    })
+    else:
+        payload_path = "data/update_item_payload.json"
+        product_data.update({
+            "itemName": product_data.get("name"),
+            "package.packageId": product_data.get("package.id"),
+            "container.name": product_data.get("container.name"),
+            "container.itemSize": product_data.get("container.size"),
+            "container.unitOfMeasurement": product_data.get("container.unitOfMeasurement"),
+            "description": product_data.get("name"),
+            "salesRanking": product_data.get("salesRanking"),
+        })
+        
     # get data from Data Mass files
     content: bytes = pkg_resources.resource_string(
         "data_mass",
-        "data/update_item_payload.json"
+        payload_path
     )
-    json_data = json.loads(content.decode("utf-8"))
+    body: dict = json.loads(content.decode("utf-8"))
+    body.update(product_data)
 
-    dict_values = {
-        "itemName": product_data.get("name"),
-        "package.packageId": product_data.get("package.id"),
-        "container.name": product_data.get("container.name"),
-        "container.itemSize": product_data.get("container.size"),
-        "container.unitOfMeasurement": product_data.get("container.unitOfMeasurement"),
-        "description": product_data.get("name"),
-        "salesRanking": product_data.get("salesRanking"),
-    }
-
-    for key in dict_values.keys():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
-
-    # Create body
-    request_body = convert_json_to_string(json_object)
+    # send as list of object or just object?
+    body = json.dumps([body]) if zone == "US" else json.dumps(body)
 
     # Place request
-    response = place_request("PUT", request_url, request_body, request_headers)
+    response = place_request(
+        request_method="PUT",
+        request_url=request_url,
+        request_body=body,
+        request_headers=request_headers
+    )
 
-    json_data = loads(response.text)
-    if response.status_code == 200 and len(json_data) != 0:
-        return "success"
-    else:
-        print(
-            text.Red
-            + "\n- [Item Service] Failure to update an item. Response Status: {response_status}. "
-            "Response message: {response_message}".format(
-                response_status=response.status_code, response_message=response.text
-            )
-        )
-        return False
+    if response.status_code in [200, 202]:
+        return True
+
+    print(
+        f"{text.Red}\n"
+        + "- [Item Service] Failure to update an item.\n"
+        f"Response Status: {response.status_code}.\n"
+        f"Response message: {response.text}\n"
+    )
+
+    return False
 
 
 def display_product_information(product_offers):
@@ -731,28 +1023,43 @@ def display_product_information(product_offers):
     print(tabulate(product_information, headers="keys", tablefmt="grid"))
 
 
-# Get SKU name
-def get_sku_name(zone, environment, sku_id):
-    # Get header request
+def get_sku_name(
+    zone: str,
+    environment: str,
+    sku_id: str) -> str:
+    """
+    Get SKU by name.
+
+    Parameters
+    ----------
+    zone : str
+    environment : str
+    sku_id : str
+
+    Returns
+    -------
+    str
+        The SKU name.
+    """
     headers = get_header_request(zone, True)
 
     # Get url base
+    base_url = get_microservice_base_url(environment, False)
     request_url = (
-        get_microservice_base_url(environment, False)
-        + "/items/"
-        + sku_id
-        + "?includeDisabled=false"
+        f"{base_url}"
+        "/items"
+        f"/{sku_id}"
+        "?includeDisabled=false"
     )
 
     # Place request
     response = place_request("GET", request_url, "", headers)
     json_data = loads(response.text)
-    if response.status_code == 200 and len(json_data) != 0:
-        sku_name = json_data["itemName"]
-    else:
-        sku_name = ""
 
-    return sku_name
+    if response.status_code == 200 and json_data:
+        return json_data["itemName"]
+
+    return None
 
 
 def display_items_information_zone(items):
