@@ -1,18 +1,49 @@
 # Standard library imports
 import json
-from json import loads
 import os
+from json import loads
 from random import randint
 
 # Third party imports
 from tabulate import tabulate
 
-# Local application imports
-from data_mass.common import get_microservice_base_url, \
-    get_header_request, place_request, update_value_to_json, create_list, \
-    convert_json_to_string, return_first_and_last_date_year_payload
 from data_mass.classes.text import text
+# Local application imports
+from data_mass.common import (
+    convert_json_to_string,
+    create_list,
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+    return_first_and_last_date_year_payload,
+    update_value_to_json
+    )
 
+
+def request_create_deal_us(account_id, zone, environment, deal_id):
+    
+    if deal_id is None:
+        # Deal unique identifier
+        deal_id = 'DM-' + str(randint(1, 100000))
+
+    request_body = get_deals_payload_us(account_id, deal_id)
+
+    # Get base URL
+    request_url = f'https://services-{environment}.bees-platform.dev/api/deal-relay/v2'
+
+
+    # Get headers
+    request_headers = get_header_request(zone, False, False, True, False)
+
+    # Send request
+    response = place_request('POST', request_url, request_body, request_headers)
+
+    if response.status_code == 202 or response.status_code == 200:
+        return deal_id
+    else:
+        print(text.Red + '\n- [Promotion Relay Service] Failure create deal. Response Status: {response_status}. '
+                         'Response message: {response_message}'
+              .format(response_status=response.status_code, response_message=response.text))
 
 def request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id=None):
     """
@@ -95,6 +126,30 @@ def request_create_deal_v2(deal_type, zone, environment, deal_id=None):
                          'Response message: {response_message}'
               .format(response_status=response.status_code, response_message=response.text))
         return False
+
+
+def get_deals_payload_us(account_id, deal_id):
+
+    abs_path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(abs_path, 'data/create_promotion_payload_us.json')
+
+    with open(file_path) as file:
+        json_data = json.load(file)
+
+    # Create dictionary with deal's values
+    dict_values = {
+        'vendorAccountIds': account_id,
+        'vendorDealId': deal_id
+    }
+
+    for key in dict_values.keys():
+        json_object = update_value_to_json(json_data, key, dict_values[key])
+
+    # Create body
+    list_dict_values = create_list(json_object)
+    request_body = convert_json_to_string(list_dict_values)
+
+    return request_body
 
 
 def get_deals_payload_v1(deal_id, deal_type, account_group_id, sku_group_id, free_good_group_id):
@@ -347,8 +402,10 @@ def create_discount(account_id, sku, zone, environment, discount_value, minimum_
     Returns: `promotion_response` if success
     """
 
-    if zone == 'ZA':
+    if zone == "ZA":
         promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id)
+    elif zone == "US":
+        promotion_response = request_create_deal_us(account_id, zone, environment, deal_id)
     else:
         promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
 
@@ -1309,7 +1366,7 @@ def request_delete_deal_by_id_v1(deal_id, zone, environment):
     request_headers = get_header_request(zone, False, False, True, False)
 
     # Get base URL
-    request_url = get_microservice_base_url(environment) + '/promotion-relay/v1/{0}'.format(deal_id)
+    request_url = get_microservice_base_url(environment) + f'/promotion-relay/v1/{deal_id}'
 
     # Send request
     response = place_request('DELETE', request_url, '', request_headers)
@@ -1333,11 +1390,14 @@ def request_get_deals_pricing_service(account_id, zone, environment):
     request_headers = get_header_request(zone, True, False, False, False, account_id)
 
     # Get base URL
-    request_url = get_microservice_base_url(environment) + '/cart-calculator/v2/accounts/{0}/deals?projection=PLAIN'\
+    if zone != "US":
+        request_url = get_microservice_base_url(environment)\
+        + '/cart-calculator/v2/accounts/{}/deals?projection=PLAIN'\
         .format(account_id)
-
-    # Send request
-    response = place_request('GET', request_url, '', request_headers)
+        response = place_request('GET', request_url, '', request_headers)
+    else:
+        request_url = 'https://services-sit.bees-platform.dev/api/deal-relay/v2'
+        response = place_request('GET', request_url, account_id, request_headers)
 
     json_data = loads(response.text)
     if response.status_code == 200:
@@ -1369,7 +1429,7 @@ def request_delete_deals_pricing_service(account_id, zone, environment, data):
         deal_id = data[i]['dealId']
 
         # Get base URL
-        request_url = get_microservice_base_url(environment) + '/cart-calculator/v1/account/{0}/deals/{1}'\
+        request_url = get_microservice_base_url(environment) + '/cart-calculator/v1/account/{}/deals/{}'\
             .format(account_id, deal_id)
 
         # Send request
