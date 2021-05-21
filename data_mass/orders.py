@@ -21,7 +21,7 @@ from data_mass.common import (
     update_value_to_json,
     validate_user_entry_date,
     validate_yes_no_change_date
-    )
+)
 
 
 def request_order_creation(
@@ -72,7 +72,10 @@ def request_order_creation(
         False,
         account_id
     )
-    request_headers.update({"Authorization": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJCVVdYcTRLanhPMUwxdTFTaENJVVNrdEk5aXRreFJ0X1Zzb3luelVvVGFFIn0.eyJleHAiOjE2MjE0Njg0NTgsImlhdCI6MTYyMTQ2NDg1OCwianRpIjoiZmQ1MTY5MWUtYmIxOC00ODEzLWI0OWMtMGQ4M2FkODgwZjhkIiwiaXNzIjoiaHR0cDovL2tleWNsb2FrLXNlcnZpY2UvYXV0aC9yZWFsbXMvYmVlcy1yZWFsbSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiI3NGM2OThlOS01ZDE5LTRjM2ItODdiZC00ZDExNDM3MDhlOTciLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiI5MGFiMjNmOC03OTQ1LTRiODMtODllYy00NTFhNDVjNmE4NGQiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6Im9wZW5pZCBlbWFpbCBwcm9maWxlIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJjbGllbnRJZCI6IjkwYWIyM2Y4LTc5NDUtNGI4My04OWVjLTQ1MWE0NWM2YTg0ZCIsImNsaWVudEhvc3QiOiIxMjcuMC4wLjEiLCJyb2xlcyI6WyJXcml0ZSIsIlJlYWQiXSwidmVuZG9ySWQiOiI1ODg3MGNiYy03ODA5LTRlMTgtYmE1OS05ODZiNDk5MmM4NDIiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtOTBhYjIzZjgtNzk0NS00YjgzLTg5ZWMtNDUxYTQ1YzZhODRkIiwiY2xpZW50QWRkcmVzcyI6IjEyNy4wLjAuMSJ9.D28yVX_C5HR5XbHyKfQbhDr_ikxCPXGuR1SxOgU_0dnBldpSdVELmBCr8ueeHrigQ2e3Tufmv5YyADpl0Kx2OEJS0JSP4Ha7uCflwR3DHO_nm7S4EEXkjPzHTbXtfN6EkB53a6ORZ0bwdnldX0pxOeuMjJVtMO6TVfgCVOckCk88q6VWzILLDo-mF6TilVIN7K4-8VmDCwW3yWkPA1FL2zS6hi4s971Hu2Qedj3W-H8fmotUDFF_9A6if-JxxI07zvYC2lIUTBT3BAhZ5lWw9O8k7GCiV01bsBbuC4UhmIMGCwC9pdA2fU97VD07dRSsWGr7knkOJVaTI2zFCerTfw"})
+    from os import environ
+
+    token = environ["TOKEN"]
+    request_headers.update({"Authorization": token})
 
     base_url = get_microservice_base_url(environment)
 
@@ -99,9 +102,9 @@ def request_order_creation(
         return json_data
 
     print(
-        f"{text.Red}"
+        f"{text.Red}\n"
         "[Order Service] Failure to create an order.\n"
-        f"Response Status: {response.status_code}."
+        f"Response Status: {response.status_code}.\n"
         f"Response message {response.text}"
     )
 
