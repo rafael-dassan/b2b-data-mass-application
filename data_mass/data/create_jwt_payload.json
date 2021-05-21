@@ -7,6 +7,7 @@
   "name": "Data Mass Script",
   "signInNames.emailAddress": "data-mass@mailinator.com",
   "accountID": "000999999",
+  "country": "DO",
   "userID": "999",
   "roles": [
     "ROLE_CUSTOMER"

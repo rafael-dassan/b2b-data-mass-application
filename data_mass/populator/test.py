@@ -7,7 +7,9 @@ from data_mass.populator.country.combo import populate_combo_discount, \
 from data_mass.populator.country.deal import populate_stepped_discount_with_limit, \
     populate_discount, populate_stepped_discount, populate_free_good, \
     populate_stepped_free_good
-from data_mass.populator.country.rewards import enroll_poc, populate_challenge
+from data_mass.populator.country.rewards import enroll_poc, populate_challenge_take_photo, \
+    populate_challenge_mark_complete, populate_challenge_purchase_single, \
+    populate_challenge_purchase_multiple
 from data_mass.populator.helpers.database_helper import delete_from_database_by_account, \
     get_database_params
 from data_mass.populator.preconditions import delete_deal, delete_invoice, delete_recommendation
@@ -106,7 +108,10 @@ def execute_test(country, environment):
     enroll_poc(country, environment, rewards_params.get('account_id'))
 
     logger.info("populate_rewards_challenges for %s/%s", country, environment)
-    populate_challenge(country, environment, rewards_params.get('challenge_id'))
+    populate_challenge_take_photo(country, environment, rewards_params.get('take_photo_challenge_id'))
+    populate_challenge_mark_complete(country, environment, rewards_params.get('mark_complete_challenge_id'))
+    populate_challenge_purchase_single(country, environment, rewards_params.get('purchase_single_challenge_id'))
+    populate_challenge_purchase_multiple(country, environment, rewards_params.get('purchase_multiple_challenge_id'))
 
     logger.info("enable_products_magento %s/%s", country, environment)
     enable_product_magento(country, environment, category_params.get('sku'))
@@ -281,5 +286,8 @@ def get_combo_params(country, combo_type):
 def get_rewards_params(country):
     return {
         'account_id': get_account_params(country).get('id'),
-        'challenge_id': 'DMA-{0}-TEST'.format(country)
+        'take_photo_challenge_id': 'DMA-{0}-01-TEST'.format(country),
+        'mark_complete_challenge_id': 'DMA-{0}-02-TEST'.format(country),
+        'purchase_single_challenge_id': 'DMA-{0}-03-TEST'.format(country),
+        'purchase_multiple_challenge_id': 'DMA-{0}-04-TEST'.format(country),
     }

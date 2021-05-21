@@ -135,7 +135,7 @@ def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclus
     }
 
     if use_jwt_auth:
-        header['Authorization'] = generate_hmac_jwt(account_id, jwt_app_claim)
+        header['Authorization'] = generate_hmac_jwt(zone, account_id, jwt_app_claim)
     elif use_root_auth:
         header['Authorization'] = 'Basic cm9vdDpyb290'
     elif use_inclusion_auth:
@@ -994,7 +994,7 @@ def is_string(item):
     return isinstance(item, str)
 
 
-def generate_hmac_jwt(account_id, app_claim=None, expire_months=1):
+def generate_hmac_jwt(zone, account_id, app_claim=None, expire_months=1):
     now = int(t.time())
     expire_in = now + (2592000 * expire_months)
     
@@ -1008,6 +1008,7 @@ def generate_hmac_jwt(account_id, app_claim=None, expire_months=1):
     dict_values = {
         'exp': expire_in,
         'iat': now,
+        'country': zone,
         'accounts': [account_id]
     }
 
@@ -1017,6 +1018,9 @@ def generate_hmac_jwt(account_id, app_claim=None, expire_months=1):
     if app_claim is not None:
         set_to_dictionary(json_object, 'app', app_claim)
 
+    if app_claim == 'adminportal':
+        set_to_dictionary(json_object, 'scopes', ['Membership.All'])
+    
     encoded = jwt.encode(json_object, '20735d31-46b5-411d-af02-47897a01c0c9', algorithm='HS256')
     return f'Bearer {encoded}'
 
