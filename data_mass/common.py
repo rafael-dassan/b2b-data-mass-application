@@ -139,6 +139,7 @@ def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclus
     
     if zone == "US":
         header['Authorization'] = get_jwt_token()
+        header['Accept-Language'] = 'en-us'
     elif use_jwt_auth:
         header['Authorization'] = generate_hmac_jwt(account_id, jwt_app_claim)
     elif use_root_auth:
@@ -444,49 +445,6 @@ def print_available_options(selection_structure):
         finish_application()
 
     return selection
-
-from data_mass.category.microservice import get_categories
-
-
-def categories_menu():
-    print(text.default_text_color + str(0), text.Yellow + 'Close application')
-    print(text.default_text_color + str(1), text.Yellow + 'List categories')
-    print(text.default_text_color + str(2), text.Yellow + 'Associate product to category')
-    print(text.default_text_color + str(3), text.Yellow + 'Create category')
-    selection = input(text.default_text_color + '\nPlease select: ')
-    while not validate_option_request_selection(selection):
-        print(text.Red + '\n- Invalid option\n')
-        print(text.default_text_color + str(0), text.Yellow + 'Close application')
-        print(text.default_text_color + str(1), text.Yellow + 'List categories')
-        print(text.default_text_color + str(2), text.Yellow + 'Associate product to category')
-        print(text.default_text_color + str(3), text.Yellow + 'Create category')
-        selection = input(text.default_text_color + '\nPlease select: ')
-        
-    if selection == "1":
-        zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
-        while validate_zone_for_ms(zone.upper()) is False:
-            print(text.Red + f'\n- {zone.upper()} is not a valid zone\n')
-            zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
-
-        environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
-        while validate_environment(environment.upper()) is False:
-            print(text.Red + f'\n- {environment.upper()} is not a valid environment\n')
-            environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
-
-        vendor_id = input(text.default_text_color + 'Vendor Id: ')
-        while not validate_account_name(vendor_id):
-            print(text.Red + f'\n- {vendor_id.upper()} is not a valid vendor id\n')
-            environment = input(text.default_text_color + 'Vendor Id: ')
-
-        categories = get_categories(zone.upper(), environment, vendor_id)
-
-        if not categories:
-            print(f"\n{text.Red}There is no categories for {vendor_id} vendor.")
-            sys.exit()
-
-        print(categories)
-
-    sys.exit()
 
 
 # Print welcome menu
@@ -1190,12 +1148,14 @@ def token_has_expired() -> bool:
     bool
         Whenever a token has expired or not.
     """
+    current_time = round(t.time())
+
     try:
         expiration_date = os.environ["EXPIRATION_TIME"]
     except KeyError:
         return True
 
-    if t.time() > int(expiration_date):
+    if current_time > int(expiration_date):
         return True
 
     return False

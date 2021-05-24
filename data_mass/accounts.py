@@ -50,7 +50,7 @@ def check_account_exists_microservice(
         account_id=account_id
     )
 
-    base_url = get_microservice_base_url(environment=environment)
+    base_url = get_microservice_base_url(environment)
     request_url = f"{base_url}/accounts?accountId={account_id}"
 
     if zone == "US":
