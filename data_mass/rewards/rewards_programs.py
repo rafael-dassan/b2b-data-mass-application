@@ -17,7 +17,7 @@ from data_mass.common import (
     print_input_text,
     set_to_dictionary,
     update_value_to_json
-    )
+)
 from data_mass.rewards.rewards_utils import (
     build_request_url_with_projection_query,
     create_product_list_from_zone,
@@ -26,7 +26,7 @@ from data_mass.rewards.rewards_utils import (
     get_payload,
     print_input_combo_qty,
     print_input_decision
-    )
+)
 
 APP_ADMIN = 'membership'
 
@@ -615,6 +615,9 @@ def generate_terms_information(zone):
         terms_info.append('https://b2bstaticwebsagbdev.blob.core.windows.net/digitaltrade/terms/terms-br.html')
         terms_info.append('Termos iniciais introduzidos ao programa')
     elif zone == 'ZA':
+        terms_info.append('https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/terms/terms-za.html')
+        terms_info.append('Initial terms added to the program')
+    elif zone == 'US':
         terms_info.append('https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/terms/terms-za.html')
         terms_info.append('Initial terms added to the program')
 

@@ -1,11 +1,19 @@
-from data_mass.algo_selling import get_recommendation_by_account, \
-    delete_recommendation_by_id
-from data_mass.deals import request_get_deals_pricing_service, \
-    request_delete_deals_pricing_service, request_get_deals_promotion_service, \
-    request_delete_deal_by_id_v1, request_delete_deal_by_id
-from data_mass.invoices import get_invoices, delete_invoice_by_id
-from data_mass.populator.helpers.database_helper import get_database_params, \
-    delete_from_database_by_account
+from data_mass.algo_selling import (
+    delete_recommendation_by_id,
+    get_recommendation_by_account
+    )
+from data_mass.deals import (
+    request_delete_deal_by_id,
+    request_delete_deal_by_id_v1,
+    request_delete_deals_pricing_service,
+    request_get_deals_pricing_service,
+    request_get_deals_promotion_service
+    )
+from data_mass.invoices import delete_invoice_by_id, get_invoices
+from data_mass.populator.helpers.database_helper import (
+    delete_from_database_by_account,
+    get_database_params
+    )
 from data_mass.populator.log import *
 
 logger = logging.getLogger(__name__)
@@ -47,15 +55,27 @@ def delete_deal(account_id, country, environment):
     """
     # Check for available deals in Cart-Calculation MS database
     customer_deals = request_get_deals_pricing_service(account_id, country, environment)
-    if not customer_deals:
-        logger.error(log(Message.RETRIEVE_PROMOTION_ERROR, {'account_id': account_id}))
-    elif customer_deals == 'not_found':
-        logger.debug("[Pricing Conditions Service] The account {account_id} does not have deals associated. Skipping..."
-                    .format(account_id=account_id))
+    if country != "US":
+        if not customer_deals:
+            logger.error(log(Message.RETRIEVE_PROMOTION_ERROR, {'account_id': account_id}))
+        elif customer_deals == 'not_found':
+            logger.debug("[Pricing Conditions Service] The account {account_id} does not have deals associated. Skipping..."
+                        .format(account_id=account_id))
+        else:
+            # Delete deals from Cart-Calculation MS database
+            if False == request_delete_deals_pricing_service(account_id, country, environment, customer_deals):
+                logger.error(log(Message.DELETE_PROMOTION_ERROR, {'account_id': account_id}))
     else:
-        # Delete deals from Cart-Calculation MS database
-        if False == request_delete_deals_pricing_service(account_id, country, environment, customer_deals):
-            logger.error(log(Message.DELETE_PROMOTION_ERROR, {'account_id': account_id}))
+        if not customer_deals:
+            logger.error(log(Message.RETRIEVE_PROMOTION_ERROR, {'vendorAccountIds': account_id}))
+        elif customer_deals == 'not_found':
+            logger.debug("[Pricing Conditions Service] The account {account_id} does not have deals associated. Skipping..."
+                        .format(account_id=account_id))
+        else:
+            # Delete deals from Cart-Calculation MS database
+            if False == request_delete_deals_pricing_service(account_id, country, environment, customer_deals):
+                logger.error(log(Message.DELETE_PROMOTION_ERROR, {'vendorAccountIds': account_id}))
+
 
     # Check for available deals in Promotion MS database
     promotions = request_get_deals_promotion_service(account_id, country, environment)

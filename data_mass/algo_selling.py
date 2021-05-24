@@ -17,7 +17,7 @@ from data_mass.common import (
     place_request,
     set_to_dictionary,
     update_value_to_json
-    )
+)
 
 
 def create_all_recommendations(zone, environment, account_id, products):
@@ -278,6 +278,7 @@ def get_header_request_recommender(zone, environment):
             'PA': 'America/Panama',
             'PE': 'America/Lima',
             'PY': 'America/Asuncion',
+            'US': 'America/New_York',
             'ZA': 'Africa/Johannesburg'
         }
         timezone = switcher.get(zone, False)
