@@ -1,9 +1,14 @@
 # Local application imports
 from data_mass.classes.text import text
-from data_mass.validations import validate_yes_no_option, \
-    validate_account_name, validate_payments_method, validate_account, \
-    validate_accounts, validate_account_operations_structure, \
-    validate_delivery_window_structure
+from data_mass.validations import (
+    validate_account,
+    validate_account_name,
+    validate_account_operations_structure,
+    validate_accounts,
+    validate_delivery_window_structure,
+    validate_payments_method,
+    validate_yes_no_option
+)
 
 
 def print_account_operations_menu():
@@ -243,8 +248,14 @@ def print_payment_method_menu(zone):
 #   Therefore, for simulation, this parameter was created to allow using accounts that do not
 #   follow this pattern of more than 10 characters
 def print_account_id_menu(zone):
-    abi_id = str(input(text.default_text_color + 'Account ID: '))
+    if zone == "US":
+        message = "Vendor Account Id: "
+    else:
+        message = "Account ID: "
+
+    abi_id = str(input(text.default_text_color + message))
     attempt = 0
+
     while validate_account(abi_id, zone) != True and attempt <= 2:
         if validate_account(abi_id, zone) == 'error_0':
             print(text.Red + '\n- Account ID should not be empty')

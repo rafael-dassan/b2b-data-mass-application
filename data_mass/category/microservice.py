@@ -1,6 +1,7 @@
 import json
 from typing import List, Union
 
+from data_mass.classes.text import text
 from data_mass.common import (
     get_header_request,
     get_microservice_base_url,
@@ -8,10 +9,7 @@ from data_mass.common import (
 )
 
 
-def get_categories(
-        zone: str,
-        environment: str,
-        vendor_id: str) -> list:
+def get_categories(zone: str, environment: str) -> list:
     """
     Get categories.
 
@@ -19,15 +17,18 @@ def get_categories(
     ----------
     zone : str
     environment : str
-    vendor_id : str
 
     Returns
     -------
     bool
         Whenever the request completed successfully.
     """
-    base_url = get_microservice_base_url("environment")
-    request_url = f"{base_url}/categories/?vendorId={vendor_id}"
+    base_url = get_microservice_base_url(environment, False)
+    request_url = (
+        f"{base_url}"
+        "/categories"
+        "/?vendorId=58870cbc-7809-4e18-ba59-986b4992c842"
+    )
     header = get_header_request(zone)
 
     response = place_request(
@@ -37,8 +38,15 @@ def get_categories(
         request_headers=header
     )
 
-    if response.status_code == 202:
+    if response.status_code == 200:
         return json.loads(response.content)
+
+    print(
+        f"\n{text.Red}"
+        "Error when retrieving categories.\n"
+        f"Response status: {response.status_code}\n"
+        f"Response message; {response.text}"
+    )
 
     return []
 
@@ -54,14 +62,13 @@ def get_category_by_id(
     ----------
     zone : str
     environment : str
-    vendor_id : str
 
     Returns
     -------
     bool
         Whenever the request completed successfully.
     """
-    base_url = get_microservice_base_url("environment")
+    base_url = get_microservice_base_url(environment)
     request_url = f"{base_url}/categories/{category_id}"
     header = get_header_request(zone)
 
@@ -84,8 +91,7 @@ def get_category_by_id(
 def create_categories(
         zone: str,
         environment: str,
-        categories: Union[List[dict], dict],
-        asynchronous: bool = False) -> dict:
+        categories: Union[List[dict], dict]) -> dict:
     """
     Get categories.
 
@@ -93,26 +99,15 @@ def create_categories(
     ----------
     zone : str
     environment : str
-    vendor_id : str
-    asynchronous : bool
-        Create or update a list of categories.\
-        This request is asynchronous and it will\
-        be placed upon a queue for a \
-        post processor consumption. Default to `False`.
 
     Returns
     -------
     bool
         Whenever the request completed successfully.
     """
-    endpoint = "categories/batch"
 
-    if asynchronous:
-        is_v1 = True
-        endpoint = "category-relay-service"
-
-    base_url = get_microservice_base_url("environment", is_v1)
-    request_url = f"{base_url}/{endpoint}"
+    base_url = get_microservice_base_url(environment)
+    request_url = f"{base_url}/category-relay-service"
     header = get_header_request(zone)
 
     if isinstance(categories, dict):
@@ -133,3 +128,10 @@ def create_categories(
     print("Generic print here.")
 
     return {}
+
+
+def generate_categories_data() -> dict:
+    """
+    Pass
+    """
+    pass

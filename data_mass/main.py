@@ -7,6 +7,7 @@ import pyperclip
 from data_mass.accounts import *
 from data_mass.algo_selling import *
 from data_mass.category.magento import *
+from data_mass.category.microservice import get_categories as get_categories_ms
 from data_mass.combos import *
 from data_mass.common import *
 from data_mass.credit import add_credit_to_account_microservice
@@ -162,7 +163,7 @@ def show_menu():
             '6': invoice_menu,
             '7': create_rewards_to_account,
             '8': create_credit_statement_menu,
-            '9': categories_menu
+            '9': categories_ms_menu
         }
     elif selection_structure == '2':
         switcher = {
@@ -1778,6 +1779,46 @@ def get_categories_menu():
     else:
         print("\n{text_red}{not_found}".format(text_red=text.Red, not_found="Categories not found"))
         print_finish_application_menu()
+
+
+def categories_ms_menu():
+    print(text.default_text_color + str(0), text.Yellow + 'Close application')
+    print(text.default_text_color + str(1), text.Yellow + 'List categories')
+    print(text.default_text_color + str(2), text.Yellow + 'Associate product to category')
+    print(text.default_text_color + str(3), text.Yellow + 'Create category')
+    selection = input(text.default_text_color + '\nPlease select: ')
+    while not validate_option_request_selection(selection):
+        print(text.Red + '\n- Invalid option\n')
+        print(text.default_text_color + str(0), text.Yellow + 'Close application')
+        print(text.default_text_color + str(1), text.Yellow + 'List categories')
+        print(text.default_text_color + str(2), text.Yellow + 'Associate product to category')
+        print(text.default_text_color + str(3), text.Yellow + 'Create category')
+        selection = input(text.default_text_color + '\nPlease select: ')
+        
+    if selection == "1":
+        zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
+        while validate_zone_for_ms(zone.upper()) is False:
+            print(text.Red + f'\n- {zone.upper()} is not a valid zone\n')
+            zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
+
+        environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
+        while validate_environment(environment.upper()) is False:
+            print(text.Red + f'\n- {environment.upper()} is not a valid environment\n')
+            environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
+
+        categories = get_categories_ms(zone.upper(), environment)
+
+        if not categories:
+            print_finish_application_menu()
+
+        if categories:
+            print("Categories: [id, name]")
+
+            for category in categories:
+                print("- {id}, {name}".format(id=category['id'], name=category['name']))
+
+    elif selection == "3":
+        pass
 
 
 def associate_product_to_category_menu():
