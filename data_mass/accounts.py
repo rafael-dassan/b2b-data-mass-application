@@ -58,7 +58,7 @@ def check_account_exists_microservice(
             f"{base_url}"
             "/accounts"
             f"?vendorAccountId={account_id}"
-            f"&vendorId=58870cbc-7809-4e18-ba59-986b4992c842"
+            f"&vendorId=75b8c5bc-f5ff-4bcd-8614-d48ba2ecd40f"
         )   
 
     response = place_request(

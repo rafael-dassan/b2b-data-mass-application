@@ -26,7 +26,7 @@ def get_categories(
     bool
         Whenever the request completed successfully.
     """
-    base_url = get_microservice_base_url("environment")
+    base_url = get_microservice_base_url(environment)
     request_url = f"{base_url}/categories/?vendorId={vendor_id}"
     header = get_header_request(zone)
 
@@ -61,7 +61,7 @@ def get_category_by_id(
     bool
         Whenever the request completed successfully.
     """
-    base_url = get_microservice_base_url("environment")
+    base_url = get_microservice_base_url(environment)
     request_url = f"{base_url}/categories/{category_id}"
     header = get_header_request(zone)
 
@@ -111,7 +111,7 @@ def create_categories(
         is_v1 = True
         endpoint = "category-relay-service"
 
-    base_url = get_microservice_base_url("environment", is_v1)
+    base_url = get_microservice_base_url(environment, is_v1)
     request_url = f"{base_url}/{endpoint}"
     header = get_header_request(zone)
 
