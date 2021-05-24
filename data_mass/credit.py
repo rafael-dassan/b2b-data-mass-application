@@ -39,11 +39,6 @@ def add_credit_to_account_microservice(
         Whenever was possible to add credit to an account.
     """
     request_headers = get_header_request(zone, False, True, False, False)
-    from os import environ
-
-    token = environ["TOKEN"]
-    request_headers.update({"Authorization": token})
-
     ms_base_url = get_microservice_base_url(environment)
     
     # Create dictionary with credit values

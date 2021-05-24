@@ -28,11 +28,7 @@ def get_categories(
     """
     base_url = get_microservice_base_url("environment")
     request_url = f"{base_url}/categories/?vendorId={vendor_id}"
-
     header = get_header_request(zone)
-    from os import environ
-
-    header.update({"Authorization": environ["TOKEN"]})
 
     response = place_request(
         request_method="GET",
@@ -42,7 +38,7 @@ def get_categories(
     )
 
     if response.status_code == 202:
-        return True
+        return json.loads(response.content)
 
     return []
 
@@ -67,11 +63,7 @@ def get_category_by_id(
     """
     base_url = get_microservice_base_url("environment")
     request_url = f"{base_url}/categories/{category_id}"
-
     header = get_header_request(zone)
-    from os import environ
-
-    header.update({"Authorization": environ["TOKEN"]})
 
     response = place_request(
         request_method="GET",
@@ -121,11 +113,7 @@ def create_categories(
 
     base_url = get_microservice_base_url("environment", is_v1)
     request_url = f"{base_url}/{endpoint}"
-
     header = get_header_request(zone)
-    from os import environ
-
-    header.update({"Authorization": environ["TOKEN"]})
 
     if isinstance(categories, dict):
         categories = [categories]

@@ -5,6 +5,7 @@ import sys
 import time as t
 from datetime import date, datetime
 from time import time
+from urllib.parse import urlencode
 from uuid import uuid1
 
 import click
@@ -24,6 +25,7 @@ from data_mass.classes.text import text
 from data_mass.logger import log_to_file
 from data_mass.validations import (
     is_number,
+    validate_account_name,
     validate_environment,
     validate_option_request_selection,
     validate_structure,
@@ -31,7 +33,7 @@ from data_mass.validations import (
     validate_supplier_search_menu_structure,
     validate_zone_for_interactive_combos_ms,
     validate_zone_for_ms
-    )
+)
 
 
 # Validate option menu selection
@@ -134,8 +136,10 @@ def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclus
         'cache-control': 'no-cache',
         'timezone': timezone
     }
-
-    if use_jwt_auth:
+    
+    if zone == "US":
+        header['Authorization'] = get_jwt_token()
+    elif use_jwt_auth:
         header['Authorization'] = generate_hmac_jwt(account_id, jwt_app_claim)
     elif use_root_auth:
         header['Authorization'] = 'Basic cm9vdDpyb290'
@@ -324,6 +328,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(6), text.Yellow + 'Invoice')
         print(text.default_text_color + str(7), text.Yellow + 'Create rewards')
         print(text.default_text_color + str(8), text.Yellow + 'Create credit statement')
+        print(text.default_text_color + str(9), text.Yellow + 'Categories')
         selection = input(text.default_text_color + '\nPlease select: ')
         while not validate_option_request_selection(selection):
             print(text.Red + '\n- Invalid option\n')
@@ -336,6 +341,7 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(6), text.Yellow + 'Invoice')
             print(text.default_text_color + str(7), text.Yellow + 'Create rewards')
             print(text.default_text_color + str(8), text.Yellow + 'Create credit statement')
+            print(text.default_text_color + str(9), text.Yellow + 'Categories')
             selection = input(text.default_text_color + '\nPlease select: ')
     elif selection_structure == '2':
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
@@ -437,6 +443,49 @@ def print_available_options(selection_structure):
         finish_application()
 
     return selection
+
+from data_mass.category.microservice import get_categories
+
+
+def categories_menu():
+    print(text.default_text_color + str(0), text.Yellow + 'Close application')
+    print(text.default_text_color + str(1), text.Yellow + 'List categories')
+    print(text.default_text_color + str(2), text.Yellow + 'Associate product to category')
+    print(text.default_text_color + str(3), text.Yellow + 'Create category')
+    selection = input(text.default_text_color + '\nPlease select: ')
+    while not validate_option_request_selection(selection):
+        print(text.Red + '\n- Invalid option\n')
+        print(text.default_text_color + str(0), text.Yellow + 'Close application')
+        print(text.default_text_color + str(1), text.Yellow + 'List categories')
+        print(text.default_text_color + str(2), text.Yellow + 'Associate product to category')
+        print(text.default_text_color + str(3), text.Yellow + 'Create category')
+        selection = input(text.default_text_color + '\nPlease select: ')
+        
+    if selection == "1":
+        zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
+        while validate_zone_for_ms(zone.upper()) is False:
+            print(text.Red + f'\n- {zone.upper()} is not a valid zone\n')
+            zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
+
+        environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
+        while validate_environment(environment.upper()) is False:
+            print(text.Red + f'\n- {environment.upper()} is not a valid environment\n')
+            environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
+
+        vendor_id = input(text.default_text_color + 'Vendor Id: ')
+        while not validate_account_name(vendor_id):
+            print(text.Red + f'\n- {vendor_id.upper()} is not a valid vendor id\n')
+            environment = input(text.default_text_color + 'Vendor Id: ')
+
+        categories = get_categories(zone.upper(), environment, vendor_id)
+
+        if not categories:
+            print(f"\n{text.Red}There is no categories for {vendor_id} vendor.")
+            sys.exit()
+
+        print(categories)
+
+    sys.exit()
 
 
 # Print welcome menu
@@ -1062,3 +1111,89 @@ def get_header_request_supplier():
     }
 
     return header
+
+
+def get_jwt_token():
+    """
+    checks if there is any token, if it exists and has expired,\
+    a new one must be created.
+
+    Returns
+    -------
+    str
+        The jwt token.
+    """
+    access_token: str = None
+
+    try:
+        access_token = os.environ["TOKEN"]
+    except KeyError:
+        pass
+
+    if access_token is None or token_has_expired():
+        access_token = create_new_jwt_token()
+        os.environ["TOKEN"] = access_token
+
+    return access_token
+    
+
+def create_new_jwt_token():
+    """
+    Create a new jwt token.
+
+    Returns
+    -------
+    str
+        The new token.
+    """
+    client_id: str = "90ab23f8-7945-4b83-89ec-451a45c6a84d"
+    client_secret: str = "b6d700b8-9d74-4c2d-b56a-b63d87b7e5a3"
+
+    header: dict = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "requestTraceId": str(uuid1()),
+    }
+
+    query: str = urlencode({
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "scope": "openid",
+        "grant_type": "client_credentials"
+    })
+
+    request_url: str = get_microservice_base_url("SIT", False)
+    request_url: str = f"{request_url}/auth/token?{query}"
+
+    response = place_request(
+        request_method="POST",
+        request_url=request_url,
+        request_body="",
+        request_headers=header
+    )
+
+    content: dict = json.loads(response.content)
+    token = content.get("access_token", None)
+
+    os.environ["EXPIRATION_TIME"] = str(round(t.time() + 1800))
+
+    return f"Bearer {token}"
+
+
+def token_has_expired() -> bool:
+    """
+    Check if the current token has expired.
+    
+    Returns
+    -------
+    bool
+        Whenever a token has expired or not.
+    """
+    try:
+        expiration_date = os.environ["EXPIRATION_TIME"]
+    except KeyError:
+        return True
+
+    if t.time() > int(expiration_date):
+        return True
+
+    return False

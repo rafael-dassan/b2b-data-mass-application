@@ -26,8 +26,7 @@ COUNTRY_SEGMENT_VERIFICATION = ["PY"]
 def check_account_exists_microservice(
         account_id: str,
         zone: str,
-        environment: str,
-        vendor_id: str = None) -> bool:
+        environment: str) -> bool:
     """
     Check if a given `accout_id` exists in the microservice.
 
@@ -50,25 +49,18 @@ def check_account_exists_microservice(
         sku_product=False,
         account_id=account_id
     )
-
+    
     base_url = get_microservice_base_url(environment=environment)
-    # request_url = f"{base_url}/accounts?accountId={account_id}"
-    request_url = f"{base_url}/accounts?vendorAccountId={account_id}&vendorId=58870cbc-7809-4e18-ba59-986b4992c842"
-    
-    # base_url = get_microservice_base_url(environment=environment)
-    # request_url = f"{base_url}/accounts?accountId={account_id}"
-    
-    # if zone == "US" and vendor_id is None:
-    #     print("Generic print here.")
+    request_url = f"{base_url}/accounts?accountId={account_id}"
 
-    # if zone == "US":
-    #     request_url = (
-    #         f"{base_url}"
-    #         "/accounts"
-    #         f"?vendorAccountId={account_id}"
-    #         f"&vendorId={vendor_id}"
-    #     )   
-    
+    if zone == "US":
+        request_url = (
+            f"{base_url}"
+            "/accounts"
+            f"?vendorAccountId={account_id}"
+            f"&vendorId=58870cbc-7809-4e18-ba59-986b4992c842"
+        )   
+
     response = place_request(
         request_method='GET',
         request_url=request_url,
@@ -171,9 +163,11 @@ def create_account_ms(
     if zone == "US":
         schema = "data/create_account_us_payload.json"
         dict_values.update({"vendorAccountId": account_id})
+        use_jwt_auth = False
     else:
         schema = "data/create_account_payload.json"
         dict_values.update({"accountId": account_id})
+        use_jwt_auth = True
 
     content = pkg_resources.resource_string("data_mass", schema)
 
@@ -193,13 +187,9 @@ def create_account_ms(
 
     request_headers = get_header_request(
         zone=zone,
-        use_jwt_auth=True,
+        use_jwt_auth=use_jwt_auth,
         account_id=account_id
     )
-    # from os import environ
-
-    # token = environ["TOKEN"]
-    # request_headers.update({"Authorization": token})
     request_url = get_microservice_base_url(environment) + '/account-relay/'
 
     body: dict = json.loads(content.decode("utf-8"))

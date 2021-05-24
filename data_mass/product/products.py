@@ -82,13 +82,6 @@ def request_post_price_microservice(
             price_values,
             zone
         )
-    elif zone == "US":
-        request_url = f"{base_url}/price-relay/v2"
-        content: bytes = pkg_resources.resource_string(
-            "data_mass",
-            "data/create_sku_price_payload_v2.json"
-        )
-        request_body = content
     else:
         request_url = f"{base_url}/cart-calculation-relay/v2/prices"
         request_body = get_body_price_microservice_request_v2(
@@ -682,8 +675,6 @@ def create_product(
     """
     # Define headers
     request_headers = get_header_request(zone, False, True, False)
-    from os import environ
-    request_headers.update({"Authorization": environ["TOKEN"]})
 
     # Get base URL
     base_url = get_microservice_base_url(environment, False)
@@ -750,8 +741,6 @@ def create_product_v2(
         The API response.
     """
     request_headers = get_header_request(zone, False, True, False)
-    from os import environ
-    request_headers.update({"Authorization": environ["TOKEN"]})
 
     # Get base URL
     base_url = get_microservice_base_url(environment, False)
@@ -833,8 +822,6 @@ def delete_item_v2(
         Whnenever a deletions works it out.
     """
     request_headers = get_header_request(zone, False, True, False)
-    from os import environ
-    request_headers.update({"Authorization": environ["TOKEN"]})
 
     # Get base URL
     base_url = get_microservice_base_url(environment, False)
@@ -930,11 +917,7 @@ def set_item_enabled(
     -------
     Whenever the item is updated successfully or not.
     """
-    # Define headers
     request_headers = get_header_request(zone, True, False, False)
-    from os import environ
-
-    request_headers.update({"Authorization": environ["TOKEN"]})
     sku = product_data.get("sku")
 
     # Get base URL
@@ -946,23 +929,23 @@ def set_item_enabled(
         payload_path = "data/update_item_payload_v2.json"
 
         product_data.update({
-        "sku": product_data.get("sku"),
-        "name": product_data.get("name"),
-        "brandId": str(randint(1, 1000)),
-        "package": {
-            "count": 1,
-            "id": "01",
-            "itemCount": 12,
-            "name": "CD",
-            "pack": "string"
-        },
-        "container": {
-            "name": product_data["container.name"],
-            "size": product_data["container.size"],
-            "returnable": product_data["container.returnable"],
-            "unitOfMeasurement": product_data["container.unitOfMeasurement"]
-        }
-    })
+            "sku": product_data.get("sku"),
+            "name": product_data.get("name"),
+            "brandId": str(randint(1, 1000)),
+            "package": {
+                "count": 1,
+                "id": "01",
+                "itemCount": 12,
+                "name": "CD",
+                "pack": "string"
+            },
+            "container": {
+                "name": product_data["container.name"],
+                "size": product_data["container.size"],
+                "returnable": product_data["container.returnable"],
+                "unitOfMeasurement": product_data["container.unitOfMeasurement"]
+            }
+        })
     else:
         payload_path = "data/update_item_payload.json"
         product_data.update({

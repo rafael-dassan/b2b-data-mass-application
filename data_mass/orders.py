@@ -72,10 +72,6 @@ def request_order_creation(
         False,
         account_id
     )
-    from os import environ
-
-    token = environ["TOKEN"]
-    request_headers.update({"Authorization": token})
 
     base_url = get_microservice_base_url(environment)
 

@@ -161,7 +161,8 @@ def show_menu():
             '5': input_combos_menu,
             '6': invoice_menu,
             '7': create_rewards_to_account,
-            '8': create_credit_statement_menu
+            '8': create_credit_statement_menu,
+            '9': categories_menu
         }
     elif selection_structure == '2':
         switcher = {
