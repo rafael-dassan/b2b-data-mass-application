@@ -22,7 +22,7 @@ from data_mass.rewards.rewards_utils import print_input_decision, \
     post_combo_relay_account, print_input_combo_qty
 
 APP_B2B = 'b2b'
-APP_ADMIN = 'adminportal'
+APP_ADMIN = 'membership'
 
 # Enroll POC to a zone's reward program
 def enroll_poc_to_program(account_id, zone, environment, account_info):
