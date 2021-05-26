@@ -554,7 +554,7 @@ def get_account_delivery_address(zone: str) -> dict:
             'address': 'McDowell Street, 1639',
             'city': 'Nashville',
             'state': 'Tennessee',
-            'zipcode': 'N/A'
+            'zipcode': '87334'
         }
     }
 

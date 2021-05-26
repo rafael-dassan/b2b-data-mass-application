@@ -617,8 +617,9 @@ def generate_terms_information(zone):
     elif zone == 'ZA':
         terms_info.append('https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/terms/terms-za.html')
         terms_info.append('Initial terms added to the program')
-    elif zone == 'US':
-        terms_info.append('https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/terms/terms-za.html')
-        terms_info.append('Initial terms added to the program')
+    # TODO waiting for confirmation of the address to be used
+    # elif zone == 'US':
+    #     terms_info.append('')
+    #     terms_info.append('Initial terms added to the program')
 
     return terms_info

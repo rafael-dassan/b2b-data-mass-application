@@ -1,0 +1,46 @@
+{
+  "vendorAccountIds": [
+    "12399"
+  ],
+  "prices": [
+    {
+      "vendorItemId": "SKU0001-CASE",
+      "sku": "SKU0001",
+      "basePrice": 20.99,
+      "measureUnit": "CS",
+      "minimumPrice": 5.99,
+      "deposit": 3.99,
+      "consignment": 0.75,
+      "quantityPerPallet": 88,
+      "promotionalPrice": {
+        "price": 10.99,
+        "externalId": "ZTPM",
+        "validUntil": "2021-12-31"
+      },
+      "taxes": [
+        {
+          "taxId": "IVA",
+          "type": "$",
+          "value": 20.99,
+          "taxBaseInclusionIds": [
+          ],
+          "hidden": false,
+          "base": 10.99,
+          "conditions": {
+            "orderSubTotal": {
+              "minimumValue": 2000.99
+            }
+          }
+        }
+      ],
+      "charges": [
+        {
+          "chargeId": "LOGISTIC_COST",
+          "type": "$",
+          "value": 20.99,
+          "base": 10.99
+        }
+      ]
+    }
+  ]
+}

@@ -26,7 +26,7 @@ from data_mass.menus.product_menu import (
 )
 
 ZONES_NEW_ENDPOINT = ["AR", "PY", "PA"]
-ZONES_DIFF_CONTRACT = ["AR", "PY"]
+ZONES_DIFF_CONTRACT = ["AR", "PY", "US"]
 
 def generate_random_price_ids(qtd):
     if qtd < 1:
@@ -379,7 +379,7 @@ def get_body_price_inclusion_microservice_request(delivery_center_id):
     return body_price_inclusion
 
 
-from typing import Any
+from typing import Any, Dict
 
 
 def get_avaliable_categories(
@@ -618,7 +618,40 @@ def request_get_products_by_account_microservice(account_id, zone, environment):
         )
         return False
 
+def get_body_price_microservice_request_v2_us(
+    abi_id: str,
+    sku_product: str,
+    product_price_id: str,
+    price_values: dict,
+    zone: str = None,
+):
+    """
+    Create body for posting new product price rules (API version 2) to the Pricing Engine Relay Service
+    Args:
+        abi_id: account_id
+        sku_product: SKU unique identifier
+        product_price_id: price record unique identifier
+        price_values: price values dict, including tax, base price and deposit
+    Returns: new price body
+    """
+    
+    dict_values = {
+            "vendorAccountIds": [abi_id]
+    }
+    content: bytes = pkg_resources.resource_string(
+                "data_mass",
+                "data/create_sku_price_payload_v2_us.json"
+            )
+    json_data = json.loads(content.decode("utf-8"))
 
+    # Update the price values in runtime
+    for key in dict_values.keys():
+        json_object = update_value_to_json(json_data, key, dict_values[key])
+
+    # Create body
+    put_price_microservice_body = convert_json_to_string(json_object)
+
+    return put_price_microservice_body
 def get_body_price_microservice_request_v2(
     abi_id: str,
     sku_product: str,
@@ -635,7 +668,7 @@ def get_body_price_microservice_request_v2(
         price_values: price values dict, including tax, base price and deposit
     Returns: new price body
     """
-
+    
     # Create dictionary with price values
     dict_values = {
         "accounts": [abi_id],
@@ -1170,10 +1203,14 @@ def request_empties_discounts_creation(
     request_headers = get_header_request(zone)
 
     # Get base URL
-    request_url = (
-        get_microservice_base_url(environment, False)
-        + "/cart-calculation-relay/v2/prices"
-    )
+    if zone != "US":
+        request_url = (
+            get_microservice_base_url(environment, False)
+            + "/cart-calculation-relay/v2/prices"
+        )
+    else:
+       request_url = "https://bees-services-sit.eastus2.cloudapp.azure.com/api/price-relay/v2"
+
 
     # get data from Data Mass files
     content: bytes = pkg_resources.resource_string(
