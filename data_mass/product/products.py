@@ -82,6 +82,14 @@ def request_post_price_microservice(
             price_values,
             zone
         )
+    elif zone == "US":
+        request_url = "https://bees-services-sit.eastus2.cloudapp.azure.com/api/price-relay/v2"
+        request_body = get_body_price_microservice_request_v2_us(
+            account_id=account_id,
+            sku_product=sku_product,
+            product_price_id=product_price_id,
+            price_values=price_values
+        )
     else:
         request_url = f"{base_url}/cart-calculation-relay/v2/prices"
         request_body = get_body_price_microservice_request_v2(
@@ -105,6 +113,60 @@ def request_post_price_microservice(
     )
 
     return False
+
+
+def get_body_price_microservice_request_v2_us(
+        account_id: str,
+        sku_product: str,
+        product_price_id: str,
+        price_values: dict):
+    """
+    Create body por posting new product price rules for us.
+
+    Parameters
+    ----------
+    account_id : str
+    sku_product : str
+    product_price_id : str
+    price_values : dict
+
+    Returns
+    -------
+    str
+        The request body.
+    """
+    content = {
+        "vendorAccountIds": [account_id],
+        "prices": [
+            {
+                "vendorItemId": str(randint(1, 99999)),
+                "sku": sku_product,
+                "basePrice": price_values.get("basePrice"),
+                "measureUnit": "CS",
+                "minimumPrice": 0,
+                "deposit": price_values.get("deposit"),
+                "quantityPerPallet": price_values.get("quantityPerPallet"),
+                "measureUnitConversion": {
+                    "6PACK": 6,
+                    "CASE": 30,
+                    "LITER": 1
+                    },
+                "taxes": [
+                    {
+                        "taxId": product_price_id,
+                        "type": "$",
+                        "value": str(price_values.get("tax")),
+                        "taxBaseInclusionIds": [],
+                        "hidden": False
+                    }
+                ]
+            }
+        ]
+    }
+
+    body = json.dumps(content)
+
+    return body
 
 
 def generate_price_values(zone, product):
