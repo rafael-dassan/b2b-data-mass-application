@@ -23,11 +23,11 @@ from data_mass.menus.account_menu import (
     print_account_operations_menu,
     print_account_status_menu,
     print_alternative_delivery_date_menu,
+    print_eligible_rewards_menu,
     print_get_account_operations_menu,
     print_include_delivery_cost_menu,
     print_minimum_order_menu,
-    print_payment_method_menu,
-    print_eligible_rewards_menu
+    print_payment_method_menu
     )
 from data_mass.menus.algo_selling_menu import print_recommender_type_menu
 from data_mass.menus.deals_menu import (
@@ -827,8 +827,17 @@ def check_simulation_service_account_microservice_menu():
     else:
         payment_term = 0
 
+    option_change_date = validate_yes_no_change_date()
+    if option_change_date.upper() == "Y": 
+        delivery_date = validate_user_entry_date(
+            'Enter Date for Delivery-Date (YYYY-mm-dd)'
+    )
+    else:
+        tomorrow = datetime.today() + timedelta(1)
+        delivery_date = str(datetime.date(tomorrow))
+
     cart_response = request_order_simulation(zone, environment, abi_id, account[0]['deliveryCenterId'], order_items,
-                                             order_combos, empties_skus, payment_method, payment_term)
+                                             order_combos, empties_skus, payment_method, payment_term, delivery_date)
     if cart_response:
         process_simulation_microservice(cart_response)
     else:
