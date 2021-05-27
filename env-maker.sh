@@ -14,7 +14,7 @@ set -e
 MINIMUM_TARGET_VERSION="3.7"
 RECOMMENDED_VERSION="3.9"
 CURRENT_VERSION=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')
-VIRTUALENV_DIR=${1:-venv}
+VIRTUALENV_DIR="venv"
 SHOULD_INSTALL="1"
 POST_MERGE_HOOK_FILE=".git/hooks/post-merge"
 REMOTE_BRANCH_LAST_COMMIT=$(git rev-parse origin/master)
@@ -31,8 +31,99 @@ function python3_exists() {
     command -v python3 || { echo "0"; }
 }
 
-if [[ $MINIMUM_TARGET_VERSION -ge $CURRENT_VERSION ]] || [ "$(python3_exists)" == 0 ]; then
-    echo "${RED}The minimum Python version (which is $MINIMUM_TARGET_VERSION) isn't installed.${RESET}";
+function install() {
+    echo "${CYAN}Installing Data Mass...${RESET}"
+
+    python3 -m pip install .
+    echo "${GREEN}Done!${RESET}"
+}
+
+function update() {
+    echo "${CYAN}Fetching Data Mass updates...${RESET}"
+    git fetch
+    echo "${GREEN}Done!${RESET}"
+
+    if [[ ! $(git log | grep ${REMOTE_BRANCH_LAST_COMMIT}) ]]; then
+        echo "${RED}Your version of Data Mass is out of date.${RESET}"
+
+        if [[ $({ git diff --name-only ; git diff --name-only --staged ; } | sort | uniq) ]]; then
+            read -e -p "${RED}You have changed files. Do you want to continue with the update?${RESET} [Y/n] " YN
+
+            if [[ $YN == "y" || $YN == "Y" ]]; then
+                echo "${CYAN}Stashing modified files...${RESET}"
+                git stash
+
+                echo "${YELLOW}Your modified files are stashed. To recover, use \"git stash apply\".${RESET}"
+            else
+                echo "${RED}Please, resolve conflicts manually.${RESET}"
+                exit 1
+            fi
+        fi
+
+        echo "${CYAN}Pulling updates...${RESET}"
+        git pull --rebase origin master
+        echo "${GREEN}Done!${RESET}"
+    else
+        echo "${GREEN}Your Data Mass source code is up-to-date!${RESET}"
+    fi
+
+    if [[ -f "$POST_MERGE_HOOK_FILE" ]]; then
+        install
+        exit 1
+    fi
+}
+
+display_usage() {
+    echo "usage: $0 [-v] {string} [-u] {True|true|1}" >&2
+    echo
+    echo "arguments:"
+    echo "   -v, --virtualenv           The name of the virtualenv folder. Default to \"venv\""
+    echo "   -u, --update-only          Ignore environment creation, only update Data Mass"
+    exit 1
+}
+
+POSITIONA=()
+while [[ $# -gt 0 ]]
+do
+param="$1"
+
+case $param in 
+    -v|--virtualenv)
+    VIRTUALENV_DIR="$2"
+    shift
+    shift
+    ;;
+    -u|--update-only)
+    UPDATE_ONLY="$2"
+    shift
+    shift
+    ;;
+    -h|--help)
+    display_usage
+    shift
+    shift
+    ;;
+    *)
+    echo "${RED}Illegal option.${RESET}"
+    echo "${CYAN}Use \"--help\" for more details of usage.${RESET}"
+    exit 1 
+    ;;
+esac
+done
+
+set -- "${POSITIONAL[@]}"
+
+if [ $UPDATE_ONLY ]; then
+    if [ ! -d "venv" ] || [ ! -d $VIRTUALENV_DIR ]; then
+        source "${VIRTUALENV_DIR}/bin/activate"
+    fi
+
+    update
+    install
+    exit 1
+fi
+
+if (( $(echo $MINIMUM_TARGET_VERSION $CURRENT_VERSION | awk '{if ($1 > $2) print 1;}') )) || [ "$(python3_exists)" == 0 ]; then    echo "${RED}The minimum Python version (which is $MINIMUM_TARGET_VERSION) isn't installed.${RESET}";
     echo "${CYAN}Installing Python version $RECOMMENDED_VERSION, which is the recommended one...${RESET}";
     sudo apt install python+="$TARGET_VERSION"
     
@@ -59,38 +150,13 @@ if [ ! -d "venv" ] || [ ! -d $VIRTUALENV_DIR ]; then
 else
     echo "${RED}You already have a virtualenv configured!${RESET}"
     echo "${RED}To enable a virtualenv run: \"source $VIRTUALENV_DIR/bin/activate\".${RESET}"
-    echo "${RED}Or, if you want to create a new one, delete the current virtualenv (rm -rf \"${VIRTUALENV_DIR}\") and run the script again.${RESET}"
-
+    echo
+    echo "${YELLOW}If you want to create a new one, delete the current virtualenv (rm -rf \"${VIRTUALENV_DIR}\") and run the script again.${RESET}"
+    echo "${YELLOW}You can also update the Data Mass version of your virtualenv by running this script with the \"--update-only true \" flag.${RESET}"
+    echo
     echo "${CYAN}Skipping virtualenv configuration.${RESET}"
     source "${VIRTUALENV_DIR}/bin/activate"
     SHOW_VIRTUALENV_MESSAGE="0"
-fi
-
-echo "${CYAN}Fetching Data Mass updates...${RESET}"
-git fetch
-echo "${GREEN}Done!${RESET}"
-
-if [[ ! $(git log | grep ${REMOTE_BRANCH_LAST_COMMIT}) ]]; then
-    echo "${RED}Your version of Data Mass is out of date.${RESET}"
-
-    if [[ $({ git diff --name-only ; git diff --name-only --staged ; } | sort | uniq) ]]; then
-        read -e -p "${RED}You have changed files. Do you want to continue with the update?${RESET} [Y/n] " YN
-
-        if [[ $YN == "y" || $YN == "Y" ]]; then
-                echo "${CYAN}Stashing modified files...${RESET}"
-                git stash
-
-                echo "${YELLOW}Your modified files are stashed. To recover, use \"git stash apply\".${RESET}"
-        fi
-    fi
-
-    echo "${CYAN}Pulling updates...${RESET}"
-    git pull --rebase origin master
-    echo "${GREEN}Done!${RESET}"
-
-    if [[ -f "$POST_MERGE_HOOK_FILE" ]]; then
-        SHOULD_INSTALL="0"
-    fi
 fi
 
 if [[ ! -f "$POST_MERGE_HOOK_FILE" ]]; then
@@ -102,16 +168,14 @@ cat << EOF > "$POST_MERGE_HOOK_FILE"
 import sys
 from subprocess import call
 
-from data_mass.classes.text import text
 
-
-print(text.Cyan + "Updating data mass..." + text.Default)
+print("Updating data mass...")
 exit_code = call(["pip3 install ."], shell=True)
 
 if not exit_code:
-    print(text.Green + "Done!" + text.Default)
+    print("Done!")
 else:
-    print(text.Red + "Error while updating Data Mass.")
+    print("Error while updating Data Mass.")
     print("Update manually by doing:\n")
     print("pip install .")
 
@@ -120,14 +184,7 @@ EOF
     echo "${GREEN}Done!${RESET}"
 fi
 
-if [ $SHOULD_INSTALL == "1" ]; then
-    echo "${CYAN}Installing Data Mass...${RESET}"
-
-    python3 -m pip install .
-    echo "${GREEN}Done!${RESET}"
-fi
-
-
 if [ $SHOW_VIRTUALENV_MESSAGE == "1" ]; then
+    install
     echo "${CYAN}NOTE: to start the virtualenv, run \"source $VIRTUALENV_DIR/bin/activate\".${RESET}"
 fi
