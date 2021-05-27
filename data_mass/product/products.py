@@ -608,7 +608,7 @@ def request_get_products_by_account_microservice(account_id, zone, environment):
     else:
         request_url = (
         get_microservice_base_url(environment)
-        + "/catalog-service/catalog?accountId="
+        + "/catalog-service/catalog/items?accountId=&projection=SMALL&includeDiscount=False&includeAllPromotions=False"
         + account_id
         + "&projection=LIST"
         )
@@ -700,7 +700,10 @@ def request_get_account_product_assortment(
     headers = get_header_request(zone, True, False, False, False, account_id)
 
     # Get base URL
-    request_url = (
+    if zone == "US":
+      request_url =  "https://services-sit.bees-platform.dev/v1/product-assortment-relay/inclusion"
+    else:
+        request_url = (
         get_microservice_base_url(environment)
         + "/product-assortment/?accountId="
         + account_id

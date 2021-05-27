@@ -142,8 +142,8 @@ def execute_preconditions(country, environment, account_params, order_database_p
     delete_recommendation(account_params.get('id'), country, environment, 'CROSS_SELL_UP_SELL')
 
     logger.info("delete_orders for account %s", account_params.get('id'))
-    delete_from_database_by_account(order_database_params.get('client'), order_database_params.get('db_name'),
-                                    order_database_params.get('collection_name'), order_database_params.get('prefix'))
+  #  delete_from_database_by_account(order_database_params.get('client'), order_database_params.get('db_name'),
+#                                 order_database_params.get('collection_name'), order_database_params.get('prefix'))
 
     logger.info("delete_deals for account %s", account_params.get('id'))
     delete_deal(account_params.get('id'), country, environment)

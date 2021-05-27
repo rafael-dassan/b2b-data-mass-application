@@ -41,8 +41,8 @@ def apply_run_preconditions(row, country, environment):
 
     logger.info("delete_orders for account %s", account_id)
     order_database_params = get_database_params(country, environment, 'order-service-ms')
-    delete_from_database_by_account(order_database_params.get('client'), order_database_params.get('db_name'),
-                                    order_database_params.get('collection_name'), account_id)
+  #  delete_from_database_by_account(order_database_params.get('client'), order_database_params.get('db_name'),
+  #                                 order_database_params.get('collection_name'), account_id)
 
 
 def delete_deal(account_id, country, environment):
@@ -116,19 +116,32 @@ def delete_invoice(account_id, country, environment):
         country: e.g., AR, BR, CO, DO, MX, ZA
         environment: e.g., SIT, UAT
     """
-    invoices_by_account = get_invoices(country, account_id, environment)
-    if not invoices_by_account:
-        logger.error(log(Message.RETRIEVE_INVOICE_ERROR, {'account_id': account_id}))
+    if country != "US":
+        invoices_by_account = get_invoices(country, account_id, environment)
+        if not invoices_by_account:
+            logger.error(log(Message.RETRIEVE_INVOICE_ERROR, {'account_id': account_id}))
+        else:
+            invoice_ids = list()
+            for i in invoices_by_account['data']:
+                invoice_id = i['invoiceId']
+                invoice_ids.append(invoice_id)
+
+            for i in range(len(invoice_ids)):
+                if False == delete_invoice_by_id(country, environment, invoice_ids[i]):
+                    logger.error(log(Message.DELETE_INVOICE_ERROR, {'account_id': account_id}))
     else:
-        invoice_ids = list()
-        for i in invoices_by_account['data']:
-            invoice_id = i['invoiceId']
-            invoice_ids.append(invoice_id)
+        invoices_by_account = get_invoices(country, account_id, environment)
+        if not invoices_by_account:
+            logger.error(log(Message.RETRIEVE_INVOICE_ERROR, {'vendorAccountIds': account_id}))
+        else:
+            invoice_ids = list()
+            for i in invoices_by_account['data']:
+                invoice_id = i['invoiceId']
+                invoice_ids.append(invoice_id)
 
-        for i in range(len(invoice_ids)):
-            if False == delete_invoice_by_id(country, environment, invoice_ids[i]):
-                logger.error(log(Message.DELETE_INVOICE_ERROR, {'account_id': account_id}))
-
+            for i in range(len(invoice_ids)):
+                if False == delete_invoice_by_id(country, environment, invoice_ids[i]):
+                    logger.error(log(Message.DELETE_INVOICE_ERROR, {'vendorAccountIds': account_id}))
 
 def delete_recommendation(account_id, country, environment, use_case):
     """
