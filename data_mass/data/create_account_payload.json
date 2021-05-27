@@ -51,9 +51,9 @@
   "hasEmptiesLoan": false,
   "hasOverprice": false,
   "salesRoute": null,
-  "potential": "DM-POTENT",
-  "segment": "DM-SEG",
-  "subSegment": "DM-SUBSEG",
+  "potential": null,
+  "segment": null,
+  "subSegment": null,
   "status": "string",
   "taxId": "string"
 }

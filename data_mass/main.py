@@ -26,7 +26,8 @@ from data_mass.menus.account_menu import (
     print_get_account_operations_menu,
     print_include_delivery_cost_menu,
     print_minimum_order_menu,
-    print_payment_method_menu
+    print_payment_method_menu,
+    print_eligible_rewards_menu
     )
 from data_mass.menus.algo_selling_menu import print_recommender_type_menu
 from data_mass.menus.deals_menu import (
@@ -1363,7 +1364,8 @@ def account_menu():
         '4': lambda: flow_update_account_name(zone, environment, account_id),
         '5': lambda: flow_update_account_status(zone, environment, account_id),
         '6': lambda: flow_update_account_minimum_order(zone, environment, account_id),
-        '7': lambda: flow_update_account_payment_method(zone, environment, account_id)
+        '7': lambda: flow_update_account_payment_method(zone, environment, account_id),
+        '8': lambda: flow_update_account_rewards_eligibility(zone, environment, account_id)
     }.get(operation, lambda: None)()
 
 
@@ -1373,6 +1375,7 @@ def flow_create_account(zone, environment, account_id):
     delivery_address = get_account_delivery_address(zone)
     account_status = print_account_status_menu()
     option_include_minimum_order = print_minimum_order_menu()
+    account_eligible_rewards = print_eligible_rewards_menu()
 
     if option_include_minimum_order == 'Y':
         minimum_order = get_minimum_order_info()
@@ -1386,13 +1389,13 @@ def flow_create_account(zone, environment, account_id):
 
     # Call create account function
     create_account_response = create_account_ms(account_id, name, payment_method, minimum_order, zone, environment,
-                                                delivery_address, account_status, enable_empties_loan)
+                                                delivery_address, account_status, enable_empties_loan, account_eligible_rewards)
 
     if create_account_response:
         print(text.Green + f'\n- Your account {account_id} has been created successfully')
 
         # Input default credit to the account so it won't be `null` in the Account Service database
-        if False == add_credit_to_account_microservice(account_id, zone, environment, 0, 0):
+        if not add_credit_to_account_microservice(account_id, zone, environment, 0, 0):
             print_finish_application_menu()
     else:
         print_finish_application_menu()
@@ -1467,6 +1470,11 @@ def flow_update_account_name(zone, environment, account_id):
         print_finish_application_menu()
     account_data = account[0]
 
+    if account_data['segment'] == 'DM-SEG':
+        eligible_rewards = True
+    else:
+        eligible_rewards = False
+
     name = print_account_name_menu()
 
     minimum_order = get_minimum_order_list(account_data['minimumOrder'])
@@ -1474,7 +1482,7 @@ def flow_update_account_name(zone, environment, account_id):
     create_account_response = create_account_ms(account_id, name, account_data['paymentMethods'],
                                                 minimum_order, zone, environment,
                                                 account_data['deliveryAddress'], account_data['status'],
-                                                account_data['hasEmptiesLoan'])
+                                                account_data['hasEmptiesLoan'], eligible_rewards)
 
     if create_account_response:
         print(text.Green + '\n- Account name updated for the account {account_id}'
@@ -1490,6 +1498,11 @@ def flow_update_account_status(zone, environment, account_id):
         print_finish_application_menu()
     account_data = account[0]
 
+    if account_data['segment'] == 'DM-SEG':
+        eligible_rewards = True
+    else:
+        eligible_rewards = False
+
     account_status = print_account_status_menu()
 
     minimum_order = get_minimum_order_list(account_data['minimumOrder'])
@@ -1497,7 +1510,7 @@ def flow_update_account_status(zone, environment, account_id):
     create_account_response = create_account_ms(account_id, account_data['name'], account_data['paymentMethods'],
                                                 minimum_order, zone, environment,
                                                 account_data['deliveryAddress'], account_status,
-                                                account_data['hasEmptiesLoan'])
+                                                account_data['hasEmptiesLoan'], eligible_rewards)
 
     if create_account_response:
         print(text.Green + '\n- Account status updated to {account_status} for the account {account_id}'
@@ -1513,6 +1526,11 @@ def flow_update_account_minimum_order(zone, environment, account_id):
         print_finish_application_menu()
     account_data = account[0]
 
+    if account_data['segment'] == 'DM-SEG':
+        eligible_rewards = True
+    else:
+        eligible_rewards = False
+
     option_include_minimum_order = print_minimum_order_menu()
 
     if option_include_minimum_order == 'Y':
@@ -1523,7 +1541,7 @@ def flow_update_account_minimum_order(zone, environment, account_id):
     create_account_response = create_account_ms(account_id, account_data['name'], account_data['paymentMethods'],
                                                 minimum_order, zone, environment,
                                                 account_data['deliveryAddress'], account_data['status'],
-                                                account_data['hasEmptiesLoan'])
+                                                account_data['hasEmptiesLoan'], eligible_rewards)
 
     if create_account_response:
         print(text.Green + '\n- Minimum order updated for the account {account_id}'
@@ -1539,6 +1557,11 @@ def flow_update_account_payment_method(zone, environment, account_id):
         print_finish_application_menu()
     account_data = account[0]
 
+    if account_data['segment'] == 'DM-SEG':
+        eligible_rewards = True
+    else:
+        eligible_rewards = False
+
     payment_method = print_payment_method_menu(zone)
 
     minimum_order = get_minimum_order_list(account_data['minimumOrder'])
@@ -1546,10 +1569,33 @@ def flow_update_account_payment_method(zone, environment, account_id):
     create_account_response = create_account_ms(account_id, account_data['name'], payment_method,
                                                 minimum_order, zone, environment,
                                                 account_data['deliveryAddress'], account_data['status'],
-                                                account_data['hasEmptiesLoan'])
+                                                account_data['hasEmptiesLoan'], eligible_rewards)
 
     if create_account_response:
         print(text.Green + '\n- Payment method updated for the account {account_id}'
+              .format(account_id=account_id))
+    else:
+        print_finish_application_menu()
+
+
+def flow_update_account_rewards_eligibility(zone, environment, account_id):
+    # Call check account exists function
+    account = check_account_exists_microservice(account_id, zone, environment)
+    if not account:
+        print_finish_application_menu()
+    account_data = account[0]
+
+    account_eligible_rewards = print_eligible_rewards_menu()
+
+    minimum_order = get_minimum_order_list(account_data['minimumOrder'])
+
+    create_account_response = create_account_ms(account_id, account_data['name'], account_data['paymentMethods'],
+                                                minimum_order, zone, environment,
+                                                account_data['deliveryAddress'], account_data['status'],
+                                                account_data['hasEmptiesLoan'], account_eligible_rewards)
+
+    if create_account_response:
+        print(text.Green + '\n- Rewards eligibility updated for the account {account_id}'
               .format(account_id=account_id))
     else:
         print_finish_application_menu()

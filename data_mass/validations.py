@@ -130,7 +130,7 @@ def validate_invoice_payment_method(option):
 
 
 def validate_account_operations_structure(option):
-    options = ['1', '2', '3', '4', '5', '6', '7']
+    options = ['1', '2', '3', '4', '5', '6', '7', '8']
     return option in options
 
 

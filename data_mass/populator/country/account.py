@@ -17,7 +17,9 @@ def populate_pocs(country, environment, dataframe_accounts):
 
 
 def apply_populate_poc(row, country, environment):
-    populate_poc(country, environment,
+    populate_poc(
+        country,
+        environment,
         row['account_id'],
         row['account_name'],
         row['payment_method'],
@@ -25,14 +27,15 @@ def apply_populate_poc(row, country, environment):
         row['balance'],
         row['amount_of_products'],
         row['has_delivery_window'],
+        row['eligible_rewards'],
         row['products'])
 
 
 # Populate the POC
 def populate_poc(country, environment, account_id, account_name, payment_method, credit, balance, amount_of_products,
-                 has_delivery_window, products=None, option='1'):
+                 has_delivery_window, eligible_rewards, products=None, option='1'):
     
-    populate_account(country, environment, account_id, account_name, payment_method)
+    populate_account(country, environment, account_id, account_name, payment_method, eligible_rewards)
     if has_delivery_window:
         populate_delivery_window(country, environment, account_id, option)
     populate_credit(country, environment, account_id, credit, balance)
@@ -49,9 +52,10 @@ def populate_poc(country, environment, account_id, account_name, payment_method,
 
 
 # Populate an account
-def populate_account(country, environment, account_id, account_name, payment_method):
+def populate_account(country, environment, account_id, account_name, payment_method, eligible_rewards):
     delivery_address = get_account_delivery_address(country)
-    if not create_account_ms(account_id, account_name, payment_method, None, country, environment, delivery_address):
+    if not create_account_ms(account_id, account_name, payment_method, None, country, environment, delivery_address, 'ACTIVE', False,
+                             eligible_rewards):
         logger.error(log(Message.ACCOUNT_ERROR, {"account_id": account_id}))
 
 

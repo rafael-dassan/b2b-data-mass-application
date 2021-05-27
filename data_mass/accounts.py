@@ -107,7 +107,8 @@ def create_account_ms(
         environment: str,
         delivery_address: dict,
         account_status: str = 'ACTIVE',
-        enable_empties_loan: bool = False):
+        enable_empties_loan: bool = False,
+        eligible_rewards: bool = True):
     """
     Create account on the microservice.
 
@@ -122,6 +123,7 @@ def create_account_ms(
     delivery_address : dict
     account_status : str
     enable_empties_loan : bool
+    eligible_rewards : bool
 
     Returns
     -------
@@ -164,6 +166,18 @@ def create_account_ms(
         )
     else:
         set_to_dictionary(dict_values, 'minimumOrder', minimum_order)
+
+    # If the user chooses to make an account eligible for rewards program,
+    # we will include the necessary information to match with a Data Mass available one
+    # If not, we associate random information that will not match with any available program
+    if eligible_rewards:
+        set_to_dictionary(dict_values, 'potential', 'DM-POTENT')
+        set_to_dictionary(dict_values, 'segment', 'DM-SEG')
+        set_to_dictionary(dict_values, 'subSegment', 'DM-SUBSEG')
+    else:
+        set_to_dictionary(dict_values, 'potential', 'POTENT')
+        set_to_dictionary(dict_values, 'segment', 'SEG')
+        set_to_dictionary(dict_values, 'subSegment', 'SUBSEG')
 
     request_headers = get_header_request(zone, False, True, False, False)
     request_url = get_microservice_base_url(environment) + '/account-relay/'

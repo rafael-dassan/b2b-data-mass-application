@@ -59,7 +59,7 @@ def execute_test(country, environment):
     logger.info("populate_accounts for %s/%s", country, environment)
     populate_poc(country, environment, account_params.get('id'), account_params.get('name'), account_params.get('payment_method'),
                  account_params.get('credit'), account_params.get('balance'), account_params.get('amount_of_products'),
-                 account_params.get('has_delivery_window'), [product_params.get('sku')])
+                 account_params.get('has_delivery_window'), account_params.get('eligible_rewards'), [product_params.get('sku')])
 
     logger.info("populate_users_iam_b2c for %s/%s", country, environment)
     populate_user_iam_b2c(country, environment, user_params.get('email'), user_params.get('password'), [account_params.get('id')])
@@ -163,7 +163,8 @@ def get_account_params(country):
         'credit': '30000',
         'balance': '30000',
         'amount_of_products': 100,
-        'has_delivery_window': True
+        'has_delivery_window': True,
+        'eligible_rewards': True
     }
 
 
