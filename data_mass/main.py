@@ -532,9 +532,9 @@ def order_menu():
         print_finish_application_menu()
     elif product_offers == 'not_found':
         print(
-            text.Red
-            + f'\n- There is no product associated '
-            'with the account {account_id}'
+            f'{text.Red}'
+            '\n- There is no product '
+            f'associated with the account {account_id}'
         )
         print_finish_application_menu()
 
@@ -864,8 +864,7 @@ def deals_menu():
     if not product_offers:
         print_finish_application_menu()
     elif product_offers == 'not_found':
-        print(text.Red + '\n- [Catalog Service] There is no product associated with the account {account_id}'
-              .format(account_id=account_id))
+        print(text.Red + f'\n- [Catalog Service] There is no product associated with the account {account_id}')
         print_finish_application_menu()
 
     sku_list = list()
@@ -1151,8 +1150,7 @@ def flow_associate_products_to_account(zone, environment):
         if not products:
             print_finish_application_menu()
         elif products == 'not_found':
-            print(text.Red + '\n- [Product Assortment Service] There is no product associated with the account '
-                             '{account_id}'.format(account_id=account_id))
+            print(text.Red + f'\n- [Product Assortment Service] There is no product associated with the account {account_id}')
             print_finish_application_menu()
 
         skus_id = list()
@@ -1251,8 +1249,7 @@ def flow_input_recommended_products_to_account(zone, environment):
     if not product_offers:
         print_finish_application_menu()
     elif product_offers == 'not_found':
-        print(text.Red + '\n- [Catalog Service] There is no product associated with the account {account_id}'
-              .format(account_id=account_id))
+        print(text.Red + f'\n- [Catalog Service] There is no product associated with the account {account_id}')
         print_finish_application_menu()
 
     items = list()

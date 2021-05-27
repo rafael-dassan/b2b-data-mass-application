@@ -17,7 +17,7 @@ from data_mass.common import (
     place_request,
     return_first_and_last_date_year_payload,
     update_value_to_json
-    )
+)
 
 
 def request_create_deal_us(account_id, zone, environment, deal_id):
@@ -440,6 +440,8 @@ def create_stepped_discount_with_limit(account_id, sku, zone, environment, index
 
     if zone == 'ZA':
         promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id)
+    elif zone == "US":
+        promotion_response = request_create_deal_us(account_id, zone, environment, deal_id)
     else:
         promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
 
@@ -473,6 +475,8 @@ def create_stepped_discount(account_id, sku, zone, environment, ranges, deal_id=
 
     if zone == 'ZA':
         promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id)
+    elif zone == "US":
+        promotion_response = request_create_deal_us(account_id, zone, environment, deal_id)
     else:
         promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
 
@@ -506,6 +510,8 @@ def create_free_good(account_id, sku_list, zone, environment, proportion, quanti
 
     if zone == 'ZA':
         promotion_response = request_create_deal_v1(account_id, sku_list[0]['sku'], deal_type, zone, environment, deal_id)
+    elif zone == "US":
+        promotion_response = request_create_deal_us(account_id, zone, environment, deal_id)
     else:
         promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
 
@@ -537,6 +543,8 @@ def create_stepped_free_good(account_id, sku, zone, environment, ranges, deal_id
 
     if zone == 'ZA':
         promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id)
+    elif zone == "US":
+        promotion_response = request_create_deal_us(account_id, zone, environment, deal_id)
     else:
         promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
 
@@ -566,6 +574,8 @@ def create_interactive_combos(account_id, sku, zone, environment, index_range, d
 
     if zone == 'ZA':
         promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment)
+    elif zone == "US":
+        promotion_response = request_create_deal_us(account_id, zone, environment)
     else:
         promotion_response = request_create_deal_v2(deal_type, zone, environment)
 
@@ -595,6 +605,8 @@ def create_interactive_combos_v2(account_id, sku, zone, environment, index_range
 
     if zone == 'ZA':
         promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment)
+    elif zone == "US":
+        promotion_response = request_create_deal_us(account_id, zone, environment)
     else:
         promotion_response = request_create_deal_v2(deal_type, zone, environment)
 
@@ -638,7 +650,10 @@ def request_create_free_good_cart_calculation(account_id, deal_id, zone, environ
         accumulation_type = None
     
     # Get base URL
-    request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/deals'
+    if zone == "US":
+        request_url = get_microservice_base_url(environment, False) + '/deal-relay/v2'
+    else:
+        request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/deals'
 
     # Get deal's start and end dates
     dates_payload = return_first_and_last_date_year_payload()
@@ -727,7 +742,10 @@ def request_create_stepped_free_good_cart_calculation(account_id, deal_id, zone,
         accumulation_type = None
 
     # Get base URL
-    request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/deals'
+    if zone == "US":
+        request_url = get_microservice_base_url(environment, False) + '/deal-relay/v2'
+    else:
+        request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/deals'
 
     # Get deal's start and end dates
     dates_payload = return_first_and_last_date_year_payload()
@@ -810,7 +828,10 @@ def request_create_discount_cart_calculation(account_id, deal_id, zone, environm
         accumulation_type = None
 
     # Get base URL
-    request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/deals'
+    if zone == "US":
+        request_url = get_microservice_base_url(environment, False) + '/deal-relay/v2'
+    else:
+        request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/deals'
 
     # Get deal's start and end dates
     dates_payload = return_first_and_last_date_year_payload()
@@ -886,7 +907,10 @@ def request_create_stepped_discount_cart_calculation(account_id, deal_id, zone, 
         accumulation_type = None
     
     # Get base URL
-    request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/deals'
+    if zone == "US":
+        request_url = get_microservice_base_url(environment, False) + '/deal-relay/v2'
+    else:
+        request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/deals'
 
     # Get deal's start and end dates
     dates_payload = return_first_and_last_date_year_payload()
@@ -970,7 +994,10 @@ def request_create_stepped_discount_with_limit_cart_calculation(account_id, deal
         accumulation_type = None
     
     # Get base URL
-    request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/deals'
+    if zone == "US":
+        request_url = get_microservice_base_url(environment, False) + '/deal-relay/v2'
+    else:
+        request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/deals'
 
     # Get deal's start and end dates
     dates_payload = return_first_and_last_date_year_payload()
@@ -1039,7 +1066,10 @@ def request_create_interactive_combos_cart_calculation(account_id, deal_id, zone
     """
 
     # Get base URL
-    request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/deals'
+    if zone == "US":
+        request_url = get_microservice_base_url(environment, False) + '/deal-relay/v2'
+    else:
+        request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/deals'
 
     # Create dictionary with deal's values
     dict_values = {
@@ -1109,8 +1139,10 @@ def request_create_interactive_combos_cart_calculation_v2(account_id, deal_id, z
     Returns: Success if the request went ok and the status code if there's a problem
     """
 
-    # Get base URL
-    request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/deals'    
+    if zone == "US":
+        request_url = get_microservice_base_url(environment, False) + '/deal-relay/v2'
+    else:
+        request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/deals'    
 
     # Create dictionary with deal's values
     dict_values = {
