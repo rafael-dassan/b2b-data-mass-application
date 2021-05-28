@@ -37,14 +37,25 @@ def request_order_creation(
 
     """
     Create an order through the Order Service
-    Args:
-        account_id: POC unique identifier
-        delivery_center_id: POC's delivery center
-        zone: e.g., AR, BR, CO, DO, MX, ZA
-        environment: e.g., DEV, SIT, UAT
-        order_status: e.g., PLACED, CANCELLED, etc
-        order_items: list of SKUs
-        allow_order_cancel: `Y` or `N`
+    
+    Parameters
+    ----------
+        account_id : int
+            POC unique identifier
+        delivery_center_id : int
+            POC's delivery center
+        zone : str
+            e.g., AR, BR, DO, etc
+        environment : str
+            e.g., DEV, SIT, UAT
+        order_status : str 
+            e.g., PLACED, CANCELLED, etc
+        order_items : list
+            list of SKUs
+        allow_order_cancel : str
+            `Y` or `N`
+        delivery_date : str
+            desired delivery date
 
     Returns: new json_data if success or error message in case of failure
     """
@@ -81,12 +92,22 @@ def create_order_payload(
 ):
     """
     Create payload for order creation
-    Args:
-        account_id: POC unique identifier
-        delivery_center_id: POC's delivery center
-        order_items: list of SKUs
-        allow_order_cancel: `Y` or `N`
-        order_status: e.g., PLACED, CANCELLED, etc
+    
+    Parameters
+    ----------
+    account_id : int
+        POC unique identifier
+    delivery_center_id : int
+        POC's delivery center
+    allow_order_cancel : str
+        `Y` or `N`
+    order_items : list
+        list of SKUs
+    order_status : str 
+        e.g., PLACED, CANCELLED, etc
+    delivery_date : str
+        desired delivery date
+
     Returns: order payload
     """
     # Sets the format of the placement date of the order (current date and time)
@@ -155,10 +176,15 @@ def create_order_payload(
 def request_changed_order_creation(zone, environment, order_data):
     """
     Change/Update order information through the Order Relay Service
-    Args:
-        zone: e.g., AR, BR, CO, DO, MX, ZA
-        environment: e.g., DEV, SIT, UAT
-        order_data: order information
+    
+    Parameters
+    ----------
+    zone : str
+        e.g., AR, BR, DO, etc
+    environment : str
+        e.g., DEV, SIT, UAT
+    order_data : list
+        order information
 
     Returns `success` or error message in case of failure
     """
@@ -185,8 +211,11 @@ def request_changed_order_creation(zone, environment, order_data):
 def get_changed_order_payload(order_data):
     """
     Create payload for order update
-    Args:
-        order_data: order information
+    
+    Parameters
+    ----------
+    order_data : list 
+        order information
 
     Returns: updated order payload
     """
@@ -224,8 +253,11 @@ def get_changed_order_payload(order_data):
 def display_specific_order_information(orders):
     """
     Display order information
-    Args:
-        orders: order data by account and order ID
+
+    Parameters
+    ----------
+    orders : list
+        order data by account and order ID
 
     Returns: a table containing the available order information
     """
@@ -290,8 +322,11 @@ def display_specific_order_information(orders):
 def display_all_order_information(orders):
     """
     Display all order information by POC
-    Args:
-        orders: order data by account
+
+    Parameters
+    ----------
+    orders : list
+        order data by account
 
     Returns: a table containing the available order information
     """
@@ -308,8 +343,11 @@ def display_all_order_information(orders):
 def validate_order_parameters(order):
     """
     Validate order parameters
-    Args:
-        order: order information
+
+    Parameters
+    ----------
+    order : list
+        order information
 
     Returns: validated order values
     """
@@ -352,12 +390,19 @@ def validate_order_parameters(order):
 def check_if_order_exists(account_id, zone, environment, order_id, order_status=None):
     """
     Check if an order exists via Order Service
-    Args:
-        account_id: POC unique identifier
-        zone: e.g., AR, BR, CO, DO, MX, ZA
-        environment: e.g., DEV, SIT, UAT
-        order_id: order unique identifier
-        order_status: order status, e.g., PLACED, DELIVERED
+    
+    Parameters
+    ----------
+    account_id : int
+        POC unique identifier
+    zone : str
+        e.g., AR, BR, DO, etc
+    environment : str
+        e.g., DEV, SIT, UAT
+    order_id : str 
+        order unique identifier
+    order_status : str 
+        order status, e.g., PLACED, DELIVERED
 
     Returns:
         empty: if an account does not have any order
@@ -468,16 +513,23 @@ def get_order_items(order_data, zone):
 
 def request_get_order_by_date_updated(zone, environment, account_id, order_prefix):
     """
-        Check if an order exists via Order Service
-        Args:
-            account_id: POC unique identifier
-            zone: e.g., AR, BR, CO, DO, MX, ZA
-            environment: e.g., DEV, SIT, UAT
-            order_prefix: order unique identifier
-        Returns:
-            json_data: order response data
-            false: if an error comes from back-end
-        """
+    Check if an order exists via Order Service
+        
+    Parameters
+    ----------
+    account_id : int
+        POC unique identifier
+    zone : str
+        e.g., AR, BR, DO, etc
+    environment : str
+        e.g., DEV, SIT, UAT
+    order_prefix : str
+        order unique identifier
+        
+    Returns:
+        json_data: order response data
+        false: if an error comes from back-end
+    """
     # Get header request
     request_headers = get_header_request(zone, True, False, False, False, account_id)
 
