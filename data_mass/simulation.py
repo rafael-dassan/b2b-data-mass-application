@@ -52,6 +52,8 @@ def request_order_simulation(
         desired payment method (default is CASH)
     payment_term : bool
         payment terms according to the payment method
+    delivery_date: str
+        desired delivery date
 
     Returns
     -------

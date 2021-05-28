@@ -794,9 +794,9 @@ def check_simulation_service_account_microservice_menu():
 
             temp_combo_data = {"comboId": sku, "quantity": quantity}
             order_combos.append(temp_combo_data)
-            more_combo = input(text.default_text_color + "Would you like to include more skus for simulation? (y/N) ")
+            more_combo = input(text.default_text_color + "Would you like to include more combo skus for simulation? (y/N) ")
 
-    # input combo sku in simulation
+    # input empties sku in simulation
     input_order_empties = input(
         text.default_text_color + "Would you like to include a new empties sku for simulation? (y/n) ")
     while input_order_empties.upper() != "Y" and input_order_empties.upper() != "N":
@@ -807,15 +807,15 @@ def check_simulation_service_account_microservice_menu():
     if input_order_empties.upper() == "Y":
         more_empties = "Y"
         while more_empties.upper() == "Y":
-            sku = input(text.default_text_color + "Inform combo sku for simulation: ")
-            quantity = input(text.default_text_color + "Inform combo sku quantity for simulation: ")
+            sku = input(text.default_text_color + "Inform empties sku for simulation: ")
+            quantity = input(text.default_text_color + "Inform empties sku quantity for simulation: ")
             while not is_number(quantity):
                 print(text.Red + "\n- Invalid quantity\n")
-                quantity = input(text.default_text_color + "Inform combo sku quantity for simulation: ")
+                quantity = input(text.default_text_color + "Inform empties sku quantity for simulation: ")
 
             temp_empties_data = {"groupId": sku, "quantity": quantity}
             empties_skus.append(temp_empties_data)
-            more_empties = input(text.default_text_color + "Would you like to include more skus for simulation? (y/N) ")
+            more_empties = input(text.default_text_color + "Would you like to include more empties skus for simulation? (y/N) ")
 
     # Payment Method menu
     payment_method = print_payment_method_simulation_menu(zone)
@@ -826,7 +826,8 @@ def check_simulation_service_account_microservice_menu():
             payment_term = input(text.default_text_color + "Enter the number of days the bill will expire: ")
     else:
         payment_term = 0
-
+        
+    # Sets the format of the delivery date of the order 
     option_change_date = validate_yes_no_change_date()
     if option_change_date.upper() == "Y": 
         delivery_date = validate_user_entry_date(
