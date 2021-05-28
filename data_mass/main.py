@@ -843,7 +843,6 @@ def check_simulation_service_account_microservice_menu():
     else:
         print_finish_application_menu()
 
-
 def deals_menu():
     operation = print_deals_operations_menu()
 
