@@ -73,21 +73,27 @@ def request_order_creation(
         account_id
     )
 
-    base_url = get_microservice_base_url(environment)
-
     # Define url request
     if zone == "US":
-        request_url = f"{base_url}/order-service"
+        endpoint = "order-service/v2/"
+        is_v1 = False
+        
     else:
-        request_url = f"{base_url}/order-service"
+        endpoint = "order-service"
+        is_v1 = True
+        
+    base_url = get_microservice_base_url(environment, is_v1)
+    request_url = f"{base_url}/{endpoint}"
 
     # Get body
     request_body = create_order_payload(
-        account_id,
-        delivery_center_id,
-        allow_order_cancel,
-        order_items, order_status,
-        delivery_date
+        account_id=account_id,
+        delivery_center_id=delivery_center_id,
+        allow_order_cancel=allow_order_cancel,
+        order_items=order_items,
+        order_status=order_status,
+        delivery_date=delivery_date,
+        is_v2="True"
     )
 
     # Send request
@@ -164,7 +170,9 @@ def create_order_payload(
 
     dict_values = {
         'accountId': account_id,
-        'delivery.date': delivery_date,
+        'delivery': {
+            'date': delivery_date
+        },
         'deposit': order_items.get('deposit'),
         'discount': order_items.get('discountAmount'),
         'interestAmount': order_items.get('interestAmount'),
@@ -182,7 +190,7 @@ def create_order_payload(
             "deliveryCenterId": delivery_center_id,
             "vendor": {
                 "accountId": account_id,
-                "id": "58870cbc-7809-4e18-ba59-986b4992c842"
+                "id": "9d72627a-02ea-4754-986b-0b29d741f5f0"
             }
         })
     else:

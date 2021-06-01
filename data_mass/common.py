@@ -1,5 +1,6 @@
 # Standard library imports
 import json
+import logging
 import os
 import sys
 import time as t
@@ -35,6 +36,7 @@ from data_mass.validations import (
     validate_zone_for_ms
 )
 
+logger = logging.getLogger(__name__)
 
 # Validate option menu selection
 def validate_option_request_selection_for_structure_2(option):
@@ -518,7 +520,7 @@ def validate_combo_structure(option):
 # Print zone menu for Microservice
 def print_zone_menu_for_ms():
     zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
-    while validate_zone_for_ms(zone.upper()) is False:
+    while not validate_zone_for_ms(zone.upper()):
         print(text.Red + f'\n- {zone.upper()} is not a valid zone\n')
         zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
 
@@ -1106,8 +1108,8 @@ def create_new_jwt_token():
     str
         The new token.
     """
-    client_id: str = "90ab23f8-7945-4b83-89ec-451a45c6a84d"
-    client_secret: str = "b6d700b8-9d74-4c2d-b56a-b63d87b7e5a3"
+    client_id: str = "b7201378-a203-11eb-bcbc-0242ac130002"
+    client_secret: str = "bff12d66-a203-11eb-bcbc-0242ac130002"
 
     header: dict = {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -1123,14 +1125,12 @@ def create_new_jwt_token():
 
     request_url: str = get_microservice_base_url("SIT", False)
     request_url: str = f"{request_url}/auth/token?{query}"
-
     response = place_request(
         request_method="POST",
         request_url=request_url,
         request_body="",
         request_headers=header
     )
-
     content: dict = json.loads(response.content)
     token = content.get("access_token", None)
 

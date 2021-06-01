@@ -2,6 +2,7 @@ from data_mass.algo_selling import (
     delete_recommendation_by_id,
     get_recommendation_by_account
 )
+from data_mass.classes.text import text
 from data_mass.deals import (
     request_delete_deal_by_id,
     request_delete_deal_by_id_v1,
@@ -41,8 +42,8 @@ def apply_run_preconditions(row, country, environment):
 
     logger.info("delete_orders for account %s", account_id)
     order_database_params = get_database_params(country, environment, 'order-service-ms')
-  #  delete_from_database_by_account(order_database_params.get('client'), order_database_params.get('db_name'),
-  #                                 order_database_params.get('collection_name'), account_id)
+    delete_from_database_by_account(order_database_params.get('client'), order_database_params.get('db_name'),
+                                  order_database_params.get('collection_name'), account_id)
 
 
 def delete_deal(account_id, country, environment):
@@ -67,15 +68,17 @@ def delete_deal(account_id, country, environment):
                 logger.error(log(Message.DELETE_PROMOTION_ERROR, {'account_id': account_id}))
     else:
         if not customer_deals:
-            logger.error(log(Message.RETRIEVE_PROMOTION_ERROR, {'vendorAccountIds': account_id}))
+            logger.error("Deu um erro mas continua")
+            pass
+          # TODO  logger.error(log(Message.RETRIEVE_PROMOTION_ERROR, {'vendorAccountIds': account_id}))
         elif customer_deals == 'not_found':
             logger.debug("[Pricing Conditions Service] The account {account_id} does not have deals associated. Skipping..."
                         .format(account_id=account_id))
+
         else:
             # Delete deals from Cart-Calculation MS database
             if False == request_delete_deals_pricing_service(account_id, country, environment, customer_deals):
                 logger.error(log(Message.DELETE_PROMOTION_ERROR, {'vendorAccountIds': account_id}))
-
 
     # Check for available deals in Promotion MS database
     promotions = request_get_deals_promotion_service(account_id, country, environment)

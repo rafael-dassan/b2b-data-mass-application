@@ -1,136 +1,28 @@
 {
-    "vendorAccountIds": "string",
-    "deals": [
-      {
-        "vendorDealId": "01",
-        "vendorPromotionId": "542772A",
-        "accumulationType": "ADD or COMPOSE or UNIQUE or HIGH or LOW",
-        "priority": 1,
-        "level": 0,
-        "conditions": {
-          "paymentMethod": "CASH",
-          "simulationDateTime": {
-            "startDateTime": "2020-01-01T00:00:00Z",
-            "endDateTime": "2020-01-01T00:00:00Z"
-          },
-          "deliveryDate": [
-            {
-              "startDate": "2020-01-01",
-              "endDate": "2020-12-31"
-            }
+  "vendorAccountIds": ["string"],
+  "deals": [
+    {
+      "vendorDealId": "01",
+      "vendorPromotionId": "542772A",
+      "conditions": {
+        "lineItem": {
+          "vendorItemIds": [
+            "1234567",
+            "456789"
           ],
-          "lineItem": {
-            "vendorItemIds": [
-              "1234567",
-              "456789"
-            ],
-            "minimumQuantity": 20,
-            "sharedMinimumQuantity": true,
-            "crossDiscount": true
-          },
-          "multipleLineItem": {
-            "items": [
-              {
-                "vendorItemIds": [
-                  "PRESIDENTE",
-                  "CORONA"
-                ],
-                "minimumQuantity": 5
-              }
-            ]
-          }
-        },
-        "output": {
-          "orderTotalDiscount": {
-            "type": "$ or %",
-            "discount": 80.3,
-            "proportion": 10,
-            "fixed": true
-          },
-          "lineItemDiscount": {
-            "vendorItemIds": [
-              "1234567",
-              "456789"
-            ],
-            "type": "@|$|%|PROMOTIONAL_PRICE|AMOUNT_OFF|PERCENT_OFF",
-            "value": 92.33,
-            "maxQuantity": 5,
-            "proportion": 10,
-            "fixed": false
-          },
-          "palletDiscount": {
-            "discount": 92.33,
-            "proportion": 10,
-            "measureUnit": "PAL"
-          },
-          "lineItemScaledDiscount": {
-            "vendorItemIds": [
-              "1234567",
-              "456789"
-            ],
-            "ranges": [
-              {
-                "from": 1,
-                "to": 10,
-                "type": "@|$|%|PROMOTIONAL_PRICE|AMOUNT_OFF|PERCENT_OFF",
-                "fixed": false,
-                "value": 92.33,
-                "maxQuantity": 5,
-                "proportion": 10
-              }
-            ]
-          },
-          "freeGoods": {
-            "fixed": false,
-            "proportion": 10,
-            "partial": false,
-            "items": [
-              {
-                "vendorItems": [
-                  {
-                    "vendorItemId": "STELLA",
-                    "measureUnit": "UNIT",
-                    "price": "12.29"
-                  }
-                ],
-                "quantity": 1
-              }
-            ]
-          },
-          "scaledFreeGoods": {
-            "partial": false,
-            "ranges": [
-              {
-                "from": 1,
-                "to": 10,
-                "fixed": false,
-                "proportion": 10,
-                "items": [
-                  {
-                    "vendorItems": [
-                      {
-                        "vendorItemId": "STELLA",
-                        "measureUnit": "UNIT",
-                        "price": "12.29"
-                      }
-                    ],
-                    "quantity": 1
-                  }
-                ]
-              }
-            ]
-          },
-          "multipleLineItemDiscount": {
-            "type": "@|$|%|PROMOTIONAL_PRICE|AMOUNT_OFF|PERCENT_OFF",
-            "items": [
-              {
-                "vendorItemId": "PRESIDENTE",
-                "value": "120.98",
-                "maxQuantity": "5"
-              }
-            ]
-          }
+          "minimumQuantity": 20,
+          "sharedMinimumQuantity": false,
+          "crossDiscount": false
+        }
+      },
+    "output": {
+        "orderTotalDiscount": {
+          "type": "$",
+          "discount": 80.3,
+          "proportion": 10,
+          "fixed": false
         }
       }
-    ]
-  }
+    }
+  ]
+}

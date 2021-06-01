@@ -273,7 +273,11 @@ def product_information_menu():
             print(text.Red + '\n- [Catalog Service] There is no product associated with the account ' + abi_id)
             print_finish_application_menu()
 
-        display_product_information(product_offers)
+        if zone == "US":
+            display_product_information_us(product_offers)
+        else:
+            display_product_information(product_offers)
+
 
     elif products_type == 'INVENTORY':
         zone = print_zone_menu_for_ms()
@@ -576,13 +580,12 @@ def order_menu():
 
 
 def flow_create_order(
-    zone: str,
-    environment: str,
-    account_id: str,
-    delivery_center_id: str,
-    order_status: str,
-    item_list: list
-    ):
+        zone: str,
+        environment: str,
+        account_id: str,
+        delivery_center_id: str,
+        order_status: str,
+        item_list: list):
     """
     Create a dataflow to match business rules.
 
@@ -632,10 +635,11 @@ def flow_create_order(
         payment_term=0,
         delivery_date=delivery_date
     )
+    
     if not order_items:
         print_finish_application_menu()
 
-    response = request_order_creation(
+    order_data = request_order_creation(
         account_id=account_id,
         delivery_center_id=delivery_center_id,
         zone=zone,
@@ -646,10 +650,10 @@ def flow_create_order(
         delivery_date=delivery_date
     )
 
-    if response:
+    if order_data:
         print(
             text.Green 
-            + f'\n- Order {response.get("orderNumber")} '
+            + f'\n- Order {order_data.get("orderNumber")} '
             'created successfully'
         )
 
@@ -1403,8 +1407,8 @@ def flow_create_account(zone, environment, account_id):
 
 
 def flow_create_delivery_window(zone, environment, account_id, option):
-    allow_flexible_delivery_dates = ['BR', 'ZA', 'MX', 'DO', 'CO', 'PE', 'EC']
-    allow_delivery_cost = ['BR', 'MX', 'DO', 'CO','PE', 'EC']
+    allow_flexible_delivery_dates = ['BR', 'ZA', 'MX', 'DO', 'CO', 'PE', 'EC', 'US']
+    allow_delivery_cost = ['BR', 'MX', 'DO', 'CO','PE', 'EC', 'US']
 
     # Call check account exists function
     account = check_account_exists_microservice(account_id, zone, environment)
@@ -1458,7 +1462,7 @@ def flow_create_credit_information(zone, environment, account_id):
     # Add credit to account
     credit = add_credit_to_account_microservice(account_id, zone, environment, credit_info.get('credit'),
                                                 credit_info.get('balance'))
-    if credit == 'success':
+    if credit:
         print(text.Green + f'\n- Credit added successfully for the account {account_id}')
     else:
         print_finish_application_menu()
@@ -1524,10 +1528,17 @@ def flow_update_account_minimum_order(zone, environment, account_id):
     else:
         minimum_order = None
 
-    create_account_response = create_account_ms(account_id, account_data['name'], account_data['paymentMethods'],
-                                                minimum_order, zone, environment,
-                                                account_data['deliveryAddress'], account_data['status'],
-                                                account_data['hasEmptiesLoan'])
+    create_account_response = create_account_ms(
+        account_id=account_id,
+        name=account_data['name'],
+        payment_method=account_data['paymentMethods'],
+        minimum_order=minimum_order,
+        zone=zone,
+        environment=environment,
+        delivery_address=account_data['deliveryAddress'],
+        account_status=account_data['status'],
+        enable_empties_loan=account_data['hasEmptiesLoan']
+    )
 
     if create_account_response:
         print(text.Green + '\n- Minimum order updated for the account {account_id}'

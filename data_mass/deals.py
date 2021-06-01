@@ -1,9 +1,11 @@
 # Standard library imports
 import json
+import logging
 import os
 from json import loads
 from random import randint
 
+from requests.api import request
 # Third party imports
 from tabulate import tabulate
 
@@ -18,6 +20,8 @@ from data_mass.common import (
     return_first_and_last_date_year_payload,
     update_value_to_json
 )
+
+logger = logging.getLogger(__name__)
 
 
 def request_create_deal_us(account_id, zone, environment, deal_id):
@@ -1418,6 +1422,7 @@ def request_get_deals_pricing_service(account_id, zone, environment):
         environment: e.g., SIT, UAT
     Returns: new json_object
     """
+    
     # Get headers
     request_headers = get_header_request(zone, True, False, False, False, account_id)
 
@@ -1428,8 +1433,9 @@ def request_get_deals_pricing_service(account_id, zone, environment):
         .format(account_id)
         response = place_request('GET', request_url, '', request_headers)
     else:
-        request_url = 'https://services-sit.bees-platform.dev/api/deal-relay/v2'
-        response = place_request('GET', request_url, account_id, request_headers)
+        request_url = get_microservice_base_url(environment)\
+        + f'cart-calculator/v3/deals?projection=PLAIN'
+        response = place_request('GET', request_url, '', request_headers)
 
     json_data = loads(response.text)
     if response.status_code == 200:

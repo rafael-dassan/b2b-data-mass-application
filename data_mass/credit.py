@@ -40,21 +40,21 @@ def add_credit_to_account_microservice(
     """
     request_headers = get_header_request(zone, False, True, False, False)
     ms_base_url = get_microservice_base_url(environment)
-    
+
     # Create dictionary with credit values
     dict_values = {
         "available": credit,
         "balance": balance,
-        "total": credit + balance
+        "total": int(credit) + int(balance)
     }
-    
+
     if zone == "US":
         payload_path = "data/create_credit_us_payload.json"
         request_url = f"{ms_base_url}/credit-relay"
         dict_values.update({"vendorAccountId": account_id})
     else:
-        request_url = f"{ms_base_url}/account-relay/credits"
         payload_path = "data/create_credit_payload.json"
+        request_url = f"{ms_base_url}/account-relay/credits"
         dict_values.update({"accountId": account_id})
 
     # TODO: check that you are always receiving an empty string

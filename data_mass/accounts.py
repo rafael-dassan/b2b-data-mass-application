@@ -58,7 +58,7 @@ def check_account_exists_microservice(
             f"{base_url}"
             "/accounts"
             f"?vendorAccountId={account_id}"
-            f"&vendorId=58870cbc-7809-4e18-ba59-986b4992c842"
+            "&vendorId=9d72627a-02ea-4754-986b-0b29d741f5f0"
         )   
 
     response = place_request(
@@ -108,6 +108,68 @@ def check_account_exists_microservice(
         return False
 
 
+def get_account_id(
+        vendorAccountId: str,
+        zone: str,
+        environment: str) -> str:
+    """
+    Get accountId of the vendorAccountId
+
+    Parameters
+    ----------
+    vendorAccountId : str
+    zone : str
+    environment : str
+
+    Returns
+    -------
+    str
+        The accountId.
+    """
+    request_headers = get_header_request(zone=zone)
+
+    base_url = get_microservice_base_url(environment)
+    request_url = (
+        f"{base_url}"
+        "/accounts/"
+        f"?vendorAccountId={vendorAccountId}"
+        "&vendorId=9d72627a-02ea-4754-986b-0b29d741f5f0"
+    )
+
+    response = place_request(
+        request_method='GET',
+        request_url=request_url,
+        request_body='',
+        request_headers=request_headers
+    )
+
+    json_data: dict = json.loads(response.text)
+
+    if response.status_code == 200 and json_data:
+        account, = json_data
+        account_id = account.get("accountId", None)
+
+        return account_id
+    elif response.status_code == 200 and not json_data:
+        print(
+            f"{text.Red}\n- "
+            f"[Account Service] "
+            f"The account {vendorAccountId} does not exist"
+        )
+
+        return None
+
+    print(
+        f"{text.Red}\n-"
+        f" [Account Service] "
+        f"Failure to retrieve the account {vendorAccountId}.\n"
+        f"Response Status: {response.status_code}.\n"
+        f"Response message: {response.text}.\n"
+    )
+
+    return None
+
+
 def create_account_ms(
         account_id: str,
         name: str,
@@ -146,15 +208,21 @@ def create_account_ms(
         "challengeIds": [account_id],
         "deliveryCenterId": account_id,
         "deliveryScheduleId": account_id,
-        "liquorLicense[0].number": account_id,
+        "liquorLicense": [{
+            "number": account_id
+        }],
         "priceListId": account_id,
         "taxId": account_id,
         "name": name,
         "paymentMethods": payment_method,
-        "deliveryAddress.address": delivery_address.get("address"),
-        "deliveryAddress.city": delivery_address.get("city"),
-        "deliveryAddress.state": delivery_address.get("state"),
-        "deliveryAddress.zipcode": delivery_address.get("zipcode"),
+        "deliveryAddress": {
+            "address": delivery_address.get("address")
+        },
+        "deliveryAddress": {
+            "city": delivery_address.get("city"),
+            "state": delivery_address.get("state"),
+            "zipcode": delivery_address.get("zipcode")
+        },
         "paymentTerms": payment_term,
         "status": account_status,
         "hasEmptiesLoan": enable_empties_loan
@@ -172,16 +240,12 @@ def create_account_ms(
     content = pkg_resources.resource_string("data_mass", schema)
 
     if minimum_order is not None:
-        set_to_dictionary(
-            dict_values,
-            "minimumOrder.type",
-            minimum_order[0]
-        )
-        set_to_dictionary(
-            dict_values,
-            "minimumOrder.value",
-            int(minimum_order[1])
-        )
+        dict_values.update({
+            "minimumOrder": {
+                "type": minimum_order[0],
+                "value": int(minimum_order[1])
+            }
+        })
     else:
         dict_values.update({"minimumOrder": minimum_order})
 
@@ -362,7 +426,7 @@ def get_minimum_order_info():
     minimum_order_type = print_minimum_order_type_menu()
     minimum_order_value = print_minimum_order_value_menu()
 
-    minimum_order_values = list()
+    minimum_order_values = []
     minimum_order_values.append(minimum_order_type)
     minimum_order_values.append(minimum_order_value)
 
@@ -414,11 +478,11 @@ def get_credit_info():
         The credit info.
     """
     credit = input(
-        f"{text.default_text_color} "
+        f"{text.default_text_color}"
         "Desired credit available (Default 5000): "
     )
     balance = input(
-        f"{text.default_text_color} "
+        f"{text.default_text_color}"
         "Desired credit balance (Default 15000): "
     )
 

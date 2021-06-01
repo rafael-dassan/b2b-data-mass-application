@@ -27,7 +27,7 @@ def get_categories(zone: str, environment: str) -> list:
     request_url = (
         f"{base_url}"
         "/categories"
-        "/?vendorId=58870cbc-7809-4e18-ba59-986b4992c842"
+        "/?vendorId=9d72627a-02ea-4754-986b-0b29d741f5f0"
     )
     header = get_header_request(zone)
 

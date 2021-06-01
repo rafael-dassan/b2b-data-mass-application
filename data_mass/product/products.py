@@ -482,7 +482,10 @@ def get_avaliable_items(
     return None
 
 
-def request_get_offers_microservice(account_id, zone, environment):
+def request_get_offers_microservice(
+        account_id: str,
+        zone: str,
+        environment: str) -> dict:
     """
     Get available SKUs for a specific account via Catalog Service
     Projection: SMALL
@@ -495,25 +498,26 @@ def request_get_offers_microservice(account_id, zone, environment):
         not_found: if there is no product association for an account
         false: if there is any error coming from the microservice
     """
-
     # Get headers
     headers = get_header_request(zone, True, False, False, False, account_id)
+    base_url = get_microservice_base_url(environment)
 
-    # Get base URL
     if zone == "US":
         request_url = (
-            get_microservice_base_url(environment)
-            + "/catalog-service/catalog/items?accountId="
-            + "9971596c-335c-40bb-8cd5-b0f621815fa0"
-            + "&projection=SMALL"
+            f"{base_url}"
+            "/catalog-service"
+            "/catalog"
+            "/items?accountId=2be68476-5b4c-4cb2-9df8-6865590aeb98"
+            "&projection=SMALL"
         )
     else:
         request_url = (
-            get_microservice_base_url(environment)
-            + "/catalog-service/catalog?accountId="
-            + account_id
-            + "&projection=SMALL"
+            f"{base_url}"
+            "/catalog-service"
+            f"/catalog?accountId={account_id}"
+            "&projection=SMALL"
         )
+
     # Send request
     response = place_request("GET", request_url, "", headers)
 
@@ -603,7 +607,7 @@ def request_get_products_by_account_microservice(account_id, zone, environment):
     if zone == "US":
         request_url = (
         get_microservice_base_url(environment)
-        + "/catalog-service/catalog/items?accountId=9971596c-335c-40bb-8cd5-b0f621815fa0&projection=SMALL&includeDiscount=False&includeAllPromotions=False"
+        + "/catalog-service/catalog/items?accountId=2be68476-5b4c-4cb2-9df8-6865590aeb98&projection=SMALL&includeDiscount=False&includeAllPromotions=False"
         )
     else:
         request_url = (
@@ -700,20 +704,15 @@ def request_get_account_product_assortment(
     headers = get_header_request(zone, True, False, False, False, account_id)
 
     # Get base URL
-    if zone == "US":
-      request_url =  "https://services-sit.bees-platform.dev/v1/product-assortment-relay/inclusion"
-    else:
-        request_url = (
-        get_microservice_base_url(environment)
-        + "/product-assortment/?accountId="
-        + account_id
-        + "&deliveryCenterId="
-        + delivery_center_id
+
+    request_url = (
+    get_microservice_base_url(environment)
+    + "/product-assortment/?accountId="
+    + account_id
+    + "&deliveryCenterId="
+    + delivery_center_id
     )
-
-    # Place request
     response = place_request("GET", request_url, "", headers)
-
     json_data = loads(response.text)
     skus = json_data["skus"]
     if response.status_code == 200 and len(json_data) != 0:
@@ -732,9 +731,9 @@ def request_get_account_product_assortment(
 
 
 def create_product(
-    zone: str,
-    environment: str,
-    product_data: dict) -> dict:
+        zone: str,
+        environment: str,
+        product_data: dict) -> dict:
     """
     Create or update an product via Item Relay Service.
 
@@ -757,7 +756,7 @@ def create_product(
 
     # Get base URL
     base_url = get_microservice_base_url(environment, False)
-    request_url = f"{base_url}/item-relay/items"
+    request_url = f"{base_url}/item-relay/v2/items"
 
     # get data from Data Mass files
     content: bytes = pkg_resources.resource_string(
@@ -1068,7 +1067,26 @@ def set_item_enabled(
 
     return False
 
+def display_product_information_us(product_offers):
+    """
+    Display item information
+    Args:
+        product_offers: product data by account
+    Returns: a table containing the available item information
+    """
+    product_information = list()
+    for i in range(len(product_offers)):
+        product_values = {
+            "SKU": product_offers[i]["sku"],
+            "Name": product_offers[i]["sourceData"]["vendorItemId"],
+            "Price": product_offers[i]["price"],
+            "Stock Available": product_offers[i]["stockAvailable"],
+        }
+        product_information.append(product_values)
 
+    print(text.default_text_color + "\nProduct Information By Account")
+    print(tabulate(product_information, headers="keys", tablefmt="grid"))
+    
 def display_product_information(product_offers):
     """
     Display item information
