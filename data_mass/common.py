@@ -518,7 +518,7 @@ def validate_combo_structure(option):
 # Print zone menu for Microservice
 def print_zone_menu_for_ms():
     zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
-    while validate_zone_for_ms(zone.upper()) is False:
+    while not validate_zone_for_ms(zone.upper()):
         print(text.Red + f'\n- {zone.upper()} is not a valid zone\n')
         zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
 
