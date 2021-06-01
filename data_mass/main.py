@@ -273,11 +273,7 @@ def product_information_menu():
             print(text.Red + '\n- [Catalog Service] There is no product associated with the account ' + abi_id)
             print_finish_application_menu()
 
-        if zone == "US":
-            display_product_information_us(product_offers)
-        else:
-            display_product_information(product_offers)
-
+        display_product_information(product_offers)
 
     elif products_type == 'INVENTORY':
         zone = print_zone_menu_for_ms()

@@ -612,9 +612,7 @@ def request_get_products_by_account_microservice(account_id, zone, environment):
     else:
         request_url = (
         get_microservice_base_url(environment)
-        + "/catalog-service/catalog/items?accountId=&projection=SMALL&includeDiscount=False&includeAllPromotions=False"
-        + account_id
-        + "&projection=LIST"
+        + f"/catalog-service/catalog/items?accountId={account_id}&projection=SMALL&includeDiscount=False&includeAllPromotions=False"
         )
   #  /newdeals?projection=LIST
 
@@ -1067,13 +1065,14 @@ def set_item_enabled(
 
     return False
 
-def display_product_information_us(product_offers):
+def display_product_information(product_offers):
     """
     Display item information
     Args:
         product_offers: product data by account
     Returns: a table containing the available item information
     """
+    print(product_offers)
     product_information = list()
     for i in range(len(product_offers)):
         product_values = {
@@ -1087,28 +1086,6 @@ def display_product_information_us(product_offers):
     print(text.default_text_color + "\nProduct Information By Account")
     print(tabulate(product_information, headers="keys", tablefmt="grid"))
     
-def display_product_information(product_offers):
-    """
-    Display item information
-    Args:
-        product_offers: product data by account
-    Returns: a table containing the available item information
-    """
-
-    product_information = list()
-    for i in range(len(product_offers)):
-        product_values = {
-            "SKU": product_offers[i]["sku"],
-            "Name": product_offers[i]["itemName"],
-            "Price": product_offers[i]["price"],
-            "Returnable": product_offers[i]["container"]["returnable"],
-            "Stock Available": product_offers[i]["stockAvailable"],
-        }
-        product_information.append(product_values)
-
-    print(text.default_text_color + "\nProduct Information By Account")
-    print(tabulate(product_information, headers="keys", tablefmt="grid"))
-
 
 def get_sku_name(
     zone: str,
