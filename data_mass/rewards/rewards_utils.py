@@ -1,6 +1,7 @@
 import json
 import os
 from time import time
+from typing import List
 
 from tabulate import tabulate
 
@@ -14,7 +15,7 @@ from data_mass.common import (
     print_input_number,
     update_value_to_json
     )
-from data_mass.orders import request_order_creation
+from data_mass.orders import create_checkout_payload
 from data_mass.product.products import request_get_products_microservice
 from data_mass.simulation import request_order_simulation
 from data_mass.validations import validate_yes_no_option
@@ -145,7 +146,7 @@ def post_combo_relay_account(
     }
 
     # Define the entire list of Combos for the main payload
-    dt_combos_list = list()
+    dt_combos_list = []
     for dt_combo in dt_combos_to_associate:
         dict_values_dt_combo = {
             "id": dt_combo["id"],
@@ -410,7 +411,7 @@ def post_orders_rewards(
     if not order_items:
         return None
 
-    response = request_order_creation(
+    response = request_order_creation_checkout(
         account_id=account[0]['accountId'],
         delivery_center_id=account[0]['deliveryCenterId'],
         zone=zone,
@@ -418,9 +419,63 @@ def post_orders_rewards(
         allow_order_cancel=allow_order_cancel,
         order_items=order_items,
         order_status=order_status,
-        delivery_date=delivery_date
+        delivery_date=delivery_date,
+        pay_method=pay_method
     )
     if not response:
         return None
 
     return response
+
+
+def request_order_creation_checkout(
+    account_id,
+    delivery_center_id,
+    zone,
+    environment, 
+    allow_order_cancel, 
+    order_items, 
+    order_status,
+    delivery_date,
+    pay_method: str
+):
+
+    request_headers = get_header_request(
+        zone=zone,
+        use_jwt_auth=True,
+        use_root_auth=False,
+        use_inclusion_auth=False,
+        sku_product=False, 
+        account_id=account_id
+    )
+    base_url = get_microservice_base_url(environment=environment)
+    request_url = f'{base_url}/checkout-service/'
+
+    request_body = create_checkout_payload(
+        account_id,
+        delivery_center_id,
+        allow_order_cancel,
+        order_items,
+        order_status,
+        delivery_date,
+        pay_method
+    )
+
+    response = place_request(
+        request_method='POST',
+        request_url=request_url,
+        request_body=request_body,
+        request_headers=request_headers
+    )
+
+    json_data = json.loads(response.text)
+    if response.status_code == 200 and len(json_data) != 0:
+        return json_data
+    else:
+        print(
+            text.Red
+            + '\n- [Order Service] Failure to create an order.'
+            f'Response Status: {response.status_code}. '
+            f'Response message {response.text}'
+        )
+        return False

@@ -1,5 +1,6 @@
 from json import loads
 from random import choice, randint
+from typing import List
 
 from tabulate import tabulate
 
@@ -423,9 +424,10 @@ def flow_create_order_rewards(
     order_status: str,
     delivery_date: str,
     quantity_orders: int = 1,
-) -> list:
+) -> List:
     """
-    Flow to create orders with the multiprocess and combos.
+    Flow to create orders with multiprocess and combos in structure of
+    item os in the combos field.
 
     Parameters
     ----------
@@ -465,22 +467,14 @@ def flow_create_order_rewards(
         return []
 
     dt_combos = loads(get_combos.text).get('combos', [])
-    if zone in COUNTRIES_USE_DTCOMBO_ITEMS:
-        combos = []
-        for item in item_list:
-            item["comboType"] = dt_combos[0]["type"]
-            item["comboId"] = dt_combos[0]["id"]
-            item["itemQuantity"] = dt_combos[0]["redeemLimit"]
-    else:
-        combos = [
-            {
-                "item": item_list,
-                "comboId": dt_combo["id"],
-                "quantity": dt_combo["redeemLimit"]
-            }
-            for dt_combo in dt_combos
-        ]
-
+    combos = [
+        {
+            "comboId": dt_combo["id"],
+            "quantity": dt_combo["redeemLimit"],
+            "comboType": dt_combo["type"],
+        }
+        for dt_combo in dt_combos
+    ]
 
     orders = []
     for _ in range(quantity_orders):

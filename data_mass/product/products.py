@@ -881,17 +881,17 @@ def get_items_associated_account(
     )
     if not product_offers or product_offers == 'not_found':
         print(
-            text.Red
-            + '\n- There is no product associated'
-            f'with the account {account_id}'
+            f"{text.Red}"
+            f"\n- [Catalog Service] - There is no product associated:"
+            f"with the account {account_id}"
         )
         return []
 
     unique_sku = {item['sku'] for item in product_offers}
     unique_sku = sample(list(unique_sku), len(unique_sku))
     print(
-        TEXT_GREEN
-        + f"The account has {len(unique_sku)} products associated!"
+        f"{TEXT_GREEN}"
+        f"The account has {len(unique_sku)} products associated!"
     )
     quantity = click.prompt(
         f'{text.default_text_color}'
@@ -901,7 +901,7 @@ def get_items_associated_account(
 
     item_list = []
     for sku in unique_sku[:quantity]:
-        data = {'sku': sku, 'itemQuantity': randint(0, 10)} 
+        data = {'sku': sku, 'itemQuantity': randint(0, 10)}
         item_list.append(data)
 
     return item_list
