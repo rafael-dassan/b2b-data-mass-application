@@ -1072,7 +1072,6 @@ def display_product_information(product_offers):
         product_offers: product data by account
     Returns: a table containing the available item information
     """
-    print(product_offers)
     product_information = list()
     for i in range(len(product_offers)):
         product_values = {
