@@ -466,7 +466,7 @@ def get_avaliable_items(
     })
 
     base_url = get_microservice_base_url(zone)
-    request_url = f"{base_url}/catalog-service/items"
+    request_url = f"{base_url}/catalog-service/catalog/items?accountId=&projection=SMALL&includeDiscount=False&includeAllPromotions=false"
 
     response = place_request(
         request_method="GET",
@@ -604,12 +604,19 @@ def request_get_products_by_account_microservice(account_id, zone, environment):
     request_headers = get_header_request(zone, True, False, False, False, account_id)
 
     # Define base URL
-    request_url = (
+    if zone == "US":
+        request_url = (
+        get_microservice_base_url(environment)
+        + "/catalog-service/catalog/items?accountId=9971596c-335c-40bb-8cd5-b0f621815fa0&projection=SMALL&includeDiscount=False&includeAllPromotions=False"
+        )
+    else:
+        request_url = (
         get_microservice_base_url(environment)
         + "/catalog-service/catalog?accountId="
         + account_id
         + "&projection=LIST"
-    )
+        )
+  #  /newdeals?projection=LIST
 
     # Send request
     response = place_request("GET", request_url, "", request_headers)
