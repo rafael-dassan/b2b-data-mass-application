@@ -3,10 +3,13 @@ import json
 import os
 from datetime import datetime, timedelta
 from json import loads
+from typing import List
+from uuid import uuid1
 
 import pkg_resources
 from tabulate import tabulate
 
+from data_mass.accounts import get_account_id
 from data_mass.classes.text import text
 from data_mass.common import (
     convert_json_to_string,
@@ -14,7 +17,7 @@ from data_mass.common import (
     get_microservice_base_url,
     place_request,
     update_value_to_json
-    )
+)
 
 
 def request_order_simulation(
@@ -113,6 +116,63 @@ def request_order_simulation(
             f"Response message: {response.text}"
         )
         return False
+
+
+
+
+def request_order_simulation_v2(
+    account_id: int,
+    zone: str,
+    environment: str,
+    items: List[dict],
+    delivery_date: str):
+    """
+    Request order simulation v2.
+
+    Parameters
+    ----------
+    zone : str
+    environment : str
+    account_id : int
+    items : list
+
+    Returns
+    -------
+    str or Bool
+        response payload in case of success or `false` in case of failure.
+    """
+    request_headers = get_header_request("US")
+    base_url = get_microservice_base_url(environment, True)
+    request_url = f"{base_url}/cart-service/v3"
+
+    dict_values = {
+        "accountId": get_account_id(account_id, zone, environment),
+        "userId": str(uuid1()),
+        "deliveryDate": delivery_date,
+        "items": []
+    }
+
+    for item in items:
+        schema = {"id": item.get("id"), "quantity": 1}
+        dict_values["items"].append(schema)
+    
+    response = place_request(
+        request_method="POST",
+        request_url=request_url,
+        request_body=json.dumps(dict_values),
+        request_headers=request_headers
+    )
+    if response.status_code == 200:
+        return loads(response.text)
+
+    print(
+        text.Red
+        + "\n- [Cart Service] Failure to simulate the order."
+        f"Response Status: {response.status_code}. "
+        f"Response message: {response.text}"
+    )
+
+    return False
 
 
 # Order simulation by Microservice

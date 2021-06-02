@@ -8,6 +8,7 @@ from random import randint, uniform
 import pkg_resources
 from tabulate import tabulate
 
+from data_mass.accounts import get_account_id
 from data_mass.classes.text import text
 from data_mass.common import (
     convert_json_to_string,
@@ -456,23 +457,20 @@ def get_avaliable_items(
     Any
         The response content.
     """
-    headers: dict = get_header_request(zone)
-    from os import environ
+    header: dict = get_header_request(zone)
 
-    headers.update({
-        "custId": account_id,
-        "regionId": zone,
-        "Authorization": environ["TOKEN"]
+    header.update({
+        "Authorization": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJCVVdYcTRLanhPMUwxdTFTaENJVVNrdEk5aXRreFJ0X1Zzb3luelVvVGFFIn0.eyJleHAiOjE2MjI1NjMzMjAsImlhdCI6MTYyMjU1OTcyMCwianRpIjoiNmIyMmM1OWQtZmUzZC00MjQ0LThlOTktOTYwM2VjZjJmYmY5IiwiaXNzIjoiaHR0cDovL2tleWNsb2FrLXNlcnZpY2UvYXV0aC9yZWFsbXMvYmVlcy1yZWFsbSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJmYWM1ZDJhMy03NjViLTRmNjItYmFiNC1kZjFmODJkMDFjMTciLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJiNzIwMTM3OC1hMjAzLTExZWItYmNiYy0wMjQyYWMxMzAwMDIiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6Im9wZW5pZCBlbWFpbCBwcm9maWxlIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJjbGllbnRJZCI6ImI3MjAxMzc4LWEyMDMtMTFlYi1iY2JjLTAyNDJhYzEzMDAwMiIsImNsaWVudEhvc3QiOiIxMjcuMC4wLjEiLCJyb2xlcyI6WyJXcml0ZSIsIlJlYWQiXSwidmVuZG9ySWQiOiI5ZDcyNjI3YS0wMmVhLTQ3NTQtOTg2Yi0wYjI5ZDc0MWY1ZjAiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtYjcyMDEzNzgtYTIwMy0xMWViLWJjYmMtMDI0MmFjMTMwMDAyIiwiY2xpZW50QWRkcmVzcyI6IjEyNy4wLjAuMSJ9.Fwx3ByJQGeEQ8_CircXX6F2qK3_c0gTmvUNVEVI47Ur62TWwxtpyvMjTDyVazfUX1MWfsqmBORUmN4QbLRFv5ut3DA_h5adShVIbORBz2RVCHhrRYUIbyeU2WNu-wPgA786d5CJk81euxoCfwHT9TVRDAzkOBMkQxXPj0srxlYBTJL3lMcFDdq1AggrkNKFT5Pby9YK4bGVmnxpKKQYhMgbEFLR23SLLaLUOQ8if1ndNw2OxfP-mzvRhQwlPKR5OWOdrfTGz7FIlqxadY_CmTeyKibRYm69uPIYqotQUxtOnuADREio68I_R0mqiyLEGxLiwWp76fLRdmP8jAoPlMw"
     })
 
-    base_url = get_microservice_base_url(zone)
-    request_url = f"{base_url}/catalog-service/catalog/items?accountId=&projection=SMALL&includeDiscount=False&includeAllPromotions=false"
+    base_url = get_microservice_base_url(zone, False)
+    request_url = f"{base_url}/v1/catalog-service/catalog/items?accountId=2be68476-5b4c-4cb2-9df8-6865590aeb98&projection=SMALL&includeDiscount=False&includeAllPromotions=false"
 
     response = place_request(
         request_method="GET",
         request_url=request_url,
         request_body="",
-        request_headers=headers
+        request_headers=header
     )
 
     if response.status_code == 200:
@@ -500,11 +498,12 @@ def request_get_offers_microservice(
     """
     # Get headers
     headers = get_header_request(zone, True, False, False, False, account_id)
-    base_url = get_microservice_base_url(environment)
+    base_url = get_microservice_base_url(environment, False)
+    vendorAccount = get_account_id(account_id, zone, environment)
 
     if zone == "US":
         request_url = (
-            f"{base_url}"
+            f"{base_url}/v1"
             "/catalog-service"
             "/catalog"
             "/items?accountId=2be68476-5b4c-4cb2-9df8-6865590aeb98"
@@ -602,19 +601,19 @@ def request_get_products_by_account_microservice(account_id, zone, environment):
 
     # Define headers
     request_headers = get_header_request(zone, True, False, False, False, account_id)
+    vendorAccountId = get_account_id(account_id, zone, environment)
 
     # Define base URL
     if zone == "US":
-        request_url = (
-        get_microservice_base_url(environment)
-        + "/catalog-service/catalog/items?accountId=2be68476-5b4c-4cb2-9df8-6865590aeb98&projection=SMALL&includeDiscount=False&includeAllPromotions=False"
-        )
+        account_id = get_account_id(account_id, zone, environment)
+        endpoint = "v1/catalog-service"
+        v1 = False
     else:
-        request_url = (
-        get_microservice_base_url(environment)
-        + f"/catalog-service/catalog/items?accountId={account_id}&projection=SMALL&includeDiscount=False&includeAllPromotions=False"
-        )
-  #  /newdeals?projection=LIST
+        endpoint = "catalog-service"
+        v1 = True
+
+    base_url = get_microservice_base_url(environment, v1)
+    request_url = f"{base_url}/{endpoint}/catalog/items?accountId={account_id}&projection=SMALL&includeDiscount=False&includeAllPromotions=False"
 
     # Send request
     response = place_request("GET", request_url, "", request_headers)

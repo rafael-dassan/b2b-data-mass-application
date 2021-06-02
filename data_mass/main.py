@@ -113,7 +113,8 @@ from data_mass.rewards.rewards_transactions import (
 )
 from data_mass.simulation import (
     process_simulation_microservice,
-    request_order_simulation
+    request_order_simulation,
+    request_order_simulation_v2
 )
 from data_mass.supplier.attribute import (
     check_if_attribute_exist,
@@ -553,9 +554,22 @@ def order_menu():
         )
 
         item_list = []
-        for sku in unique_sku[:quantity]:
-            data = {'sku': sku, 'itemQuantity': randint(0, 10)} 
-            item_list.append(data)
+        if zone == "US":
+            for sku in unique_sku[:quantity]:
+                item, = list(filter(lambda item: item["sku"] == sku, product_offers))
+                item_list.append({
+                    "sku": item.get("sku"),
+                    "id": item.get("id"),
+                    "vendorItemId": item.get("sourceData").get("vendorItemId"),
+                    "price": item.get("price"),
+                    "quantity": 1,
+                    "subtotal": item.get("price"),
+                    "total": item.get("price")
+                })
+        else:
+            for sku in unique_sku[:quantity]:
+                data = {'sku': sku, 'itemQuantity': randint(0, 10)} 
+                item_list.append(data)
         
 
     return {
@@ -617,21 +631,30 @@ def flow_create_order(
         )
         else:
             tomorrow = datetime.today() + timedelta(1)
-            delivery_date = str(datetime.date(tomorrow)) 
+            delivery_date = str(datetime.date(tomorrow))
 
-    order_items = request_order_simulation(
-        zone=zone,
-        environment=environment,
-        account_id=account_id,
-        delivery_center_id=delivery_center_id,
-        items=item_list,
-        combos=[],
-        empties=[],
-        payment_method='CASH',
-        payment_term=0,
-        delivery_date=delivery_date
-    )
-    
+    if zone == "US":
+        order_items = request_order_simulation_v2(
+            account_id=account_id,
+            zone=zone,
+            environment=environment,
+            items=item_list,
+            delivery_date=delivery_date
+        )
+    else:
+        order_items = request_order_simulation(
+            zone=zone,
+            environment=environment,
+            account_id=account_id,
+            delivery_center_id=delivery_center_id,
+            items=item_list,
+            combos=[],
+            empties=[],
+            payment_method='CASH',
+            payment_term=0,
+            delivery_date=delivery_date
+        )
+
     if not order_items:
         print_finish_application_menu()
 
@@ -643,7 +666,8 @@ def flow_create_order(
         allow_order_cancel=allow_order_cancel,
         order_items=order_items,
         order_status=order_status,
-        delivery_date=delivery_date
+        delivery_date=delivery_date,
+        items=item_list
     )
 
     if order_data:
@@ -1193,8 +1217,13 @@ def flow_input_inventory_to_product(zone, environment):
     if option == 'N':
         inventory = request_inventory_creation(zone, environment, account_id, delivery_center_id, sku_list)
     else:
-        get_inventory_response = get_delivery_center_inventory(environment, zone, account_id, delivery_center_id, sku_list)
+        if zone == "US":
+            get_inventory_response = get_delivery_center_inventory_v2(account_id, zone, environment, delivery_center_id)
+        else:
+            get_inventory_response = get_delivery_center_inventory(environment, zone, account_id, delivery_center_id, sku_list)
+
         if not get_inventory_response:
+            print(f"O delivery center {delivery_center_id} não existe.\n")
             print_finish_application_menu()
         else:
             inventory_information = print_inventory_sku_quantity_menu(zone, environment, sku_list)

@@ -32,7 +32,8 @@ def request_order_creation(
     allow_order_cancel: str, 
     order_items: list, 
     order_status: str,
-    delivery_date: str) -> Optional[Any]:
+    delivery_date: str,
+    items = None) -> Optional[Any]:
     """
     Create an order through the Order Service.
 
@@ -77,16 +78,32 @@ def request_order_creation(
     if zone == "US":
         endpoint = "order-service/v2/"
         is_v1 = False
-        
+
+        request_body = json.dumps({
+            "accountId": account_id,
+            "channel": "B2B_WEB",
+            "deliveryCenterId": delivery_center_id,
+            "delivery":{
+              "date": delivery_date  
+            },
+            "itemsQuantity": len(order_items.get("items")),
+            "placementDate": datetime.now().strftime('%Y-%m-%dT%H:%M:%S') + '+00:00',
+            "status": order_status,
+            "items": items,
+            "subtotal": order_items.get("subTotal"),
+            "total": order_items.get("total"),
+            "vendor": {
+                "accountId": account_id,
+                "id": "9d72627a-02ea-4754-986b-0b29d741f5f0"
+            },
+            "paymentMethod": "CASH"
+        })
     else:
         endpoint = "order-service"
         is_v1 = True
-        
-    base_url = get_microservice_base_url(environment, is_v1)
-    request_url = f"{base_url}/{endpoint}"
 
-    # Get body
-    request_body = create_order_payload(
+        # Get body
+        request_body = create_order_payload(
         account_id=account_id,
         delivery_center_id=delivery_center_id,
         allow_order_cancel=allow_order_cancel,
@@ -96,11 +113,14 @@ def request_order_creation(
         is_v2="True"
     )
 
+    base_url = get_microservice_base_url(environment, is_v1)
+    request_url = f"{base_url}/{endpoint}"
+
     # Send request
     response = place_request("POST", request_url, request_body, request_headers)
     json_data = loads(response.text)
 
-    if response.status_code == 200 and json_data:
+    if response.status_code in [200, 202] and json_data:
         return json_data
 
     print(
@@ -434,7 +454,9 @@ def check_if_order_exists(account_id, zone, environment, order_id, order_status=
     # Get header request
     request_headers = get_header_request(zone, True, False, False, False, account_id)
 
-    if order_status is not None:
+    if zone == "US":
+        request_url = f"{get_microservice_base_url(environment)}/order-service/v2?orderIds={order_id}"
+    elif order_status is not None:
         # Get base URL
         request_url = '{}/order-service/v1?orderIds={}&orderStatus={}&accountId={}'.format(get_microservice_base_url(environment),
                                                                                                order_id, order_status, account_id)

@@ -50,9 +50,6 @@ def request_inventory_creation(
         use_inclusion_auth=True
     )
 
-    base_url = get_microservice_base_url(environment)
-    request_url = f"{base_url}/inventory-relay/add"
-
     request_body = get_inventory_payload(
         zone=zone,
         environment=environment,
@@ -62,11 +59,32 @@ def request_inventory_creation(
         sku_id=sku_id,
         sku_quantity=sku_quantity
     )
+    
+    if zone == "US":
+        is_v1: bool = False
+        delivery_center_id: str = request_body.get("fulfillmentCenterId")
+        endpoint: str = f"inventory-relay/inventory/{delivery_center_id}"
+        body: dict = {"inventory": []}
+        items = request_body.get("inventory", {})
+
+        for item in items:
+            body["inventory"].append({
+                "vendorItemId": item.get("sku"),
+                "quantity": item.get("quantity")
+            })
+
+        request_body = body
+    else:
+        is_v1 = True
+        endpoint = "inventory-relay/add"
+
+    base_url = get_microservice_base_url(environment, is_v1)
+    request_url = f"{base_url}/{endpoint}"
 
     response = place_request(
         request_method="PUT",
         request_url=request_url,
-        request_body=request_body,
+        request_body=json.dumps(request_body),
         request_headers=request_headers
     )
 
@@ -90,7 +108,7 @@ def get_inventory_payload(
         products: list,
         delivery_center_id: str,
         sku_id: str,
-        sku_quantity: int) -> str:
+        sku_quantity: int) -> dict:
     """
     Get inventory from microservice.
 
@@ -106,7 +124,7 @@ def get_inventory_payload(
 
     Returns
     -------
-    str
+    dict
         The request body.
     """
     get_inventory_response = get_delivery_center_inventory(
@@ -163,10 +181,7 @@ def get_inventory_payload(
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
-    # Create body
-    request_body = convert_json_to_string(json_object)
-
-    return request_body
+    return json_object
 
 
 def display_inventory_by_account(inventory: list):
@@ -189,6 +204,60 @@ def display_inventory_by_account(inventory: list):
 
     print(text.default_text_color + '\nInventory/stock information ')
     print(tabulate(inventory_info, headers='keys', tablefmt='grid'))
+
+
+def get_delivery_center_inventory_v2(
+        account_id: str,
+        zone: str,
+        environment: str,
+        delivery_center_id: str = None) -> dict:
+    """
+    Get inventory from a specific Delivery Center.
+
+    Parameters
+    ----------
+    account_id : str
+    zone : str
+    environment : str
+    delivery_center_id : str
+        Default by `None`.
+
+    Returns
+    -------
+    dict
+        List of all Delivery Center inventory.
+    """
+    header = get_header_request(zone)
+    base_url = get_microservice_base_url(environment, False)
+    query = "vendorId=9d72627a-02ea-4754-986b-0b29d741f5f0"
+
+    if delivery_center_id:
+        query = f"{query}&deliveryCenters={delivery_center_id}"
+
+    request_url = f"{base_url}/inventory/inventories?{query}"
+    
+    response = place_request(
+        request_method="GET",
+        request_url=request_url,
+        request_body="",
+        request_headers=header
+    )
+
+    if response.status_code == 200:
+        data = loads(response.text)
+        return data
+
+    if response.status_code == 404:
+        return {}
+
+    print(
+        f'\n{text.Red}'
+        '- [Inventory Service] Failure to retrieve inventory information. '
+        f'Response Status: {response.status_code}. '
+        f'Response message: {response.text}'
+    )
+
+    return None    
 
 
 def get_delivery_center_inventory(
@@ -238,7 +307,7 @@ def get_delivery_center_inventory(
     if response.status_code == 200:
         return json_data
     elif response.status_code == 404:
-        return {}
+        return None
     else:
         print((
             f'\n{text.Red}'

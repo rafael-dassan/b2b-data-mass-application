@@ -256,7 +256,7 @@ def print_account_id_menu(zone):
     abi_id = str(input(text.default_text_color + message))
     attempt = 0
 
-    while validate_account(abi_id, zone) != True and attempt <= 2:
+    while validate_account(abi_id, zone) != True and attempt <= 2 and zone != "US":
         if validate_account(abi_id, zone) == 'error_0':
             print(text.Red + '\n- Account ID should not be empty')
             if attempt < 2:
