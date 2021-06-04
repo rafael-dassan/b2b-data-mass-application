@@ -1,5 +1,6 @@
 import json
 import os
+from distutils.util import strtobool
 from typing import Dict
 
 import pkg_resources
@@ -179,7 +180,8 @@ def create_account_ms(
         environment: str,
         delivery_address: dict,
         account_status: str = 'ACTIVE',
-        enable_empties_loan: bool = False):
+        enable_empties_loan: bool = False,
+        **kwargs):
     """
     Create account on the microservice.
 
@@ -230,7 +232,15 @@ def create_account_ms(
 
     if zone == "US":
         schema = "data/create_account_us_payload.json"
-        dict_values.update({"vendorAccountId": account_id})
+
+        dict_values.update({
+            "vendorAccountId": account_id,
+            "hasPONumberRequirement": kwargs.get(
+                "hasPONumberRequirement",
+                False
+            )
+        })
+
         use_jwt_auth = False
     else:
         schema = "data/create_account_payload.json"

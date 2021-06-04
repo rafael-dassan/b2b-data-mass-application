@@ -693,7 +693,7 @@ def validate_yes_no_change_date(
     str
         Y or N depending on user input.
     """
-    option = input(f'\n{text.default_text_color}{question}')
+    option = input(f'{text.default_text_color}{question}')
 
     while (option.upper() in ["Y", "N"]) is False:
         print(text.Red + '\n- Invalid option')

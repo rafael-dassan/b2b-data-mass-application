@@ -25,7 +25,7 @@
   "deliveryScheduleId": "2021-12-12",
   "erpSalesCenter": null,
   "hasEmptiesLoan": true,
-  "hasOrderNumberRequirement": false,
+  "hasPONumberRequirement": false,
   "hasOverprice": true,
   "liquorLicense": [
     {

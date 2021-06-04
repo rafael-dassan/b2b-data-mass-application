@@ -105,8 +105,13 @@ def create_delivery_window_microservice(
     # Get headers
     request_headers = get_header_request(zone, False, True, False, False)
 
+    if zone == "US":
+        v1 = False
+    else:
+        v1 = True
+
     # Get base URL
-    ms_base_url = get_microservice_base_url(environment)
+    ms_base_url = get_microservice_base_url(environment, v1)
     request_url = f"{ms_base_url}/account-relay/delivery-windows"
 
     # Return list of dates
@@ -146,17 +151,17 @@ def create_delivery_window_microservice(
         request_headers=request_headers
     )
 
-    if response.status_code != 202:
-        print(
-            f"{text.Green}"
-            "- [Account Relay Service] Failure to create delivery window.\n"
-            f"Response Status: {response.status_code}.\n"
-            f"Response message: {response.text}"
-        )
+    if response.status_code in [200, 202]:
+        return True
 
-        return False
+    print(
+        f"{text.Red}"
+        "- [Account Relay Service] Failure to create delivery window.\n"
+        f"Response Status: {response.status_code}.\n"
+        f"Response message: {response.text}"
+    )
 
-    return True
+    return False
 
 
 # Return payload next date for delivery date

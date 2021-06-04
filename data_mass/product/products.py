@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 from json import dumps, loads
 from random import randint, uniform
+from typing import Any, Dict, Optional
 
 import pkg_resources
 from tabulate import tabulate
@@ -378,9 +379,6 @@ def get_body_price_inclusion_microservice_request(delivery_center_id):
     body_price_inclusion = dumps({"deliveryCenters": [delivery_center_id]})
 
     return body_price_inclusion
-
-
-from typing import Any, Dict
 
 
 def get_avaliable_categories(
@@ -795,10 +793,10 @@ def create_product(
 
 
 def create_product_v2(
-    zone: str,
-    environment: str,
-    product_data: dict,
-    vendor_item_id: str = "") -> dict:
+        zone: str,
+        environment: str,
+        product_data: dict,
+        vendor_item_id: Optional[str] = None) -> dict:
     """
     Create product using ms version 2.
 

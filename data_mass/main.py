@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from distutils.util import strtobool
 from random import random, sample
 
 import click
@@ -634,12 +635,24 @@ def flow_create_order(
             delivery_date = str(datetime.date(tomorrow))
 
     if zone == "US":
+        has_empties = input(
+            f"{text.default_text_color}"
+            "Has empties? true/False: "
+        )
+
+        while (has_empties.upper() in ["TRUE", "FALSE"]) is False:
+            print(text.Red + "\n- Invalid option")
+            has_empties = input(f"\n{text.default_text_color}Has empties?")
+
+        has_empties = strtobool(has_empties)
+
         order_items = request_order_simulation_v2(
             account_id=account_id,
             zone=zone,
             environment=environment,
             items=item_list,
-            delivery_date=delivery_date
+            delivery_date=delivery_date,
+            has_empties=has_empties
         )
     else:
         order_items = request_order_simulation(
@@ -1237,6 +1250,10 @@ def flow_input_inventory_to_product(zone, environment):
 
 
 def flow_input_sku_limit(zone, environment):
+    if zone == "US":
+        print(f"{text.Red}\nThis feature isn't enabled for US.")
+        print_finish_application_menu()
+
     account_id = print_account_id_menu(zone)
 
     if not account_id:
@@ -1341,6 +1358,10 @@ def flow_input_combo_quick_order(zone, environment, account_id):
 
 
 def flow_input_empties_discounts(zone, environment):
+    if zone == "US":
+        print(f"{text.Red}\nThis feature isn't enabled for US.")
+        print_finish_application_menu()
+
     account_id = print_account_id_menu(zone)
 
     if not account_id:
@@ -1417,9 +1438,30 @@ def flow_create_account(zone, environment, account_id):
     else:
         enable_empties_loan = False
 
+    if zone == "US":
+        has_po_number = input("Has PO Number? true/False: ")
+
+        while (has_po_number.upper() in ["TRUE", "FALSE"]) is False:
+            print(text.Red + "\n- Invalid option")
+            has_po_number = input(f"\n{text.default_text_color}Has PO Number? true/False: ")
+
+        has_po_number = strtobool(has_po_number)
+
     # Call create account function
-    create_account_response = create_account_ms(account_id, name, payment_method, minimum_order, zone, environment,
-                                                delivery_address, account_status, enable_empties_loan)
+    create_account_response = create_account_ms(
+        account_id=account_id,
+        name=name,
+        payment_method=payment_method,
+        minimum_order=minimum_order,
+        zone=zone,
+        environment=environment,
+        delivery_address=delivery_address,
+        account_status=account_status,
+        enable_empties_loan=enable_empties_loan,
+        kwargs={
+            "hasPONumberRequirement": has_po_number
+        }
+    )
 
     if create_account_response:
         print(text.Green + f'\n- Your account {account_id} has been created successfully')
@@ -1452,10 +1494,15 @@ def flow_create_delivery_window(zone, environment, account_id, option):
             is_alternative_delivery_date = False
 
     # Call add delivery window to account function
-    delivery_window = create_delivery_window_microservice(zone, environment, account_data,
-                                                              is_alternative_delivery_date, option)
+    delivery_window = create_delivery_window_microservice(
+        zone=zone,
+        environment=environment,
+        account_data=account_data,
+        is_alternative_delivery_date=is_alternative_delivery_date,
+        option=option
+    )
 
-    if delivery_window == 'success':
+    if delivery_window:
         print(text.Green + '\n- Delivery window created successfully for the account {account_id}'
               .format(account_id=account_id))
 
@@ -1503,11 +1550,30 @@ def flow_update_account_name(zone, environment, account_id):
     name = print_account_name_menu()
 
     minimum_order = get_minimum_order_list(account_data['minimumOrder'])
+    
+    if zone == "US":
+        has_po_number = input("Has PO Number? true/False: ")
 
-    create_account_response = create_account_ms(account_id, name, account_data['paymentMethods'],
-                                                minimum_order, zone, environment,
-                                                account_data['deliveryAddress'], account_data['status'],
-                                                account_data['hasEmptiesLoan'])
+        while (has_po_number.upper() in ["TRUE", "FALSE"]) is False:
+            print(text.Red + "\n- Invalid option")
+            has_po_number = input(f"\n{text.default_text_color}Has PO Number? true/False: ")
+
+        has_po_number = strtobool(has_po_number)
+
+    create_account_response = create_account_ms(
+        account_id=account_id,
+        name=name,
+        payment_method=account_data['paymentMethods'],
+        minimum_order=minimum_order,
+        zone=zone,
+        environment=environment,
+        delivery_address=account_data['deliveryAddress'],
+        account_status=account_data['status'],
+        enable_empties_loan=account_data['hasEmptiesLoan'],
+        kwargs={
+            "hasPONumberRequirement": has_po_number
+        }
+    )
 
     if create_account_response:
         print(text.Green + '\n- Account name updated for the account {account_id}'

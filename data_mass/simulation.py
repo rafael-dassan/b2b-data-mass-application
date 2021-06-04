@@ -118,14 +118,13 @@ def request_order_simulation(
         return False
 
 
-
-
 def request_order_simulation_v2(
     account_id: int,
     zone: str,
     environment: str,
     items: List[dict],
-    delivery_date: str):
+    delivery_date: str,
+    has_empties: str = False):
     """
     Request order simulation v2.
 
@@ -135,6 +134,8 @@ def request_order_simulation_v2(
     environment : str
     account_id : int
     items : list
+    has_empties : str
+        By default `None`.
 
     Returns
     -------
@@ -149,6 +150,9 @@ def request_order_simulation_v2(
         "accountId": get_account_id(account_id, zone, environment),
         "userId": str(uuid1()),
         "deliveryDate": delivery_date,
+        "empties": {
+            "hasEmtpies": has_empties
+        },
         "items": []
     }
 

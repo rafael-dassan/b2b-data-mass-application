@@ -66,12 +66,17 @@ def create_quick_order_payload(account_id, zone, product_list):
         'recommendationId': f'DM-{zone}-{str(randint(1, 100000))}',
         'useCase': 'QUICK_ORDER',
         'useCaseId': account_id,
-        'descriptions[0].language': language,
-        'descriptions[0].text': text,
-        'descriptions[0].description': text_description,
+        'items': items,
+        'descriptions': [{
+            'language': language,
+            'text': text,
+            'description': text_description
+        }],
         'combos': None
     }
-    set_to_dictionary(dict_values, 'items', items)
+    
+    if zone == "US":
+        dict_values.update({"vendorId": "9d72627a-02ea-4754-986b-0b29d741f5f0"})
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
@@ -122,11 +127,17 @@ def create_forgotten_items_payload(account_id, zone, product_list):
         'recommendationId': f'DM-{zone}-{str(randint(1, 100000))}',
         'useCase': 'FORGOTTEN_ITEMS',
         'useCaseId': account_id,
-        'descriptions[0].language': language,
-        'descriptions[0].text': text,
-        'descriptions[0].description': text_description,
+        'descriptions': [{
+            'language': language,
+            'text': text,
+            'description': text_description,
+        }],
         'combos': None
     }
+
+    if zone == "US":
+        dict_values.update({"vendorId": "9d72627a-02ea-4754-986b-0b29d741f5f0"})
+
     set_to_dictionary(dict_values, 'items', items)
 
     content = pkg_resources.resource_string("data_mass", "data/create_beer_recommender_payload.json") 
@@ -174,11 +185,17 @@ def create_upsell_payload(account_id, zone, product_list):
 
     dict_values = {
         'recommendationId': f'DM-{zone}-{str(randint(1, 100000))}',
-        'descriptions[0].language': language,
-        'descriptions[0].text': text,
-        'descriptions[0].description': text_description,
+        'descriptions': [{
+            'language': language,
+            'text': text,
+            'description': text_description
+        }],
         'useCaseId': account_id
     }
+
+    if zone == "US":
+        dict_values.update({"vendorId": "9d72627a-02ea-4754-986b-0b29d741f5f0"})
+
     set_to_dictionary(dict_values, 'items', items)
 
     # get data from Data Mass files
@@ -299,8 +316,8 @@ def get_header_request_recommender(zone, environment):
 def get_recommendation_by_account(account_id, zone, environment, use_case):
     headers = get_header_request(zone, True, False, False, False, account_id)
 
-    request_url = get_microservice_base_url(environment, True) + '/global-recommendation/?useCase={}&useCaseId=' \
-                                                                   '{}&useCaseType=ACCOUNT'.format(use_case, account_id)
+    base_url = get_microservice_base_url(environment, True)
+    request_url = f"{base_url}/global-recommendation/?useCase={use_case}&useCaseId={account_id}"
 
     response = place_request('GET', request_url, '', headers)
 
@@ -409,7 +426,7 @@ def input_combos_quick_order(zone, environment, account_id):
     
     if account_recommendation == 'not_found' or not account_recommendation:
         return False
-    else: 
+    else:
         # Retrieve combos type discount of the account
         request_headers = get_header_request(zone, True, False, False, False, account_id)
 
