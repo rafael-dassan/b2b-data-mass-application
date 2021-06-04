@@ -1,14 +1,15 @@
-# Standard library imports
 import json
-from json import loads
 import os
 from random import randint
 
-# Local application imports
-from data_mass.common import get_header_request, \
-    get_microservice_base_url, convert_json_to_string, place_request, \
-    print_input_number
 from data_mass.classes.text import text
+from data_mass.common import (
+    convert_json_to_string,
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+    print_input_number
+    )
 from data_mass.rewards.rewards_utils import get_rewards_combos_by_account
 
 APP_ADMIN = 'membership'
@@ -20,7 +21,7 @@ def create_redemption(account_id, zone, environment):
 
     if rewards_combos_response is None: return None
 
-    json_rewards_combos = loads(rewards_combos_response.text)
+    json_rewards_combos = json.loads(rewards_combos_response.text)
     
     comboId = json_rewards_combos['combos'][0]['id']
     order_id = 'DM-' + account_id + str(randint(100,900))

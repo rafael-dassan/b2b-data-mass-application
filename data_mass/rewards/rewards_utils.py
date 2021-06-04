@@ -1,7 +1,7 @@
 import json
 import os
 from time import time
-from typing import List
+from typing import AnyStr, Dict, List, Union
 
 from tabulate import tabulate
 
@@ -102,8 +102,8 @@ def get_rewards_combos_by_account(account_id, zone, environment):
             )
     elif response.status_code == 404:
         print(
-            text.Red
-            + f'\n- [Rewards] The account "{account_id}" is not enrolled to any'
+            f"{text.Red}"
+            f'\n- [Rewards] The account "{account_id}" is not enrolled to any'
             " rewards program."
             '\n- Please use the menu option "Enroll POC to a program" to '
             "enroll this account to a rewards program."
@@ -361,7 +361,7 @@ def post_orders_rewards(
     delivery_date: str,
     empties: list = [],
     payment_term: bool = 0
-):
+) -> Dict:
     """
     Post methods for orders rewards.
 
@@ -409,7 +409,7 @@ def post_orders_rewards(
         delivery_date=delivery_date
     )
     if not order_items:
-        return None
+        return {}
 
     response = request_order_creation_checkout(
         account_id=account[0]['accountId'],
@@ -423,23 +423,51 @@ def post_orders_rewards(
         pay_method=pay_method
     )
     if not response:
-        return None
+        return {}
 
     return response
 
 
 def request_order_creation_checkout(
-    account_id,
-    delivery_center_id,
-    zone,
-    environment, 
-    allow_order_cancel, 
-    order_items, 
-    order_status,
-    delivery_date,
+    account_id: str,
+    delivery_center_id: str,
+    zone: str,
+    environment: str, 
+    allow_order_cancel: str, 
+    order_items: list, 
+    order_status: str,
+    delivery_date: str,
     pay_method: str
-):
+) -> AnyStr:
+    """
+    Post data payload to checkout endpoint.
 
+    Parameters
+    ----------
+    account_id : str
+        the specific id of the account to be used.
+    delivery_center_id : str
+        the id of delivery center for the order.
+    zone : str
+        the zone the order will be created.
+    environment : str
+        the environment the order will be created i.e: DEV, SIT or UAT.
+    allow_order_cancel : str
+        if order could be cancellable.
+    order_items : list
+        list of items to be used in the order.
+    order_status : str
+        how order enter the flow i.e: Placed, Pending, Confirmed, etc.
+    delivery_date : str
+        the specific date to deliver the order. 
+    pay_method : str
+        the method of payment set in the account.
+
+    Returns
+    -------
+    str
+        If succesfull return Json with orderId, if not a False statement.
+    """
     request_headers = get_header_request(
         zone=zone,
         use_jwt_auth=True,
@@ -449,7 +477,7 @@ def request_order_creation_checkout(
         account_id=account_id
     )
     base_url = get_microservice_base_url(environment=environment)
-    request_url = f'{base_url}/checkout-service/'
+    request_url = f"{base_url}/checkout-service/"
 
     request_body = create_checkout_payload(
         account_id,
@@ -462,7 +490,7 @@ def request_order_creation_checkout(
     )
 
     response = place_request(
-        request_method='POST',
+        request_method="POST",
         request_url=request_url,
         request_body=request_body,
         request_headers=request_headers
@@ -472,10 +500,4 @@ def request_order_creation_checkout(
     if response.status_code == 200 and len(json_data) != 0:
         return json_data
     else:
-        print(
-            text.Red
-            + '\n- [Order Service] Failure to create an order.'
-            f'Response Status: {response.status_code}. '
-            f'Response message {response.text}'
-        )
-        return False
+        return {"orderNumber": response.text}

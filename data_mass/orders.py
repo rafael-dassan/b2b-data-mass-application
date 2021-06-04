@@ -3,7 +3,7 @@ import json
 import os
 from datetime import datetime, timedelta
 from json import loads
-from random import randint
+from random import choice, randint
 
 import pkg_resources
 # Third party imports
@@ -207,8 +207,9 @@ def create_checkout_payload(
     for combo in combos_items:
         sku = combo.get("freeGoods", "").get("skus","")[0]
         combo.update({"sku": sku})
+        combo["id"] = combo.pop("comboId")
 
-    item_list.append(combos_items[randint(1, len(combos_items)-1)])
+    item_list.extend(combos_items)
 
     dict_values = {
         "accountId": account_id,

@@ -1,6 +1,6 @@
 from json import loads
-from random import choice, randint
-from typing import List
+from random import choice, randint, sample
+from typing import List, Union
 
 from tabulate import tabulate
 
@@ -420,7 +420,7 @@ def flow_create_order_rewards(
     zone: str,
     environment: str,
     account: list,
-    item_list: list,
+    item_list: Union[List, List[List]],
     order_status: str,
     delivery_date: str,
     quantity_orders: int = 1,
@@ -477,13 +477,13 @@ def flow_create_order_rewards(
     ]
 
     orders = []
-    for _ in range(quantity_orders):
+    for value in range(quantity_orders):
         order = post_orders_rewards(
             zone=zone,
             environment=environment,
             account=account,
-            item_list=item_list,
-            dt_combos=combos if combos else [],
+            item_list=item_list[value],
+            dt_combos=sample(combos, 1) if combos else [],
             pay_method=pay_method,
             order_status=order_status,
             allow_order_cancel=allow_order_cancel,
@@ -492,5 +492,5 @@ def flow_create_order_rewards(
         orders.append(order)
 
     if orders:
-        return [orderid.get("orderNumber") for orderid in orders]
+        return [orderid.get("orderNumber", orderid) for orderid in orders]
     return []

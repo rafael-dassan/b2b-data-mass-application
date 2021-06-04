@@ -537,18 +537,20 @@ def create_rewards_to_account():
             tomorrow = datetime.today() + timedelta(1)
             delivery_date = str(datetime.date(tomorrow))
 
-        item_list = get_items_associated_account(
-            account_id=account_id,
-            zone=zone,
-            environment=environment,
-        )
-        if not item_list:
-            print_finish_application_menu()
-
         qty_orders = click.prompt(
             'Please enter the quantity of orders to create (max. 20)',
             type=click.IntRange(1, 20)
         )
+
+        item_list = get_items_associated_account(
+            account_id=account_id,
+            zone=zone,
+            environment=environment,
+            qty_lists=qty_orders
+        )
+        if not item_list:
+            print_finish_application_menu()
+
         response = flow_create_order_rewards(
             zone=zone,
             environment=environment,
@@ -559,16 +561,9 @@ def create_rewards_to_account():
             delivery_date=delivery_date
             )
         if response:
-            if len(response) > 1:
-                print(TEXT_GREEN + f"Orders created successfully: ")
-                for order in response:
-                    print(f'- {order}')
-            else:
-                print(
-                    TEXT_GREEN
-                    + f"\n- Order {response[0]} created "
-                    "successfully"
-                )
+            print(f"{TEXT_GREEN}The result: ")
+            for index, order in enumerate(response, start=1):
+                print(f"{index} - {order}")
             
         print_finish_application_menu()
 

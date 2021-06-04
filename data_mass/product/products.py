@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 from json import dumps, loads
 from random import randint, sample, uniform
+from typing import List
 
 import click
 import pkg_resources
@@ -855,7 +856,8 @@ def get_items_associated_account(
     account_id: str,
     zone: str,
     environment: str,
-) -> list:
+    qty_lists: int = 1,
+) -> List:
     """
     Get items associated in the POC.
 
@@ -867,22 +869,25 @@ def get_items_associated_account(
         e.g., AR, BR, DO, etc
     environment : str
         e.g., DEV, SIT, UAT
+    qty_lists : int
+        value to identify quantity of lists with skus.
 
     Returns
     -------
-    list
+    Union[List, List[List]]
         list of dict with sku and quantity of products
         associated in the account.
+        List of lists with dict of sku and quantity of products.
     """
     product_offers = request_get_offers_microservice(
         account_id=account_id,
         zone=zone,
         environment=environment
     )
-    if not product_offers or product_offers == 'not_found':
+    if not product_offers or product_offers == "not_found":
         print(
             f"{text.Red}"
-            f"\n- [Catalog Service] - There is no product associated:"
+            f"\n- [Catalog Service] - There is no product associated: "
             f"with the account {account_id}"
         )
         return []
@@ -894,14 +899,25 @@ def get_items_associated_account(
         f"The account has {len(unique_sku)} products associated!"
     )
     quantity = click.prompt(
-        f'{text.default_text_color}'
-        'Quantity of products you want to include in this order',
+        f"{text.default_text_color}"
+        "Quantity of products you want to include in this order",
         type=click.IntRange(1, len(unique_sku)),
     )
+    if qty_lists > 1:
+        items_list = [
+            generate_list_skus(unique_sku,quantity) for _ in range(qty_lists)
+        ]
+    else:
+        items_list = generate_list_skus(items=unique_sku, qty_items=quantity)
+    return items_list
 
-    item_list = []
-    for sku in unique_sku[:quantity]:
-        data = {'sku': sku, 'itemQuantity': randint(0, 10)}
-        item_list.append(data)
 
-    return item_list
+def generate_list_skus(
+    items: list,
+    qty_items:int,
+) -> List:
+    items_list = []
+    for sku in sample(items, qty_items):
+        data = {"sku": sku, "itemQuantity": randint(0, 10)}
+        items_list.append(data)
+    return items_list
