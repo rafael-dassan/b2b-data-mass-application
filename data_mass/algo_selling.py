@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from json import loads
 from random import randint
@@ -19,6 +20,7 @@ from data_mass.common import (
     update_value_to_json
 )
 
+logger = logging.getLogger(__name__)
 
 def create_all_recommendations(zone, environment, account_id, products):
     # Get responses
@@ -317,7 +319,12 @@ def get_recommendation_by_account(account_id, zone, environment, use_case):
     headers = get_header_request(zone, True, False, False, False, account_id)
 
     base_url = get_microservice_base_url(environment, True)
-    request_url = f"{base_url}/global-recommendation/?useCase={use_case}&useCaseId={account_id}"
+
+    if zone == "US":
+        request_url = f"{base_url}/global-recommendation/?useCase={use_case}&useCaseId={account_id}&vendorId=9d72627a-02ea-4754-986b-0b29d741f5f0"
+        
+    else:
+        request_url = f"{base_url}/global-recommendation/?useCase={use_case}&useCaseId={account_id}"
 
     response = place_request('GET', request_url, '', headers)
 
@@ -335,7 +342,6 @@ def get_recommendation_by_account(account_id, zone, environment, use_case):
         print(text.Red + '\n- [Global Recommendation Service] Failure to retrieve recommendation. Response Status: {}.'
                          ' Response message: {}'.format(response.status_code, response.text))
         return False
-
 
 def delete_recommendation_by_id(environment, recommendation_data):
     recommendation_id = recommendation_data['content'][0]['id']

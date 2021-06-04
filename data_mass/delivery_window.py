@@ -1,6 +1,7 @@
 # Standard library imports
 import calendar
 import json
+import logging
 import os
 import sys
 from datetime import datetime, timedelta
@@ -17,6 +18,8 @@ from data_mass.common import (
     place_request,
     update_value_to_json
 )
+
+logger = logging.getLogger(__name__)
 
 
 # Create payload for delivery date
@@ -139,7 +142,6 @@ def create_delivery_window_microservice(
             dates_list[index],
             index
         )
-
         request_body.append(temporary_body)
         index = index + 1
 

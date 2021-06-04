@@ -497,14 +497,14 @@ def request_get_offers_microservice(
     # Get headers
     headers = get_header_request(zone, True, False, False, False, account_id)
     base_url = get_microservice_base_url(environment, False)
-    vendorAccount = get_account_id(account_id, zone, environment)
+    vendor_account = get_account_id(account_id, zone, environment)
 
     if zone == "US":
         request_url = (
             f"{base_url}/v1"
             "/catalog-service"
             "/catalog"
-            "/items?accountId=2be68476-5b4c-4cb2-9df8-6865590aeb98"
+            f"/items?accountId={vendor_account}"
             "&projection=SMALL"
         )
     else:
@@ -599,7 +599,6 @@ def request_get_products_by_account_microservice(account_id, zone, environment):
 
     # Define headers
     request_headers = get_header_request(zone, True, False, False, False, account_id)
-    vendorAccountId = get_account_id(account_id, zone, environment)
 
     # Define base URL
     if zone == "US":
@@ -700,13 +699,9 @@ def request_get_account_product_assortment(
 
     # Get base URL
 
-    request_url = (
-    get_microservice_base_url(environment)
-    + "/product-assortment/?accountId="
-    + account_id
-    + "&deliveryCenterId="
-    + delivery_center_id
-    )
+    base_url = get_microservice_base_url(environment)
+    request_url = f"{base_url}/product-assortment/?accountId={account_id}&deliveryCenterId={delivery_center_id}"
+
     response = place_request("GET", request_url, "", headers)
     json_data = loads(response.text)
     skus = json_data["skus"]
@@ -1070,12 +1065,12 @@ def display_product_information(product_offers):
     Returns: a table containing the available item information
     """
     product_information = list()
-    for i in range(len(product_offers)):
+    for product in product_offers:
         product_values = {
-            "SKU": product_offers[i]["sku"],
-            "Name": product_offers[i]["sourceData"]["vendorItemId"],
-            "Price": product_offers[i]["price"],
-            "Stock Available": product_offers[i]["stockAvailable"],
+            "SKU": product.get("sku"),
+            "Name": product.get("sourceData", {}).get("vendorItemId"),
+            "Price": product.get("price"),
+            "Stock Available": product.get("stockAvailable"),
         }
         product_information.append(product_values)
 

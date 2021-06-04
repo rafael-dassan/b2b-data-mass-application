@@ -1,9 +1,9 @@
 from data_mass.populator.log import *
 from data_mass.product.magento import enable_product
 from data_mass.product.products import (
-    create_product,
+    create_product_v2,
     request_get_offers_microservice
-    )
+)
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +53,7 @@ def populate_product(country, environment, sku, name, brand_name, sub_brand_name
         'isAlcoholic': is_alcoholic
     }
 
-    response = create_product(country, environment, item_data)
+    response = create_product_v2(country, environment, item_data)
     if response is None:
         logger.error(log(Message.PRODUCT_CREATE_ERROR, {"sku": sku}))
 

@@ -1,11 +1,18 @@
 from data_mass.accounts import create_account_ms, get_account_delivery_address
-from data_mass.delivery_window import create_delivery_window_microservice
 from data_mass.credit import add_credit_to_account_microservice
-from data_mass.populator.country.product import check_product_associated_to_account
-from data_mass.product.products import request_get_products_by_account_microservice, request_get_products_microservice, generate_random_price_ids, \
-    slice_array_products, request_post_products_account_microservice
+from data_mass.delivery_window import create_delivery_window_microservice
 from data_mass.populator.country.inventory import populate_default_inventory
+from data_mass.populator.country.product import (
+    check_product_associated_to_account
+)
 from data_mass.populator.log import *
+from data_mass.product.products import (
+    generate_random_price_ids,
+    request_get_products_by_account_microservice,
+    request_get_products_microservice,
+    request_post_products_account_microservice,
+    slice_array_products
+)
 
 logger = logging.getLogger(__name__)
 
@@ -61,14 +68,14 @@ def populate_delivery_window(country, environment, account_id, option):
         "deliveryScheduleId": account_id,
         "accountId": account_id
     }
-    if "success" != create_delivery_window_microservice(country, environment, account_data, False, option):
+    if not create_delivery_window_microservice(country, environment, account_data, False, option):
         logger.error(log(Message.DELIVERY_WINDOW_ERROR,
                          {"account_id": account_id}))
 
 
 # Populate the credit for an account
 def populate_credit(country, environment, account_id, credit, balance):
-    if "success" != add_credit_to_account_microservice(account_id, country, environment, credit, balance):
+    if not add_credit_to_account_microservice(account_id, country, environment, credit, balance):
         logger.error(log(Message.CREDIT_ERROR, {"account_id": account_id}))
 
 
