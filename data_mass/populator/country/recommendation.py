@@ -27,13 +27,11 @@ def populate_recommendation(country, environment, account_id, products):
         - products: specific products registered as recommended ones
     Return new json_object
     """
-    logger.info(products)
     if False == check_account_exists_microservice(account_id, country, environment):
         logger.error(log(Message.RETRIEVE_ACCOUNT_ERROR, {'account_id': account_id}))
     else:
         # Retrieve all SKUs of the specified Account and DeliveryCenter IDs
         product_offers = request_get_offers_microservice(account_id, country, environment)
-        logger.info(product_offers)
         if product_offers == 'not_found':
             logger.error(log(Message.PRODUCT_NOT_FOUND_ERROR, {'account_id': account_id}))
         elif not product_offers:
@@ -44,7 +42,6 @@ def populate_recommendation(country, environment, account_id, products):
                 for j in range(len(products)):
                     if product_offers[i]['sku'] == products[j]:
                         sku_list.append(product_offers[i]['sku'])
-            logger.info(sku_list)
             if len(sku_list) == 0:
                 logger.info("Skipping populate_recommendation step for account {0} since the products are not associated"
                             .format(account_id))
