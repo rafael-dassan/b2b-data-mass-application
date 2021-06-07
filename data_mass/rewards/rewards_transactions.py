@@ -11,7 +11,7 @@ from data_mass.common import get_header_request, \
 from data_mass.classes.text import text
 from data_mass.rewards.rewards_utils import get_rewards_combos_by_account
 
-APP_ADMIN = 'membership'
+APP_ADMIN = 'adminportal'
 
 # Create REDEMPTION transaction for an account
 def create_redemption(account_id, zone, environment):

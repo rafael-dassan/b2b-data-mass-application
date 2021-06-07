@@ -24,7 +24,7 @@ from data_mass.rewards.rewards_utils import (
     get_payload
     )
 
-APP_ADMIN = 'membership'
+APP_ADMIN = 'adminportal'
 
 
 def create_take_photo_challenge(zone, environment, challenge_id=None, is_expired=False):

@@ -28,7 +28,7 @@ from data_mass.rewards.rewards_utils import (
     print_input_decision
     )
 
-APP_ADMIN = 'membership'
+APP_ADMIN = 'adminportal'
 
 # Create Rewards Program
 def create_new_program(zone, environment):
