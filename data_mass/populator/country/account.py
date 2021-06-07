@@ -58,6 +58,7 @@ def populate_poc(country, environment, account_id, account_name, payment_method,
 # Populate an account
 def populate_account(country, environment, account_id, account_name, payment_method):
     delivery_address = get_account_delivery_address(country)
+    logger.info(delivery_address)
     if not create_account_ms(account_id, account_name, payment_method, None, country, environment, delivery_address):
         logger.error(log(Message.ACCOUNT_ERROR, {"account_id": account_id}))
 
@@ -85,7 +86,7 @@ def populate_product(account_id, country, environment, amount_of_products):
         "deliveryCenterId": account_id,
         "accountId": account_id
     }
-    if "success" != add_products_to_account(account_data, country, environment, amount_of_products):
+    if not add_products_to_account(account_data, country, environment, amount_of_products):
         logger.error(log(Message.PRODUCT_ERROR, {"account_id": account_id}))
 
 
@@ -112,6 +113,8 @@ def add_products_to_account(account, country, environment, amount_of_products):
     # Get products by account
     products_by_account = request_get_products_by_account_microservice(
         account['accountId'], country, environment)
+    if not products_by_account:
+        return False 
     logger.debug("Products found on account {account_id}: {products} items".format(account_id=account['accountId'],
                                                                                    products=str(len(products_by_account))))
 
@@ -131,7 +134,7 @@ def add_products_to_account(account, country, environment, amount_of_products):
     else:
         logger.debug(
             "Account already has the desired amount of products, not needed to populate!")
-        return 'success'
+        return True
 
 
 # Populate association products for an account

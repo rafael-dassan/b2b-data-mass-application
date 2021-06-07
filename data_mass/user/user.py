@@ -45,7 +45,7 @@ def get_iam_b2c_country_params_uat(country):
         },
         "US": {
             "REDIRECT_URL": "com.abi.bees.unitedstates://oauth/redirect",
-            "CLIENT_ID": "PENDING MIGRATION"
+            "CLIENT_ID": "PENDING MIGRATION" #todo
         },
         "CO": {
             "REDIRECT_URL": "com.abi.bees.colombia://oauth/redirect",

@@ -137,7 +137,7 @@ def delete_invoice(account_id, country, environment):
         if not invoices_by_account:
             logger.error(log(Message.RETRIEVE_INVOICE_ERROR, {'vendorAccountIds': account_id}))
         else:
-            invoice_ids = list()
+            invoice_ids = []
             for i in invoices_by_account['data']:
                 invoice_id = i['invoiceId']
                 invoice_ids.append(invoice_id)
@@ -162,5 +162,5 @@ def delete_recommendation(account_id, country, environment, use_case):
     elif not data:
         logger.error(log(Message.RETRIEVE_RECOMMENDER_ERROR, {'use_case_type': use_case, 'account_id': account_id}))
     else:
-        if 'success' != delete_recommendation_by_id(environment, data):
+        if not delete_recommendation_by_id(environment, data, country, account_id):
             logger.error(log(Message.DELETE_RECOMMENDER_ERROR, {'use_case_type': use_case, 'account_id': account_id}))

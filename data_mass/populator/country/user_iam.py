@@ -1,8 +1,7 @@
 from data_mass.populator.log import *
-
-from data_mass.user.creation import create_user
-from data_mass.user.authorization import authorize_load_request
 from data_mass.user.assertion import assert_email_request
+from data_mass.user.authorization import authorize_load_request
+from data_mass.user.creation import create_user
 from data_mass.user.user import get_iam_b2c_params
 
 logger = logging.getLogger(__name__)
@@ -33,5 +32,5 @@ def populate_user_iam_b2c(country, environment, email, password, account_id):
         else:
             if len(account_id) > 0:
                 for x in range(len(account_id)):
-                    if 'success' != create_user(environment, country, email, password, account_id, account_id):
+                    if not create_user(environment, country, email, password, account_id, account_id):
                         logger.error(log(Message.CREATE_USER_IAM_ERROR, {'email': email, 'account_id': account_id[x]}))

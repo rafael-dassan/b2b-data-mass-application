@@ -28,8 +28,8 @@ def create_all_recommendations(zone, environment, account_id, products):
     sell_up_response = request_sell_up(zone, environment, account_id, products)
     forgotten_items_response = request_forgotten_items(zone, environment, account_id, products)
 
-    if quick_order_response == 'success' and sell_up_response == 'success' and forgotten_items_response == 'success':
-        return 'success'
+    if quick_order_response and sell_up_response and forgotten_items_response:
+        return True
     else:
         return False
 
@@ -231,7 +231,7 @@ def request_quick_order(zone, environment, account_id, products):
     response = place_request('POST', request_url, request_body, request_headers)
     
     if response.status_code == 202:
-        return 'success'
+        return True
     else:
         print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: {}. '
                          'Response message: {}'.format(response.status_code, response.text))
@@ -252,7 +252,7 @@ def request_forgotten_items(zone, environment, account_id, products):
     response = place_request('POST', request_url, request_body, request_headers)
 
     if response.status_code == 202:
-        return 'success'
+        return True
     else:
         print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: {}. '
                          'Response message: {}'.format(response.status_code, response.text))
@@ -273,7 +273,7 @@ def request_sell_up(zone, environment, account_id, products):
     response = place_request('POST', request_url, request_body, request_headers)
 
     if response.status_code == 202:
-        return 'success'
+        return True
     else:
         print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: {}. '
                          'Response message: {}'.format(response.status_code, response.text))
@@ -343,23 +343,17 @@ def get_recommendation_by_account(account_id, zone, environment, use_case):
                          ' Response message: {}'.format(response.status_code, response.text))
         return False
 
-def delete_recommendation_by_id(environment, recommendation_data):
+def delete_recommendation_by_id(environment, recommendation_data, zone, account_id):
     recommendation_id = recommendation_data['content'][0]['id']
 
-    headers = {
-        'requestTraceId': str(uuid1()),
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYi1pbmJldiIsImF1ZCI6ImFiaS1taWNyb3Nlc'
-                         'nZpY2VzIiwiZXhwIjoxNjE2MjM5MDIyLCJpYXQiOjE1MTYyMzkwMjIsInVwZGF0ZWRfYXQiOjExMTExMTEsIm5hbWUiOi'
-                         'J1c2VyQGFiLWluYmV2LmNvbSIsImFjY291bnRJRCI6IiIsInVzZXJJRCI6IjIxMTgiLCJyb2xlcyI6WyJST0xFX0FETUl'
-                         'OIl19.Hpthi-Joez6m2lNiOpC6y1hfPOT5nvMtYdNnp5NqVTM'
-    }
+    headers = get_header_request(zone, False, False, False, False, account_id)
 
     request_url = get_microservice_base_url(environment, True) + f'/global-recommendation/{recommendation_id}'
 
     response = place_request('DELETE', request_url, '', headers)
-
+    logger.info(response.text)
     if response.status_code == 202:
-        return 'success'
+        return True
     else:
         print(text.Red + '\n- [Global Recommendation Service] Failure to delete recommendation. Response Status: {}.'
                          ' Response message: {}'.format(response.status_code, response.text))
@@ -368,9 +362,9 @@ def delete_recommendation_by_id(environment, recommendation_data):
 
 def display_recommendations_by_account(data):
     recommendations = data['content']
-    recommender_list = list()
-    items_list = list()
-    combo_list = list()
+    recommender_list = []
+    items_list = []
+    combo_list = []
 
     for i in range(len(recommendations)):
         dict_value = {
@@ -472,7 +466,7 @@ def input_combos_quick_order(zone, environment, account_id):
         response = place_request('POST', request_url, updated_recommendation, request_headers)
 
         if response.status_code == 202:
-            return 'success'
+            return True
         else:
             print(text.Red + '\n- [Recommendation Relay Service] Failure to retrieve combos. Response Status: {}. '
                              'Response message: {}'.format(response.status_code, response.text))
