@@ -4,6 +4,7 @@ import os
 from json import loads
 from random import randint
 from time import time
+from urllib.parse import urlencode
 from uuid import uuid1
 
 import pkg_resources
@@ -315,33 +316,49 @@ def get_header_request_recommender(zone, environment):
     return request_headers
 
 
-def get_recommendation_by_account(account_id, zone, environment, use_case):
+def get_recommendation_by_account(
+        account_id: str,
+        zone: str,
+        environment: str,
+        use_case: list):
     headers = get_header_request(zone, True, False, False, False, account_id)
 
     base_url = get_microservice_base_url(environment, True)
+    query: dict = {"useCaseId": account_id}
+    case_query: list = []
+    
+    for case in use_case:
+        case_query.append(("useCase", case))
 
     if zone == "US":
-        request_url = f"{base_url}/global-recommendation/?useCase={use_case}&useCaseId={account_id}&vendorId=9d72627a-02ea-4754-986b-0b29d741f5f0"
-        
-    else:
-        request_url = f"{base_url}/global-recommendation/?useCase={use_case}&useCaseId={account_id}"
+        query.update({"vendorId": "9d72627a-02ea-4754-986b-0b29d741f5f0"})
 
+    request_url = f"{base_url}/global-recommendation/?{urlencode(query)}&{urlencode(case_query)}"
     response = place_request('GET', request_url, '', headers)
-
     recommendation_data = loads(response.text)
 
     if response.status_code == 200:
         content = recommendation_data['content']
-        if len(content) != 0:
+
+        if content:
             return recommendation_data
-        elif len(content) == 0:
-            print(text.Yellow + '\n- [Global Recommendation Service] The account {} does not have recommendation type'
-                                ' {}'.format(account_id, use_case))
-            return 'not_found'
-    else:
-        print(text.Red + '\n- [Global Recommendation Service] Failure to retrieve recommendation. Response Status: {}.'
-                         ' Response message: {}'.format(response.status_code, response.text))
-        return False
+
+        print(
+            f"{text.Yellow}\n"
+            "- [Global Recommendation Service] "
+            f"The account {account_id} does not contains any recommendation type: {use_case}"
+        )
+
+        return 'not_found'
+
+    print(
+        f"{text.Red}\n"
+        "- [Global Recommendation Service] Failure to retrieve recommendation."
+        f"Response Status: {response.status_code}."
+        f"Response message: {response.text}\n"
+    )
+
+    return False
 
 def delete_recommendation_by_id(environment, recommendation_data, zone, account_id):
     recommendation_id = recommendation_data['content'][0]['id']
@@ -422,7 +439,7 @@ def display_recommendations_by_account(data):
 
 def input_combos_quick_order(zone, environment, account_id):
     # Retrieve quick order recommendation of the account
-    account_recommendation = get_recommendation_by_account(account_id, zone, environment, 'QUICK_ORDER')
+    account_recommendation = get_recommendation_by_account(account_id, zone, environment, ['QUICK_ORDER'])
     
     if account_recommendation == 'not_found' or not account_recommendation:
         return False

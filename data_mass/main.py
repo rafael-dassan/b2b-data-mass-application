@@ -295,12 +295,16 @@ def product_information_menu():
             print(text.Red + '\n- [Product Assortment Service] There is no product associated with the account ' + abi_id)
             print_finish_application_menu()
 
-        inventory = get_delivery_center_inventory(environment, zone, abi_id, delivery_center_id, product_offers)
+        if zone == "US":
+            inventory = get_delivery_center_inventory_v2(abi_id, zone, environment, delivery_center_id)
+        else:
+            inventory = get_delivery_center_inventory(environment, zone, abi_id, delivery_center_id, product_offers)
+
         if not inventory:
             print_error_delivery_center_inventory(delivery_center_id)
             print_finish_application_menu()
         else:
-            display_inventory_by_account(inventory)
+            display_inventory_by_account(inventory, zone)
 
     else:
         zone = print_zone_menu_for_ms()
@@ -558,14 +562,16 @@ def order_menu():
         if zone == "US":
             for sku in unique_sku[:quantity]:
                 item, = list(filter(lambda item: item["sku"] == sku, product_offers))
+                default_price = round(uniform(9.99, 99.99), 2)
+                
                 item_list.append({
                     "sku": item.get("sku"),
                     "id": item.get("id"),
                     "vendorItemId": item.get("sourceData").get("vendorItemId"),
-                    "price": item.get("price"),
+                    "price": item.get("price", default_price),
                     "quantity": 1,
-                    "subtotal": item.get("price"),
-                    "total": item.get("price")
+                    "subtotal": item.get("price", default_price),
+                    "total": item.get("price", default_price)
                 })
         else:
             for sku in unique_sku[:quantity]:
@@ -637,14 +643,14 @@ def flow_create_order(
     if zone == "US":
         has_empties = input(
             f"{text.default_text_color}"
-            "Has empties? true/False: "
+            "Has empties? y/N: "
         )
 
-        while (has_empties.upper() in ["TRUE", "FALSE"]) is False:
+        while (has_empties.upper() in ["Y", "N"]) is False:
             print(text.Red + "\n- Invalid option")
-            has_empties = input(f"\n{text.default_text_color}Has empties?")
+            has_empties = input(f"\n{text.default_text_color}Has empties? y/N: ")
 
-        has_empties = strtobool(has_empties)
+        has_empties = bool(strtobool(has_empties))
 
         order_items = request_order_simulation_v2(
             account_id=account_id,
@@ -1177,8 +1183,14 @@ def flow_associate_products_to_account(zone, environment):
             print_finish_application_menu()
 
         # Call add products to account function
-        add_products = add_products_to_account_microservice(account_id, zone, environment, delivery_center_id,
-                                                            all_products_zone)
+        add_products = add_products_to_account_microservice(
+            abi_id=account_id,
+            zone=zone,
+            environment=environment,
+            delivery_center_id=delivery_center_id,
+            all_products_zone=all_products_zone
+        )
+
         if add_products != 'success':
             print(text.Red + '\n- [Products] Something went wrong, please try again')
             print_finish_application_menu()
@@ -1236,7 +1248,7 @@ def flow_input_inventory_to_product(zone, environment):
             get_inventory_response = get_delivery_center_inventory(environment, zone, account_id, delivery_center_id, sku_list)
 
         if not get_inventory_response:
-            print(f"O delivery center {delivery_center_id} não existe.\n")
+            print(f"Delivery center {delivery_center_id} not found.\n")
             print_finish_application_menu()
         else:
             inventory_information = print_inventory_sku_quantity_menu(zone, environment, sku_list)
@@ -1427,6 +1439,7 @@ def flow_create_account(zone, environment, account_id):
     delivery_address = get_account_delivery_address(zone)
     account_status = print_account_status_menu()
     option_include_minimum_order = print_minimum_order_menu()
+    has_po_number = None
 
     if option_include_minimum_order == 'Y':
         minimum_order = get_minimum_order_info()
@@ -1445,7 +1458,7 @@ def flow_create_account(zone, environment, account_id):
             print(text.Red + "\n- Invalid option")
             has_po_number = input(f"\n{text.default_text_color}Has PO Number? true/False: ")
 
-        has_po_number = strtobool(has_po_number)
+        has_po_number = bool(strtobool(has_po_number))
 
     # Call create account function
     create_account_response = create_account_ms(
@@ -1558,7 +1571,7 @@ def flow_update_account_name(zone, environment, account_id):
             print(text.Red + "\n- Invalid option")
             has_po_number = input(f"\n{text.default_text_color}Has PO Number? true/False: ")
 
-        has_po_number = strtobool(has_po_number)
+        has_po_number = bool(strtobool(has_po_number))
 
     create_account_response = create_account_ms(
         account_id=account_id,
@@ -2031,7 +2044,7 @@ def recommender_information_menu():
     if not account_id:
         print_finish_application_menu()
 
-    case_id = 'QUICK_ORDER&useCase=FORGOTTEN_ITEMS&useCase=CROSS_SELL_UP_SELL'
+    case_id = ['QUICK_ORDER', 'FORGOTTEN_ITEMS', 'CROSS_SELL_UP_SELL']
     data = get_recommendation_by_account(account_id, zone, environment, case_id)
     if not data or data == 'not_found':
         print_finish_application_menu()

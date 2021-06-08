@@ -30,9 +30,9 @@ def apply_run_preconditions(row, country, environment):
     account_id = row['account_id']
 
     logger.info("delete_recommendations for account %s", account_id)
-    delete_recommendation(account_id, country, environment, 'CROSS_SELL_UP_SELL')
-    delete_recommendation(account_id, country, environment, 'FORGOTTEN_ITEMS')
-    delete_recommendation(account_id, country, environment, 'QUICK_ORDER')
+    delete_recommendation(account_id, country, environment, ['CROSS_SELL_UP_SELL'])
+    delete_recommendation(account_id, country, environment, ['FORGOTTEN_ITEMS'])
+    delete_recommendation(account_id, country, environment, ['QUICK_ORDER'])
 
     logger.info("delete_deals for account %s", account_id)
     delete_deal(account_id, country, environment)

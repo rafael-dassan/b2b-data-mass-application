@@ -49,32 +49,35 @@ def request_inventory_creation(
         use_root_auth=False,
         use_inclusion_auth=True
     )
-
-    request_body = get_inventory_payload(
-        zone=zone,
-        environment=environment,
-        account_id=account_id,
-        products=products,
-        delivery_center_id=delivery_center_id,
-        sku_id=sku_id,
-        sku_quantity=sku_quantity
-    )
     
     if zone == "US":
-        is_v1: bool = False
-        delivery_center_id: str = request_body.get("fulfillmentCenterId")
         endpoint: str = f"inventory-relay/inventory/{delivery_center_id}"
-        body: dict = {"inventory": []}
-        items = request_body.get("inventory", {})
+        is_v1: bool = False
 
-        for item in items:
-            body["inventory"].append({
-                "vendorItemId": item.get("sku"),
-                "quantity": item.get("quantity")
-            })
+        response: dict = get_delivery_center_inventory_v2(
+            account_id=account_id,
+            zone=zone,
+            environment=environment,
+            delivery_center_id=delivery_center_id
+        )
 
-        request_body = body
+        request_body: dict = {"inventory": []}
+        for inventory in response:
+            for product in inventory.get("inventories", []):
+                if product.get("vendorItemId") == sku_id:
+                    product.update({"quantity": int(sku_quantity)})
+
+                request_body["inventory"].append(product)
     else:
+        request_body = get_inventory_payload(
+            zone=zone,
+            environment=environment,
+            account_id=account_id,
+            products=products,
+            delivery_center_id=delivery_center_id,
+            sku_id=sku_id,
+            sku_quantity=sku_quantity
+        )
         is_v1 = True
         endpoint = "inventory-relay/add"
 
@@ -184,7 +187,7 @@ def get_inventory_payload(
     return json_object
 
 
-def display_inventory_by_account(inventory: list):
+def display_inventory_by_account(inventory: list, zone: str = None):
     """
     Display inventory on the screen.
 
@@ -194,13 +197,24 @@ def display_inventory_by_account(inventory: list):
     """
     inventory_info = []
 
-    for item in inventory["inventory"]:
-        inventory_values = {
-            "sku": item["sku"],
-            "quantity": item["quantity"]
-        }
+    if zone == "US":
+        inventory = inventory[0]
 
-        inventory_info.append(inventory_values)
+        for item in inventory["inventories"]:
+            inventory_values = {
+                "vendorItemId": item["vendorItemId"],
+                "quantity": item["quantity"]
+            }
+
+            inventory_info.append(inventory_values)
+    else:
+        for item in inventory["inventory"]:
+            inventory_values = {
+                "sku": item["sku"],
+                "quantity": item["quantity"]
+            }
+
+            inventory_info.append(inventory_values)
 
     print(text.default_text_color + '\nInventory/stock information ')
     print(tabulate(inventory_info, headers='keys', tablefmt='grid'))
@@ -248,7 +262,7 @@ def get_delivery_center_inventory_v2(
         return data
 
     if response.status_code == 404:
-        return {}
+        return None
 
     print(
         f'\n{text.Red}'

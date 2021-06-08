@@ -216,9 +216,9 @@ def execute_preconditions(country, environment, account_params, order_database_p
     # Run pre-conditions
     logger.info("Running pre-conditions for %s/%s", country, environment)
     logger.info("delete_recommendations for account %s", account_params.get('id'))
-    delete_recommendation(account_params.get('id'), country, environment, 'QUICK_ORDER')
-    delete_recommendation(account_params.get('id'), country, environment, 'FORGOTTEN_ITEMS')
-    delete_recommendation(account_params.get('id'), country, environment, 'CROSS_SELL_UP_SELL')
+    delete_recommendation(account_params.get('id'), country, environment, ['QUICK_ORDER'])
+    delete_recommendation(account_params.get('id'), country, environment, ['FORGOTTEN_ITEMS'])
+    delete_recommendation(account_params.get('id'), country, environment, ['CROSS_SELL_UP_SELL'])
 
     logger.info("delete_orders for account %s", account_params.get('id'))
     delete_from_database_by_account(order_database_params.get('client'), order_database_params.get('db_name'),

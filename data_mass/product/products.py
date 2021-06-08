@@ -1,7 +1,9 @@
 import concurrent.futures
 import json
 import os
+from ast import literal_eval
 from datetime import datetime
+from distutils.util import strtobool
 from json import dumps, loads
 from random import randint, uniform
 from typing import Any, Dict, Optional
@@ -139,31 +141,32 @@ def get_body_price_microservice_request_v2_us(
     """
     content = {
         "vendorAccountIds": [account_id],
-        "prices": [
-            {
-                "vendorItemId": str(randint(1, 99999)),
-                "sku": sku_product,
-                "basePrice": price_values.get("basePrice"),
-                "measureUnit": "CS",
-                "minimumPrice": 0,
-                "deposit": price_values.get("deposit"),
-                "quantityPerPallet": price_values.get("quantityPerPallet"),
-                "measureUnitConversion": {
-                    "6PACK": 6,
-                    "CASE": 30,
-                    "LITER": 1
-                    },
-                "taxes": [
-                    {
-                        "taxId": product_price_id,
-                        "type": "$",
-                        "value": str(price_values.get("tax")),
-                        "taxBaseInclusionIds": [],
-                        "hidden": False
-                    }
-                ]
-            }
-        ]
+        "prices": [{
+            "vendorItemId": str(randint(1, 99999)),
+            "sku": sku_product,
+            "basePrice": price_values.get("basePrice"),
+            "measureUnit": "CS",
+            "minimumPrice": 0,
+            "deposit": price_values.get("deposit"),
+            "quantityPerPallet": price_values.get("quantityPerPallet"),
+            "promotionalPrice": {
+                "price": round(uniform(10.99, 99.99), 2),
+                "externalId": "ZTPM",
+                "validUntil": "2021-12-31"
+            },
+            "measureUnitConversion": {
+                "6PACK": 6,
+                "CASE": 30,
+                "LITER": 1
+            },
+            "taxes": [{
+                "taxId": product_price_id,
+                "type": "$",
+                "value": str(price_values.get("tax")),
+                "taxBaseInclusionIds": [],
+                "hidden": False
+            }]
+        }]
     }
 
     body = json.dumps(content)
@@ -249,14 +252,25 @@ def request_get_products_microservice(
     request_headers = get_header_request(zone, True, False, False, False)
 
     # Get base URL
-    base_url = get_microservice_base_url(environment)
-    request_url = (
-        f"{base_url}"
-        "/items/?"
-        "includeDeleted=false"
-        "&includeDisabled=false"
-        f"&pageSize={page_size}"
-    )
+    if zone == "US":
+        base_url = get_microservice_base_url(environment)
+
+        request_url = (
+            f"{base_url}"
+            "/items/?"
+            "includeDeleted=false"
+            "&includeDisabled=false"
+            f"&pageSize={page_size}"
+        )
+    else:
+        base_url = get_microservice_base_url(environment)
+        request_url = (
+            f"{base_url}"
+            "/items/?"
+            "includeDeleted=false"
+            "&includeDisabled=false"
+            f"&pageSize={page_size}"
+        )
 
     # Send request
     response = place_request("GET", request_url, "", request_headers)
@@ -286,6 +300,7 @@ def product_post_requests_microservice(
     product_inclusion_ms_result = request_post_price_inclusion_microservice(
         zone, environment, product["sku"], delivery_center_id
     )
+
     if not product_inclusion_ms_result:
         return False
 
@@ -293,6 +308,7 @@ def product_post_requests_microservice(
     price_inclusion_result = request_post_price_microservice(
         account_id, zone, environment, product["sku"], index, price_values
     )
+
     if not price_inclusion_result:
         return False
 
@@ -348,11 +364,10 @@ def request_post_price_inclusion_microservice(
 
     # Get headers
     request_headers = get_header_request(zone, False, False, True, sku_product)
+    base_url = get_microservice_base_url(environment)
 
     # Get base URL
-    request_url = (
-        get_microservice_base_url(environment) + "/product-assortment-relay/inclusion"
-    )
+    request_url = f"{base_url}/product-assortment-relay/inclusion"
 
     # Get body request
     request_body = get_body_price_inclusion_microservice_request(delivery_center_id)
@@ -437,47 +452,6 @@ def get_avaliable_categories(
     return None
 
 
-def get_avaliable_items(
-    account_id: str,
-    zone: str,
-    environment: str) -> Any:
-    """
-    Get avaliable items using microservice.
-
-    Parameters
-    ----------
-    account_id : str
-    zone : str
-    environment : str
-
-    Returns
-    -------
-    Any
-        The response content.
-    """
-    header: dict = get_header_request(zone)
-
-    header.update({
-        "Authorization": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJCVVdYcTRLanhPMUwxdTFTaENJVVNrdEk5aXRreFJ0X1Zzb3luelVvVGFFIn0.eyJleHAiOjE2MjI1NjMzMjAsImlhdCI6MTYyMjU1OTcyMCwianRpIjoiNmIyMmM1OWQtZmUzZC00MjQ0LThlOTktOTYwM2VjZjJmYmY5IiwiaXNzIjoiaHR0cDovL2tleWNsb2FrLXNlcnZpY2UvYXV0aC9yZWFsbXMvYmVlcy1yZWFsbSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJmYWM1ZDJhMy03NjViLTRmNjItYmFiNC1kZjFmODJkMDFjMTciLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJiNzIwMTM3OC1hMjAzLTExZWItYmNiYy0wMjQyYWMxMzAwMDIiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6Im9wZW5pZCBlbWFpbCBwcm9maWxlIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJjbGllbnRJZCI6ImI3MjAxMzc4LWEyMDMtMTFlYi1iY2JjLTAyNDJhYzEzMDAwMiIsImNsaWVudEhvc3QiOiIxMjcuMC4wLjEiLCJyb2xlcyI6WyJXcml0ZSIsIlJlYWQiXSwidmVuZG9ySWQiOiI5ZDcyNjI3YS0wMmVhLTQ3NTQtOTg2Yi0wYjI5ZDc0MWY1ZjAiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtYjcyMDEzNzgtYTIwMy0xMWViLWJjYmMtMDI0MmFjMTMwMDAyIiwiY2xpZW50QWRkcmVzcyI6IjEyNy4wLjAuMSJ9.Fwx3ByJQGeEQ8_CircXX6F2qK3_c0gTmvUNVEVI47Ur62TWwxtpyvMjTDyVazfUX1MWfsqmBORUmN4QbLRFv5ut3DA_h5adShVIbORBz2RVCHhrRYUIbyeU2WNu-wPgA786d5CJk81euxoCfwHT9TVRDAzkOBMkQxXPj0srxlYBTJL3lMcFDdq1AggrkNKFT5Pby9YK4bGVmnxpKKQYhMgbEFLR23SLLaLUOQ8if1ndNw2OxfP-mzvRhQwlPKR5OWOdrfTGz7FIlqxadY_CmTeyKibRYm69uPIYqotQUxtOnuADREio68I_R0mqiyLEGxLiwWp76fLRdmP8jAoPlMw"
-    })
-
-    base_url = get_microservice_base_url(zone, False)
-    request_url = f"{base_url}/v1/catalog-service/catalog/items?accountId=2be68476-5b4c-4cb2-9df8-6865590aeb98&projection=SMALL&includeDiscount=False&includeAllPromotions=false"
-
-    response = place_request(
-        request_method="GET",
-        request_url=request_url,
-        request_body="",
-        request_headers=header
-    )
-
-    if response.status_code == 200:
-        return json.loads(response.text)
-
-    print(f"{text.Red}Generic message.")
-    return None
-
-
 def request_get_offers_microservice(
         account_id: str,
         zone: str,
@@ -523,6 +497,11 @@ def request_get_offers_microservice(
         return json_data
     elif response.status_code == 200 and len(json_data) == 0:
         return "not_found"
+    elif response.status_code == 500:
+        response_message = literal_eval(response.text)
+
+        if "404 Not Found" in response_message.get("message"):
+            return "not_found"
     else:
         print(
             text.Red
@@ -693,11 +672,12 @@ def request_get_account_product_assortment(
         delivery_center_id: POC's delivery center unique identifier
     Returns: array of SKUs in case of success and `false` in case of failure
     """
-
     # Get headers
     headers = get_header_request(zone, True, False, False, False, account_id)
 
     # Get base URL
+    base_url = get_microservice_base_url(environment)
+    request_url = f"{base_url}/product-assortment/?accountId={account_id}&deliveryCenterId={delivery_center_id}"
 
     base_url = get_microservice_base_url(environment)
     request_url = f"{base_url}/product-assortment/?accountId={account_id}&deliveryCenterId={delivery_center_id}"
@@ -836,7 +816,8 @@ def create_product_v2(
             "size": product_data["container.size"],
             "returnable": product_data["container.returnable"],
             "unitOfMeasurement": product_data["container.unitOfMeasurement"]
-        }
+        },
+        "uncategorized": product_data.get("uncategorized", False)
     })
     body.update(product_data)
 
@@ -938,6 +919,12 @@ def get_item_input_data(zone: str):
     is_returnable = print_is_returnable_menu()
     is_narcotic = print_is_narcotic_menu()
     is_alcoholic = print_is_alcoholic_menu()
+    
+    has_category = input(f"{text.default_text_color}Is uncategorized? y/N: ")
+
+    while (has_category.upper() in ["Y", "N"]) is False:
+        print(text.Red + "\n- Invalid option")
+        has_category = input(f"\n{text.default_text_color}Is uncategorized? y/N: ")
 
     # Create item dictionary
     item_data = {
@@ -959,7 +946,8 @@ def get_item_input_data(zone: str):
         item_data.update({
             "sourceData": {
                 "vendorItemId": vendor_item_id
-            }
+            },
+            "uncategorized": bool(strtobool(has_category))
         })
 
     return item_data
@@ -1057,6 +1045,7 @@ def set_item_enabled(
 
     return False
 
+
 def display_product_information(product_offers):
     """
     Display item information
@@ -1065,6 +1054,7 @@ def display_product_information(product_offers):
     Returns: a table containing the available item information
     """
     product_information = list()
+
     for product in product_offers:
         product_values = {
             "SKU": product.get("sku"),
