@@ -333,7 +333,7 @@ def get_recommendation_by_account(
     if zone == "US":
         query.update({"vendorId": "9d72627a-02ea-4754-986b-0b29d741f5f0"})
 
-    request_url = f"{base_url}/global-recommendation/?{urlencode(query)}&{urlencode(case_query)}"
+    request_url = f"{base_url}/global-recommendation/?{urlencode(query)}&{urlencode(case_query)}&useCaseType=ACCOUNT"
     response = place_request('GET', request_url, '', headers)
     recommendation_data = loads(response.text)
 
@@ -363,10 +363,18 @@ def get_recommendation_by_account(
 def delete_recommendation_by_id(environment, recommendation_data, zone, account_id):
     recommendation_id = recommendation_data['content'][0]['id']
 
-    headers = get_header_request(zone, False, False, False, False, account_id)
+    headers = get_header_request(zone, True, False, False, False, account_id)
+
+    # headers = {
+    #     'requestTraceId': str(uuid1()),
+    #     'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYi1pbmJldiIsImF1ZCI6ImFiaS1taWNyb3Nlc'
+    #                      'nZpY2VzIiwiZXhwIjoxNjE2MjM5MDIyLCJpYXQiOjE1MTYyMzkwMjIsInVwZGF0ZWRfYXQiOjExMTExMTEsIm5hbWUiOi'
+    #                      'J1c2VyQGFiLWluYmV2LmNvbSIsImFjY291bnRJRCI6IiIsInVzZXJJRCI6IjIxMTgiLCJyb2xlcyI6WyJST0xFX0FETUl'
+    #                      'OIl19.Hpthi-Joez6m2lNiOpC6y1hfPOT5nvMtYdNnp5NqVTM'
+    # }
 
     request_url = get_microservice_base_url(environment, True) + f'/global-recommendation/{recommendation_id}'
-
+    logger.info(recommendation_id)
     response = place_request('DELETE', request_url, '', headers)
     logger.info(response.text)
     if response.status_code == 202:
