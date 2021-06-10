@@ -1,6 +1,5 @@
 import json
 import os
-from distutils.util import strtobool
 from typing import Dict
 
 import pkg_resources

@@ -1,6 +1,8 @@
 import json
-from typing import List, Union
+from urllib.parse import urlencode
+from uuid import uuid1
 
+from data_mass.accounts import get_account_id
 from data_mass.classes.text import text
 from data_mass.common import (
     get_header_request,
@@ -9,7 +11,11 @@ from data_mass.common import (
 )
 
 
-def get_categories(zone: str, environment: str) -> list:
+def get_categories(
+        zone: str,
+        environment: str,
+        service: str = "category",
+        account_id: str = None) -> list:
     """
     Get categories.
 
@@ -17,19 +23,58 @@ def get_categories(zone: str, environment: str) -> list:
     ----------
     zone : str
     environment : str
+    service : str
+        Service from which you will be consulted. One of [category, catalog].
+    account_id : str
+        If the chosen service is `catalog`, this parameter is required.\
+        Default to `None`.
 
     Returns
     -------
-    bool
-        Whenever the request completed successfully.
+    dict
+        A dict with a list of categoires.
     """
     base_url = get_microservice_base_url(environment, False)
-    request_url = (
-        f"{base_url}"
-        "/categories"
-        "/?vendorId=9d72627a-02ea-4754-986b-0b29d741f5f0"
-    )
     header = get_header_request(zone)
+
+    if service.lower() == "category":
+        query = {
+            "vendorId": "9d72627a-02ea-4754-986b-0b29d741f5f0"
+        }
+        request_url = f"{base_url}/categories/?{urlencode(query)}"
+
+    if service.lower() == "catalog":
+        if account_id is not None:
+            account_id = get_account_id(account_id, zone, environment)
+            header.update({
+                "accountId": account_id,
+                "Accept-Language": "en"
+            })
+
+            query = {
+                "categoryType": "WEB",
+                "includeEmptyCategory": False,
+                "projection": "SMALL",
+                "page_size": 50,
+                "depth": -1,
+                "includeDiscount": False,
+                "includeAllPromotions": False
+            }
+            request_url = (
+                f"{base_url}"
+                "/v1/catalog-service"
+                "/catalog"
+                "/categories"
+                f"?{urlencode(query)}"
+            )
+        else:
+            print(
+                f"{text.Red}\n"
+                'The parameter "account_id" is required '
+                'when target service is catalog.\n'
+            )
+
+            return None
 
     response = place_request(
         request_method="GET",
@@ -39,7 +84,7 @@ def get_categories(zone: str, environment: str) -> list:
     )
 
     if response.status_code == 200:
-        return json.loads(response.content)
+        return json.loads(response.text)
 
     print(
         f"\n{text.Red}"
@@ -48,13 +93,15 @@ def get_categories(zone: str, environment: str) -> list:
         f"Response message; {response.text}"
     )
 
-    return []
+    return None
 
 
 def get_category_by_id(
         zone: str,
         environment: str,
-        category_id: str) -> dict:
+        category_id: str,
+        service: str = "category",
+        account_id: str = None) -> dict:
     """
     Get a specific category.
 
@@ -62,15 +109,62 @@ def get_category_by_id(
     ----------
     zone : str
     environment : str
+    service : str
+        Service from which you will be consulted. One of [category, catalog].\
+        Default to `category`.
+    account_id : str
+        If the chosen service is `catalog`, this parameter is required.\
+        Default to `None`.
 
     Returns
     -------
-    bool
-        Whenever the request completed successfully.
+    dict
+        The catefory information.
     """
-    base_url = get_microservice_base_url(environment)
-    request_url = f"{base_url}/categories/{category_id}"
+    base_url = get_microservice_base_url(environment, False)
     header = get_header_request(zone)
+
+    if service.lower() == "category":
+        query = {"vendorId": "9d72627a-02ea-4754-986b-0b29d741f5f0"}
+        request_url = (
+            f"{base_url}"
+            "/categories"
+            f"/{category_id}"
+            f"?{urlencode(query)}"
+        )
+
+    if service.lower() == "catalog":
+        if account_id is not None:
+            account_id = get_account_id(account_id, zone, environment)
+            header.update({
+                "accountId": account_id,
+                "Accept-Language": "en"
+            })
+
+            query = {
+                "includeEmptyCategory": False,
+                "projection": "TREE",
+                "page_size": 50,
+                "depth": -1,
+                "includeDiscount": False,
+                "includeAllPromotions": False
+            }
+            request_url = (
+                f"{base_url}"
+                "/v1/catalog-service"
+                "/catalog"
+                "/categories"
+                f"/{category_id}"
+                f"?{urlencode(query)}"
+            )
+        else:
+            print(
+                f"{text.Red}\n"
+                'The parameter "account_id" is required '
+                'when target service is catalog.\n'
+            )
+
+            return None
 
     response = place_request(
         request_method="GET",
@@ -80,20 +174,24 @@ def get_category_by_id(
     )
 
     if response.status_code == 200:
-        content: dict = json.dumps(response.content)
+        return json.loads(response.text)
 
-        return content
+    print(
+        f"{text.Red}\n"
+        f'- [Category Service] Failure to get "{category_id}" category.\n'
+        f"Response Status: {response.status_code}\n"
+        f"Response message: {response.text}"
+    )
 
-    print("Generic print here.")
-    return {}
+    return None
 
 
-def create_categories(
+def create_category(
         zone: str,
         environment: str,
-        categories: Union[List[dict], dict]) -> dict:
+        category_data: dict) -> dict:
     """
-    Get categories.
+    Create/Update category via Category API.
 
     Parameters
     ----------
@@ -110,28 +208,35 @@ def create_categories(
     request_url = f"{base_url}/category-relay-service"
     header = get_header_request(zone)
 
-    if isinstance(categories, dict):
-        categories = [categories]
+    body = {
+        "vendorCategoryId": category_data.get(
+            "vendorCategoryId",
+            str(uuid1())
+        ),
+        "enabled": category_data.get("enabled", True),
+        "items": category_data.get("items", []),
+        "name": category_data.get("name"),
+        "type": category_data.get("type", "CATEGORY"),
+        "parentId": category_data.get("parentId", 0)
+    }
 
     response = place_request(
-        request_method="GET",
+        request_method="PUT",
         request_url=request_url,
-        request_body=json.loads(categories),
+        request_body=json.dumps([body]),
         request_headers=header
     )
 
-    if response.status_code == 200:
-        content: dict = json.dumps(response.content)
+    if response.status_code in [200, 202]:
+        content: dict = json.dumps(response.text)
 
         return content
 
-    print("Generic print here.")
+    print(
+        f"{text.Red}\n"
+        f'- [Category Service] Failure to create category.\n'
+        f"Response Status: {response.status_code}\n"
+        f"Response message: {response.text}"
+    )
 
-    return {}
-
-
-def generate_categories_data() -> dict:
-    """
-    Pass
-    """
-    pass
+    return None

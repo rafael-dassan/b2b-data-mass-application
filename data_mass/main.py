@@ -8,7 +8,10 @@ import pyperclip
 from data_mass.accounts import *
 from data_mass.algo_selling import *
 from data_mass.category.magento import *
+from data_mass.category.microservice import \
+    create_category as create_category_ms
 from data_mass.category.microservice import get_categories as get_categories_ms
+from data_mass.category.microservice import get_category_by_id
 from data_mass.combos import *
 from data_mass.common import *
 from data_mass.credit import add_credit_to_account_microservice
@@ -1452,11 +1455,11 @@ def flow_create_account(zone, environment, account_id):
         enable_empties_loan = False
 
     if zone == "US":
-        has_po_number = input("Has PO Number? true/False: ")
+        has_po_number = input("Has PO Number? y/N: ")
 
-        while (has_po_number.upper() in ["TRUE", "FALSE"]) is False:
+        while (has_po_number.upper() in ["Y", "N"]) is False:
             print(text.Red + "\n- Invalid option")
-            has_po_number = input(f"\n{text.default_text_color}Has PO Number? true/False: ")
+            has_po_number = input(f"\n{text.default_text_color}Has PO Number? y/N: ")
 
         has_po_number = bool(strtobool(has_po_number))
 
@@ -1565,11 +1568,11 @@ def flow_update_account_name(zone, environment, account_id):
     minimum_order = get_minimum_order_list(account_data['minimumOrder'])
     
     if zone == "US":
-        has_po_number = input("Has PO Number? true/False: ")
+        has_po_number = input("Has PO Number? y/N: ")
 
-        while (has_po_number.upper() in ["TRUE", "FALSE"]) is False:
+        while (has_po_number.upper() in ["Y", "N"]) is False:
             print(text.Red + "\n- Invalid option")
-            has_po_number = input(f"\n{text.default_text_color}Has PO Number? true/False: ")
+            has_po_number = input(f"\n{text.default_text_color}Has PO Number? y/N: ")
 
         has_po_number = bool(strtobool(has_po_number))
 
@@ -1906,8 +1909,10 @@ def categories_ms_menu():
         print(text.default_text_color + str(2), text.Yellow + 'Associate product to category')
         print(text.default_text_color + str(3), text.Yellow + 'Create category')
         selection = input(text.default_text_color + '\nPlease select: ')
-        
+
     if selection == "1":
+        account_id = None
+
         zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
         while validate_zone_for_ms(zone.upper()) is False:
             print(text.Red + f'\n- {zone.upper()} is not a valid zone\n')
@@ -1918,19 +1923,118 @@ def categories_ms_menu():
             print(text.Red + f'\n- {environment.upper()} is not a valid environment\n')
             environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
 
-        categories = get_categories_ms(zone.upper(), environment)
+        service = input(text.default_text_color + 'From which service? category/catalog: ')
+        while service.lower() not in ["category", "catalog"]:
+            print(text.Red + f'\n- {service.upper()} is not a valid service\n')
+            service = input(text.default_text_color + 'From which service? category/catalog: ')
+
+        if service.lower() == "catalog":
+            account_id = environment = input(text.default_text_color + 'Vendor account id: ')
+
+        categories = get_categories_ms(
+            zone=zone.upper(),
+            environment=environment,
+            service=service,
+            account_id=account_id
+        )
 
         if not categories:
             print_finish_application_menu()
 
         if categories:
             print("Categories: [id, name]")
+            if service.lower() == "category":
+                for category in categories:
+                    print(f"- {category['id']}, {category['name']}")
+            else:
+                for category in categories.get("categories", []):
+                    print(f"- {category['categoryID']}, {category['name']}")
+    elif selection == "2":
+        zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
+        while validate_zone_for_ms(zone.upper()) is False:
+            print(text.Red + f'\n- {zone.upper()} is not a valid zone\n')
+            zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
 
-            for category in categories:
-                print("- {id}, {name}".format(id=category['id'], name=category['name']))
+        environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
+        while validate_environment(environment.upper()) is False:
+            print(text.Red + f'\n- {environment.upper()} is not a valid environment\n')
+            environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
 
+        category_id = input(text.default_text_color + 'Category id: ')
+
+        if not category_id:
+            print_finish_application_menu()
+
+        category_data = get_category_by_id(zone.upper(), environment, category_id)
+
+        vendor_item_id = input(text.default_text_color + 'Vendor item id: ')
+        category_data.update({
+            "items": [{
+                "vendorItemId": vendor_item_id
+            }]
+        })
+
+        response = create_category_ms(
+            zone.upper(),
+            environment,
+            category_data
+        )
+
+        if response:
+            print(
+                f'{text.Green}\n'
+                f'Success to associate "{vendor_item_id}" '
+                f'to "{category_data["name"]}"'
+            )
+        else:
+            print_finish_application_menu()
     elif selection == "3":
-        pass
+        zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
+        while validate_zone_for_ms(zone.upper()) is False:
+            print(text.Red + f'\n- {zone.upper()} is not a valid zone\n')
+            zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
+
+        environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
+        while validate_environment(environment.upper()) is False:
+            print(text.Red + f'\n- {environment.upper()} is not a valid environment\n')
+            environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
+
+        category_id = input(text.default_text_color + 'Vendor category id (Optional): ')
+        is_enabled = input(text.default_text_color + 'Is enabled? y/N: ')
+
+        while is_enabled.upper() not in ["Y", "N"]:
+            print(text.Red + "\n- Invalid option")
+            is_enabled = input(f"\n{text.default_text_color}Is enabled? y/N: ")
+        
+        name = input(text.default_text_color + 'Category Name: ')
+        category_type = input(text.default_text_color + 'Category type: ')
+        parent_id = input(text.default_text_color + 'Parent id [Default to 0]: ')
+
+        category_data = {
+            "vendorCategoryId": category_id,
+            "enabled": bool(strtobool(is_enabled)),
+            "items": [],
+            "name": name,
+            "type": category_type,
+            "parentId": parent_id
+        }
+
+        response = create_category_ms(
+            zone.upper(),
+            environment,
+            category_data
+        )
+
+        if response:
+            print(
+                f"{text.Green}\n"
+                f"Category {category_id} - {name} was created successfully."
+            )
+
+            print_finish_application_menu()
+        else:
+            print(f"\n{text.Red}Fail to create category.")
+            print_finish_application_menu()
 
 
 def associate_product_to_category_menu():
