@@ -2,6 +2,7 @@ import json
 import os
 from json import dumps, load, loads
 from typing import Optional
+from urllib.parse import urlencode
 
 import pkg_resources
 from tabulate import tabulate
@@ -14,6 +15,7 @@ from data_mass.common import (
     place_request,
     update_value_to_json
 )
+from data_mass.config import get_settings
 
 
 def request_inventory_creation(
@@ -243,10 +245,12 @@ def get_delivery_center_inventory_v2(
     """
     header = get_header_request(zone)
     base_url = get_microservice_base_url(environment, False)
-    query = "vendorId=9d72627a-02ea-4754-986b-0b29d741f5f0"
+    settings = get_settings()
+
+    query = {"vendorId": settings.vendor_id}
 
     if delivery_center_id:
-        query = f"{query}&deliveryCenters={delivery_center_id}"
+        query = f"{urlencode(query)}&deliveryCenters={delivery_center_id}"
 
     request_url = f"{base_url}/inventory/inventories?{query}"
     

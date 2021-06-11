@@ -21,8 +21,9 @@ from jsonpath_rw_ext import parse
 from requests import request
 from tabulate import tabulate
 
-# Local application imports
 from data_mass.classes.text import text
+# Local application imports
+from data_mass.config import get_settings
 from data_mass.logger import log_to_file
 from data_mass.validations import (
     is_number,
@@ -1108,17 +1109,15 @@ def create_new_jwt_token():
     str
         The new token.
     """
-    client_id: str = "b7201378-a203-11eb-bcbc-0242ac130002"
-    client_secret: str = "bff12d66-a203-11eb-bcbc-0242ac130002"
-
+    settings = get_settings()
     header: dict = {
         "Content-Type": "application/x-www-form-urlencoded",
         "requestTraceId": str(uuid1()),
     }
 
     query: str = urlencode({
-        "client_id": client_id,
-        "client_secret": client_secret,
+        "client_id": settings.client_id,
+        "client_secret": settings.client_secret,
         "scope": "openid",
         "grant_type": "client_credentials"
     })

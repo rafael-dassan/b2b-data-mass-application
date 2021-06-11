@@ -15,6 +15,7 @@ from data_mass.common import (
     set_to_dictionary,
     update_value_to_json
 )
+from data_mass.config import get_settings
 from data_mass.menus.account_menu import (
     print_minimum_order_type_menu,
     print_minimum_order_value_menu
@@ -54,11 +55,13 @@ def check_account_exists_microservice(
     request_url = f"{base_url}/accounts?accountId={account_id}"
 
     if zone == "US":
+        settings = get_settings()
+
         request_url = (
             f"{base_url}"
             "/accounts"
             f"?vendorAccountId={account_id}"
-            "&vendorId=9d72627a-02ea-4754-986b-0b29d741f5f0"
+            f"&vendorId={settings.vendor_id}"
         )   
 
     response = place_request(
@@ -127,13 +130,14 @@ def get_account_id(
         The accountId.
     """
     request_headers = get_header_request(zone=zone)
+    settings = get_settings()
 
     base_url = get_microservice_base_url(environment)
     request_url = (
         f"{base_url}"
         "/accounts/"
         f"?vendorAccountId={vendorAccountId}"
-        "&vendorId=9d72627a-02ea-4754-986b-0b29d741f5f0"
+        f"&vendorId={settings.vendor_id}"
     )
 
     response = place_request(

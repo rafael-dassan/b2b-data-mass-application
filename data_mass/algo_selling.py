@@ -20,6 +20,7 @@ from data_mass.common import (
     set_to_dictionary,
     update_value_to_json
 )
+from data_mass.config import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +80,8 @@ def create_quick_order_payload(account_id, zone, product_list):
     }
     
     if zone == "US":
-        dict_values.update({"vendorId": "9d72627a-02ea-4754-986b-0b29d741f5f0"})
+        settings = get_settings()
+        dict_values.update({"vendorId": settings.vendor_id})
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
@@ -139,7 +141,8 @@ def create_forgotten_items_payload(account_id, zone, product_list):
     }
 
     if zone == "US":
-        dict_values.update({"vendorId": "9d72627a-02ea-4754-986b-0b29d741f5f0"})
+        settings = get_settings()
+        dict_values.update({"vendorId": settings.vendor_id})
 
     set_to_dictionary(dict_values, 'items', items)
 
@@ -197,7 +200,8 @@ def create_upsell_payload(account_id, zone, product_list):
     }
 
     if zone == "US":
-        dict_values.update({"vendorId": "9d72627a-02ea-4754-986b-0b29d741f5f0"})
+        settings = get_settings()
+        dict_values.update({"vendorId": settings.vendor_id})
 
     set_to_dictionary(dict_values, 'items', items)
 
@@ -331,7 +335,8 @@ def get_recommendation_by_account(
         case_query.append(("useCase", case))
 
     if zone == "US":
-        query.update({"vendorId": "9d72627a-02ea-4754-986b-0b29d741f5f0"})
+        settings = get_settings()
+        query.update({"vendorId": settings.vendor_id})
 
     request_url = f"{base_url}/global-recommendation/?{urlencode(query)}&{urlencode(case_query)}&useCaseType=ACCOUNT"
     response = place_request('GET', request_url, '', headers)

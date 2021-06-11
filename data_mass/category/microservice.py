@@ -9,6 +9,7 @@ from data_mass.common import (
     get_microservice_base_url,
     place_request
 )
+from data_mass.config import get_settings
 
 
 def get_categories(
@@ -38,8 +39,9 @@ def get_categories(
     header = get_header_request(zone)
 
     if service.lower() == "category":
+        settings = get_settings()
         query = {
-            "vendorId": "9d72627a-02ea-4754-986b-0b29d741f5f0"
+            "vendorId": settings.vendor_id
         }
         request_url = f"{base_url}/categories/?{urlencode(query)}"
 
@@ -125,7 +127,8 @@ def get_category_by_id(
     header = get_header_request(zone)
 
     if service.lower() == "category":
-        query = {"vendorId": "9d72627a-02ea-4754-986b-0b29d741f5f0"}
+        settings = get_settings()
+        query = {"vendorId": settings.vendor_id}
         request_url = (
             f"{base_url}"
             "/categories"

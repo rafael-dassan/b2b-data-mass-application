@@ -172,3 +172,6 @@ venv/
 # Logs
 logs/
 **/logs/**
+
+# Sensitive data
+.env
