@@ -1809,6 +1809,10 @@ def flow_create_invoice(zone, environment, account_id):
 
 
 def flow_update_invoice_status(zone, environment, account_id):
+    if zone == "US":
+        print(text.Green + "\n- Function not available in that country.")
+        print_finish_application_menu()
+
     invoice_id = print_invoice_id_menu()
     response = check_if_invoice_exists(account_id, invoice_id, zone, environment)
 
@@ -1816,7 +1820,7 @@ def flow_update_invoice_status(zone, environment, account_id):
         print_finish_application_menu()
     else:
         status = print_invoice_status_menu()
-        invoice_response = update_invoice_request(zone, environment, account_id, invoice_id,
+        invoice_response = update_invoice_request(zone, environment, account_id, response['data'][0]['invoiceId'],
                                                   response['data'][0]['paymentType'], status)
         if not invoice_response:
             print_finish_application_menu()
@@ -1826,6 +1830,10 @@ def flow_update_invoice_status(zone, environment, account_id):
 
 
 def flow_update_invoice_payment_method(zone, environment, account_id):
+    if zone == "US":
+        print(text.Green + "\n- Function not available in that country.")
+        print_finish_application_menu()
+    
     invoice_id = print_invoice_id_menu()
     response = check_if_invoice_exists(account_id, invoice_id, zone, environment)
 
@@ -1833,7 +1841,7 @@ def flow_update_invoice_payment_method(zone, environment, account_id):
         print_finish_application_menu()
     else:
         payment_method = print_invoice_payment_method_menu()
-        invoice_response = update_invoice_request(zone, environment, account_id, invoice_id, payment_method,
+        invoice_response = update_invoice_request(zone, environment, account_id, response['data'][0]['invoiceId'], payment_method,
                                                   response['data'][0]['status'])
         if not invoice_response:
             print_finish_application_menu()

@@ -1,0 +1,20 @@
+{
+    "accountId": "string",
+    "channel": "string",
+    "date": "string",
+    "deleted": false,
+    "discount": 0,
+    "interestAmount": 0,
+    "items": [],
+    "itemsQuantity": 0,
+    "orderDate": "string",
+    "orderId": "string",
+    "paymentTerm": null,
+    "paymentType": "string",
+    "poNumber": "string",
+    "status": "string",
+    "subtotal": 0,
+    "tax": 0,
+    "total": 0,
+    "vendor": {}
+}

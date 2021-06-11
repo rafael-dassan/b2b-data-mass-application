@@ -14,15 +14,23 @@ from data_mass.common import (
     place_request,
     set_to_dictionary,
     update_value_to_json
-    )
+)
 
 
 def create_invoice_request(zone, environment, order_id, status, order_details, order_items, invoice_id=None):
     # get data from Data Mass files
-    content: bytes = pkg_resources.resource_string(
-        "data_mass",
-        "data/create_invoice_payload.json"
-    )
+    #TODO check back for another countries
+
+    if(zone =='US'):
+        content: bytes = pkg_resources.resource_string(
+            "data_mass",
+            "data/create_invoice_payload_us.json"
+        )
+    else:
+        content: bytes = pkg_resources.resource_string(
+            "data_mass",
+            "data/create_invoice_payload.json"
+        )
     json_data = json.loads(content.decode("utf-8"))
 
     if invoice_id is None:
@@ -35,22 +43,39 @@ def create_invoice_request(zone, environment, order_id, status, order_details, o
     else:
         placement_date = order_placement_date.split('+')[0] + 'Z'
 
+    vendorItemId = "DM-VENDOR_SKU_001"
+
+    for i in range(len(order_items)):
+        order_items[i].update({"vendorItemId": vendorItemId})
+
+    accountId = order_details.get('accountId')
+
+    vendor_values = {
+        'accountId': accountId,
+        'id': "VENDOR-12345",
+        'invoiceId': invoice_id
+    }
+
     dict_values = {
-        'accountId': order_details.get('accountId'),
+        'accountId': accountId,
         'channel': order_details.get('channel'),
+        'invoiceId': invoice_id,
+        'customerInvoiceNumber': invoice_id,
+        'accountId': accountId,
         'date': placement_date,
         'interestAmount': order_details.get('interestAmount'),
+        'discount': abs(order_details.get('discount')),
+        'vendorItemId': vendorItemId,
         'orderDate': placement_date,
         'orderId': order_id,
         'subtotal': order_details.get('subtotal'),
-        'invoiceId': invoice_id,
         'status': status,
         'tax': order_details.get('tax'),
         'total': order_details.get('total'),
         'poNumber': order_id,
         'paymentType': order_details.get('paymentMethod'),
-        'discount': abs(order_details.get('discount')),
-        'itemsQuantity': order_details.get('itemsQuantity')
+        'itemsQuantity': order_details.get('itemsQuantity'),
+        'vendor': vendor_values
     }
 
     for key in dict_values.keys():
@@ -60,6 +85,8 @@ def create_invoice_request(zone, environment, order_id, status, order_details, o
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/invoices-relay'
+    if(zone == "US"):
+        request_url += "/v2"
 
     # Get headers
     request_headers = get_header_request(zone, False, False, True, False)
@@ -107,6 +134,7 @@ def update_invoice_request(zone, environment, account_id, invoice_id, payment_me
     request_body = convert_json_to_string(json_object)
 
     # Send request
+    #TODO change to PATCH v2 as soon as available
     response = place_request('PATCH', request_url, request_body, request_headers)
 
     if response.status_code == 202:
@@ -123,8 +151,12 @@ def check_if_invoice_exists(account_id, invoice_id, zone, environment):
     request_headers = get_header_request(zone, True, False, False, False, account_id)
 
     # Get base URL
-    request_url = get_microservice_base_url(
-        environment) + '/invoices-service/?accountId=' + account_id + '&invoiceId=' + invoice_id
+    request_url = get_microservice_base_url(environment) + '/invoices-service'
+    
+    if(zone == "US"):
+        request_url += "/v2?customerInvoiceNumber=" + invoice_id
+    else:
+        request_url += "/v1?invoiceId=" + invoice_id
 
     # Place request
     response = place_request('GET', request_url, '', request_headers)
@@ -144,8 +176,12 @@ def check_if_invoice_exists(account_id, invoice_id, zone, environment):
 
 def get_invoices(zone, account_id, environment):
     header_request = get_header_request(zone, True, False, False, False, account_id)
+    
     # Get url base
-    request_url = get_microservice_base_url(environment, False) + '/invoices-service/?accountId=' + account_id
+    request_url = get_microservice_base_url(environment, False) 
+    if(zone=='US'):
+        request_url += '/v2'
+    request_url += '/invoices-service/?accountId=' + account_id
 
     # Place request
     response = place_request('GET', request_url, '', header_request)
