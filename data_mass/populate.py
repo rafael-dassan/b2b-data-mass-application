@@ -4,7 +4,10 @@ import sys
 from data_mass.populator.gateway import execute_gateway
 from data_mass.populator.log import *
 from data_mass.populator.product import execute_product
-from data_mass.populator.regression import execute_regression
+from data_mass.populator.regression import (
+    execute_regression,
+    execute_regression_us
+)
 from data_mass.populator.rewards import execute_rewards
 from data_mass.populator.test import execute_test, execute_test_us
 from data_mass.populator.validation import *
@@ -19,8 +22,10 @@ def gateway(country, environment):
 
 def regression(country, environment):
     logger.debug(f"REGRESSION method executed with Country/Environment: {country}/{environment}")
-    execute_regression(country, environment)
-
+    if country == "US":
+        execute_regression_us(country, environment)
+    else:
+        execute_regression(country, environment)
 
 def test(country, environment):
     logger.debug(f"TEST method executed with Country/Environment: {country}/{environment}")

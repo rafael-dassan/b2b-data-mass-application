@@ -5,7 +5,6 @@ from data_mass.algo_selling import (
 from data_mass.classes.text import text
 from data_mass.deals import (
     request_delete_deal_by_id,
-    request_delete_deal_by_id_v1,
     request_delete_deals_pricing_service,
     request_get_deals_pricing_service,
     request_get_deals_promotion_service
@@ -68,9 +67,7 @@ def delete_deal(account_id, country, environment):
                 logger.error(log(Message.DELETE_PROMOTION_ERROR, {'account_id': account_id}))
     else:
         if not customer_deals:
-            logger.error("Deu um erro mas continua")
-            pass
-          # TODO  logger.error(log(Message.RETRIEVE_PROMOTION_ERROR, {'vendorAccountIds': account_id}))
+            logger.error(log(Message.RETRIEVE_PROMOTION_ERROR, {'vendorAccountIds': account_id}))
         elif customer_deals == 'not_found':
             logger.debug("[Pricing Conditions Service] The account {account_id} does not have deals associated. Skipping..."
                         .format(account_id=account_id))
@@ -89,15 +86,7 @@ def delete_deal(account_id, country, environment):
             logger.debug("[Promotion Service] The account {account_id} does not have deals associated. Skipping..."
                         .format(account_id=account_id))
         else:
-            if country == 'ZA':
-                for i in range(len(promotions)):
-                    deal_id = promotions[i]['id']
-
-                    # Delete deals from Promotion MS database
-                    if False == request_delete_deal_by_id_v1(deal_id, country, environment):
-                        logger.error(log(Message.DELETE_PROMOTION_ERROR, {'account_id': account_id}))
-            else:
-                if False == request_delete_deal_by_id(account_id, country, environment, promotions):
+            if False == request_delete_deal_by_id(account_id, country, environment, promotions):
                     logger.error(log(Message.DELETE_PROMOTION_ERROR, {'account_id': account_id}))
     else:
         if not promotions:

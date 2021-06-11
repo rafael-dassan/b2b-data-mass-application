@@ -884,13 +884,14 @@ def check_simulation_service_account_microservice_menu():
 
 
 def deals_menu():
-    operation = print_deals_operations_menu()
-
+    zone = print_zone_menu_for_ms()
+    operation = print_deals_operations_menu(zone)
+    
     # For Interactive Combos
     if operation == '6' or operation == '7':
-        zone = print_zone_for_interactive_combos_menu_for_ms()
-    else:
-        zone = print_zone_menu_for_ms()
+        while not validate_zone_for_interactive_combos_ms(zone.upper()):
+            print(text.Red + f'\n- {zone.upper()} is not a valid zone\n')
+            zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
 
     environment = print_environment_menu()
     account_id = print_account_id_menu(zone)
@@ -1126,10 +1127,18 @@ def input_combos_menu():
 
 
 def product_menu():
-    operation = print_product_operations_menu()
     zone = print_zone_menu_for_ms()
     environment = print_environment_menu()
+    operation = print_product_operations_menu(zone)
 
+
+    if zone == "US":
+        return {
+            '1': lambda: flow_create_product(zone, environment),
+            '2': lambda: flow_associate_products_to_account(zone, environment),
+            '3': lambda: flow_input_inventory_to_product(zone, environment),
+            '4': lambda: flow_input_recommended_products_to_account(zone, environment)
+        }.get(operation, lambda: None)()
     return {
         '1': lambda: flow_create_product(zone, environment),
         '2': lambda: flow_associate_products_to_account(zone, environment),
@@ -1265,10 +1274,7 @@ def flow_input_inventory_to_product(zone, environment):
 
 
 def flow_input_sku_limit(zone, environment):
-    if zone == "US":
-        print(f"{text.Red}\nThis feature isn't enabled for US.")
-        print_finish_application_menu()
-
+    
     account_id = print_account_id_menu(zone)
 
     if not account_id:
@@ -1373,9 +1379,6 @@ def flow_input_combo_quick_order(zone, environment, account_id):
 
 
 def flow_input_empties_discounts(zone, environment):
-    if zone == "US":
-        print(f"{text.Red}\nThis feature isn't enabled for US.")
-        print_finish_application_menu()
 
     account_id = print_account_id_menu(zone)
 

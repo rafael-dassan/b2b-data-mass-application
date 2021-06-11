@@ -128,7 +128,7 @@ def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclus
         'US': 'America/New_York',
         'ZA': 'Africa/Johannesburg',
     }
-    timezone = switcher.get(zone, False)
+    timezone = switcher.get(zone.upper(), False)
 
     header = {
         'User-Agent': 'BEES - Data Mass Framework',

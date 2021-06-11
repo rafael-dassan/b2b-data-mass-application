@@ -1,10 +1,22 @@
 # Local application imports
 from data_mass.classes.text import text
-from data_mass.validations import validate_deals_options, \
-    validate_option_sku
+from data_mass.validations import validate_deals_options, validate_option_sku
 
 
-def print_deals_operations_menu():
+def print_deals_operations_menu(zone):
+    if zone == "US":
+        print(text.default_text_color + '\nDeals operations')
+        print(text.default_text_color + str(1), text.Yellow + 'Create deal type discount')
+        print(text.default_text_color + str(2), text.Yellow + 'Create deal type free good')
+        option = input(text.default_text_color + '\nPlease select: ')
+        while validate_deals_options(option, zone) is False:
+            print(text.Red + '\n- Invalid option')
+            print(text.default_text_color + '\nDeals operations')
+            print(text.default_text_color + str(1), text.Yellow + 'Create deal type discount')
+            print(text.default_text_color + str(2), text.Yellow + 'Create deal type free good')
+            option = input(text.default_text_color + '\nPlease select: ')
+
+        return option
     print(text.default_text_color + '\nDeals operations')
     print(text.default_text_color + str(1), text.Yellow + 'Create deal type discount')
     print(text.default_text_color + str(2), text.Yellow + 'Create deal type stepped discount')
@@ -14,7 +26,7 @@ def print_deals_operations_menu():
     print(text.default_text_color + str(6), text.Yellow + 'Create deal type Interactive Combos v1')
     print(text.default_text_color + str(7), text.Yellow + 'Create deal type Interactive Combos v2')
     option = input(text.default_text_color + '\nPlease select: ')
-    while validate_deals_options(option) is False:
+    while validate_deals_options(option, zone) is False:
         print(text.Red + '\n- Invalid option')
         print(text.default_text_color + '\nDeals operations')
         print(text.default_text_color + str(1), text.Yellow + 'Create deal type discount')

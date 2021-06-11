@@ -25,12 +25,12 @@
         {
             "event": "PRODUCT_ADDED",
             "key": "UNIQUE_SKUS",
-            "value": "3"
+            "value": "4"
         },
         {
             "event": "CART_VIEWED",
             "key": "UNIQUE_SKUS",
-            "value": "1"
+            "value": "5"
         }
     ]
 }

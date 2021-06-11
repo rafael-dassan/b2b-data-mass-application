@@ -49,52 +49,6 @@ def request_create_deal_us(account_id, zone, environment, deal_id):
                          'Response message: {response_message}'
               .format(response_status=response.status_code, response_message=response.text))
 
-def request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id=None):
-    """
-    Input deal to a specific POC. The deal is created by calling the Promotion Relay Service V1
-    Args:
-        deal_id: deal unique identifier
-        account_id: POC unique identifier
-        sku: Product unique identifier that will have discount/free good associated with it
-        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
-        zone: e.g., ZA
-        environment: e.g., DEV, SIT, UAT
-    Returns: `deal_id` if success and error message in case of failure
-    """
-
-    if deal_id is None:
-        # Deal unique identifier
-        deal_id = 'DM-' + str(randint(1, 100000))
-
-    # Assign an account group unique identifier
-    account_group_id = create_account_group(account_id, zone, environment)
-    # Assign a SKU group unique identifier
-    sku_group_id = create_sku_group(sku, zone, environment)
-    # Assign a free good group unique identifier when needed
-    free_good_group_id = list()
-    if deal_type == 'FREE_GOOD' or deal_type == 'STEPPED_FREE_GOOD':
-        free_good = create_free_good_group(sku, zone, environment)
-        free_good_group_id.append(free_good)
-
-    # Get body
-    request_body = get_deals_payload_v1(deal_id, deal_type, account_group_id, sku_group_id, free_good_group_id)
-
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + '/promotion-relay/'
-
-    # Get headers
-    request_headers = get_header_request(zone, False, False, True, False)
-
-    # Send request
-    response = place_request('POST', request_url, request_body, request_headers)
-
-    if response.status_code == 202 or response.status_code == 200:
-        return deal_id
-    else:
-        print(text.Red + '\n- [Promotion Relay Service] Failure create deal. Response Status: {response_status}. '
-                         'Response message: {response_message}'
-              .format(response_status=response.status_code, response_message=response.text))
-
 
 def request_create_deal_v2(deal_type, zone, environment, deal_id=None):
     """
@@ -156,47 +110,6 @@ def get_deals_payload_us(account_id, deal_id):
     return request_body
 
 
-def get_deals_payload_v1(deal_id, deal_type, account_group_id, sku_group_id, free_good_group_id):
-    """
-    Create a payload to associate a promotion to a POC (Promotion Relay Service v1)
-    Args:
-        deal_id: deal unique identifier
-        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
-        account_group_id: account group unique identifier
-        sku_group_id: sku group unique identifier
-        free_good_group_id: free good group unique identifier
-    Returns: new promotion payload
-    """
-
-    # Create file path
-    abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, 'data/create_promotion_payload_v1.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
-
-    # Create dictionary with deal's values
-    dict_values = {
-        'accountGroupIds': [account_group_id],
-        'description': 'This is a description for a deal type ' + deal_type + ' / ' + deal_id,
-        'freeGoodGroupIds': free_good_group_id,
-        'id': deal_id,
-        'skuGroupIds': [sku_group_id],
-        'title': deal_type + ' / ' + deal_id,
-        'type': deal_type
-    }
-
-    for key in dict_values.keys():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
-
-    # Create body
-    list_dict_values = create_list(json_object)
-    request_body = convert_json_to_string(list_dict_values)
-
-    return request_body
-
-
 def get_deals_payload_v2(deal_id, deal_type):
     """
     Create a payload to associate a promotion to a POC (Promotion Relay Service v2)
@@ -233,162 +146,6 @@ def get_deals_payload_v2(deal_id, deal_type):
     return request_body
 
 
-def create_account_group(account_id, zone, environment):
-    """
-    Create new account group, used to create a new deal via the Promotion Relay Service
-    Args:
-        account_id: POC unique identifier
-        zone: e.g., AR, BR, CO, DO, MX, ZA
-        environment: e.g., DEV, SIT, UAT
-    Returns: `account_group_id` if success and error message in case of failure
-    """
-
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_account_group_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
-
-    # Assign an account group unique identifier
-    account_group_id = 'DM-' + str(randint(1, 100000))
-
-    # Create dictionary with account group's values
-    dict_values = {
-        'accountGroupId': account_group_id,
-        'accounts': [account_id]
-    }
-
-    for key in dict_values.keys():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
-
-    # Create body
-    list_dict_values = create_list(json_object)
-    request_body = convert_json_to_string(list_dict_values)
-
-    # Get header request
-    request_headers = get_header_request(zone, False, False, True, False)
-
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + '/promotion-relay/account-group'
-
-    # Send request
-    response = place_request('POST', request_url, request_body, request_headers)
-
-    if response.status_code == 202:
-        return account_group_id
-    else:
-        print(text.Red + '\n- [Promotion Relay Service] Failure create account group. Response Status: '
-                         '{response_status}. Response message: {response_message}'
-              .format(response_status=response.status_code, response_message=response.text))
-        return False
-
-
-def create_sku_group(sku, zone, environment):
-    """
-    Create new SKU group, used to create a new deal via the Promotion Relay Service
-    Args:
-        sku: Product unique identifier
-        zone: e.g., AR, BR, CO, DO, MX, ZA
-        environment: e.g., DEV, SIT, UAT
-    Returns: `sku_group_id` if success and error message in case of failure
-    """
-
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_sku_group_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
-
-    # Assign a SKU group unique identifier
-    sku_group_id = 'DM-' + str(randint(1, 100000))
-
-    # Create dictionary with SKU group's values
-    dict_values = {
-        'skuGroupId': sku_group_id,
-        'skus': [sku]
-    }
-
-    for key in dict_values.keys():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
-
-    # Create body
-    list_dict_values = create_list(json_object)
-    request_body = convert_json_to_string(list_dict_values)
-
-    # Get headers
-    request_headers = get_header_request(zone, False, False, True, False)
-
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + '/promotion-relay/sku-group'
-
-    # Send request
-    response = place_request('POST', request_url, request_body, request_headers)
-
-    if response.status_code == 202:
-        return sku_group_id
-    else:
-        print(text.Red + '\n- [Promotion Relay Service] Failure create sku group. Response Status: '
-                         '{response_status}. Response message: {response_message}'
-              .format(response_status=response.status_code, response_message=response.text))
-        return False
-
-
-def create_free_good_group(sku, zone, environment):
-    """
-    Create new free good group, used to create a new deal via the Promotion Relay Service
-    Args:
-        sku: Product unique identifier
-        zone: e.g., AR, BR, CO, DO, MX, ZA
-        environment: e.g., DEV, SIT, UAT
-    Returns: `free_good_group_id` if success and error message in case of failure
-    """
-
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_free_good_group_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
-
-    # Assign a free good group unique identifier
-    free_good_group_id = 'DM-' + str(randint(1, 100000))
-
-    # Create dictionary with free good group's values
-    dict_values = {
-        'freeGoodGroupId': free_good_group_id,
-        'skus': [sku]
-    }
-
-    for key in dict_values.keys():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
-
-    # Create body
-    list_dict_values = create_list(json_object)
-    request_body = convert_json_to_string(list_dict_values)
-
-    # Get headers
-    request_headers = get_header_request(zone, False, False, True, False)
-
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + '/promotion-relay/free-good-group'
-
-    # Send request
-    response = place_request('POST', request_url, request_body, request_headers)
-
-    if response.status_code == 202:
-        return free_good_group_id
-    else:
-        print(text.Red + '\n- [Promotion Relay Service] Failure create free good group. Response Status: '
-                         '{response_status}. Response message: {response_message}'
-              .format(response_status=response.status_code, response_message=response.text))
-        return False
-
-
 def create_discount(account_id, sku, zone, environment, discount_value, minimum_quantity, deal_id=None, discount_type='percentOff',
                     deal_type='DISCOUNT'):
     """
@@ -406,9 +163,7 @@ def create_discount(account_id, sku, zone, environment, discount_value, minimum_
     Returns: `promotion_response` if success
     """
 
-    if zone == "ZA":
-        promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id)
-    elif zone == "US":
+    if zone == "US":
         promotion_response = request_create_deal_us(account_id, zone, environment, deal_id)
     else:
         promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
@@ -442,9 +197,7 @@ def create_stepped_discount_with_limit(account_id, sku, zone, environment, index
     Returns: `promotion_response` if success
     """
 
-    if zone == 'ZA':
-        promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id)
-    elif zone == "US":
+    if zone == 'US':
         promotion_response = request_create_deal_us(account_id, zone, environment, deal_id)
     else:
         promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
@@ -477,9 +230,7 @@ def create_stepped_discount(account_id, sku, zone, environment, ranges, deal_id=
     Returns: `promotion_response` if success
     """
 
-    if zone == 'ZA':
-        promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id)
-    elif zone == "US":
+    if zone == 'US':
         promotion_response = request_create_deal_us(account_id, zone, environment, deal_id)
     else:
         promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
@@ -512,9 +263,7 @@ def create_free_good(account_id, sku_list, zone, environment, proportion, quanti
     Returns: `promotion_response` if success
     """
 
-    if zone == 'ZA':
-        promotion_response = request_create_deal_v1(account_id, sku_list[0]['sku'], deal_type, zone, environment, deal_id)
-    elif zone == "US":
+    if zone == 'US':
         promotion_response = request_create_deal_us(account_id, zone, environment, deal_id)
     else:
         promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
@@ -545,9 +294,7 @@ def create_stepped_free_good(account_id, sku, zone, environment, ranges, deal_id
     Returns: `promotion_response` if success
     """
 
-    if zone == 'ZA':
-        promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id)
-    elif zone == "US":
+    if zone == 'US':
         promotion_response = request_create_deal_us(account_id, zone, environment, deal_id)
     else:
         promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
@@ -576,9 +323,7 @@ def create_interactive_combos(account_id, sku, zone, environment, index_range, d
     Returns: `promotion_response` if success
     """
 
-    if zone == 'ZA':
-        promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment)
-    elif zone == "US":
+    if zone == 'US':
         promotion_response = request_create_deal_us(account_id, zone, environment)
     else:
         promotion_response = request_create_deal_v2(deal_type, zone, environment)
@@ -607,9 +352,7 @@ def create_interactive_combos_v2(account_id, sku, zone, environment, index_range
     Returns: `promotion_response` if success
     """
 
-    if zone == 'ZA':
-        promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment)
-    elif zone == "US":
+    if zone == 'US':
         promotion_response = request_create_deal_us(account_id, zone, environment)
     else:
         promotion_response = request_create_deal_v2(deal_type, zone, environment)
@@ -1383,29 +1126,6 @@ def request_delete_deal_by_id(account_id, zone, environment, data):
 
     # Send request
     response = place_request('DELETE', request_url, request_body, request_headers)
-    if response.status_code != 202:
-        print(text.Red + '\n- [Promotion Relay Service] Failure to delete the deal {deal_id}. Response Status: '
-                         '{status_code}. Response message: {response_message}'
-              .format(deal_id=deal_id, status_code=response.status_code, response_message=response.text))
-        return False
-
-
-def request_delete_deal_by_id_v1(deal_id, zone, environment):
-    """
-    Delete deal by ID via Promotion Relay Service v1
-    Args:
-        deal_id: deal unique identifier
-        zone: e.g., AR, BR, CO, DO, MX, ZA
-        environment: e.g., SIT, UAT
-    """
-    # Get headers
-    request_headers = get_header_request(zone, False, False, True, False)
-
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + f'/promotion-relay/v1/{deal_id}'
-
-    # Send request
-    response = place_request('DELETE', request_url, '', request_headers)
     if response.status_code != 202:
         print(text.Red + '\n- [Promotion Relay Service] Failure to delete the deal {deal_id}. Response Status: '
                          '{status_code}. Response message: {response_message}'
