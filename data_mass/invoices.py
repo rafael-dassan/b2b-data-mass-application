@@ -1,5 +1,6 @@
 # Standard library imports
 import json
+import logging
 from random import randint
 
 import pkg_resources
@@ -16,6 +17,7 @@ from data_mass.common import (
     update_value_to_json
 )
 
+logger = logging.getLogger(__name__)
 
 def create_invoice_request(zone, environment, order_id, status, order_details, order_items, invoice_id=None):
     # get data from Data Mass files
@@ -186,6 +188,8 @@ def get_invoices(zone, account_id, environment):
     # Place request
     response = place_request('GET', request_url, '', header_request)
     invoice_info = json.loads(response.text)
+    logger.info(response.text)
+
     if response.status_code == 200:
         return invoice_info
     else:
