@@ -132,6 +132,7 @@ def delete_invoice(account_id, country, environment):
                 invoice_ids.append(invoice_id)
 
             for i in range(len(invoice_ids)):
+
                 if False == delete_invoice_by_id(country, environment, invoice_ids[i]):
                     logger.error(log(Message.DELETE_INVOICE_ERROR, {'vendorAccountIds': account_id}))
 

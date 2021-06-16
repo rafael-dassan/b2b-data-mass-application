@@ -1,5 +1,6 @@
 # Standard library imports
 import json
+import logging
 from random import randint
 from typing import Optional
 from urllib.parse import urlencode
@@ -20,6 +21,7 @@ from data_mass.common import (
 )
 from data_mass.config import get_settings
 
+logger = logging.getLogger(__name__)
 
 def create_invoice_request(zone, environment, order_id, status, order_details, order_items, invoice_id=None):
     # get data from Data Mass files
