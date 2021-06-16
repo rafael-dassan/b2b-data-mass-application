@@ -21,9 +21,7 @@ logger = logging.getLogger(__name__)
 
 def create_invoice_request(zone, environment, order_id, status, order_details, order_items, invoice_id=None):
     # get data from Data Mass files
-    #TODO check back for another countries
-
-    if(zone =='US'):
+    if zone == 'US':
         content: bytes = pkg_resources.resource_string(
             "data_mass",
             "data/create_invoice_payload_us.json"
@@ -45,29 +43,29 @@ def create_invoice_request(zone, environment, order_id, status, order_details, o
     else:
         placement_date = order_placement_date.split('+')[0] + 'Z'
 
-    vendorItemId = "DM-VENDOR_SKU_001"
+    vendor_item_id = "DM-VENDOR_SKU_001"
 
     for i in range(len(order_items)):
-        order_items[i].update({"vendorItemId": vendorItemId})
+        order_items[i].update({"vendorItemId": vendor_item_id})
 
-    accountId = order_details.get('accountId')
+    account_id = order_details.get('accountId')
 
     vendor_values = {
-        'accountId': accountId,
+        'accountId': account_id,
         'id': "VENDOR-12345",
         'invoiceId': invoice_id
     }
 
     dict_values = {
-        'accountId': accountId,
+        'accountId': account_id,
         'channel': order_details.get('channel'),
         'invoiceId': invoice_id,
         'customerInvoiceNumber': invoice_id,
-        'accountId': accountId,
+        'accountId': account_id,
         'date': placement_date,
         'interestAmount': order_details.get('interestAmount'),
         'discount': abs(order_details.get('discount')),
-        'vendorItemId': vendorItemId,
+        'vendorItemId': vendor_item_id,
         'orderDate': placement_date,
         'orderId': order_id,
         'subtotal': order_details.get('subtotal'),
@@ -87,7 +85,7 @@ def create_invoice_request(zone, environment, order_id, status, order_details, o
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/invoices-relay'
-    if(zone == "US"):
+    if zone == "US":
         request_url += "/v2"
 
     # Get headers
@@ -155,7 +153,7 @@ def check_if_invoice_exists(account_id, invoice_id, zone, environment):
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/invoices-service'
     
-    if(zone == "US"):
+    if zone == "US":
         request_url += "/v2?customerInvoiceNumber=" + invoice_id
     else:
         request_url += "/v1?invoiceId=" + invoice_id
@@ -181,7 +179,7 @@ def get_invoices(zone, account_id, environment):
     
     # Get url base
     request_url = get_microservice_base_url(environment, False) 
-    if(zone=='US'):
+    if zone=='US':
         request_url += '/v2'
     request_url += '/invoices-service/?accountId=' + account_id
 

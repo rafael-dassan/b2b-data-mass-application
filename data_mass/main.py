@@ -1763,6 +1763,11 @@ def delete_user_iam():
 def invoice_menu():
     operation = print_invoice_operations_menu()
     zone = print_zone_menu_for_ms()
+
+    if zone == "US" and operation != '1':
+        print(text.Red + "\n- Function not available in this country.")
+        print_finish_application_menu()
+
     environment = print_environment_menu()
     account_id = print_account_id_menu(zone)
 
@@ -1809,10 +1814,6 @@ def flow_create_invoice(zone, environment, account_id):
 
 
 def flow_update_invoice_status(zone, environment, account_id):
-    if zone == "US":
-        print(text.Green + "\n- Function not available in that country.")
-        print_finish_application_menu()
-
     invoice_id = print_invoice_id_menu()
     response = check_if_invoice_exists(account_id, invoice_id, zone, environment)
 
@@ -1830,10 +1831,6 @@ def flow_update_invoice_status(zone, environment, account_id):
 
 
 def flow_update_invoice_payment_method(zone, environment, account_id):
-    if zone == "US":
-        print(text.Green + "\n- Function not available in that country.")
-        print_finish_application_menu()
-    
     invoice_id = print_invoice_id_menu()
     response = check_if_invoice_exists(account_id, invoice_id, zone, environment)
 
