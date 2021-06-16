@@ -920,26 +920,39 @@ def print_year_credit_statement():
     return year
 
 
-def print_invoices(invoice_info, status):
-    invoice_list = list()
-    for i in invoice_info['data']:
-        if i['status'] == status[0] or i['status'] == status[1]:
-            invoice_values = {
-                'Invoice ID': i['invoiceId'],
-                'Product Quantity': i['itemsQuantity'],
-                'Sub Total': i['subtotal'],
-                'Tax': i['tax'],
-                'Discount': i['discount'],
-                'Total': i['total']
-            }
-            for j in range(i['itemsQuantity']):
-                invoice_values.setdefault('SKU', []).append(i['items'][j-1]['sku'])
-            invoice_list.append(invoice_values)
-        else:
-            continue
-    if bool(invoice_list):
+def print_invoices(invoice_info: dict, status: list, zone: str = None):
+    """
+    Print invoices.
+
+    Parameters
+    ----------
+    invoice_info : dict
+    status : list
+    zone : str
+        Defaults by `None`.
+    """
+    invoices = []
+    
+    if zone == "US":
+        key = "vendorItemId"
+    else:
+        key = "sku"
+
+    for invoice in invoice_info.get("data", []):
+        if invoice.get("status") in status:
+            invoices.append({
+                "Invoice ID": invoice.get("invoiceId"),
+                "Product Quantity": invoice.get("itemsQuantity", 0),
+                "Sub Total": invoice.get("subtotal"),
+                "Tax": invoice.get("tax"),
+                "Discount": invoice.get("discount"),
+                "Total": invoice.get("total"),
+                key: [item.get(key) for item in invoice.get("items")]
+            })
+
+    if invoices:
         print(text.default_text_color + '\nInvoice Information By Account  -  Status:' + status[1])
-        print(tabulate(invoice_list, headers='keys', tablefmt='grid'))
+        print(tabulate(invoices, headers='keys', tablefmt='grid'))
     else:
         print(text.Red + '\nThere is no invoices with the status of ' + status[1] + ' for this account')
 

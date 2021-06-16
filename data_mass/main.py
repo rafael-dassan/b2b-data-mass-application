@@ -796,7 +796,7 @@ def check_simulation_service_account_microservice_menu():
         print_finish_application_menu()
 
     # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone, environment)
+    account, = check_account_exists_microservice(abi_id, zone, environment)
 
     if not account:
         print_finish_application_menu()
@@ -875,8 +875,19 @@ def check_simulation_service_account_microservice_menu():
     else:
         payment_term = 0
 
-    cart_response = request_order_simulation(zone, environment, abi_id, account[0]['deliveryCenterId'], order_items,
-                                             order_combos, empties_skus, payment_method, payment_term)
+    cart_response = request_order_simulation(
+        zone=zone,
+        environment=environment,
+        account_id=abi_id,
+        delivery_center_id=account.get('deliveryCenterId'),
+        items=order_items,
+        combos=order_combos,
+        empties=empties_skus,
+        payment_method=payment_method,
+        payment_term=payment_term,
+        delivery_date=(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+    )
+
     if cart_response:
         process_simulation_microservice(cart_response)
     else:
@@ -1797,7 +1808,17 @@ def flow_create_invoice(zone, environment, account_id):
     order_items = get_order_items(order_data, zone)
     invoice_status = print_invoice_status_menu()
 
-    invoice_response = create_invoice_request(zone, environment, order_id, invoice_status, order_details, order_items)
+    if zone == "US":
+        invoice_response = create_invoice_v2(
+            zone,
+            environment,
+            order_id,
+            invoice_status,
+            order_data
+        )
+    else:
+        invoice_response = create_invoice_request(zone, environment, order_id, invoice_status, order_details, order_items)
+
     if invoice_response:
         print(text.Green + f'\n- Invoice {invoice_response} created successfully')
 
@@ -2177,7 +2198,7 @@ def retrieve_available_invoices_menu():
     invoice_info = get_invoices(zone, abi_id, environment)
     if not invoice_info:
         print_finish_application_menu()
-    print_invoices(invoice_info, status)
+    print_invoices(invoice_info, status, zone)
 
 
 def retriever_sku_menu():
