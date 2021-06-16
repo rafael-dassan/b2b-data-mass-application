@@ -1764,8 +1764,8 @@ def invoice_menu():
     operation = print_invoice_operations_menu()
     zone = print_zone_menu_for_ms()
 
-    if (zone == "US" and operation != '1'):
-        print(text.Red + "\n- Function not available in that country.")
+    if zone == "US" and operation != '1':
+        print(text.Red + "\n- Function not available in this country.")
         print_finish_application_menu()
 
     environment = print_environment_menu()
