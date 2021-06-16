@@ -962,6 +962,12 @@ def deals_menu():
     else:
         sku = sku_list[0]['sku']
 
+    if zone == "US":
+            return {
+        '1': lambda: flow_create_discount(zone, environment, account_id, sku),
+        '2': lambda: flow_create_free_good(zone, environment, account_id, sku_list),
+    }.get(operation, lambda: None)()
+
     return {
         '1': lambda: flow_create_discount(zone, environment, account_id, sku),
         '2': lambda: flow_create_stepped_discount(zone, environment, account_id, sku),

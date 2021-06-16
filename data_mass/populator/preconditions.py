@@ -122,15 +122,8 @@ def delete_invoice(account_id, country, environment):
                 if False == delete_invoice_by_id(country, environment, invoice_ids[i]):
                     logger.error(log(Message.DELETE_INVOICE_ERROR, {'account_id': account_id}))
     else:
-        logger.info(country)
-        logger.info(account_id)
-        logger.info(environment)
-
-
         invoices_by_account = get_invoices(country, account_id, environment)
         if not invoices_by_account:
-            logger.info("1")
-
             logger.error(log(Message.RETRIEVE_INVOICE_ERROR, {'vendorAccountIds': account_id}))
         else:
             invoice_ids = []
