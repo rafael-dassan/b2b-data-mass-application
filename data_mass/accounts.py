@@ -1,6 +1,7 @@
 import json
-import os
+from typing import Dict
 
+import click
 import pkg_resources
 from tabulate import tabulate
 
@@ -387,30 +388,64 @@ def get_delivery_cost_values(option):
     return delivery_cost_values
 
 
-def get_credit_info():
+def get_credit_info() -> Dict:
     """
-    Prompts to the user for credit information.
+    Prompts to the user for credit information,
+    to create a dict with types of credit and the values.
 
     Returns
     ------
     dict
-        The credit info.
+        The credit ammount for "available", "balance", "consumption" and
+        "overdue".
     """
-    credit = input(
-        f"{text.default_text_color} "
-        "Desired credit available (Default 5000): "
-    )
-    balance = input(
-        f"{text.default_text_color} "
-        "Desired credit balance (Default 15000): "
-    )
 
-    credit_info = {
-        'credit': credit,
-        'balance': balance
+    credit_types = {
+        "available": 5000,
+        "balance": 15000,
+        "consumption": 5000,
+        "overdue": 15000,
     }
 
-    return credit_info
+    for key, value in credit_types.items():
+        updated = get_user_prompt_credit_info(key, value)
+        credit_types.update(updated)
+
+    total = sum(credit_types.values())
+    credit_types.update({"total": total})
+
+    return credit_types
+
+
+def get_user_prompt_credit_info(credit_type: str , value: int) -> Dict:
+    """
+    Ask user two questions, one y_n answer and another to input the desired
+    value to credit type.
+
+    Parameters
+    ----------
+    credit_type : str
+        type of credit.
+    value : int
+        ammount of credit.
+
+    Returns
+    -------
+    Dict
+        key with defalt or the new value credit type.
+    """
+    user_choice = click.prompt(
+        f"{text.LightYellow}"
+        f"Would like to insert value for {credit_type}? (Default {value})",
+        type=click.Choice(["y", "n"]),
+    )
+    if user_choice == "y":
+        value = click.prompt(
+            f"{text.default_text_color} "
+            f"Desired credit {credit_type}",
+            type=int
+        )
+    return {credit_type: value}
 
 
 def get_minimum_order_list(minimum_order_values: dict):

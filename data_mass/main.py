@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from random import random, sample
+from random import choice, random, sample
 
 import click
 import pyperclip
@@ -1449,15 +1449,29 @@ def flow_create_credit_information(zone, environment, account_id):
     account = check_account_exists_microservice(account_id, zone, environment)
     if not account:
         print_finish_application_menu()
+    
+    payment_term = choice(account[0].get("paymentMethods", [None]))
 
     # Get credit information
     credit_info = get_credit_info()
 
     # Add credit to account
-    credit = add_credit_to_account_microservice(account_id, zone, environment, credit_info.get('credit'),
-                                                credit_info.get('balance'))
-    if credit == 'success':
-        print(text.Green + f'\n- Credit added successfully for the account {account_id}')
+    credit = add_credit_to_account_microservice(
+        account_id=account_id,
+        zone=zone,
+        environment=environment,
+        credit=credit_info.get("available", 0),
+        balance=credit_info.get("balance", 0),
+        consumption=credit_info.get("consumption", 0),
+        payment_term=payment_term,
+        overdue=credit_info.get("overdue", 0),
+        total=credit_info.get("total", 0)
+    )
+    if credit:
+        print(
+            f"{text.Green}"
+            f"- Credit added successfully for the account {account_id}"
+        )
     else:
         print_finish_application_menu()
 
