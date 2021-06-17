@@ -3,27 +3,23 @@
     "deals": [
         {
             "dealId": "string",
-            "externalId": "string",
+            "promotionId": "string",
             "accumulationType": null,
             "priority": 1,
             "budget": null,
             "quantityLimit": null,
             "availability": null,
             "conditions": {
-                "simulationDateTime": [
-                    {
-                        "startDate": "string",
-                        "endDate": "string",
-                        "startTime": "00:00:00",
-                        "endTime": "23:59:59"
-                    }
-                ],
-                "lineItem": {
-                    "skus": "string",
-                    "minimumQuantity": 1,
-                    "sharedMinimumQuantity": true,
-                    "crossDiscount": true
-                }
+              "simulationDateTime": {
+                "startDateTime": "string",
+                "endDateTime": "string"
+              },
+              "lineItem": {
+                "skus": "string",
+                "minimumQuantity": 1,
+                "sharedMinimumQuantity": true,
+                "crossDiscount": true
+              }
             },
             "output": {
                 "freeGoods": {

@@ -23,11 +23,11 @@ from data_mass.menus.account_menu import (
     print_account_operations_menu,
     print_account_status_menu,
     print_alternative_delivery_date_menu,
+    print_eligible_rewards_menu,
     print_get_account_operations_menu,
     print_include_delivery_cost_menu,
     print_minimum_order_menu,
-    print_payment_method_menu,
-    print_eligible_rewards_menu
+    print_payment_method_menu
     )
 from data_mass.menus.algo_selling_menu import print_recommender_type_menu
 from data_mass.menus.deals_menu import (
@@ -529,9 +529,8 @@ def order_menu():
         print_finish_application_menu()
     elif product_offers == 'not_found':
         print(
-            text.Red
-            + f'\n- There is no product associated '
-            'with the account {account_id}'
+            f"{text.Red}"
+            f"\n- There is no product associated with the account {account_id}"
         )
         print_finish_application_menu()
 

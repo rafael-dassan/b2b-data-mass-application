@@ -10,26 +10,22 @@
             "quantityLimit": null,
             "availability": null,
             "conditions": {
-                "simulationDateTime": [
-                    {
-                        "startDate": "string",
-                        "endDate": "string",
-                        "startTime": "00:00:00",
-                        "endTime": "23:59:59"
-                    }
+              "simulationDateTime": {
+                "startDateTime": "string",
+                "endDateTime": "string"
+              },
+              "scaledLineItem": {
+                "skus": "string",
+                "ranges": [
+                  {
+                    "index": 0,
+                    "from": "string",
+                    "to": "string"
+                  }
                 ],
-                "scaledLineItem": {
-                    "skus": "string",
-                    "ranges": [
-                        {
-                            "index": 0,
-                            "from": "string",
-                            "to": "string"
-                        }
-                    ],
-                    "sharedMinimumQuantity": true,
-                    "crossDiscount": true
-                }
+                "sharedMinimumQuantity": true,
+                "crossDiscount": true
+              }
             },
             "output": {
                 "lineItemScaledDiscount": {
