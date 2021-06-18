@@ -262,11 +262,7 @@ def create_account_ms(
     else:
         dict_values.update({"minimumOrder": minimum_order})
 
-    request_headers = get_header_request(
-        zone=zone,
-        use_jwt_auth=use_jwt_auth,
-        account_id=account_id
-    )
+    request_headers = get_header_request(zone, False, True, False, False)
     request_url = get_microservice_base_url(environment) + '/account-relay/'
 
     body: dict = json.loads(content.decode("utf-8"))

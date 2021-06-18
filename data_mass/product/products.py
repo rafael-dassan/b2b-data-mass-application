@@ -421,12 +421,10 @@ def get_avaliable_categories(
         The response content.
     """
     headers: dict = get_header_request(zone)
-    from os import environ
 
     headers.update({
         "custId": account_id,
         "regionId": zone,
-        "Authorization": environ["TOKEN"]
     })
 
     base_url = get_microservice_base_url(zone)
@@ -726,7 +724,7 @@ def create_product(
 
     # Get base URL
     base_url = get_microservice_base_url(environment, False)
-    request_url = f"{base_url}/item-relay/v2/items"
+    request_url = f"{base_url}/item-relay/items"
 
     # get data from Data Mass files
     content: bytes = pkg_resources.resource_string(
@@ -919,12 +917,6 @@ def get_item_input_data(zone: str):
     is_returnable = print_is_returnable_menu()
     is_narcotic = print_is_narcotic_menu()
     is_alcoholic = print_is_alcoholic_menu()
-    
-    has_category = input(f"{text.default_text_color}Is uncategorized? y/N: ")
-
-    while (has_category.upper() in ["Y", "N"]) is False:
-        print(text.Red + "\n- Invalid option")
-        has_category = input(f"\n{text.default_text_color}Is uncategorized? y/N: ")
 
     # Create item dictionary
     item_data = {
@@ -943,6 +935,12 @@ def get_item_input_data(zone: str):
     }
 
     if zone == "US":
+        has_category = input(f"{text.default_text_color}Is uncategorized? y/N: ")
+
+        while (has_category.upper() in ["Y", "N"]) is False:
+            print(text.Red + "\n- Invalid option")
+            has_category = input(f"\n{text.default_text_color}Is uncategorized? y/N: ")
+
         item_data.update({
             "sourceData": {
                 "vendorItemId": vendor_item_id

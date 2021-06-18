@@ -1148,7 +1148,6 @@ def product_menu():
     environment = print_environment_menu()
     operation = print_product_operations_menu(zone)
 
-
     if zone == "US":
         return {
             '1': lambda: flow_create_product(zone, environment),

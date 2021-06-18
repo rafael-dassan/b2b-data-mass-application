@@ -4,6 +4,7 @@ import logging
 import os
 import sys
 import time as t
+import warnings
 from datetime import date, datetime
 from time import time
 from urllib.parse import urlencode
@@ -1171,3 +1172,19 @@ def token_has_expired() -> bool:
         return True
 
     return False
+
+
+def resources_warning():
+    """
+    Shows `ResourcesWarning` when using US features.
+    """
+    message = \
+    """
+    Data Mass does not have persistent data creation power for \
+    services that make use of live call.
+
+    All returned data is mocked. If there is a need for any \
+    specific data, we suggest that you notify the migration team or the Data Mass team.
+    """
+
+    warnings.warn(message, ResourceWarning, stacklevel=2)
