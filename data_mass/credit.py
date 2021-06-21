@@ -1,70 +1,75 @@
-# Standard library imports
 import json
-import os
-
-import pkg_resources
 
 from data_mass.classes.text import text
-# Local application imports
 from data_mass.common import (
-    convert_json_to_string,
-    create_list,
     get_header_request,
     get_microservice_base_url,
-    place_request,
-    update_value_to_json
+    place_request
     )
 
 
-# Include credit for account in microservice
-def add_credit_to_account_microservice(account_id, zone, environment, credit, balance):
-    # Get headers
-    request_headers = get_header_request(zone, False, True, False, False)
+def add_credit_to_account_microservice(
+    account_id: str,
+    zone: str,
+    environment: str,
+    credit: str = 0,
+    balance: str = 0,
+    consumption: str = 0,
+    payment_term: str = None,
+    overdue: str = 0,
+    total: int = 0
+) -> bool:
+    """
+    Include credit for account in microservice
 
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + '/account-relay/credits'
+    Parameters
+    ----------
+    account_id : str
+        POC unique identifier
+    zone : str
+        country used in the operation e.g., AR, BR, DO, etc.
+    environment : str
+        envorinment used in the operation e.g., DEV, SIT, UAT.
+    credit_info : dict
+        [description]
 
-    # Default value for credit available
-    if credit == '':
-        credit = '5000'
+    Returns
+    -------
+    bool
+        return True if there were success in POST method, 
+        else print the failure and return False.
+    """
+    request_headers = get_header_request(zone=zone, use_root_auth=True)
 
-    # Default value for credit balance
-    if balance == '':
-        balance = '15000'
+    base_url = get_microservice_base_url(environment)
+    request_url = f"{base_url}/account-relay/credits"
 
-    credit = int(credit)
-    balance = int(balance)
-
-    # Create dictionary with credit values
     dict_values = {
-        'accountId': account_id,
-        'available': credit,
-        'balance': balance,
-        'total': credit + balance
+        "accountId": account_id,
+        "available": credit,
+        "balance": balance,
+        "consumption": consumption,
+        "overdue": overdue,
+        "paymentTerms": payment_term,
+        "total": total
     }
-    
-    # get data from Data Mass files
-    content: bytes = pkg_resources.resource_string(
-        "data_mass",
-        "data/create_credit_payload.json"
+
+    request_body = json.dumps(dict_values)
+
+    response = place_request(
+        request_method='POST',
+        request_url=request_url,
+        request_body=request_body,
+        request_headers=request_headers
     )
-    json_data = json.loads(content.decode("utf-8"))
-
-    # Update the credit values in runtime
-    for key in dict_values.keys():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
-
-    # Create body
-    list_dict_values = create_list(json_object)
-    request_body = convert_json_to_string(list_dict_values)
-
-    # Send request
-    response = place_request('POST', request_url, request_body, request_headers)
 
     if response.status_code == 202:
-        return 'success'
+        return True
     else:
-        print(text.Red + '\n- [Account Relay Service] Failure to add credit to the account {account_id}. '
-                         'Response Status: {response_status}. Response message: {response_message}'
-              .format(account_id=account_id, response_status=str(response.status_code), response_message=response.text))
+        print(
+            f"{text.Red}\n- [Account Relay Service] "
+            f"Failure to add credit to the account {account_id}. "
+            f"Response Status: {str(response.status_code)}. "
+            f"Response message: {response.text}"
+        )
         return False

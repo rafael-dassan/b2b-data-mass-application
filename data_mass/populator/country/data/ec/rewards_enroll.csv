@@ -1,2 +1,2 @@
-account_id_unenroll,challenge_id
-"2736327921","EC-7921"
+account_id_unenroll,take_photo_challenge_id,mark_complete_challenge_id,purchase_single_challenge_id,purchase_multiple_challenge_id
+"2736327921","EC-7920","EC-7921","EC-7922","EC-7923"

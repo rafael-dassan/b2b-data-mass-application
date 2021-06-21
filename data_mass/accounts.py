@@ -1,6 +1,7 @@
 import json
-import os
+from typing import Dict
 
+import click
 import pkg_resources
 from tabulate import tabulate
 
@@ -107,7 +108,8 @@ def create_account_ms(
         environment: str,
         delivery_address: dict,
         account_status: str = 'ACTIVE',
-        enable_empties_loan: bool = False):
+        enable_empties_loan: bool = False,
+        eligible_rewards: bool = True):
     """
     Create account on the microservice.
 
@@ -122,6 +124,7 @@ def create_account_ms(
     delivery_address : dict
     account_status : str
     enable_empties_loan : bool
+    eligible_rewards : bool
 
     Returns
     -------
@@ -164,6 +167,18 @@ def create_account_ms(
         )
     else:
         set_to_dictionary(dict_values, 'minimumOrder', minimum_order)
+
+    # If the user chooses to make an account eligible for rewards program,
+    # we will include the necessary information to match with a Data Mass available one
+    # If not, we associate random information that will not match with any available program
+    if eligible_rewards:
+        set_to_dictionary(dict_values, 'potential', 'DM-POTENT')
+        set_to_dictionary(dict_values, 'segment', 'DM-SEG')
+        set_to_dictionary(dict_values, 'subSegment', 'DM-SUBSEG')
+    else:
+        set_to_dictionary(dict_values, 'potential', 'POTENT')
+        set_to_dictionary(dict_values, 'segment', 'SEG')
+        set_to_dictionary(dict_values, 'subSegment', 'SUBSEG')
 
     request_headers = get_header_request(zone, False, True, False, False)
     request_url = get_microservice_base_url(environment) + '/account-relay/'
@@ -373,30 +388,64 @@ def get_delivery_cost_values(option):
     return delivery_cost_values
 
 
-def get_credit_info():
+def get_credit_info() -> Dict:
     """
-    Prompts to the user for credit information.
+    Prompts to the user for credit information,
+    to create a dict with types of credit and the values.
 
     Returns
     ------
     dict
-        The credit info.
+        The credit ammount for "available", "balance", "consumption" and
+        "overdue".
     """
-    credit = input(
-        f"{text.default_text_color} "
-        "Desired credit available (Default 5000): "
-    )
-    balance = input(
-        f"{text.default_text_color} "
-        "Desired credit balance (Default 15000): "
-    )
 
-    credit_info = {
-        'credit': credit,
-        'balance': balance
+    credit_types = {
+        "available": 5000,
+        "balance": 15000,
+        "consumption": 5000,
+        "overdue": 15000,
     }
 
-    return credit_info
+    for key, value in credit_types.items():
+        updated = get_user_prompt_credit_info(key, value)
+        credit_types.update(updated)
+
+    total = sum(credit_types.values())
+    credit_types.update({"total": total})
+
+    return credit_types
+
+
+def get_user_prompt_credit_info(credit_type: str , value: int) -> Dict:
+    """
+    Ask user two questions, one y_n answer and another to input the desired
+    value to credit type.
+
+    Parameters
+    ----------
+    credit_type : str
+        type of credit.
+    value : int
+        ammount of credit.
+
+    Returns
+    -------
+    Dict
+        key with defalt or the new value credit type.
+    """
+    user_choice = click.prompt(
+        f"{text.LightYellow}"
+        f"Would like to insert value for {credit_type}? (Default {value})",
+        type=click.Choice(["y", "n"]),
+    )
+    if user_choice == "y":
+        value = click.prompt(
+            f"{text.default_text_color} "
+            f"Desired credit {credit_type}",
+            type=int
+        )
+    return {credit_type: value}
 
 
 def get_minimum_order_list(minimum_order_values: dict):

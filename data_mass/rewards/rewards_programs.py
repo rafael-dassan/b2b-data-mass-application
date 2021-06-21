@@ -24,8 +24,9 @@ from data_mass.rewards.rewards_utils import (
     print_input_decision
     )
 
-APP_ADMIN = "membership"
+APP_ADMIN = "adminportal"
 BASE_URL_IMAGE = "https://cdn-b2b-abi.global.ssl.fastly.net"
+
 
 
 def create_new_program(zone, environment):
@@ -368,9 +369,9 @@ def get_DM_rewards_program_for_zone(zone_programs_list):
 # Get all reward program for the zone
 def get_all_programs(zone, environment, projections=set()):
     header_request = get_header_request(
-        zone, True, False, False, False, None, APP_ADMIN + "-" + zone.lower()
+        zone, True, False, False, False, None, APP_ADMIN
     )
-
+    
     # Define url request
     request_url = (
         get_microservice_base_url(environment, False)
@@ -409,9 +410,9 @@ def get_all_programs(zone, environment, projections=set()):
 def get_specific_program(program_id, zone, environment, projections=set()):
 
     header_request = get_header_request(
-        zone, True, False, False, False, None, APP_ADMIN + "-" + zone.lower()
+        zone, True, False, False, False, None, APP_ADMIN
     )
-
+    
     # Define url request
     request_url = (
         get_microservice_base_url(environment, False)
@@ -450,7 +451,7 @@ def get_specific_program(program_id, zone, environment, projections=set()):
 def patch_program(program_id, zone, environment, request_body):
 
     request_headers = get_header_request(
-        zone, True, False, False, False, None, APP_ADMIN + "-" + zone.lower()
+        zone, True, False, False, False, None, APP_ADMIN
     )
 
     # Define url request to patch the Rewards program selected
@@ -494,7 +495,7 @@ def patch_program(program_id, zone, environment, request_body):
 def put_programs(program_id, zone, environment, request_body):
 
     request_headers = get_header_request(
-        zone, True, False, False, False, None, APP_ADMIN + "-" + zone.lower()
+        zone, True, False, False, False, None, APP_ADMIN
     )
 
     # Define url request to patch the Rewards program selected
@@ -567,7 +568,7 @@ def diff_combos_program_and_zone(program_dt_combos, zone_dt_combos, reason):
 def patch_program_combos(program_id, zone, environment, request_body):
 
     request_headers = get_header_request(
-        zone, True, False, False, False, None, APP_ADMIN + "-" + zone.lower()
+        zone, True, False, False, False, None, APP_ADMIN
     )
 
     # Define url request to patch the Rewards program selected
@@ -611,7 +612,7 @@ def patch_program_combos(program_id, zone, environment, request_body):
 
 def delete_program_combo(program_id, combo_id, zone, environment):
     request_headers = get_header_request(
-        zone, True, False, False, False, None, APP_ADMIN + "-" + zone.lower()
+        zone, True, False, False, False, None, APP_ADMIN
     )
 
     # Define url request to delete the Rewards program combo

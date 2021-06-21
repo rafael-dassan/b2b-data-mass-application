@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from random import choice, random, sample
 
 import click
 import pyperclip
@@ -22,6 +23,7 @@ from data_mass.menus.account_menu import (
     print_account_operations_menu,
     print_account_status_menu,
     print_alternative_delivery_date_menu,
+    print_eligible_rewards_menu,
     print_get_account_operations_menu,
     print_include_delivery_cost_menu,
     print_minimum_order_menu,
@@ -608,8 +610,22 @@ def order_menu():
         zone=zone,
         environment=environment
     )
-    if not account:
+
+    # Call function to check if the account has products inside
+    product_offers = request_get_offers_microservice(
+        account_id=account_id,
+        zone=zone,
+        environment=environment
+    )
+    if not product_offers:
         print_finish_application_menu()
+    elif product_offers == 'not_found':
+        print(
+            f"{text.Red}"
+            f"\n- There is no product associated with the account {account_id}"
+        )
+        print_finish_application_menu()
+        
     delivery_center_id = account[0]['deliveryCenterId']
 
     if operation != '2':
@@ -1431,7 +1447,8 @@ def account_menu():
         '4': lambda: flow_update_account_name(zone, environment, account_id),
         '5': lambda: flow_update_account_status(zone, environment, account_id),
         '6': lambda: flow_update_account_minimum_order(zone, environment, account_id),
-        '7': lambda: flow_update_account_payment_method(zone, environment, account_id)
+        '7': lambda: flow_update_account_payment_method(zone, environment, account_id),
+        '8': lambda: flow_update_account_rewards_eligibility(zone, environment, account_id)
     }.get(operation, lambda: None)()
 
 
@@ -1441,6 +1458,7 @@ def flow_create_account(zone, environment, account_id):
     delivery_address = get_account_delivery_address(zone)
     account_status = print_account_status_menu()
     option_include_minimum_order = print_minimum_order_menu()
+    account_eligible_rewards = print_eligible_rewards_menu()
 
     if option_include_minimum_order == 'Y':
         minimum_order = get_minimum_order_info()
@@ -1454,13 +1472,13 @@ def flow_create_account(zone, environment, account_id):
 
     # Call create account function
     create_account_response = create_account_ms(account_id, name, payment_method, minimum_order, zone, environment,
-                                                delivery_address, account_status, enable_empties_loan)
+                                                delivery_address, account_status, enable_empties_loan, account_eligible_rewards)
 
     if create_account_response:
         print(TEXT_GREEN + f'\n- Your account {account_id} has been created successfully')
 
         # Input default credit to the account so it won't be `null` in the Account Service database
-        if False == add_credit_to_account_microservice(account_id, zone, environment, 0, 0):
+        if not add_credit_to_account_microservice(account_id, zone, environment, 0, 0):
             print_finish_application_menu()
     else:
         print_finish_application_menu()
@@ -1515,15 +1533,29 @@ def flow_create_credit_information(zone, environment, account_id):
     account = check_account_exists_microservice(account_id, zone, environment)
     if not account:
         print_finish_application_menu()
+    
+    payment_term = choice(account[0].get("paymentMethods", [None]))
 
     # Get credit information
     credit_info = get_credit_info()
 
     # Add credit to account
-    credit = add_credit_to_account_microservice(account_id, zone, environment, credit_info.get('credit'),
-                                                credit_info.get('balance'))
-    if credit == 'success':
-        print(TEXT_GREEN + f'\n- Credit added successfully for the account {account_id}')
+    credit = add_credit_to_account_microservice(
+        account_id=account_id,
+        zone=zone,
+        environment=environment,
+        credit=credit_info.get("available", 0),
+        balance=credit_info.get("balance", 0),
+        consumption=credit_info.get("consumption", 0),
+        payment_term=payment_term,
+        overdue=credit_info.get("overdue", 0),
+        total=credit_info.get("total", 0)
+    )
+    if credit:
+        print(
+            f"{text.Green}"
+            f"- Credit added successfully for the account {account_id}"
+        )
     else:
         print_finish_application_menu()
 
@@ -1535,6 +1567,11 @@ def flow_update_account_name(zone, environment, account_id):
         print_finish_application_menu()
     account_data = account[0]
 
+    if account_data['segment'] == 'DM-SEG':
+        eligible_rewards = True
+    else:
+        eligible_rewards = False
+
     name = print_account_name_menu()
 
     minimum_order = get_minimum_order_list(account_data['minimumOrder'])
@@ -1542,7 +1579,7 @@ def flow_update_account_name(zone, environment, account_id):
     create_account_response = create_account_ms(account_id, name, account_data['paymentMethods'],
                                                 minimum_order, zone, environment,
                                                 account_data['deliveryAddress'], account_data['status'],
-                                                account_data['hasEmptiesLoan'])
+                                                account_data['hasEmptiesLoan'], eligible_rewards)
 
     if create_account_response:
         print(TEXT_GREEN + '\n- Account name updated for the account {account_id}'
@@ -1558,6 +1595,11 @@ def flow_update_account_status(zone, environment, account_id):
         print_finish_application_menu()
     account_data = account[0]
 
+    if account_data['segment'] == 'DM-SEG':
+        eligible_rewards = True
+    else:
+        eligible_rewards = False
+
     account_status = print_account_status_menu()
 
     minimum_order = get_minimum_order_list(account_data['minimumOrder'])
@@ -1565,7 +1607,7 @@ def flow_update_account_status(zone, environment, account_id):
     create_account_response = create_account_ms(account_id, account_data['name'], account_data['paymentMethods'],
                                                 minimum_order, zone, environment,
                                                 account_data['deliveryAddress'], account_status,
-                                                account_data['hasEmptiesLoan'])
+                                                account_data['hasEmptiesLoan'], eligible_rewards)
 
     if create_account_response:
         print(TEXT_GREEN + '\n- Account status updated to {account_status} for the account {account_id}'
@@ -1581,6 +1623,11 @@ def flow_update_account_minimum_order(zone, environment, account_id):
         print_finish_application_menu()
     account_data = account[0]
 
+    if account_data['segment'] == 'DM-SEG':
+        eligible_rewards = True
+    else:
+        eligible_rewards = False
+
     option_include_minimum_order = print_minimum_order_menu()
 
     if option_include_minimum_order == 'Y':
@@ -1591,7 +1638,7 @@ def flow_update_account_minimum_order(zone, environment, account_id):
     create_account_response = create_account_ms(account_id, account_data['name'], account_data['paymentMethods'],
                                                 minimum_order, zone, environment,
                                                 account_data['deliveryAddress'], account_data['status'],
-                                                account_data['hasEmptiesLoan'])
+                                                account_data['hasEmptiesLoan'], eligible_rewards)
 
     if create_account_response:
         print(TEXT_GREEN + '\n- Minimum order updated for the account {account_id}'
@@ -1607,6 +1654,11 @@ def flow_update_account_payment_method(zone, environment, account_id):
         print_finish_application_menu()
     account_data = account[0]
 
+    if account_data['segment'] == 'DM-SEG':
+        eligible_rewards = True
+    else:
+        eligible_rewards = False
+
     payment_method = print_payment_method_menu(zone)
 
     minimum_order = get_minimum_order_list(account_data['minimumOrder'])
@@ -1614,13 +1666,49 @@ def flow_update_account_payment_method(zone, environment, account_id):
     create_account_response = create_account_ms(account_id, account_data['name'], payment_method,
                                                 minimum_order, zone, environment,
                                                 account_data['deliveryAddress'], account_data['status'],
-                                                account_data['hasEmptiesLoan'])
+                                                account_data['hasEmptiesLoan'], eligible_rewards)
 
     if create_account_response:
         print(TEXT_GREEN + '\n- Payment method updated for the account {account_id}'
               .format(account_id=account_id))
     else:
         print_finish_application_menu()
+
+
+def flow_update_account_rewards_eligibility(zone, environment, account_id):
+    # Call check account exists function
+    account = check_account_exists_microservice(account_id, zone, environment)
+    if not account:
+        print_finish_application_menu()
+    account_data = account[0]
+
+    account_eligible_rewards = print_eligible_rewards_menu()
+
+    minimum_order = get_minimum_order_list(account_data['minimumOrder'])
+
+    create_account_response = create_account_ms(account_id, account_data['name'], account_data['paymentMethods'],
+                                                minimum_order, zone, environment,
+                                                account_data['deliveryAddress'], account_data['status'],
+                                                account_data['hasEmptiesLoan'], account_eligible_rewards)
+
+    if create_account_response:
+        print(text.Green + '\n- Rewards eligibility updated for the account {account_id}'
+              .format(account_id=account_id))
+    else:
+        print_finish_application_menu()
+
+
+# Print Finish Menu application
+def print_finish_application_menu():
+    option = input(text.default_text_color + '\nDo you want to finish the application? y/N: ')
+    while validate_yes_no_option(option.upper()) is False:
+        print(text.Red + '\n- Invalid option')
+        option = input(text.default_text_color + '\nDo you want to finish the application? y/N: ')
+
+    if option.upper() == 'Y':
+        finish_application()
+    else:
+        show_menu()
 
 
 # Validate if chosen sku is valid

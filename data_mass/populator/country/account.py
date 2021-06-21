@@ -1,11 +1,18 @@
 from data_mass.accounts import create_account_ms, get_account_delivery_address
-from data_mass.delivery_window import create_delivery_window_microservice
 from data_mass.credit import add_credit_to_account_microservice
-from data_mass.populator.country.product import check_product_associated_to_account
-from data_mass.product.products import request_get_products_by_account_microservice, request_get_products_microservice, generate_random_price_ids, \
-    slice_array_products, request_post_products_account_microservice
+from data_mass.delivery_window import create_delivery_window_microservice
 from data_mass.populator.country.inventory import populate_default_inventory
+from data_mass.populator.country.product import (
+    check_product_associated_to_account
+    )
 from data_mass.populator.log import *
+from data_mass.product.products import (
+    generate_random_price_ids,
+    request_get_products_by_account_microservice,
+    request_get_products_microservice,
+    request_post_products_account_microservice,
+    slice_array_products
+    )
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +24,9 @@ def populate_pocs(country, environment, dataframe_accounts):
 
 
 def apply_populate_poc(row, country, environment):
-    populate_poc(country, environment,
+    populate_poc(
+        country,
+        environment,
         row['account_id'],
         row['account_name'],
         row['payment_method'],
@@ -25,14 +34,15 @@ def apply_populate_poc(row, country, environment):
         row['balance'],
         row['amount_of_products'],
         row['has_delivery_window'],
+        row['eligible_rewards'],
         row['products'])
 
 
 # Populate the POC
 def populate_poc(country, environment, account_id, account_name, payment_method, credit, balance, amount_of_products,
-                 has_delivery_window, products=None, option='1'):
+                 has_delivery_window, eligible_rewards, products=None, option='1'):
     
-    populate_account(country, environment, account_id, account_name, payment_method)
+    populate_account(country, environment, account_id, account_name, payment_method, eligible_rewards)
     if has_delivery_window:
         populate_delivery_window(country, environment, account_id, option)
     populate_credit(country, environment, account_id, credit, balance)
@@ -49,9 +59,10 @@ def populate_poc(country, environment, account_id, account_name, payment_method,
 
 
 # Populate an account
-def populate_account(country, environment, account_id, account_name, payment_method):
+def populate_account(country, environment, account_id, account_name, payment_method, eligible_rewards):
     delivery_address = get_account_delivery_address(country)
-    if not create_account_ms(account_id, account_name, payment_method, None, country, environment, delivery_address):
+    if not create_account_ms(account_id, account_name, payment_method, None, country, environment, delivery_address, 'ACTIVE', False,
+                             eligible_rewards):
         logger.error(log(Message.ACCOUNT_ERROR, {"account_id": account_id}))
 
 
@@ -68,7 +79,7 @@ def populate_delivery_window(country, environment, account_id, option):
 
 # Populate the credit for an account
 def populate_credit(country, environment, account_id, credit, balance):
-    if "success" != add_credit_to_account_microservice(account_id, country, environment, credit, balance):
+    if not add_credit_to_account_microservice(account_id, country, environment, credit, balance):
         logger.error(log(Message.CREDIT_ERROR, {"account_id": account_id}))
 
 

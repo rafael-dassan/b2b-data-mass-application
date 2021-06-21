@@ -32,7 +32,7 @@ from data_mass.rewards.rewards_utils import (
     )
 
 APP_B2B = "b2b"
-APP_ADMIN = "membership"
+APP_ADMIN = "adminportal"
 COUNTRIES_USE_DTCOMBO_ITEMS = ['BR', 'EC', 'MX', 'PE']
 
 
@@ -92,13 +92,7 @@ def disenroll_poc_from_program(account_id, zone, environment):
 
     # Define headers
     request_headers = get_header_request(
-        zone,
-        True,
-        False,
-        False,
-        False,
-        account_id,
-        APP_ADMIN + "-" + zone.lower(),
+        zone, True, False, False, False, account_id, APP_ADMIN
     )
 
     # Define url request

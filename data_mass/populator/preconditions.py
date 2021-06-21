@@ -1,11 +1,18 @@
-from data_mass.algo_selling import get_recommendation_by_account, \
-    delete_recommendation_by_id
-from data_mass.deals import request_get_deals_pricing_service, \
-    request_delete_deals_pricing_service, request_get_deals_promotion_service, \
-    request_delete_deal_by_id_v1, request_delete_deal_by_id
-from data_mass.invoices import get_invoices, delete_invoice_by_id
-from data_mass.populator.helpers.database_helper import get_database_params, \
-    delete_from_database_by_account
+from data_mass.algo_selling import (
+    delete_recommendation_by_id,
+    get_recommendation_by_account
+    )
+from data_mass.deals import (
+    request_delete_deal_by_id,
+    request_delete_deals_pricing_service,
+    request_get_deals_pricing_service,
+    request_get_deals_promotion_service
+    )
+from data_mass.invoices import delete_invoice_by_id, get_invoices
+from data_mass.populator.helpers.database_helper import (
+    delete_from_database_by_account,
+    get_database_params
+    )
 from data_mass.populator.log import *
 
 logger = logging.getLogger(__name__)
@@ -65,16 +72,8 @@ def delete_deal(account_id, country, environment):
         logger.debug("[Promotion Service] The account {account_id} does not have deals associated. Skipping..."
                     .format(account_id=account_id))
     else:
-        if country == 'ZA':
-            for i in range(len(promotions)):
-                deal_id = promotions[i]['id']
-
-                # Delete deals from Promotion MS database
-                if False == request_delete_deal_by_id_v1(deal_id, country, environment):
-                    logger.error(log(Message.DELETE_PROMOTION_ERROR, {'account_id': account_id}))
-        else:
-            if False == request_delete_deal_by_id(account_id, country, environment, promotions):
-                logger.error(log(Message.DELETE_PROMOTION_ERROR, {'account_id': account_id}))
+        if not request_delete_deal_by_id(account_id, country, environment, promotions):
+            logger.error(log(Message.DELETE_PROMOTION_ERROR, {'account_id': account_id}))
 
 
 def delete_invoice(account_id, country, environment):

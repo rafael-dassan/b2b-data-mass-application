@@ -172,3 +172,4 @@ venv/
 # Logs
 logs/
 **/logs/**
+*.env

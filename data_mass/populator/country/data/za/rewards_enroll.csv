@@ -1,2 +1,2 @@
-account_id_unenroll,challenge_id
-"9883300101","ZA-0101"
+account_id_unenroll,take_photo_challenge_id,mark_complete_challenge_id,purchase_single_challenge_id,purchase_multiple_challenge_id
+"9883300101","ZA-0100","ZA-0101","ZA-0102","ZA-0103"

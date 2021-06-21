@@ -560,14 +560,14 @@ def get_order_items(order_data, zone):
             item_list.append(items_details)
         else:
             items_details = {
-                "sku": items[i]["sku"],
-                "price": items[i]["price"],
-                "quantity": items[i]["quantity"],
-                "subtotal": items[i]["subtotal"],
-                "total": items[i]["total"],
-                "freeGood": items[i]["freeGood"],
-                "tax": tax,
-                "discount": discount,
+                'sku': items[i]['sku'],
+                'price': items[i]['price'],
+                'quantity': items[i]['quantity'],
+                'subtotal': items[i]['subtotal'],
+                'total': items[i]['total'],
+                'freeGood': items[i].get('freeGood', False),
+                'tax': tax,
+                'discount': discount
             }
             item_list.append(items_details)
 

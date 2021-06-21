@@ -1,149 +1,69 @@
-# Standard library imports
 import json
-from json import loads
 import os
+from json import loads
 from random import randint
 
-# Third party imports
 from tabulate import tabulate
 
-# Local application imports
-from data_mass.common import get_microservice_base_url, \
-    get_header_request, place_request, update_value_to_json, create_list, \
-    convert_json_to_string, return_first_and_last_date_year_payload
 from data_mass.classes.text import text
-
-
-def request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id=None):
-    """
-    Input deal to a specific POC. The deal is created by calling the Promotion Relay Service V1
-    Args:
-        deal_id: deal unique identifier
-        account_id: POC unique identifier
-        sku: Product unique identifier that will have discount/free good associated with it
-        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
-        zone: e.g., ZA
-        environment: e.g., DEV, SIT, UAT
-    Returns: `deal_id` if success and error message in case of failure
-    """
-
-    if deal_id is None:
-        # Deal unique identifier
-        deal_id = 'DM-' + str(randint(1, 100000))
-
-    # Assign an account group unique identifier
-    account_group_id = create_account_group(account_id, zone, environment)
-    # Assign a SKU group unique identifier
-    sku_group_id = create_sku_group(sku, zone, environment)
-    # Assign a free good group unique identifier when needed
-    free_good_group_id = list()
-    if deal_type == 'FREE_GOOD' or deal_type == 'STEPPED_FREE_GOOD':
-        free_good = create_free_good_group(sku, zone, environment)
-        free_good_group_id.append(free_good)
-
-    # Get body
-    request_body = get_deals_payload_v1(deal_id, deal_type, account_group_id, sku_group_id, free_good_group_id)
-
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + '/promotion-relay/'
-
-    # Get headers
-    request_headers = get_header_request(zone, False, False, True, False)
-
-    # Send request
-    response = place_request('POST', request_url, request_body, request_headers)
-
-    if response.status_code == 202 or response.status_code == 200:
-        return deal_id
-    else:
-        print(text.Red + '\n- [Promotion Relay Service] Failure create deal. Response Status: {response_status}. '
-                         'Response message: {response_message}'
-              .format(response_status=response.status_code, response_message=response.text))
+from data_mass.common import (
+    convert_json_to_string,
+    create_list,
+    get_header_request,
+    get_microservice_base_url,
+    place_request,
+    return_first_and_last_date_year_payload,
+    update_value_to_json
+    )
 
 
 def request_create_deal_v2(deal_type, zone, environment, deal_id=None):
     """
-    Input deal to a specific POC. The deal is created by calling the Promotion Relay Service V2
+    Input deal to a specific POC. The deal is created by calling the
+    Promotion Relay Service V2
     Args:
         deal_id: deal unique identifier
-        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
+        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD,
+            STEPPED_FREE_GOOD
         zone: e.g., AR, BR, CO, DO, MX
         environment: e.g., DEV, SIT, UAT
     Returns: `deal_id` if success and error message in case of failure
     """
-
     if deal_id is None:
         # Deal unique identifier
-        deal_id = 'DM-' + str(randint(1, 100000))
+        deal_id = f"DM-{str(randint(1, 100000))}"
 
-    # Get body
     request_body = get_deals_payload_v2(deal_id, deal_type)
 
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + '/promotion-relay/v2'
+    base_url = get_microservice_base_url(environment)
+    request_url =  f"{base_url}/promotion-relay/v2"
 
-    # Get headers
     request_headers = get_header_request(zone, False, False, True, False)
 
-    # Send request
-    response = place_request('POST', request_url, request_body, request_headers)
+    response = place_request(
+        'POST', request_url, request_body, request_headers
+    )
 
-    if response.status_code == 202 or response.status_code == 200:
+    if response.status_code in [200, 202]:
         return deal_id
-    else:
-        print(text.Red + '\n- [Promotion Relay Service] Failure create deal. Response Status: {response_status}. '
-                         'Response message: {response_message}'
-              .format(response_status=response.status_code, response_message=response.text))
-        return False
 
-
-def get_deals_payload_v1(deal_id, deal_type, account_group_id, sku_group_id, free_good_group_id):
-    """
-    Create a payload to associate a promotion to a POC (Promotion Relay Service v1)
-    Args:
-        deal_id: deal unique identifier
-        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
-        account_group_id: account group unique identifier
-        sku_group_id: sku group unique identifier
-        free_good_group_id: free good group unique identifier
-    Returns: new promotion payload
-    """
-
-    # Create file path
-    abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(abs_path, 'data/create_promotion_payload_v1.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
-
-    # Create dictionary with deal's values
-    dict_values = {
-        'accountGroupIds': [account_group_id],
-        'description': 'This is a description for a deal type ' + deal_type + ' / ' + deal_id,
-        'freeGoodGroupIds': free_good_group_id,
-        'id': deal_id,
-        'skuGroupIds': [sku_group_id],
-        'title': deal_type + ' / ' + deal_id,
-        'type': deal_type
-    }
-
-    for key in dict_values.keys():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
-
-    # Create body
-    list_dict_values = create_list(json_object)
-    request_body = convert_json_to_string(list_dict_values)
-
-    return request_body
+    print(
+        f"{text.Red}"
+        "\n- [Promotion Relay Service] Failure create deal."
+        f"Response Status: {response.status_code}. "
+        f"Response message: {response.text}."
+    )
+    return False
 
 
 def get_deals_payload_v2(deal_id, deal_type):
     """
-    Create a payload to associate a promotion to a POC (Promotion Relay Service v2)
+    Create a payload to associate a promotion to a 
+        POC (Promotion Relay Service v2)
     Args:
         deal_id: deal unique identifier
-        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
+        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD,
+            STEPPED_FREE_GOOD
     Returns: new promotion payload
     """
 
@@ -157,10 +77,12 @@ def get_deals_payload_v2(deal_id, deal_type):
 
     # Create dictionary with deal's values
     dict_values = {
-        'description': 'This is a description for a deal type ' + deal_type + ' / ' + deal_id,
+        'description': (
+            f"This is a description for a deal type {deal_type} / {deal_id}"
+        ),
         'id': deal_id,
         'promotionId': deal_id,
-        'title': deal_type + ' / ' + deal_id,
+        'title': f"{deal_type} / {deal_id}",
         'type': deal_type
     }
 
@@ -174,166 +96,20 @@ def get_deals_payload_v2(deal_id, deal_type):
     return request_body
 
 
-def create_account_group(account_id, zone, environment):
+def create_discount(
+    account_id,
+    sku,
+    zone,
+    environment,
+    discount_value,
+    minimum_quantity,
+    deal_id=None,
+    discount_type='percentOff',
+    deal_type='DISCOUNT'
+):
     """
-    Create new account group, used to create a new deal via the Promotion Relay Service
-    Args:
-        account_id: POC unique identifier
-        zone: e.g., AR, BR, CO, DO, MX, ZA
-        environment: e.g., DEV, SIT, UAT
-    Returns: `account_group_id` if success and error message in case of failure
-    """
-
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_account_group_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
-
-    # Assign an account group unique identifier
-    account_group_id = 'DM-' + str(randint(1, 100000))
-
-    # Create dictionary with account group's values
-    dict_values = {
-        'accountGroupId': account_group_id,
-        'accounts': [account_id]
-    }
-
-    for key in dict_values.keys():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
-
-    # Create body
-    list_dict_values = create_list(json_object)
-    request_body = convert_json_to_string(list_dict_values)
-
-    # Get header request
-    request_headers = get_header_request(zone, False, False, True, False)
-
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + '/promotion-relay/account-group'
-
-    # Send request
-    response = place_request('POST', request_url, request_body, request_headers)
-
-    if response.status_code == 202:
-        return account_group_id
-    else:
-        print(text.Red + '\n- [Promotion Relay Service] Failure create account group. Response Status: '
-                         '{response_status}. Response message: {response_message}'
-              .format(response_status=response.status_code, response_message=response.text))
-        return False
-
-
-def create_sku_group(sku, zone, environment):
-    """
-    Create new SKU group, used to create a new deal via the Promotion Relay Service
-    Args:
-        sku: Product unique identifier
-        zone: e.g., AR, BR, CO, DO, MX, ZA
-        environment: e.g., DEV, SIT, UAT
-    Returns: `sku_group_id` if success and error message in case of failure
-    """
-
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_sku_group_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
-
-    # Assign a SKU group unique identifier
-    sku_group_id = 'DM-' + str(randint(1, 100000))
-
-    # Create dictionary with SKU group's values
-    dict_values = {
-        'skuGroupId': sku_group_id,
-        'skus': [sku]
-    }
-
-    for key in dict_values.keys():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
-
-    # Create body
-    list_dict_values = create_list(json_object)
-    request_body = convert_json_to_string(list_dict_values)
-
-    # Get headers
-    request_headers = get_header_request(zone, False, False, True, False)
-
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + '/promotion-relay/sku-group'
-
-    # Send request
-    response = place_request('POST', request_url, request_body, request_headers)
-
-    if response.status_code == 202:
-        return sku_group_id
-    else:
-        print(text.Red + '\n- [Promotion Relay Service] Failure create sku group. Response Status: '
-                         '{response_status}. Response message: {response_message}'
-              .format(response_status=response.status_code, response_message=response.text))
-        return False
-
-
-def create_free_good_group(sku, zone, environment):
-    """
-    Create new free good group, used to create a new deal via the Promotion Relay Service
-    Args:
-        sku: Product unique identifier
-        zone: e.g., AR, BR, CO, DO, MX, ZA
-        environment: e.g., DEV, SIT, UAT
-    Returns: `free_good_group_id` if success and error message in case of failure
-    """
-
-    # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_free_good_group_payload.json')
-
-    # Load JSON file
-    with open(file_path) as file:
-        json_data = json.load(file)
-
-    # Assign a free good group unique identifier
-    free_good_group_id = 'DM-' + str(randint(1, 100000))
-
-    # Create dictionary with free good group's values
-    dict_values = {
-        'freeGoodGroupId': free_good_group_id,
-        'skus': [sku]
-    }
-
-    for key in dict_values.keys():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
-
-    # Create body
-    list_dict_values = create_list(json_object)
-    request_body = convert_json_to_string(list_dict_values)
-
-    # Get headers
-    request_headers = get_header_request(zone, False, False, True, False)
-
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + '/promotion-relay/free-good-group'
-
-    # Send request
-    response = place_request('POST', request_url, request_body, request_headers)
-
-    if response.status_code == 202:
-        return free_good_group_id
-    else:
-        print(text.Red + '\n- [Promotion Relay Service] Failure create free good group. Response Status: '
-                         '{response_status}. Response message: {response_message}'
-              .format(response_status=response.status_code, response_message=response.text))
-        return False
-
-
-def create_discount(account_id, sku, zone, environment, discount_value, minimum_quantity, deal_id=None, discount_type='percentOff',
-                    deal_type='DISCOUNT'):
-    """
-    Input a deal type discount to a specific POC by calling the Promotion Relay Service and Pricing Engine Relay Service
+    Input a deal type discount to a specific POC by calling the 
+    Promotion Relay Service and Pricing Engine Relay Service
     Args:
         account_id: POC unique identifier
         sku: product unique identifier
@@ -342,54 +118,85 @@ def create_discount(account_id, sku, zone, environment, discount_value, minimum_
         discount_value: value of discount to be applied
         minimum_quantity: minimum quantity for the discount to be applied
         discount_type: percentOff
-        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
+        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, 
+            FREE_GOOD, STEPPED_FREE_GOOD
         deal_id: deal unique identifier
     Returns: `promotion_response` if success
     """
+    promotion_response = request_create_deal_v2(
+        deal_type=deal_type,
+        zone=zone,
+        environment=environment,
+        deal_id=deal_id
+    )
 
-    if zone == 'ZA':
-        promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id)
-    else:
-        promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
-
-    cart_response = request_create_discount_cart_calculation(account_id, promotion_response, zone, environment, sku,
-                                                             discount_type, discount_value, minimum_quantity)
+    cart_response = request_create_discount_cart_calculation(
+        account_id=account_id,
+        deal_id=promotion_response,
+        zone=zone,
+        environment=environment,
+        deal_sku=sku,
+        discount_type=discount_type,
+        discount_value=discount_value,
+        minimum_quantity=minimum_quantity
+    )
 
     if promotion_response and cart_response == 'success':
         return promotion_response
-    else:
-        return False
+    
+    return False
 
 
-def create_stepped_discount_with_limit(account_id, sku, zone, environment, index_range, discount_range,
-                                       max_quantity, deal_id=None, discount_type='percentOff',
-                                       deal_type='STEPPED_DISCOUNT'):
+def create_stepped_discount_with_limit(
+    account_id,
+    sku,
+    zone,
+    environment,
+    index_range,
+    discount_range,
+    max_quantity,
+    deal_id=None,
+    discount_type='percentOff',
+    deal_type='STEPPED_DISCOUNT'
+):
     """
-    Input a deal type stepped discount with max quantity to a specific POC by calling the Promotion Relay Service and
+    Input a deal type stepped discount with max quantity to a specific 
+    POC by calling the Promotion Relay Service and
     Pricing Engine Relay Service
     Args:
         account_id: POC unique identifier
         sku: product unique identifier
         zone: e.g., AR, BR, CO, DO, MX, ZA
         environment: e.g, DEV, SIT, UAT
-        index_range: range of quantity for the discount to be applied (e.g., from 1 to 50)
-        discount_range: range of discount values to be applied (e.g., 10% for the range 0 e 20% for the range 1)
+        index_range: range of quantity for the discount to be 
+            applied (e.g., from 1 to 50)
+        discount_range: range of discount values to be 
+            applied (e.g., 10% for the range 0 e 20% for the range 1)
         max_quantity: deal limit
         discount_type: percentOff
-        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
+        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, 
+            FREE_GOOD, STEPPED_FREE_GOOD
         deal_id: deal unique identifier
     Returns: `promotion_response` if success
     """
+    promotion_response = request_create_deal_v2(
+        deal_type,
+        zone,
+        environment,
+        deal_id
+    )
 
-    if zone == 'ZA':
-        promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id)
-    else:
-        promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
-
-    cart_response = request_create_stepped_discount_with_limit_cart_calculation(account_id, promotion_response, zone,
-                                                                                environment, sku, max_quantity,
-                                                                                index_range, discount_type,
-                                                                                discount_range)
+    cart_response = create_stepped_discount_with_limit_cart_calculation(
+        account_id=account_id,
+        deal_id=promotion_response,
+        zone=zone,
+        environment=environment,
+        sku=sku,
+        quantity=max_quantity,
+        index_range=index_range,
+        discount_type=discount_type,
+        discount_range=discount_range
+    )
 
     if promotion_response and cart_response == 'success':
         return promotion_response
@@ -397,11 +204,19 @@ def create_stepped_discount_with_limit(account_id, sku, zone, environment, index
         return False
 
 
-def create_stepped_discount(account_id, sku, zone, environment, ranges, deal_id=None,
-                            discount_type='percentOff', deal_type='STEPPED_DISCOUNT'):
+def create_stepped_discount(
+    account_id,
+    sku,
+    zone,
+    environment,
+    ranges,
+    deal_id=None,
+    discount_type='percentOff',
+    deal_type='STEPPED_DISCOUNT'
+):
     """
-    Input a deal type stepped discount to a specific POC by calling the Promotion Relay Service and
-    Pricing Engine Relay Service
+    Input a deal type stepped discount to a specific POC by calling the
+    Promotion Relay Service and Pricing Engine Relay Service.
     Args:
         account_id: POC unique identifier
         deal_id: deal unique identifier
@@ -410,34 +225,54 @@ def create_stepped_discount(account_id, sku, zone, environment, ranges, deal_id=
         environment: e.g, DEV, SIT, UAT
         ranges: range of SKU quantities and discount values to be applied
         discount_type: percentOff
-        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
+        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD,
+            STEPPED_FREE_GOOD
     Returns: `promotion_response` if success
     """
+    promotion_response = request_create_deal_v2(
+        deal_type=deal_type,
+        zone=zone,
+        environment=environment,
+        deal_id=deal_id
+    )
 
-    if zone == 'ZA':
-        promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id)
-    else:
-        promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
+    cart_response = request_create_stepped_discount_cart_calculation(
+        account_id=account_id, 
+        deal_id=promotion_response, 
+        zone=zone, 
+        environment=environment,
+        deal_sku=sku,
+        discount_type=discount_type,
+        ranges=ranges
+    )
 
-    cart_response = request_create_stepped_discount_cart_calculation(account_id, promotion_response, zone, environment,
-                                                                     sku, discount_type, ranges)
-
-    if promotion_response and cart_response == 'success':
+    if promotion_response and cart_response:
         return promotion_response
     else:
         return False
 
 
-def create_free_good(account_id, sku_list, zone, environment, proportion, quantity, partial_free_good,
-                     need_to_buy_product, deal_id=None, deal_type='FREE_GOOD'):
+def create_free_good(
+    account_id,
+    sku_list,
+    zone,
+    environment,
+    proportion,
+    quantity,
+    partial_free_good,
+    need_to_buy_product,
+    deal_id=None,
+    deal_type='FREE_GOOD'
+):
     """
-    Input a deal type free good to a specific POC by calling the Promotion Relay Service and Pricing Engine Relay
-    Service
+    Input a deal type free good to a specific POC by calling the Promotion
+    Relay Service and Pricing Engine Relay Service.
     Args:
         account_id: POC unique identifier
         deal_id: deal unique identifier
         sku_list: SKU list to offer as free good
-        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
+        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD,
+            STEPPED_FREE_GOOD
         zone: e.g., AR, BR, CO, DO, MX, ZA
         environment: e.g, DEV, SIT, UAT
         proportion: proportion for the free good to be applied
@@ -446,15 +281,24 @@ def create_free_good(account_id, sku_list, zone, environment, proportion, quanti
         need_to_buy_product: e.g., `Y` or `N`
     Returns: `promotion_response` if success
     """
+    promotion_response = request_create_deal_v2(
+        deal_type=deal_type,
+        zone=zone,
+        environment=environment,
+        deal_id=deal_id
+    )
 
-    if zone == 'ZA':
-        promotion_response = request_create_deal_v1(account_id, sku_list[0]['sku'], deal_type, zone, environment, deal_id)
-    else:
-        promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
-
-    cart_response = request_create_free_good_cart_calculation(account_id, promotion_response, zone, environment,
-                                                              sku_list, proportion, quantity, partial_free_good,
-                                                              need_to_buy_product)
+    cart_response = request_create_free_good_cart_calculation(
+        account_id=account_id,
+        deal_id=promotion_response,
+        zone=zone,
+        environment=environment,
+        sku_list=sku_list,
+        proportion=proportion,
+        quantity=quantity,
+        partial_free_good=partial_free_good,
+        need_buy_product=need_to_buy_product
+    )
 
     if promotion_response and cart_response == 'success':
         return promotion_response
@@ -462,29 +306,45 @@ def create_free_good(account_id, sku_list, zone, environment, proportion, quanti
         return False
 
 
-def create_stepped_free_good(account_id, sku, zone, environment, ranges, deal_id=None,
-                             deal_type='STEPPED_FREE_GOOD'):
+def create_stepped_free_good(
+    account_id,
+    sku,
+    zone,
+    environment,
+    ranges,
+    deal_id=None,
+    deal_type='STEPPED_FREE_GOOD'
+):
     """
-    Input a deal type stepped free good to a specific POC by calling the Promotion Relay Service and Pricing Engine
+    Input a deal type stepped free good to a specific POC by calling
+        the Promotion Relay Service and Pricing Engine
     Relay Service
     Args:
         account_id: POC unique identifier
         deal_id: deal unique identifier
         sku: product unique identifier
-        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD
+        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD,
+            STEPPED_FREE_GOOD
         zone: e.g., AR, BR, CO, DO, MX, ZA
         environment: e.g, DEV, SIT, UAT
         ranges: range of SKU quantities and free good values to be applied
     Returns: `promotion_response` if success
     """
+    promotion_response = request_create_deal_v2(
+        deal_type=deal_type,
+        zone=zone,
+        environment=environment,
+        deal_id=deal_id
+    )
 
-    if zone == 'ZA':
-        promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment, deal_id)
-    else:
-        promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
-
-    cart_response = request_create_stepped_free_good_cart_calculation(account_id, promotion_response, zone, environment,
-                                                                      sku, ranges)
+    cart_response = request_create_stepped_free_good_cart_calculation(
+        account_id=account_id,
+        deal_id=promotion_response,
+        zone=zone,
+        environment=environment,
+        sku=sku,
+        ranges=ranges
+    )
 
     if promotion_response and cart_response == 'success':
         return promotion_response
@@ -493,9 +353,17 @@ def create_stepped_free_good(account_id, sku, zone, environment, ranges, deal_id
 
 
 # Create Interactive Combos v1 List
-def create_interactive_combos(account_id, sku, zone, environment, index_range, deal_type='FLEXIBLE_DISCOUNT'):
+def create_interactive_combos(
+    account_id,
+    sku,
+    zone,
+    environment,
+    index_range,
+    deal_type='FLEXIBLE_DISCOUNT'
+):
     """
-    Input a deal type interactive combos to a specific POC by calling the Promotion Relay Service and Pricing Engine
+    Input a deal type interactive combos to a specific POC by calling the
+    Promotion Relay Service and Pricing Engine
     Relay Service
     Args:
         account_id: POC unique identifier
@@ -503,17 +371,24 @@ def create_interactive_combos(account_id, sku, zone, environment, index_range, d
         zone: e.g., BR, CO, AR
         environment: e.g, DEV, SIT, UAT
         index_range: SKU quantity range for the discount to be applied
-        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD, FLEXIBLE_DISCOUNT
+        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, 
+            STEPPED_FREE_GOOD, FLEXIBLE_DISCOUNT
     Returns: `promotion_response` if success
     """
+    promotion_response = request_create_deal_v2(
+        deal_type=deal_type,
+        zone=zone,
+        environment=environment
+    )
 
-    if zone == 'ZA':
-        promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment)
-    else:
-        promotion_response = request_create_deal_v2(deal_type, zone, environment)
-
-    cart_response = request_create_interactive_combos_cart_calculation(account_id, promotion_response, zone,
-                                                                       environment, sku, index_range)
+    cart_response = request_create_interactive_combos_cart_calculation(
+        account_id=account_id,
+        deal_id=promotion_response,
+        zone=zone,
+        environment=environment,
+        sku=sku,
+        index_range=index_range
+    )
 
     if promotion_response and cart_response == 'success':
         return promotion_response
@@ -521,10 +396,18 @@ def create_interactive_combos(account_id, sku, zone, environment, index_range, d
         return False
 
 
-# Create Interactive Combos v2 List
-def create_interactive_combos_v2(account_id, sku, zone, environment, index_range, deal_type='FLEXIBLE_DISCOUNT'):
+def create_interactive_combos_v2(
+    account_id,
+    sku,
+    zone,
+    environment,
+    index_range,
+    deal_type='FLEXIBLE_DISCOUNT'
+):
     """
-    Input a deal type interactive combos to a specific POC by calling the Promotion Relay Service and Pricing Engine
+    Create Interactive Combos v2 List.
+    Input a deal type interactive combos to a specific POC by calling the
+    Promotion Relay Service and Pricing Engine
     Relay Service
     Args:
         account_id: POC unique identifier
@@ -532,17 +415,24 @@ def create_interactive_combos_v2(account_id, sku, zone, environment, index_range
         zone: e.g., BR, CO, AR
         environment: e.g, DEV, SIT, UAT
         index_range: range for the free good rule to be applied
-        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD, STEPPED_FREE_GOOD, FLEXIBLE_DISCOUNT
+        deal_type: e.g., DISCOUNT, STEPPED_DISCOUNT, FREE_GOOD,
+            STEPPED_FREE_GOOD, FLEXIBLE_DISCOUNT
     Returns: `promotion_response` if success
     """
+    promotion_response = request_create_deal_v2(
+        deal_type=deal_type,
+        zone=zone,
+        environment=environment
+    )
 
-    if zone == 'ZA':
-        promotion_response = request_create_deal_v1(account_id, sku, deal_type, zone, environment)
-    else:
-        promotion_response = request_create_deal_v2(deal_type, zone, environment)
-
-    cart_response = request_create_interactive_combos_cart_calculation_v2(account_id, promotion_response, zone, environment, sku,
-                                                                          index_range)
+    cart_response = request_create_interactive_combos_cart_calculation_v2(
+        account_id=account_id,
+        deal_id=promotion_response,
+        zone=zone,
+        environment=environment,
+        sku=sku,
+        index_range=index_range
+    )
 
     if promotion_response and cart_response == 'success':
         return promotion_response
@@ -550,10 +440,20 @@ def create_interactive_combos_v2(account_id, sku, zone, environment, index_range
         return False
 
 
-def request_create_free_good_cart_calculation(account_id, deal_id, zone, environment, sku_list, proportion,
-                                              quantity, partial_free_good, need_buy_product):
+def request_create_free_good_cart_calculation(
+    account_id,
+    deal_id,
+    zone,
+    environment,
+    sku_list,
+    proportion,
+    quantity,
+    partial_free_good,
+    need_buy_product
+):
     """
-    Input deal type free good rules (API version 2) to the Pricing Engine Relay Service
+    Input deal type free good rules (API version 2) to the 
+        Pricing Engine Relay Service
     Args:
         deal_id: deal unique identifier
         account_id: POC unique identifier
@@ -565,7 +465,8 @@ def request_create_free_good_cart_calculation(account_id, deal_id, zone, environ
         quantity: quantity of SKUs to offer as free goods
         partial_free_good: partial SKU to be rescued
         need_buy_product: e.g., `Y` or `N`
-    Returns: Success if the request went ok and the status code if there's a problem
+    Returns: Success if the request went ok and the 
+        status code if there's a problem
     """
 
     # Define if free good promotion is partial sku rescue
@@ -581,7 +482,8 @@ def request_create_free_good_cart_calculation(account_id, deal_id, zone, environ
         accumulation_type = None
     
     # Get base URL
-    request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/deals'
+    base_url = get_microservice_base_url(environment, False)
+    request_url = f"{base_url}/deal-relay/v1"
 
     # Get deal's start and end dates
     dates_payload = return_first_and_last_date_year_payload()
@@ -594,8 +496,8 @@ def request_create_free_good_cart_calculation(account_id, deal_id, zone, environ
             'deals[0].dealId': deal_id,
             'deals[0].externalId': deal_id,
             'deals[0].accumulationType': accumulation_type,
-            'deals[0].conditions.simulationDateTime[0].startDate': dates_payload['startDate'],
-            'deals[0].conditions.simulationDateTime[0].endDate': dates_payload['endDate'],
+            'deals[0].conditions.simulationDateTime.startDateTime': dates_payload['startDate'],
+            'deals[0].conditions.simulationDateTime.endDateTime': dates_payload['endDate'],
             'deals[0].conditions.lineItem.skus': [sku_list[0]['sku']],
             'deals[0].output.freeGoods.proportion': proportion,
             'deals[0].output.freeGoods.partial': boolean_partial_free_good,
@@ -612,8 +514,8 @@ def request_create_free_good_cart_calculation(account_id, deal_id, zone, environ
             'deals[0].externalId': deal_id,
             'deals[0].accumulationType': accumulation_type,
             'deals[0].quantityLimit': quantity,
-            'deals[0].conditions.simulationDateTime[0].startDate': dates_payload['startDate'],
-            'deals[0].conditions.simulationDateTime[0].endDate': dates_payload['endDate'],
+            'deals[0].conditions.simulationDateTime.startDateTime': dates_payload['startDate'],
+            'deals[0].conditions.simulationDateTime.endDateTime': dates_payload['endDate'],
             'deals[0].output.freeGoods.partial': boolean_partial_free_good,
             'deals[0].output.freeGoods.freeGoods[0].skus[0].sku': sku_list[0]['sku'],
             'deals[0].output.freeGoods.freeGoods[0].skus[0].price': sku_list[0]['price'],
@@ -670,7 +572,8 @@ def request_create_stepped_free_good_cart_calculation(account_id, deal_id, zone,
         accumulation_type = None
 
     # Get base URL
-    request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/deals'
+    base_url = get_microservice_base_url(environment, False)
+    request_url = f"{base_url}/deal-relay/v1"
 
     # Get deal's start and end dates
     dates_payload = return_first_and_last_date_year_payload()
@@ -681,8 +584,8 @@ def request_create_stepped_free_good_cart_calculation(account_id, deal_id, zone,
         'deals[0].dealId': deal_id,
         'deals[0].externalId': deal_id,
         'deals[0].accumulationType': accumulation_type,
-        'deals[0].conditions.simulationDateTime[0].startDate': dates_payload['startDate'],
-        'deals[0].conditions.simulationDateTime[0].endDate': dates_payload['endDate'],
+        'deals[0].conditions.simulationDateTime.startDateTime': dates_payload['startDate'],
+        'deals[0].conditions.simulationDateTime.endDateTime': dates_payload['endDate'],
         'deals[0].conditions.scaledLineItem.skus': [sku],
         'deals[0].conditions.scaledLineItem.ranges[0].from': ranges[0]['start'],
         'deals[0].conditions.scaledLineItem.ranges[0].to': ranges[0]['end'],
@@ -753,7 +656,8 @@ def request_create_discount_cart_calculation(account_id, deal_id, zone, environm
         accumulation_type = None
 
     # Get base URL
-    request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/deals'
+    base_url = get_microservice_base_url(environment, False)
+    request_url = f"{base_url}/deal-relay/v1"
 
     # Get deal's start and end dates
     dates_payload = return_first_and_last_date_year_payload()
@@ -764,8 +668,8 @@ def request_create_discount_cart_calculation(account_id, deal_id, zone, environm
         'deals[0].dealId': deal_id,
         'deals[0].externalId': deal_id,
         'deals[0].accumulationType': accumulation_type,
-        'deals[0].conditions.simulationDateTime[0].startDate': dates_payload['startDate'],
-        'deals[0].conditions.simulationDateTime[0].endDate': dates_payload['endDate'],
+        'deals[0].conditions.simulationDateTime.startDateTime': dates_payload['startDate'],
+        'deals[0].conditions.simulationDateTime.endDateTime': dates_payload['endDate'],
         'deals[0].conditions.lineItem.skus': [deal_sku],
         'deals[0].conditions.lineItem.minimumQuantity': minimum_quantity,
         'deals[0].output.lineItemDiscount.skus': [deal_sku],
@@ -803,10 +707,12 @@ def request_create_discount_cart_calculation(account_id, deal_id, zone, environm
         return False
 
 
-def request_create_stepped_discount_cart_calculation(account_id, deal_id, zone, environment, deal_sku, discount_type,
-                                                     ranges):
+def request_create_stepped_discount_cart_calculation(
+    account_id, deal_id, zone, environment, deal_sku, discount_type, ranges
+) -> bool:
     """
-    Input deal type stepped discount rules (API version 2) to the Pricing Engine Relay Service
+    Input deal type stepped discount rules (API version 2) to 
+        the Pricing Engine Relay Service
     Args:
         deal_id: deal unique identifier
         account_id: POC unique identifier
@@ -815,7 +721,8 @@ def request_create_stepped_discount_cart_calculation(account_id, deal_id, zone, 
         deal_sku: SKU that will have discount applied
         discount_type: type of discount being applied (percent or amount)
         ranges: range of SKU quantities and discount values to be applied
-    Returns: Success if the request went ok and the status code if there's a problem
+    Returns: Success if the request went ok and the status code 
+        if there's a problem
     """
 
     # Get the correct discount type
@@ -829,7 +736,8 @@ def request_create_stepped_discount_cart_calculation(account_id, deal_id, zone, 
         accumulation_type = None
     
     # Get base URL
-    request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/deals'
+    base_url = get_microservice_base_url(environment, False)
+    request_url = f"{base_url}/deal-relay/v1"
 
     # Get deal's start and end dates
     dates_payload = return_first_and_last_date_year_payload()
@@ -838,10 +746,10 @@ def request_create_stepped_discount_cart_calculation(account_id, deal_id, zone, 
     dict_values = {
         'accounts': [account_id],
         'deals[0].dealId': deal_id,
-        'deals[0].externalId': deal_id,
+        'deals[0].promotionId': deal_id,
         'deals[0].accumulationType': accumulation_type,
-        'deals[0].conditions.simulationDateTime[0].startDate': dates_payload['startDate'],
-        'deals[0].conditions.simulationDateTime[0].endDate': dates_payload['endDate'],
+        'deals[0].conditions.simulationDateTime.startDateTime': dates_payload['startDate'],
+        'deals[0].conditions.simulationDateTime.endDateTime': dates_payload['endDate'],
         'deals[0].conditions.scaledLineItem.skus': [deal_sku],
         'deals[0].conditions.scaledLineItem.ranges[0].from': ranges[0]['start'],
         'deals[0].conditions.scaledLineItem.ranges[0].to': ranges[0]['end'],
@@ -857,7 +765,9 @@ def request_create_stepped_discount_cart_calculation(account_id, deal_id, zone, 
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_stepped_discount_payload_v2.json')
+    file_path = os.path.join(
+        path, 'data/create_stepped_discount_payload_v2.json'
+    )
 
     # Load JSON file
     with open(file_path) as file:
@@ -877,18 +787,30 @@ def request_create_stepped_discount_cart_calculation(account_id, deal_id, zone, 
     response = place_request('PUT', request_url, request_body, request_headers)
 
     if response.status_code == 202:
-        return 'success'
-    else:
-        print(text.Red + '\n- [Pricing Engine Relay Service] Failure to associate a deal. Response Status: '
-                         '{response_status}. Response message: {response_message}'
-              .format(response_status=response.status_code, response_message=response.text))
-        return False
+        return True
+    
+    print(
+        f"{text.Red}\n-[Pricing Engine Relay Service] Failure to associate "
+        f"a deal. Response Status: '{response.status_code}'. "
+        f"Response message: '{response.text}'"
+    )
+    return False
 
 
-def request_create_stepped_discount_with_limit_cart_calculation(account_id, deal_id, zone, environment, sku, quantity,
-                                                                index_range, discount_type, discount_range):
+def create_stepped_discount_with_limit_cart_calculation(
+    account_id,
+    deal_id,
+    zone,
+    environment,
+    sku,
+    quantity,
+    index_range,
+    discount_type,
+    discount_range
+):
     """
-    Input deal type stepped discount rules (API version 2) to the Pricing Engine Relay Service
+    Input deal type stepped discount rules (API version 2) to the Pricing
+    Engine Relay Service
     Args:
         deal_id: deal unique identifier
         account_id: POC unique identifier
@@ -897,9 +819,12 @@ def request_create_stepped_discount_with_limit_cart_calculation(account_id, deal
         sku: product unique identifier
         quantity: quantity limit for the deal to be applied
         discount_type: type of discount being applied (percent or amount)
-        index_range: range of SKU quantities that the discount is valid to be applied
-        discount_range: different discount values to be applied according to the index_range parameter
-    Returns: Success if the request went ok and the status code if there's a problem
+        index_range: range of SKU quantities that the discount 
+            is valid to be applied
+        discount_range: different discount values to be applied according 
+            to the index_range parameter
+    Returns: Success if the request went ok and the status code 
+        if there's a problem
     """
 
     # Get the correct discount type
@@ -913,7 +838,8 @@ def request_create_stepped_discount_with_limit_cart_calculation(account_id, deal
         accumulation_type = None
     
     # Get base URL
-    request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/deals'
+    base_url = get_microservice_base_url(environment, False)
+    request_url = f"{base_url}/deal-relay/v1"
 
     # Get deal's start and end dates
     dates_payload = return_first_and_last_date_year_payload()
@@ -924,8 +850,8 @@ def request_create_stepped_discount_with_limit_cart_calculation(account_id, deal
         'deals[0].dealId': deal_id,
         'deals[0].externalId': deal_id,
         'deals[0].accumulationType': accumulation_type,
-        'deals[0].conditions.simulationDateTime[0].startDate': dates_payload['startDate'],
-        'deals[0].conditions.simulationDateTime[0].endDate': dates_payload['endDate'],
+        'deals[0].conditions.simulationDateTime.startDateTime': dates_payload['startDate'],
+        'deals[0].conditions.simulationDateTime.endDateTime': dates_payload['endDate'],
         'deals[0].conditions.scaledLineItem.skus': [sku],
         'deals[0].conditions.scaledLineItem.ranges[0].from': index_range[0],
         'deals[0].conditions.scaledLineItem.ranges[0].to': index_range[1],
@@ -937,7 +863,9 @@ def request_create_stepped_discount_with_limit_cart_calculation(account_id, deal
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_stepped_discount_max_qtd_payload_v2.json')
+    file_path = os.path.join(
+        path, 'data/create_stepped_discount_max_qtd_payload_v2.json'
+    )
 
     # Load JSON file
     with open(file_path) as file:
@@ -966,9 +894,12 @@ def request_create_stepped_discount_with_limit_cart_calculation(account_id, deal
 
 
 # Request Cart Interactive Combos v1
-def request_create_interactive_combos_cart_calculation(account_id, deal_id, zone, environment, sku, index_range):
+def request_create_interactive_combos_cart_calculation(
+    account_id, deal_id, zone, environment, sku, index_range
+):
     """
-    Input deal type stepped discount rules (API version 2) to the Pricing Engine Relay Service
+    Input deal type stepped discount rules (API version 2) to the 
+        Pricing Engine Relay Service
     Args:
         deal_id: deal unique identifier
         account_id: POC unique identifier
@@ -978,11 +909,13 @@ def request_create_interactive_combos_cart_calculation(account_id, deal_id, zone
         maxquantity: maximum quantity for each SKU to be applied
         minquantity: minimum quantity for each SKU to be applied
 
-    Returns: Success if the request went ok and the status code if there's a problem
+    Returns: Success if the request went ok and the status code if 
+        there's a problem
     """
 
     # Get base URL
-    request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/deals'
+    base_url = get_microservice_base_url(environment, False)
+    request_url = f"{base_url}/deal-relay/v1"
 
     # Create dictionary with deal's values
     dict_values = {
@@ -1038,9 +971,12 @@ def request_create_interactive_combos_cart_calculation(account_id, deal_id, zone
 
 
 # Request Cart Interactive Combos v2
-def request_create_interactive_combos_cart_calculation_v2(account_id, deal_id, zone, environment, sku, index_range):
+def request_create_interactive_combos_cart_calculation_v2(
+    account_id, deal_id, zone, environment, sku, index_range
+):
     """
-    Input deal type stepped discount rules (API version 2) to the Pricing Engine Relay Service
+    Input deal type stepped discount rules (API version 2) to 
+        the Pricing Engine Relay Service
     Args:
         deal_id: deal unique identifier
         account_id: POC unique identifier
@@ -1049,11 +985,13 @@ def request_create_interactive_combos_cart_calculation_v2(account_id, deal_id, z
         sku: product unique identifier
         index_range: quantity ranges for each SKU to be applied
 
-    Returns: Success if the request went ok and the status code if there's a problem
+    Returns: Success if the request went ok and the status code if 
+        there's a problem.
     """
 
     # Get base URL
-    request_url = get_microservice_base_url(environment, False) + '/cart-calculation-relay/v2/deals'    
+    base_url = get_microservice_base_url(environment, False)
+    request_url = f"{base_url}/deal-relay/v1"
 
     # Create dictionary with deal's values
     dict_values = {
@@ -1078,7 +1016,9 @@ def request_create_interactive_combos_cart_calculation_v2(account_id, deal_id, z
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(path, 'data/create_interactive_combos_payload_v2.json')
+    file_path = os.path.join(
+        path, 'data/create_interactive_combos_payload_v2.json'
+    )
 
     # Load JSON file
     with open(file_path) as file:
@@ -1099,11 +1039,13 @@ def request_create_interactive_combos_cart_calculation_v2(account_id, deal_id, z
 
     if response.status_code == 202:
         return 'success'
-    else:
-        print(text.Red + '\n- [Pricing Engine Relay Service] Failure to associate a deal. Response Status: '
-                         '{response_status}. Response message: {response_message}'
-              .format(response_status=response.status_code, response_message=response.text))
-        return False
+    print(
+        f"{text.Red}\n- [Pricing Engine Relay Service] "
+        "Failure to associate a deal. "
+        f"Response Status: {response.status_code}. "
+        f"Response message: {response.text}"
+    )
+    return False
 
 
 def request_get_deals_promo_fusion_service(zone, environment, account_id=''):
@@ -1117,10 +1059,13 @@ def request_get_deals_promo_fusion_service(zone, environment, account_id=''):
     """
 
     # Get base URL
-    request_url = get_microservice_base_url(environment) + '/promo-fusion-service/' + account_id
+    base_url = get_microservice_base_url(environment)
+    request_url = f"{base_url}/promo-fusion-service/{account_id}"
 
     # Define headers
-    request_headers = get_header_request(zone=zone, use_jwt_auth=True, account_id=account_id)
+    request_headers = get_header_request(
+        zone=zone, use_jwt_auth=True, account_id=account_id
+    )
 
     # Send request
     response = place_request('GET', request_url, '', request_headers)
@@ -1129,11 +1074,12 @@ def request_get_deals_promo_fusion_service(zone, environment, account_id=''):
 
     if response.status_code == 200 and len(json_data) != 0:
         return json_data
-    else:
-        print(text.Red + '\n- [Promo Fusion Service] Failure to retrieve deals. Response Status: '
-                         '{response_status}. Response message: {response_message}'
-              .format(response_status=response.status_code, response_message=response.text))
-        return False
+    print(
+        f"{text.Red}\n- [Promo Fusion Service] Failure to retrieve deals. "
+        f"Response Status: {response.status_code}. "
+        f" Response message: {response.text}"
+    )
+    return False
 
 
 def request_get_deals_promotion_service(account_id, zone, environment):
@@ -1146,14 +1092,16 @@ def request_get_deals_promotion_service(account_id, zone, environment):
     Returns: new json_object
     """
 
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + '/promotion-service/?accountId=' + account_id \
-                  + '&includeDisabled=false'
+    base_url = get_microservice_base_url(environment)
+    request_url = (
+        f"{base_url}/promotion-service/"
+        f"?accountId={account_id}&includeDisabled=false"
+    )
 
-    # Define headers
-    request_headers = get_header_request(zone, True, False, False, False, account_id)
+    request_headers = get_header_request(
+        zone, True, False, False, False, account_id
+    )
 
-    # Send request
     response = place_request('GET', request_url, '', request_headers)
     json_data = loads(response.text)
 
@@ -1162,18 +1110,23 @@ def request_get_deals_promotion_service(account_id, zone, environment):
         if len(deals) != 0:
             return deals
         else:
-            print(text.Yellow + '\n- [Promotion Service] The account {account_id} does not have deals associated'
-                  .format(account_id=account_id))
+            print(
+                f"{text.Yellow}\n- [Promotion Service] "
+                f"The account {account_id} does not have deals associated"
+            )
             return 'not_found'
     elif response.status_code == 404:
-        print(text.Yellow + '\n- [Promotion Service] The account {account_id} does not have deals associated'
-                  .format(account_id=account_id))
+        print(
+            f"{text.Yellow}\n- [Promotion Service] The account {account_id} "
+            "does not have deals associated"
+        )
         return 'not_found'
-    else:
-        print(text.Red + '\n- [Promotion Service] Failure to retrieve deals. Response Status: '
-                         '{response_status}. Response message: {response_message}'
-              .format(response_status=response.status_code, response_message=response.text))
-        return False
+    print(
+        f"{text.Red}\n- [Promotion Service] Failure to retrieve deals. "
+        f"Response Status: {response.status_code}. "
+        f"Response message: {response.text}."
+    )
+    return False
 
 
 def display_deals_information_promotion(deals):
@@ -1212,8 +1165,10 @@ def display_deals_information_promo_fusion(account_id, deals):
 
     combo_information = list()
     if len(combos) == 0:
-        print(text.Yellow + '\n- There is no combo available for the account {account_id}'
-              .format(account_id=account_id))
+        print(
+            f"{text.Yellow}\n- There is no combo available for the "
+            f"account {account_id}"
+        )
     else:
         for i in range(len(combos)):
             combo_values = {
@@ -1231,8 +1186,10 @@ def display_deals_information_promo_fusion(account_id, deals):
 
     promotion_information = list()
     if len(promotions) == 0:
-        print(text.Yellow + '\n- There is no promotion available for the account {account_id}'
-              .format(account_id=account_id))
+        print(
+            f"{text.Yellow}\n- There is no promotion available "
+            f"for the account {account_id}"
+        )
     else:
         for i in range(len(promotions)):
             promotion_values = {
@@ -1286,37 +1243,20 @@ def request_delete_deal_by_id(account_id, zone, environment, data):
     request_body = convert_json_to_string(json_object)
 
     # Get base URL
-    request_url = get_microservice_base_url(environment) + '/promotion-relay/v2'
+    base_url = get_microservice_base_url(environment)
+    request_url = f"{base_url}/promotion-relay/v2"
 
     # Send request
-    response = place_request('DELETE', request_url, request_body, request_headers)
+    response = place_request(
+        'DELETE', request_url, request_body, request_headers
+    )
     if response.status_code != 202:
-        print(text.Red + '\n- [Promotion Relay Service] Failure to delete the deal {deal_id}. Response Status: '
-                         '{status_code}. Response message: {response_message}'
-              .format(deal_id=deal_id, status_code=response.status_code, response_message=response.text))
-        return False
-
-
-def request_delete_deal_by_id_v1(deal_id, zone, environment):
-    """
-    Delete deal by ID via Promotion Relay Service v1
-    Args:
-        deal_id: deal unique identifier
-        zone: e.g., AR, BR, CO, DO, MX, ZA
-        environment: e.g., SIT, UAT
-    """
-    # Get headers
-    request_headers = get_header_request(zone, False, False, True, False)
-
-    # Get base URL
-    request_url = get_microservice_base_url(environment) + '/promotion-relay/v1/{0}'.format(deal_id)
-
-    # Send request
-    response = place_request('DELETE', request_url, '', request_headers)
-    if response.status_code != 202:
-        print(text.Red + '\n- [Promotion Relay Service] Failure to delete the deal {deal_id}. Response Status: '
-                         '{status_code}. Response message: {response_message}'
-              .format(deal_id=deal_id, status_code=response.status_code, response_message=response.text))
+        print(
+            f"{text.Red}\n- [Promotion Relay Service] Failure to delete "
+            f"the deal {deal_id}. "
+            f"Response Status: {response.status_code}. "
+            f"Response message: {response.text}"
+        )
         return False
 
 
@@ -1330,11 +1270,16 @@ def request_get_deals_pricing_service(account_id, zone, environment):
     Returns: new json_object
     """
     # Get headers
-    request_headers = get_header_request(zone, True, False, False, False, account_id)
+    request_headers = get_header_request(
+        zone, True, False, False, False, account_id
+    )
 
     # Get base URL
-    request_url = get_microservice_base_url(environment) + '/cart-calculator/v2/accounts/{0}/deals?projection=PLAIN'\
-        .format(account_id)
+    base_url = get_microservice_base_url(environment)
+    request_url = (
+        f"{base_url}'/cart-calculator/v2/"
+        f"accounts/{account_id}/deals?projection=PLAIN"
+    )
 
     # Send request
     response = place_request('GET', request_url, '', request_headers)
@@ -1343,14 +1288,18 @@ def request_get_deals_pricing_service(account_id, zone, environment):
     if response.status_code == 200:
         return json_data['deals']
     elif response.status_code == 404:
-        print(text.Yellow + '\n- [Pricing Conditions Service] The account {account_id} does not have deals associated'
-              .format(account_id=account_id))
+        print(
+            f"{text.Yellow} \n- [Pricing Conditions Service] The account "
+            f"{account_id} does not have deals associated."
+        )
         return 'not_found'
-    else:
-        print(text.Red + '\n- [Pricing Conditions Service] Failure to retrieve deals for account {account_id}. Response'
-                         ' Status: {status_code}. Response message: {response_message}'
-              .format(account_id=account_id, status_code=response.status_code, response_message=response.text))
-        return False
+    print(
+        f"{text.Red}\n- [Pricing Conditions Service] Failure to retrieve "
+        f"deals for account {account_id}. "
+        f"Response Status: {response.status_code}. "
+        f"Response message: {response.text}."
+    )
+    return False
 
 
 def request_delete_deals_pricing_service(account_id, zone, environment, data):
@@ -1362,20 +1311,26 @@ def request_delete_deals_pricing_service(account_id, zone, environment, data):
         environment: e.g., SIT, UAT
         data: deals response payload
     """
-    # Get headers
-    request_headers = get_header_request(zone, True, False, False, False, account_id)
+    request_headers = get_header_request(
+        zone, True, False, False, False, account_id
+    )
 
     for i in range(len(data)):
         deal_id = data[i]['dealId']
 
-        # Get base URL
-        request_url = get_microservice_base_url(environment) + '/cart-calculator/v1/account/{0}/deals/{1}'\
-            .format(account_id, deal_id)
+        base_url = get_microservice_base_url(environment)
+        request_url = (
+            f"{base_url}/cart-calculator/v1/account/"
+            f"{account_id}/deals/{deal_id}"
+        )
 
-        # Send request
         response = place_request('DELETE', request_url, '', request_headers)
         if response.status_code != 200:
-            print(text.Red + '\n- [Pricing Conditions Service] Failure to delete the deal {deal_id}. Response Status: '
-                             '{status_code}. Response message: {response_message}'
-                  .format(deal_id=deal_id, status_code=response.status_code, response_message=response.text))
+            print(
+                f"{text.Red}"
+                "\n- [Pricing Conditions Service] Failure to delete the deal "
+                f"{deal_id}. "
+                f"Response Status: {response.status_code}. "
+                f"Response message: {response.text}"
+            )
             return False
