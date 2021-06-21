@@ -6,6 +6,7 @@ This document describes some Data Mass usage guides.
     - [Getting logs](#getting-logs)
     - [Using Environment Virtualizer](#using-virtualenv)
     - [Contributing to Data Mass](#contributing-to-data-mass)
+    - [[Multivendor] .env File Configuration](#env-file-configuration)
 
 ### [Getting logs](#getting-logs)
 If an error occurs in the application execution, it is necessary to collect the logs for analysis. To do this, follow the instructions below:
@@ -49,3 +50,19 @@ pip install requirements-dev.txt
 pre-commit install
 ```
 You are now able to contribute.
+
+### [[Multivendor] .env File Configuration](#env-file-configuration)
+To perform requests on relay services, Data Mass depends on the M2M JWT Token. In the `.env.example` file there is a vendorId used by the Data Mass team, but if you don't have one, you can use it
+
+#### Pre-condition:
+You must contain the following data: `vendorId`, `client_id` and `client_secret`.
+
+#### Steps:
+1. At the root of the project, open the `.env.example` file and populate the environment variables with their appropriate values;
+2. Rename this same file to `.env`;
+3. Update the mass data:
+```bash
+   python3 -m pip install .
+  ```
+
+**Notes**: For US and CA zones, Data Mass is unable to create data in services that make use of Live Calls, due to the new architecture that interacts with the BEES Connector. In order to have a better usability of the application with these zones, we recommend the use of accounts with certain mocked data.
