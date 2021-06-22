@@ -51,17 +51,18 @@ def check_account_exists_microservice(
         account_id=account_id
     )
 
-    base_url = get_microservice_base_url(environment)
-    request_url = f"{base_url}/accounts?accountId={account_id}"
+    #todo base_url = get_microservice_base_url(environment)
+    base_url = 'http://localhost:8080'
+    request_url = f"{base_url}/account-ms?accountId={account_id}"
 
     if zone == "US":
         settings = get_settings()
+        account_id = get_account_id(account_id, zone, environment)
 
         request_url = (
             f"{base_url}"
-            "/accounts"
-            f"?vendorAccountId={account_id}"
-            f"&vendorId={settings.vendor_id}"
+            "/account-ms"
+            f"?accountId={account_id}"
         )   
 
     response = place_request(
@@ -70,7 +71,7 @@ def check_account_exists_microservice(
         request_body='',
         request_headers=request_headers
     )
-
+    
     json_data = json.loads(response.text)
 
     if response.status_code == 200 and json_data:

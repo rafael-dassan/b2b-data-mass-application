@@ -587,11 +587,12 @@ def request_get_products_by_account_microservice(account_id, zone, environment):
         v1 = True
 
     base_url = get_microservice_base_url(environment, v1)
-    request_url = f"{base_url}/{endpoint}/catalog/items?accountId={account_id}&projection=SMALL&includeDiscount=False&includeAllPromotions=False"
-
+    # request_url = f"{base_url}/{endpoint}/catalog/items?accountId={account_id}&projection=SMALL&includeDiscount=False&includeAllPromotions=False"
+    request_url = f"http://localhost:8080/catalog/items?accountId={account_id}&projection=SMALL&includeDiscount=False&includeAllPromotions=False"
+    print(request_url)
     # Send request
     response = place_request("GET", request_url, "", request_headers)
-
+    print(response.text)
     json_data = loads(response.text)
     if response.status_code == 200 and len(json_data) != 0:
         return json_data
@@ -1167,7 +1168,8 @@ def request_empties_discounts_creation(
             + "/cart-calculation-relay/v2/prices"
         )
     else:
-       request_url = "https://bees-services-sit.eastus2.cloudapp.azure.com/api/price-relay/v2"
+       request_url = get_microservice_base_url(environment, False)
+       + "/price-relay/v2"
 
 
     # get data from Data Mass files
