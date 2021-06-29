@@ -1,16 +1,13 @@
-# Standard library imports
 import json
 import os
 from datetime import datetime, timedelta
-from json import loads
 from random import choice, randint
+from typing import Dict
 
 import pkg_resources
-# Third party imports
 from tabulate import tabulate
 
 from data_mass.classes.text import text
-# Local application imports
 from data_mass.common import (
     convert_json_to_string,
     find_values,
@@ -69,7 +66,7 @@ def request_order_creation(
     # Send request
     response = place_request("POST", request_url, request_body, request_headers)
 
-    json_data = loads(response.text)
+    json_data = json.loads(response.text)
     if response.status_code == 200 and len(json_data) != 0:
         return json_data
     else:
@@ -165,6 +162,67 @@ def create_order_payload(
         )
 
     return convert_json_to_string(json_object)
+
+
+def create_checkout_mobile_payload(
+    order_items: list,
+    delivery_date: str,
+    pay_method: str,
+) -> Dict:
+    """
+    [summary]
+
+    Parameters
+    ----------
+    order_items : list
+        items to get infos for payload.
+    delivery_date : str
+        date to define the
+    pay_method : str
+        [description]
+
+    Returns
+    -------
+    Dict
+        an Dict with payload to checkout
+    """
+    po_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") + "+00:00"
+
+    line_items = order_items.get("lineItems", [])
+    item_list = []
+    for item in line_items:
+        item_values = {
+            "itemCount": item["quantity"],
+            "itemID": item["sku"],
+        }
+        item_list.append(item_values)
+
+    combos_items = order_items.get("combos", [])
+    combos_list = []
+    for combo in combos_items:
+        quantity = int(combo.get("quantity", 2))
+        combo_item = {
+            "comboId": combo.get("comboId", ""),
+            "quantity": choice(range(1, quantity))
+        }
+        combos_list.append(combo_item)
+        
+
+    dict_values = {
+        "deliveryWindowID": delivery_date,
+        "empties": [],
+        "emptiesQuantity": 0,
+        "freeGoodsSelection": [],
+        "note": "DM-ORDER-FREE-GOOD-REDEMPTION",
+        "orderCombos": combos_list,
+        "orderItems": item_list,
+        "paymentMethod": pay_method,
+        "paymentTerm": 0,
+        "poNumber": f"Data-Mass-Order-Mobile {po_date}",
+        "truckUUID": False
+    }
+
+    return json.dumps(dict_values)
 
 
 def create_checkout_payload(
@@ -475,7 +533,7 @@ def check_if_order_exists(account_id, zone, environment, order_id, order_status=
     # Place request
     response = place_request("GET", request_url, "", request_headers)
 
-    json_data = loads(response.text)
+    json_data = json.loads(response.text)
     if response.status_code == 200 and len(json_data) != 0:
         return json_data
     elif response.status_code == 200 and len(json_data) == 0:
@@ -601,7 +659,7 @@ def request_get_order_by_date_updated(zone, environment, account_id, order_prefi
     # Place request
     response = place_request("GET", request_url, "", request_headers)
 
-    json_data = loads(response.text)
+    json_data = json.loads(response.text)
     if response.status_code == 200 and len(json_data) != 0:
         for i in range(len(json_data)):
             if f"{order_prefix}-{zone}" in json_data[i]["orderNumber"]:

@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from random import choice, random, sample
+from random import choice
 
 import click
 import pyperclip
@@ -93,9 +93,7 @@ from data_mass.rewards.rewards import (
     associate_dt_combos_to_poc,
     disenroll_poc_from_program,
     display_program_rules_skus,
-    enroll_poc_to_program,
-    flow_create_order_rewards,
-    get_rewards
+    enroll_poc_to_program
     )
 from data_mass.rewards.rewards_challenges import (
     create_mark_complete_challenge,
@@ -109,6 +107,7 @@ from data_mass.rewards.rewards_programs import (
     remove_program_dt_combos,
     update_program_dt_combos
     )
+from data_mass.rewards.rewards_redeem import create_order_rewards_redeem
 from data_mass.rewards.rewards_transactions import (
     create_points_removal,
     create_redemption,
@@ -226,28 +225,6 @@ def show_menu():
         function()
 
     print_finish_application_menu()
-
-
-def print_finish_application_menu():
-    """
-    Print Finish Menu application and
-    Ask to the User if want to finish
-    """
-    option = input(
-        text.default_text_color 
-        + '\nDo you want to finish the application? y/N: '
-        )
-    while validate_yes_no_option(option.upper()) is False:
-        print(text.Red + '\n- Invalid option')
-        option = input(
-            text.default_text_color 
-            + '\nDo you want to finish the application? y/N: '
-            )
-
-    if option.upper() == 'Y':
-        finish_application()
-    else:
-        show_menu()
 
 
 def deals_information_menu():
@@ -512,61 +489,12 @@ def create_rewards_to_account():
         if not account_id:
             print_finish_application_menu()
 
-        account = check_account_exists_microservice(
+        create_order_rewards_redeem(
             account_id=account_id,
             zone=zone,
             environment=environment
         )
-        if not account:
-            print_finish_application_menu()
-
-        order_status = print_order_status_menu()
-
-        valid_acc = get_rewards(
-            account_id=account_id,
-            zone=zone,
-            environment=environment
-        )
-        if not valid_acc:
-            print_finish_application_menu()
-        
-        option_change_date = validate_yes_no_change_date()
-        if option_change_date.upper() == "Y": 
-            delivery_date = validate_user_entry_date(
-                'Enter Date for Delivery-Date (YYYY-mm-dd)'
-        )
-        else:
-            tomorrow = datetime.today() + timedelta(1)
-            delivery_date = str(datetime.date(tomorrow))
-
-        qty_orders = click.prompt(
-            'Please enter the quantity of orders to create (max. 20)',
-            type=click.IntRange(1, 20)
-        )
-
-        item_list = get_items_associated_account(
-            account_id=account_id,
-            zone=zone,
-            environment=environment,
-            qty_lists=qty_orders
-        )
-        if not item_list:
-            print_finish_application_menu()
-
-        response = flow_create_order_rewards(
-            zone=zone,
-            environment=environment,
-            account=account,
-            item_list=item_list,
-            order_status=order_status,
-            quantity_orders=qty_orders,
-            delivery_date=delivery_date
-            )
-        if response:
-            print(f"{TEXT_GREEN}The result: ")
-            for index, order in enumerate(response, start=1):
-                print(f"{index} - {order}")
-            
+    
         print_finish_application_menu()
 
     # Option to create a TAKE_PHOTO challenge for zone

@@ -486,5 +486,5 @@ def flow_create_order_rewards(
         orders.append(order)
 
     if orders:
-        return [orderid.get("orderNumber", orderid) for orderid in orders]
+        return [orderid.get("orderId", orderid) for orderid in orders]
     return []

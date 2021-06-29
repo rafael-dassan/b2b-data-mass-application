@@ -15,7 +15,7 @@ from data_mass.common import (
     print_input_number,
     update_value_to_json
     )
-from data_mass.orders import create_checkout_payload
+from data_mass.orders import create_checkout_mobile_payload
 from data_mass.product.products import request_get_products_microservice
 from data_mass.simulation import request_order_simulation
 from data_mass.validations import validate_yes_no_option
@@ -465,8 +465,8 @@ def request_order_creation_checkout(
 
     Returns
     -------
-    str
-        If succesfull return Json with orderId, if not a False statement.
+    Dict
+        If successfull return JSON with orderId, if not a Dict statement.
     """
     request_headers = get_header_request(
         zone=zone,
@@ -476,17 +476,15 @@ def request_order_creation_checkout(
         sku_product=False, 
         account_id=account_id
     )
-    base_url = get_microservice_base_url(environment=environment)
-    request_url = f"{base_url}/checkout-service/"
+    request_headers.update({"accountId": account_id})
 
-    request_body = create_checkout_payload(
-        account_id,
-        delivery_center_id,
-        allow_order_cancel,
-        order_items,
-        order_status,
-        delivery_date,
-        pay_method
+    base_url = get_microservice_base_url(environment=environment)
+    request_url = f"{base_url}/checkout-service/mobile"
+
+    request_body = create_checkout_mobile_payload(
+        order_items=order_items,
+        delivery_date=delivery_date,
+        pay_method=pay_method
     )
 
     response = place_request(

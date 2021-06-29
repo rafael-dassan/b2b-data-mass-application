@@ -1,4 +1,3 @@
-# Standard library imports
 import json
 import os
 import sys
@@ -13,13 +12,11 @@ import pkg_resources
 import requests
 from click.termui import prompt
 from dateutil.parser import parse
-# Third party imports
 from jsonpath_rw import Fields, Index
 from jsonpath_rw_ext import parse
 from requests import request
 from tabulate import tabulate
 
-# Local application imports
 from data_mass.classes.text import text
 from data_mass.logger import log_to_file
 from data_mass.validations import (
