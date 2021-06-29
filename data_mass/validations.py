@@ -73,7 +73,7 @@ def validate_accounts(option):
 
 def validate_deals_options(option, zone):
     if zone == "US":
-        options = ['1', '2']
+        options = ['1', '2', '3']
         return option in options     
 
     options = ['1', '2', '3', '4', '5', '6', '7']
@@ -135,7 +135,7 @@ def validate_invoice_payment_method(option):
 
 
 def validate_account_operations_structure(option):
-    options = ['1', '2', '3', '4', '5', '6', '7']
+    options = ['1', '2', '3', '4', '5', '6', '7', '8']
     return option in options
 
 

@@ -9,7 +9,7 @@ from uuid import uuid1
 import pkg_resources
 from tabulate import tabulate
 
-from data_mass.accounts import get_account_id
+from data_mass.accounts import get_multivendor_account_id
 from data_mass.classes.text import text
 from data_mass.common import (
     convert_json_to_string,
@@ -76,7 +76,6 @@ def request_order_simulation(
         get_microservice_base_url(environment, False) + "/cart-service/v2"
     )
 
-
     # Inputs for default payload simulation
     dict_values = {
         "accountId": account_id,
@@ -119,12 +118,12 @@ def request_order_simulation(
 
 
 def request_order_simulation_v2(
-    account_id: int,
-    zone: str,
-    environment: str,
-    items: List[dict],
-    delivery_date: str,
-    has_empties: str = False):
+        account_id: int,
+        zone: str,
+        environment: str,
+        items: List[dict],
+        delivery_date: str,
+        has_empties: str = False):
     """
     Request order simulation v2.
 
@@ -147,7 +146,7 @@ def request_order_simulation_v2(
     request_url = f"{base_url}/cart-service/v3"
 
     dict_values = {
-        "accountId": get_account_id(account_id, zone, environment),
+        "accountId": get_multivendor_account_id(account_id, zone, environment),
         "userId": str(uuid1()),
         "deliveryDate": delivery_date,
         "empties": {

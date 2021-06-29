@@ -32,8 +32,8 @@ def create_all_recommendations(zone, environment, account_id, products):
 
     if quick_order_response and sell_up_response and forgotten_items_response:
         return True
-    else:
-        return False
+
+    return False
 
 
 # Define JSON to submit QUICK ORDER recommendation type

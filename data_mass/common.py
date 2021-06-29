@@ -145,7 +145,7 @@ def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclus
         header['Authorization'] = get_jwt_token()
         header['Accept-Language'] = 'en-us'
     elif use_jwt_auth:
-        header['Authorization'] = generate_hmac_jwt(account_id, jwt_app_claim)
+        header['Authorization'] = generate_hmac_jwt(zone, account_id, jwt_app_claim)
     elif use_root_auth:
         header['Authorization'] = 'Basic cm9vdDpyb290'
     elif use_inclusion_auth:
@@ -937,18 +937,21 @@ def print_invoices(invoice_info: dict, status: list, zone: str = None):
     if zone == "US":
         key = "vendorItemId"
     else:
-        key = "sku"
+        key = "SKU"
 
     for invoice in invoice_info.get("data", []):
+        products = [item.get(key) for item in invoice.get("items")]
+
         if invoice.get("status") in status:
             invoices.append({
                 "Invoice ID": invoice.get("invoiceId"),
+                "Customer Invoice Number": invoice.get("customerInvoiceNumber"),
                 "Product Quantity": invoice.get("itemsQuantity", 0),
                 "Sub Total": invoice.get("subtotal"),
                 "Tax": invoice.get("tax"),
                 "Discount": invoice.get("discount"),
                 "Total": invoice.get("total"),
-                key: [item.get(key) for item in invoice.get("items")]
+                key: ", ".join(products)
             })
 
     if invoices:
@@ -1021,7 +1024,7 @@ def is_string(item):
     return isinstance(item, str)
 
 
-def generate_hmac_jwt(account_id, app_claim=None, expire_months=1):
+def generate_hmac_jwt(zone, account_id, app_claim=None, expire_months=1):
     now = int(t.time())
     expire_in = now + (2592000 * expire_months)
     
@@ -1035,6 +1038,7 @@ def generate_hmac_jwt(account_id, app_claim=None, expire_months=1):
     dict_values = {
         'exp': expire_in,
         'iat': now,
+        'country': zone,
         'accounts': [account_id]
     }
 
@@ -1043,7 +1047,9 @@ def generate_hmac_jwt(account_id, app_claim=None, expire_months=1):
     
     if app_claim is not None:
         set_to_dictionary(json_object, 'app', app_claim)
-
+        if app_claim == 'adminportal':
+            set_to_dictionary(json_object, 'scopes', ["Membership"])
+    
     encoded = jwt.encode(json_object, '20735d31-46b5-411d-af02-47897a01c0c9', algorithm='HS256')
     return f'Bearer {encoded}'
 

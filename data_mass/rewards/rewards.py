@@ -22,7 +22,7 @@ from data_mass.rewards.rewards_utils import print_input_decision, \
     post_combo_relay_account, print_input_combo_qty
 
 APP_B2B = 'b2b'
-APP_ADMIN = 'membership'
+APP_ADMIN = 'adminportal'
 
 # Enroll POC to a zone's reward program
 def enroll_poc_to_program(account_id, zone, environment, account_info):
@@ -62,7 +62,7 @@ def enroll_poc_to_program(account_id, zone, environment, account_info):
 def disenroll_poc_from_program(account_id, zone, environment):
 
     # Define headers
-    request_headers = get_header_request(zone, True, False, False, False, account_id, APP_ADMIN + '-' + zone.lower())
+    request_headers = get_header_request(zone, True, False, False, False, account_id, APP_ADMIN)
 
     # Define url request
     request_url = get_microservice_base_url(environment, False) + '/rewards-service/rewards/' + account_id

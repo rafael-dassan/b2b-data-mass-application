@@ -1,7 +1,7 @@
 import json
-import os
 from typing import Dict
 
+import click
 import pkg_resources
 from tabulate import tabulate
 
@@ -62,7 +62,7 @@ def check_account_exists_microservice(
             "/accounts"
             f"?vendorAccountId={account_id}"
             f"&vendorId={settings.vendor_id}"
-        )   
+        )
 
     response = place_request(
         request_method='GET',
@@ -99,20 +99,20 @@ def check_account_exists_microservice(
         )
 
         return False
-    else:
-        print(
-            f"{text.Red}\n-"
-            f" [Account Service]"
-            f" Failure to retrieve the account {account_id}."
-            f" Response Status: {str(response.status_code)}."
-            f" Response message: {response.text}"
-        )
 
-        return False
+    print(
+        f"{text.Red}\n-"
+        f" [Account Service]"
+        f" Failure to retrieve the account {account_id}."
+        f" Response Status: {str(response.status_code)}."
+        f" Response message: {response.text}"
+    )
+
+    return False
 
 
-def get_account_id(
-        vendorAccountId: str,
+def get_multivendor_account_id(
+        vendor_account_id: str,
         zone: str,
         environment: str) -> str:
     """
@@ -120,7 +120,7 @@ def get_account_id(
 
     Parameters
     ----------
-    vendorAccountId : str
+    vendor_account_id : str
     zone : str
     environment : str
 
@@ -136,7 +136,7 @@ def get_account_id(
     request_url = (
         f"{base_url}"
         "/accounts/"
-        f"?vendorAccountId={vendorAccountId}"
+        f"?vendorAccountId={vendor_account_id}"
         f"&vendorId={settings.vendor_id}"
     )
 
@@ -154,11 +154,12 @@ def get_account_id(
         account_id = account.get("accountId", None)
 
         return account_id
-    elif response.status_code == 200 and not json_data:
+
+    if response.status_code == 200 and not json_data:
         print(
             f"{text.Red}\n- "
             f"[Account Service] "
-            f"The account {vendorAccountId} does not exist"
+            f"The account {vendor_account_id} does not exist"
         )
 
         return None
@@ -166,7 +167,7 @@ def get_account_id(
     print(
         f"{text.Red}\n-"
         f" [Account Service] "
-        f"Failure to retrieve the account {vendorAccountId}.\n"
+        f"Failure to retrieve the account {vendor_account_id}.\n"
         f"Response Status: {response.status_code}.\n"
         f"Response message: {response.text}.\n"
     )
@@ -184,6 +185,7 @@ def create_account_ms(
         delivery_address: dict,
         account_status: str = 'ACTIVE',
         enable_empties_loan: bool = False,
+        eligible_rewards: bool = True,
         **kwargs):
     """
     Create account on the microservice.
@@ -199,6 +201,7 @@ def create_account_ms(
     delivery_address : dict
     account_status : str
     enable_empties_loan : bool
+    eligible_rewards : bool
 
     Returns
     -------
@@ -262,6 +265,18 @@ def create_account_ms(
     else:
         dict_values.update({"minimumOrder": minimum_order})
 
+    # If the user chooses to make an account eligible for rewards program,
+    # we will include the necessary information to match with a Data Mass available one
+    # If not, we associate random information that will not match with any available program
+    if eligible_rewards:
+        set_to_dictionary(dict_values, 'potential', 'DM-POTENT')
+        set_to_dictionary(dict_values, 'segment', 'DM-SEG')
+        set_to_dictionary(dict_values, 'subSegment', 'DM-SUBSEG')
+    else:
+        set_to_dictionary(dict_values, 'potential', 'POTENT')
+        set_to_dictionary(dict_values, 'segment', 'SEG')
+        set_to_dictionary(dict_values, 'subSegment', 'SUBSEG')
+
     request_headers = get_header_request(zone, False, True, False, False)
     request_url = get_microservice_base_url(environment) + '/account-relay/'
 
@@ -282,7 +297,7 @@ def create_account_ms(
         f"{text.Red}"
         f"\n- [Account Relay Service]"
         f" Failure to create the account {account_id}."
-        f" Response status {str(response.status_code)}."
+        f" Response status {str(response.status_code)}"
         f" Response message: {response.text}"
     )
 
@@ -460,12 +475,12 @@ def get_delivery_cost_values(option: str) -> Dict[str, str]:
 
     if option.upper() == "Y":
         min_value = input(
-            f"{text.default_text_color} "
+            f"{text.default_text_color}"
             f"Define the minimum order value to not pay any delivery fee: "
         )
 
         tax_value = input(
-            f"{text.default_text_color} "
+            f"{text.default_text_color}"
             f"Define the delivery fee value: "
         )
 
@@ -477,14 +492,16 @@ def get_delivery_cost_values(option: str) -> Dict[str, str]:
     return delivery_cost_values
 
 
-def get_credit_info():
+def get_credit_info() -> Dict:
     """
-    Prompts to the user for credit information.
+    Prompts to the user for credit information,
+    to create a dict with types of credit and the values.
 
     Returns
     ------
     dict
-        The credit info.
+        The credit ammount for "available", "balance", "consumption" and \
+        "overdue".
     """
     credit = input(
         f"{text.default_text_color}"
@@ -495,12 +512,52 @@ def get_credit_info():
         "Desired credit balance (Default 15000): "
     )
 
-    credit_info = {
-        'credit': credit,
-        'balance': balance
+    credit_types = {
+        "available": 5000,
+        "balance": 15000,
+        "consumption": 5000,
+        "overdue": 15000,
     }
 
-    return credit_info
+    for key, value in credit_types.items():
+        updated = get_user_prompt_credit_info(key, value)
+        credit_types.update(updated)
+
+    total = sum(credit_types.values())
+    credit_types.update({"total": total})
+
+    return credit_types
+
+
+def get_user_prompt_credit_info(credit_type: str , value: int) -> Dict:
+    """
+    Ask user two questions, one y_n answer and another to input the desired
+    value to credit type.
+
+    Parameters
+    ----------
+    credit_type : str
+        type of credit.
+    value : int
+        ammount of credit.
+
+    Returns
+    -------
+    Dict
+        key with defalt or the new value credit type.
+    """
+    user_choice = click.prompt(
+        f"{text.LightYellow}"
+        f"Would like to insert value for {credit_type}? (Default {value})",
+        type=click.Choice(["y", "n"]),
+    )
+    if user_choice == "y":
+        value = click.prompt(
+            f"{text.default_text_color}"
+            f"Desired credit {credit_type}",
+            type=int
+        )
+    return {credit_type: value}
 
 
 def get_minimum_order_list(minimum_order_values: dict):

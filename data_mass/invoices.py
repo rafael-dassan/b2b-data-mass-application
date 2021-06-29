@@ -7,7 +7,7 @@ from urllib.parse import urlencode
 
 import pkg_resources
 
-from data_mass.accounts import get_account_id
+from data_mass.accounts import get_multivendor_account_id
 from data_mass.classes.text import text
 # Local application imports
 from data_mass.common import (
@@ -21,20 +21,13 @@ from data_mass.common import (
 )
 from data_mass.config import get_settings
 
-logger = logging.getLogger(__name__)
 
 def create_invoice_request(zone, environment, order_id, status, order_details, order_items, invoice_id=None):
     # get data from Data Mass files
-    if zone == 'US':
-        content: bytes = pkg_resources.resource_string(
-            "data_mass",
-            "data/create_invoice_payload_us.json"
-        )
-    else:
-        content: bytes = pkg_resources.resource_string(
-            "data_mass",
-            "data/create_invoice_payload.json"
-        )
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_invoice_payload.json"
+    )
     json_data = json.loads(content.decode("utf-8"))
 
     if invoice_id is None:
@@ -47,39 +40,22 @@ def create_invoice_request(zone, environment, order_id, status, order_details, o
     else:
         placement_date = order_placement_date.split('+')[0] + 'Z'
 
-    vendor_item_id = "DM-VENDOR_SKU_001"
-
-    for i in range(len(order_items)):
-        order_items[i].update({"vendorItemId": vendor_item_id})
-
-    account_id = order_details.get('accountId')
-
-    vendor_values = {
-        'accountId': account_id,
-        'id': "VENDOR-12345",
-        'invoiceId': invoice_id
-    }
-
     dict_values = {
-        'accountId': account_id,
+        'accountId': order_details.get('accountId'),
         'channel': order_details.get('channel'),
-        'invoiceId': invoice_id,
-        'customerInvoiceNumber': invoice_id,
-        'accountId': account_id,
         'date': placement_date,
         'interestAmount': order_details.get('interestAmount'),
-        'discount': abs(order_details.get('discount')),
-        'vendorItemId': vendor_item_id,
         'orderDate': placement_date,
         'orderId': order_id,
         'subtotal': order_details.get('subtotal'),
+        'invoiceId': invoice_id,
         'status': status,
         'tax': order_details.get('tax'),
         'total': order_details.get('total'),
         'poNumber': order_id,
         'paymentType': order_details.get('paymentMethod'),
-        'itemsQuantity': order_details.get('itemsQuantity'),
-        'vendor': vendor_values
+        'discount': abs(order_details.get('discount')),
+        'itemsQuantity': order_details.get('itemsQuantity')
     }
 
     for key in dict_values.keys():
@@ -89,8 +65,6 @@ def create_invoice_request(zone, environment, order_id, status, order_details, o
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/invoices-relay'
-    if zone == "US":
-        request_url += "/v2"
 
     # Get headers
     request_headers = get_header_request(zone, False, False, True, False)
@@ -111,10 +85,9 @@ def create_invoice_request(zone, environment, order_id, status, order_details, o
         return False
 
 
-def create_invoice_v2(
+def create_invoice_multivendor(
         zone: str,
         environment: str,
-        account_id: str,
         order_id: str,
         status: str,
         order_details: dict) -> Optional[dict]:
@@ -143,7 +116,7 @@ def create_invoice_v2(
     order_placement_date = order_details.get('placementDate')
     placement_date = order_placement_date.split('+')[0] + 'Z'
     items = []
-    
+
     for item in order_details.get("items", []):
         items.append({
             "discount": item.get("discount", 0.0),
@@ -199,6 +172,7 @@ def create_invoice_v2(
     )
 
     return False
+
 
 def update_invoice_request(zone, environment, account_id, invoice_id, payment_method, status):
     # get data from Data Mass files
@@ -267,7 +241,7 @@ def check_if_invoice_exists(
     else:
         version = "v1"
 
-    query = {"customerInvoiceNumber": invoice_id}
+    query = {"invoiceId": invoice_id}
     base_url = get_microservice_base_url(environment)
     request_url = f"{base_url}/invoices-service/{version}?{urlencode(query)}"
 
@@ -319,7 +293,7 @@ def get_invoices(
 
     if zone == "US":
         version = "v2"
-        account_id = get_account_id(account_id, zone, environment)
+        account_id = get_multivendor_account_id(account_id, zone, environment)
     else:
         version = "v1"
 

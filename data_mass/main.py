@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from distutils.util import strtobool
-from random import random, sample
+from random import choice, random, sample
 
 import click
 import pyperclip
@@ -28,6 +28,7 @@ from data_mass.menus.account_menu import (
     print_account_operations_menu,
     print_account_status_menu,
     print_alternative_delivery_date_menu,
+    print_eligible_rewards_menu,
     print_get_account_operations_menu,
     print_include_delivery_cost_menu,
     print_minimum_order_menu,
@@ -977,6 +978,7 @@ def deals_menu():
             return {
         '1': lambda: flow_create_discount(zone, environment, account_id, sku),
         '2': lambda: flow_create_free_good(zone, environment, account_id, sku_list),
+        '3': lambda: flow_create_mix_match(zone, environment, account_id, sku_list)
     }.get(operation, lambda: None)()
 
     return {
@@ -994,7 +996,15 @@ def flow_create_discount(zone, environment, account_id, sku):
     minimum_quantity = print_minimum_quantity_menu()
     discount_value = print_discount_percentage_menu()
 
-    response = create_discount(account_id, sku, zone, environment, discount_value, minimum_quantity)
+    response = create_discount(
+        account_id=account_id,
+        sku=sku,
+        zone=zone,
+        environment=environment,
+        discount_value=discount_value,
+        minimum_quantity=minimum_quantity
+    )
+
     if response:
         print(text.Green + f'\n- Deal {response} created successfully')
     else:
@@ -1049,6 +1059,28 @@ def flow_create_stepped_free_good(zone, environment, account_id, sku):
     ranges = print_stepped_free_good_ranges_menu()
 
     response = create_stepped_free_good(account_id, sku, zone, environment, ranges)
+    if response:
+        print(text.Green + f'\n- Deal {response} created successfully')
+    else:
+        print_finish_application_menu()
+
+
+def flow_create_mix_match(zone, environment, vendor_account_id, sku_list):
+    max_quantity = input(
+        f"{text.default_text_color}"
+        "Maximum amount of items that can receive discounts: "
+    )
+    quantity = input(f"{text.default_text_color}Promotion quantity limit: ")
+
+    response = create_mix_match(
+        vendor_account_id=vendor_account_id,
+        zone=zone,
+        environment=environment,
+        vendor_item_ids=sku_list,
+        max_quantity=max_quantity,
+        quantity=quantity
+    )
+
     if response:
         print(text.Green + f'\n- Deal {response} created successfully')
     else:
@@ -1191,6 +1223,7 @@ def flow_associate_products_to_account(zone, environment):
 
     if not account:
         print_finish_application_menu()
+
     delivery_center_id = account[0]['deliveryCenterId']
 
     proceed = 'N'
@@ -1358,14 +1391,14 @@ def flow_input_recommended_products_to_account(zone, environment):
 
 
 def flow_input_products_quick_order(zone, environment, account_id, items):
-    if 'success' == request_quick_order(zone, environment, account_id, items):
+    if request_quick_order(zone, environment, account_id, items):
         print(text.Green + '\n- Quick order items added successfully')
     else:
         print_finish_application_menu()
 
 
 def flow_input_products_up_sell(zone, environment, account_id, items):
-    if 'success' == request_sell_up(zone, environment, account_id, items):
+    if request_sell_up(zone, environment, account_id, items):
         print(text.Green + '\n- Up sell items added successfully')
         print(text.Yellow + '- Up sell trigger: Add 3 of any products to the cart / Cart viewed with a product inside')
     else:
@@ -1373,14 +1406,14 @@ def flow_input_products_up_sell(zone, environment, account_id, items):
 
 
 def flow_input_products_forgotten_items(zone, environment, account_id, items):
-    if 'success' == request_forgotten_items(zone, environment, account_id, items):
+    if request_forgotten_items(zone, environment, account_id, items):
         print(text.Green + '\n- Forgotten items added successfully')
     else:
         print_finish_application_menu()
 
 
 def flow_input_all_recommendation_use_cases(zone, environment, account_id, items):
-    if 'success' == create_all_recommendations(zone, environment, account_id, items):
+    if create_all_recommendations(zone, environment, account_id, items):
         print(text.Green + '\n- All recommendation use cases were added (quick order, up sell and forgotten items)')
         print(text.Yellow + '- Up sell trigger: Add 3 of any products to the cart / Cart viewed with a product inside')
     else:
@@ -1388,7 +1421,7 @@ def flow_input_all_recommendation_use_cases(zone, environment, account_id, items
 
 
 def flow_input_combo_quick_order(zone, environment, account_id):
-    if 'success' == input_combos_quick_order(zone, environment, account_id):
+    if input_combos_quick_order(zone, environment, account_id):
         print(text.Green + '\n- Combos for quick order added successfully')
     else:
         print_finish_application_menu()
@@ -1451,7 +1484,8 @@ def account_menu():
         '4': lambda: flow_update_account_name(zone, environment, account_id),
         '5': lambda: flow_update_account_status(zone, environment, account_id),
         '6': lambda: flow_update_account_minimum_order(zone, environment, account_id),
-        '7': lambda: flow_update_account_payment_method(zone, environment, account_id)
+        '7': lambda: flow_update_account_payment_method(zone, environment, account_id),
+        '8': lambda: flow_update_account_rewards_eligibility(zone, environment, account_id)
     }.get(operation, lambda: None)()
 
 
@@ -1462,6 +1496,7 @@ def flow_create_account(zone, environment, account_id):
     account_status = print_account_status_menu()
     option_include_minimum_order = print_minimum_order_menu()
     has_po_number = None
+    account_eligible_rewards = print_eligible_rewards_menu()
 
     if option_include_minimum_order == 'Y':
         minimum_order = get_minimum_order_info()
@@ -1493,9 +1528,22 @@ def flow_create_account(zone, environment, account_id):
         delivery_address=delivery_address,
         account_status=account_status,
         enable_empties_loan=enable_empties_loan,
+        account_eligible_rewards=False,
         kwargs={
             "hasPONumberRequirement": has_po_number
         }
+    )
+    create_account_response = create_account_ms(
+        account_id,
+        name,
+        payment_method,
+        minimum_order,
+        zone,
+        environment,
+        delivery_address,
+        account_status,
+        enable_empties_loan,
+        account_eligible_rewards
     )
 
     if create_account_response:
@@ -1562,15 +1610,29 @@ def flow_create_credit_information(zone, environment, account_id):
     account = check_account_exists_microservice(account_id, zone, environment)
     if not account:
         print_finish_application_menu()
+    
+    payment_term = choice(account[0].get("paymentMethods", [None]))
 
     # Get credit information
     credit_info = get_credit_info()
 
     # Add credit to account
-    credit = add_credit_to_account_microservice(account_id, zone, environment, credit_info.get('credit'),
-                                                credit_info.get('balance'))
+    credit = add_credit_to_account_microservice(
+        account_id=account_id,
+        zone=zone,
+        environment=environment,
+        credit=credit_info.get("available", 0),
+        balance=credit_info.get("balance", 0),
+        consumption=credit_info.get("consumption", 0),
+        payment_term=payment_term,
+        overdue=credit_info.get("overdue", 0),
+        total=credit_info.get("total", 0)
+    )
     if credit:
-        print(text.Green + f'\n- Credit added successfully for the account {account_id}')
+        print(
+            f"{text.Green}"
+            f"- Credit added successfully for the account {account_id}"
+        )
     else:
         print_finish_application_menu()
 
@@ -1582,18 +1644,13 @@ def flow_update_account_name(zone, environment, account_id):
         print_finish_application_menu()
     account_data = account[0]
 
+    if account_data['segment'] == 'DM-SEG':
+        eligible_rewards = True
+    else:
+        eligible_rewards = False
+
     name = print_account_name_menu()
-
     minimum_order = get_minimum_order_list(account_data['minimumOrder'])
-    
-    if zone == "US":
-        has_po_number = input("Has PO Number? y/N: ")
-
-        while (has_po_number.upper() in ["Y", "N"]) is False:
-            print(text.Red + "\n- Invalid option")
-            has_po_number = input(f"\n{text.default_text_color}Has PO Number? y/N: ")
-
-        has_po_number = bool(strtobool(has_po_number))
 
     create_account_response = create_account_ms(
         account_id=account_id,
@@ -1605,9 +1662,7 @@ def flow_update_account_name(zone, environment, account_id):
         delivery_address=account_data['deliveryAddress'],
         account_status=account_data['status'],
         enable_empties_loan=account_data['hasEmptiesLoan'],
-        kwargs={
-            "hasPONumberRequirement": has_po_number
-        }
+        eligible_rewards=False
     )
 
     if create_account_response:
@@ -1624,6 +1679,11 @@ def flow_update_account_status(zone, environment, account_id):
         print_finish_application_menu()
     account_data = account[0]
 
+    if account_data['segment'] == 'DM-SEG':
+        eligible_rewards = True
+    else:
+        eligible_rewards = False
+
     account_status = print_account_status_menu()
 
     minimum_order = get_minimum_order_list(account_data['minimumOrder'])
@@ -1631,7 +1691,7 @@ def flow_update_account_status(zone, environment, account_id):
     create_account_response = create_account_ms(account_id, account_data['name'], account_data['paymentMethods'],
                                                 minimum_order, zone, environment,
                                                 account_data['deliveryAddress'], account_status,
-                                                account_data['hasEmptiesLoan'])
+                                                account_data['hasEmptiesLoan'], eligible_rewards)
 
     if create_account_response:
         print(text.Green + '\n- Account status updated to {account_status} for the account {account_id}'
@@ -1647,6 +1707,11 @@ def flow_update_account_minimum_order(zone, environment, account_id):
         print_finish_application_menu()
     account_data = account[0]
 
+    if account_data['segment'] == 'DM-SEG':
+        eligible_rewards = True
+    else:
+        eligible_rewards = False
+
     option_include_minimum_order = print_minimum_order_menu()
 
     if option_include_minimum_order == 'Y':
@@ -1656,14 +1721,15 @@ def flow_update_account_minimum_order(zone, environment, account_id):
 
     create_account_response = create_account_ms(
         account_id=account_id,
-        name=account_data['name'],
-        payment_method=account_data['paymentMethods'],
+        name=account_data.get('name'),
+        payment_method=account_data.get('paymentMethods'),
         minimum_order=minimum_order,
         zone=zone,
         environment=environment,
-        delivery_address=account_data['deliveryAddress'],
-        account_status=account_data['status'],
-        enable_empties_loan=account_data['hasEmptiesLoan']
+        delivery_address=account_data.get('deliveryAddress'),
+        account_status=account_data.get('status'),
+        enable_empties_loan=account_data.get('hasEmptiesLoan'),
+        eligible_rewards=eligible_rewards
     )
 
     if create_account_response:
@@ -1680,6 +1746,11 @@ def flow_update_account_payment_method(zone, environment, account_id):
         print_finish_application_menu()
     account_data = account[0]
 
+    if account_data['segment'] == 'DM-SEG':
+        eligible_rewards = True
+    else:
+        eligible_rewards = False
+
     payment_method = print_payment_method_menu(zone)
 
     minimum_order = get_minimum_order_list(account_data['minimumOrder'])
@@ -1687,10 +1758,38 @@ def flow_update_account_payment_method(zone, environment, account_id):
     create_account_response = create_account_ms(account_id, account_data['name'], payment_method,
                                                 minimum_order, zone, environment,
                                                 account_data['deliveryAddress'], account_data['status'],
-                                                account_data['hasEmptiesLoan'])
+                                                account_data['hasEmptiesLoan'], eligible_rewards)
 
     if create_account_response:
         print(text.Green + '\n- Payment method updated for the account {account_id}'
+              .format(account_id=account_id))
+    else:
+        print_finish_application_menu()
+
+
+def flow_update_account_rewards_eligibility(zone, environment, account_id):
+    # Call check account exists function
+    account = check_account_exists_microservice(account_id, zone, environment)
+
+    if zone in ["US"]:
+        print(f"\n{text.Red}Option not enabled for {zone}.")
+        print_finish_application_menu()
+
+    if not account:
+        print_finish_application_menu()
+    account_data = account[0]
+
+    account_eligible_rewards = print_eligible_rewards_menu()
+
+    minimum_order = get_minimum_order_list(account_data['minimumOrder'])
+
+    create_account_response = create_account_ms(account_id, account_data['name'], account_data['paymentMethods'],
+                                                minimum_order, zone, environment,
+                                                account_data['deliveryAddress'], account_data['status'],
+                                                account_data['hasEmptiesLoan'], account_eligible_rewards)
+
+    if create_account_response:
+        print(text.Green + '\n- Rewards eligibility updated for the account {account_id}'
               .format(account_id=account_id))
     else:
         print_finish_application_menu()
@@ -1814,12 +1913,12 @@ def flow_create_invoice(zone, environment, account_id):
     invoice_status = print_invoice_status_menu()
 
     if zone == "US":
-        invoice_response = create_invoice_v2(
-            zone,
-            environment,
-            order_id,
-            invoice_status,
-            order_data
+        invoice_response = create_invoice_multivendor(
+            zone=zone,
+            environment=environment,
+            order_id=order_id,
+            status=invoice_status,
+            order_details=order_data
         )
     else:
         invoice_response = create_invoice_request(zone, environment, order_id, invoice_status, order_details, order_items)

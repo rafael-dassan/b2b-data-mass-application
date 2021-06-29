@@ -3,22 +3,17 @@
     "deals": [
         {
             "dealId": "string",
-            "externalId": "string",
+            "promotionId": "string",
             "accumulationType": null,
             "priority": 1,
             "budget": null,
             "quantityLimit": 0,
             "availability": null,
             "conditions": {
-                "simulationDateTime": [
-                    {
-                        "startDate": "string",
-                        "endDate": "string",
-                        "startTime": "00:00:00",
-                        "endTime": "23:59:59"
-                    }
-                ]
-            },
+                "simulationDateTime": {
+                        "startDateTime": "string",
+                        "endDateTime": "string"
+                },
             "output": {
                 "freeGoods": {
                     "partial": "string",

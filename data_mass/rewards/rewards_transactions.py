@@ -11,7 +11,7 @@ from data_mass.common import get_header_request, \
 from data_mass.classes.text import text
 from data_mass.rewards.rewards_utils import get_rewards_combos_by_account
 
-APP_ADMIN = 'membership'
+APP_ADMIN = 'adminportal'
 
 # Create REDEMPTION transaction for an account
 def create_redemption(account_id, zone, environment):
@@ -81,7 +81,7 @@ def create_points_removal(account_id, zone, environment):
 
 def post_rewards_offer(account_id, zone, environment, request_body):
     # Define headers
-    request_headers = get_header_request(zone, True, False, False, False, account_id, APP_ADMIN + '-' + zone.lower())
+    request_headers = get_header_request(zone, True, False, False, False, account_id, APP_ADMIN)
 
     # Define url request
     request_url = get_microservice_base_url(environment, False) + '/rewards-service/rewards/' + account_id + '/transaction/rewards-offer'
@@ -103,7 +103,7 @@ def post_rewards_offer(account_id, zone, environment, request_body):
 
 def post_redemption(account_id, zone, environment, request_body):
     # Define headers
-    request_headers = get_header_request(zone, True, False, False, False, account_id, APP_ADMIN + '-' + zone.lower())
+    request_headers = get_header_request(zone, True, False, False, False, account_id, APP_ADMIN)
 
     # Define url request
     request_url = get_microservice_base_url(environment, False) + '/rewards-service/rewards/' + account_id + '/transaction/redemption'
@@ -125,7 +125,7 @@ def post_redemption(account_id, zone, environment, request_body):
 
 def post_points_removal(account_id, zone, environment, request_body):
     # Define headers
-    request_headers = get_header_request(zone, True, False, False, False, account_id, APP_ADMIN + '-' + zone.lower())
+    request_headers = get_header_request(zone, True, False, False, False, account_id, APP_ADMIN)
 
     # Define url request
     request_url = get_microservice_base_url(environment, False) + '/rewards-service/rewards/' + account_id + '/transaction/points-removal'
