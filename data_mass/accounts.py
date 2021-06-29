@@ -21,8 +21,6 @@ from data_mass.menus.account_menu import (
     print_minimum_order_value_menu
 )
 
-COUNTRY_SEGMENT_VERIFICATION = ["PY"]
-
 
 def check_account_exists_microservice(
         account_id: str,
@@ -73,13 +71,11 @@ def check_account_exists_microservice(
 
     json_data = json.loads(response.text)
 
-    if response.status_code == 200 and json_data:
-        if (
-            zone in COUNTRY_SEGMENT_VERIFICATION
-            and not (json_data[0]["segment"] == 'DM-SEG'
-                and json_data[0]["subSegment"] == 'DM-SUBSEG'
-            )
-        ):
+    if response.status_code == 200 and len(json_data) != 0:
+        verification_list = ['DM-SUBSEG', 'DM-SEG', 'DM-SUBSEG_NO_REWARDS', 'DM-SEG_NO_REWARDS']
+        if (zone == "PY" and json_data[0]['segment'] not in verification_list
+        and json_data[0]['subSegment'] not in verification_list):
+
             print(
                 f"{text.Red}\n-"
                 f" [Account Service]"
@@ -273,9 +269,9 @@ def create_account_ms(
         set_to_dictionary(dict_values, 'segment', 'DM-SEG')
         set_to_dictionary(dict_values, 'subSegment', 'DM-SUBSEG')
     else:
-        set_to_dictionary(dict_values, 'potential', 'POTENT')
-        set_to_dictionary(dict_values, 'segment', 'SEG')
-        set_to_dictionary(dict_values, 'subSegment', 'SUBSEG')
+        set_to_dictionary(dict_values, 'potential', 'DM-POTENT_NO_REWARDS')
+        set_to_dictionary(dict_values, 'segment', 'DM-SEG_NO_REWARDS')
+        set_to_dictionary(dict_values, 'subSegment', 'DM-SUBSEG_NO_REWARDS')
 
     request_headers = get_header_request(zone, False, True, False, False)
     request_url = get_microservice_base_url(environment) + '/account-relay/'
