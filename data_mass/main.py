@@ -119,7 +119,7 @@ from data_mass.rewards.rewards_transactions import (
 from data_mass.simulation import (
     process_simulation_microservice,
     request_order_simulation,
-    request_order_simulation_v2
+    request_order_simulation_v3
 )
 from data_mass.supplier.attribute import (
     check_if_attribute_exist,
@@ -246,7 +246,11 @@ def deals_information_menu():
 
     deals = request_get_deals_promo_fusion_service(zone, environment, abi_id)
     if deals:
-        display_deals_information_promo_fusion(abi_id, deals)
+        if zone == "US":
+            display_deals_information_multivendor(abi_id, deals.get("deals"))
+        else:
+            display_deals_information_promo_fusion(abi_id, deals)
+
     else:
         print_finish_application_menu()
 
@@ -656,7 +660,7 @@ def flow_create_order(
 
         has_empties = bool(strtobool(has_empties))
 
-        order_items = request_order_simulation_v2(
+        order_items = request_order_simulation_v3(
             account_id=account_id,
             zone=zone,
             environment=environment,
@@ -1181,6 +1185,8 @@ def product_menu():
     operation = print_product_operations_menu(zone)
 
     if zone == "US":
+        resources_warning()
+
         return {
             '1': lambda: flow_create_product(zone, environment),
             '2': lambda: flow_associate_products_to_account(zone, environment),
@@ -1908,7 +1914,6 @@ def flow_create_invoice(zone, environment, account_id):
         print_finish_application_menu()
 
     order_data = response[0]
-    order_details = get_order_details(order_data)
     order_items = get_order_items(order_data, zone)
     invoice_status = print_invoice_status_menu()
 
@@ -1921,6 +1926,7 @@ def flow_create_invoice(zone, environment, account_id):
             order_details=order_data
         )
     else:
+        order_details = get_order_details(order_data)
         invoice_response = create_invoice_request(zone, environment, order_id, invoice_status, order_details, order_items)
 
     if invoice_response:

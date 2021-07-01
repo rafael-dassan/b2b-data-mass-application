@@ -324,14 +324,15 @@ def get_delivery_center_inventory(
 
     if response.status_code == 200:
         return json_data
-    elif response.status_code == 404:
-        return None
-    else:
-        print((
-            f'\n{text.Red}'
-            '- [Inventory Service] Failure to retrieve inventory information. '
-            f'Response Status: {response.status_code}. '
-            f'Response message: {response.text}'
-        ))
 
-        return {}
+    if response.status_code == 404:
+        return None
+
+    print(
+        f'\n{text.Red}'
+        '- [Inventory Service] Failure to retrieve inventory information. '
+        f'Response Status: {response.status_code}. '
+        f'Response message: {response.text}'
+    )
+
+    return None

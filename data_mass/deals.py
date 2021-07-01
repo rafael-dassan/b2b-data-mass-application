@@ -1277,27 +1277,27 @@ def request_get_deals_promo_fusion_service(
     str
         New json_object.
     """
-    # Get base URL
-    if zone == "US":
-        settings = get_settings()
-        base_url = get_microservice_base_url(environment, False)
-
-        query = {
-            "vendorId": settings.vendor_id,
-            "vendorAccountId": account_id
-        }
-
-        request_url = f"{base_url}/promotion-service/promotions?{urlencode(query)}"
-    else:
-        base_url = get_microservice_base_url(environment)
-        request_url = f"{base_url}/promo-fusion-service/{account_id}"
-
     # Define headers
     request_headers = get_header_request(
         zone=zone.lower(),
         use_jwt_auth=True,
         account_id=account_id
     )
+
+    # Get base URL
+    if zone == "US":
+        settings = get_settings()
+        base_url = get_microservice_base_url(environment, False)
+
+        request_headers.update({
+            "vendorId": settings.vendor_id,
+            "vendorAccountId": account_id
+        })
+
+        request_url = f"{base_url}/deal-service/v2"
+    else:
+        base_url = get_microservice_base_url(environment)
+        request_url = f"{base_url}/promo-fusion-service/{account_id}"
 
     # Send request
     response = place_request('GET', request_url, '', request_headers)
@@ -1382,6 +1382,53 @@ def display_deals_information_promotion(deals):
 
     print(text.default_text_color + '\nPromotion Information')
     print(tabulate(promotion_information, headers='keys', tablefmt='grid'))
+
+
+def display_deals_information_multivendor(
+        vendor_account_id: str,
+        deals: list):
+    """
+    Display, using tabulate, deals and combos.
+
+    Parameters
+    ----------
+    vendor_account_id : str
+    deals : list
+    """
+    response = []
+
+    if deals:
+        for deal in deals:
+            output = list(deal.get("output", {}))
+            deal_type = output[0] if output else None
+            items = []
+
+            if deal_type == "freeGoods":
+                deal_items, = deal.get("output", {}).get(deal_type,{}).get("items", [])
+                
+                for item in deal_items.get("vendorItems", {}):
+                    items.append(item.get("vendorItemId"))
+            elif deal_type == "multipleLineItemDiscount":
+                deal_items = deal.get("output", {}).get(deal_type,{}).get("items", [])
+                
+                for item in deal_items:
+                    items.append(item.get("vendorItemId"))
+            else:
+                items = deal.get("output", {}).get(deal_type, {}).get("vendorItemIds")
+
+            response.append({
+                "Id": deal.get("vendorDealId"),
+                "Type": deal_type,
+                "Items": ", ".join(items) if isinstance(items, list) else items
+            })
+
+        print(tabulate(response, headers='keys', tablefmt='grid'))
+    else:
+        print(
+            f"{text.Yellow}\n"
+            "- There is no promotion available "
+            f"for the account {vendor_account_id}"
+        )
 
 
 def display_deals_information_promo_fusion(account_id, deals):

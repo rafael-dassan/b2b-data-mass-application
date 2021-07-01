@@ -113,17 +113,28 @@ def create_invoice_multivendor(
     settings = get_settings()
 
     invoice_id = f"DM-{str(randint(1, 100000))}"
-    order_placement_date = order_details.get('placementDate')
-    placement_date = order_placement_date.split('+')[0] + 'Z'
+    order_placement_date = order_details.get("placementDate")
+    placement_date = order_placement_date.split('+')[0]
     items = []
+    
+    if "Z" not in placement_date:
+        placement_date += "Z"
 
     for item in order_details.get("items", []):
+        # For some reason, `discount` and `tax` are not required when \
+        # creating an new Order, but it's required when creating an Invoice.
+        # Since dict's `get` method does not return a default value when a key's \
+        # value is `None` (only when the key does not exists), and `json.loads()` \
+        # turns `null` into `None`, we should change it manually.
+        discount = item.get("discount")
+        tax = item.get("tax")
+
         items.append({
-            "discount": item.get("discount", 0.0),
+            "discount": 0.0 if discount is None else discount,
             "price": item.get("price"),
             "quantity": item.get("quantity"),
             "subtotal": item.get("subtotal"),
-            "tax": item.get("tax"),
+            "tax": 0 if tax is None else tax,
             "total": item.get("total"),
             "vendorItemId": item.get("vendorItemId")
         })
@@ -133,7 +144,7 @@ def create_invoice_multivendor(
         "customerInvoiceNumber": invoice_id,
         "date": placement_date,
         "deleted": False,
-        "discount": abs(order_details.get("discount")),
+        "discount": abs(order_details.get("discount", 0)),
         "dueDate": placement_date,
         "fileAvailable": False,
         "items": items,
@@ -145,7 +156,7 @@ def create_invoice_multivendor(
         "poNumber": order_id,
         "status": status,
         "subtotal": order_details.get("subtotal"),
-        "tax": order_details.get("tax"),
+        "tax": order_details.get("tax", 0),
         "total": order_details.get("total"),
         "vendor": {
             "id": settings.vendor_id,

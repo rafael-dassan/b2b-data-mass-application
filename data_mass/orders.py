@@ -22,18 +22,19 @@ from data_mass.common import (
     validate_user_entry_date,
     validate_yes_no_change_date
 )
+from data_mass.config import get_settings
 
 
 def request_order_creation(
-    account_id: str,
-    delivery_center_id: str,
-    zone: str,
-    environment: str, 
-    allow_order_cancel: str, 
-    order_items: list, 
-    order_status: str,
-    delivery_date: str,
-    items = None) -> Optional[Any]:
+        account_id: str,
+        delivery_center_id: str,
+        zone: str,
+        environment: str,
+        allow_order_cancel: str,
+        order_items: list,
+        order_status: str,
+        delivery_date: str,
+        items = None) -> Optional[Any]:
     """
     Create an order through the Order Service.
 
@@ -63,7 +64,6 @@ def request_order_creation(
         (a str, bytes or bytearray instance containing a JSON document)\
         to a Python object.
     """
-
     # Define headers
     request_headers = get_header_request(
         zone,
@@ -78,6 +78,7 @@ def request_order_creation(
     if zone == "US":
         endpoint = "order-service/v2/"
         is_v1 = False
+        settings = get_settings()
 
         request_body = json.dumps({
             "accountId": account_id,
@@ -94,7 +95,7 @@ def request_order_creation(
             "total": order_items.get("total"),
             "vendor": {
                 "accountId": account_id,
-                "id": "9d72627a-02ea-4754-986b-0b29d741f5f0"
+                "id": settings.vendor_id
             },
             "paymentMethod": "CASH"
         })
@@ -104,14 +105,14 @@ def request_order_creation(
 
         # Get body
         request_body = create_order_payload(
-        account_id=account_id,
-        delivery_center_id=delivery_center_id,
-        allow_order_cancel=allow_order_cancel,
-        order_items=order_items,
-        order_status=order_status,
-        delivery_date=delivery_date,
-        is_v2=False
-    )
+            account_id=account_id,
+            delivery_center_id=delivery_center_id,
+            allow_order_cancel=allow_order_cancel,
+            order_items=order_items,
+            order_status=order_status,
+            delivery_date=delivery_date,
+            is_v2=False
+        )
 
     base_url = get_microservice_base_url(environment, is_v1)
     request_url = f"{base_url}/{endpoint}"
@@ -514,7 +515,7 @@ def get_order_items(order_data, zone):
 
     for i in range(len(items)):
         discount = 0
-        if 'pricingReasonDetail' in items[i] and len(items[i]['pricingReasonDetail']) != 0:
+        if 'pricingReasonDetail' in items[i] and items[i].get('pricingReasonDetail', []):
             discount = items[i]['pricingReasonDetail'][0]['discountAmount']
             if discount is None:
                 discount = 0
