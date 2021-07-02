@@ -7,6 +7,7 @@ import time as t
 import warnings
 from datetime import date, datetime
 from time import time
+from typing import Text
 from urllib.parse import urlencode
 from uuid import uuid1
 
@@ -453,24 +454,25 @@ def print_available_options(selection_structure):
 
 # Print welcome menu
 def print_welcome_script():
-    print(text.BackgroundLightYellow + text.Bold + text.Black)
+    print(text.Bold + text.Cyan)
     print("╭──────────────────────────────────╮")
-    print("│ 🝝                               │")
-    print("│   ANTARCTICA AUTOMATION SCRIPT   │")
-    print("│                               🝝 │")
+    print("│                                  │")
+    print("│         DATA-MASS SCRIPT         │")
+    print("│                                  │")
     print("╰──────────────────────────────────╯")
-    print(text.BackgroundDefault + text.ResetBold + text.default_text_color + "\n")
+    print(text.default_text_color + text.ResetAll + "\n")
+    print(text.Bold)
 
 
 # Print structure menu
 def print_structure_menu():
-    print(text.default_text_color + str(1), text.Yellow + 'Data creation - Microservice')
-    print(text.default_text_color + str(2), text.Yellow + 'Data searching - Microservice')    
-    print(text.default_text_color + str(3), text.Yellow + 'Token generator - Microservice')
-    print(text.default_text_color + str(4), text.Yellow + 'Data creation - Magento')
-    print(text.default_text_color + str(5), text.Yellow + 'Data creation - IAM')
-    print(text.default_text_color + str(6), text.Yellow + 'Data creation - Supplier/PIM')
-    print(text.default_text_color + str(7), text.Yellow + 'Data searching - Supplier/PIM')    
+    print(text.default_text_color + str(1), text.Yellow + 'Data creation - ' + text.White + 'Microservice')
+    print(text.default_text_color + str(2), text.Yellow + 'Data searching - ' + text.White + 'Microservice')    
+    print(text.default_text_color + str(3), text.Yellow + 'Token generator - ' + text.White + 'Microservice')
+    print(text.default_text_color + str(4), text.Yellow + 'Data creation - ' + text.White + 'Magento')
+    print(text.default_text_color + str(5), text.Yellow + 'Data creation - ' + text.White + 'IAM')
+    print(text.default_text_color + str(6), text.Yellow + 'Data creation - ' + text.White + 'Supplier/PIM')
+    print(text.default_text_color + str(7), text.Yellow + 'Data searching - ' + text.White + 'Supplier/PIM')    
     print(text.default_text_color + str(8), text.Yellow + 'Close application')
     structure = input(text.default_text_color + '\nPlease choose an option: ')
     while validate_structure(structure) is False:
