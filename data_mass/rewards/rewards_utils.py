@@ -495,7 +495,7 @@ def request_order_creation_checkout(
     )
 
     json_data = json.loads(response.text)
-    if response.status_code == 200 and len(json_data) != 0:
+    if response.status_code == 200 and not json_data:
         return json_data
     else:
         return {"orderNumber": response.text}

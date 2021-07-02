@@ -13,7 +13,22 @@ from data_mass.product.products import get_items_associated_account
 from data_mass.rewards.rewards import flow_create_order_rewards, get_rewards
 
 
-def create_order_rewards_redeem(account_id, zone, environment):
+def create_order_rewards_redeem(
+    account_id: str, zone: str, environment: str
+) -> None:
+    """
+    Collect user prompt, call the process of order creatio
+     and print the returned orders.
+
+    Parameters
+    ----------
+    account_id : str
+        POC unique identifier
+    zone : str
+        e.g., AR, BR, DO, etc
+    environment : str
+        e.g., DEV, SIT, UAT
+    """
     account = check_account_exists_microservice(
             account_id=account_id,
             zone=zone,
@@ -63,7 +78,7 @@ def create_order_rewards_redeem(account_id, zone, environment):
         order_status=order_status,
         quantity_orders=qty_orders,
         delivery_date=delivery_date
-        )
+    )
     if response:
         print(f"{text.Green}The result: ")
         for index, order in enumerate(response, start=1):

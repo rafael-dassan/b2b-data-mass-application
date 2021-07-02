@@ -170,16 +170,16 @@ def create_checkout_mobile_payload(
     pay_method: str,
 ) -> Dict:
     """
-    [summary]
+    Create payload to checkout-mobile.
 
     Parameters
     ----------
     order_items : list
         items to get infos for payload.
     delivery_date : str
-        date to define the
+        date to define the delivery.
     pay_method : str
-        [description]
+        Paymenth method allowed in the account.
 
     Returns
     -------
@@ -221,75 +221,6 @@ def create_checkout_mobile_payload(
         "poNumber": f"Data-Mass-Order-Mobile {po_date}",
         "truckUUID": False
     }
-
-    return json.dumps(dict_values)
-
-
-def create_checkout_payload(
-    account_id,
-    delivery_center_id,
-    allow_order_cancel,
-    order_items,
-    order_status,
-    delivery_date,
-    pay_method,
-):
-    placement_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") + "+00:00"
-
-    cancellable_date = (datetime.now() + timedelta(days=10)).strftime(
-        "%Y-%m-%dT%H:%M:%S"
-    ) + "+00:00"
-
-    line_items = order_items.get("lineItems", [])
-    item_list = []
-    for item in line_items:
-        item_values = {
-            "price": item["price"],
-            "unitPrice": item["unitPrice"],
-            "unitPriceInclTax": item["unitPriceInclTax"],
-            "quantity": item["quantity"],
-            "discountAmount": item["discountAmount"],
-            "deposit": item["deposit"],
-            "subtotal": item["subtotal"],
-            "taxAmount": item["taxAmount"],
-            "total": item["total"],
-            "totalExclDeposit": item["totalExclDeposit"],
-            "sku": item["sku"],
-            "hasInventory": item["hasInventory"],
-            "freeGood": item["freeGood"],
-            "originalPrice": item["originalPrice"],
-        }
-        item_list.append(item_values)
-
-    combos_items = order_items.get("combos", [])
-    for combo in combos_items:
-        sku = combo.get("freeGoods", "").get("skus","")[0]
-        combo.update({"sku": sku})
-        combo["id"] = combo.pop("comboId")
-
-    item_list.extend(combos_items)
-
-    dict_values = {
-        "accountId": account_id,
-        "channel": "B2B_WEB",
-        "status": order_status,
-        "deliveryCenterId": delivery_center_id,
-        "paymentMethod": pay_method,
-        "paymentTerm": 0,
-        "items": item_list,
-        "combos": [],
-        "deliveryDate": delivery_date,
-        "placementDate": placement_date,
-        "empties": {},
-    }
-
-    if order_status == "PLACED":
-        if allow_order_cancel == "Y":
-            dict_values.update({"cancellableUntil": cancellable_date})
-    elif order_status == "CANCELLED":
-        dict_values.update(
-            {"cancellationReason": "Order cancelled for testing purposes"}
-        )
 
     return json.dumps(dict_values)
 
