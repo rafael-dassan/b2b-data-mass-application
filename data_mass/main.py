@@ -269,6 +269,10 @@ def product_information_menu():
 
     if products_type == 'PRODUCT':
         zone = print_zone_menu_for_ms()
+
+        if zone == "US":
+            resources_warning()
+
         abi_id = print_account_id_menu(zone)
         if not abi_id:
             print_finish_application_menu()

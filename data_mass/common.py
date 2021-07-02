@@ -1189,7 +1189,7 @@ def resources_warning():
     Data Mass does not have persistent data creation power for
     services that make use of live-call.
 
-    All returned data is mocked. If there is a need for any
+    All returned data (if any) is mocked. If there is a need for any
     specific data, we suggest that you notify the migration team or the Data Mass team.
     """
     warnings.filterwarnings(action="once")

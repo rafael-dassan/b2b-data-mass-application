@@ -1337,9 +1337,6 @@ def request_get_deals_promo_fusion_service(zone, environment, account_id):
         })
 
         request_url = f"{base_url}/deal-service/v2"
-    else:
-        base_url = get_microservice_base_url(environment)
-        request_url = f"{base_url}/promo-fusion-service/{account_id}"
 
     # Send request
     response = place_request('GET', request_url, '', request_headers)
