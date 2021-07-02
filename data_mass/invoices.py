@@ -86,6 +86,7 @@ def create_invoice_request(zone, environment, order_id, status, order_details, o
 
 
 def create_invoice_multivendor(
+        vendor_account_id: str,
         zone: str,
         environment: str,
         order_id: str,
@@ -96,6 +97,7 @@ def create_invoice_multivendor(
 
     Parameters
     ----------
+    vendor_account_id : str
     zone : str
     environment : str
     order_id : str
@@ -160,7 +162,7 @@ def create_invoice_multivendor(
         "total": order_details.get("total"),
         "vendor": {
             "id": settings.vendor_id,
-            "accountId": order_details.get("accountId"),
+            "accountId": vendor_account_id,
             "invoiceId": invoice_id
         }
     }

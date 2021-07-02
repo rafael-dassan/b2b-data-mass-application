@@ -1919,6 +1919,7 @@ def flow_create_invoice(zone, environment, account_id):
 
     if zone == "US":
         invoice_response = create_invoice_multivendor(
+            vendor_account_id=account_id,
             zone=zone,
             environment=environment,
             order_id=order_id,
