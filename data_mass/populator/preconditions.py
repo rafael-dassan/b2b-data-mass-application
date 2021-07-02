@@ -114,5 +114,5 @@ def delete_recommendation(account_id, country, environment, use_case):
     elif not data:
         logger.error(log(Message.RETRIEVE_RECOMMENDER_ERROR, {'use_case_type': use_case, 'account_id': account_id}))
     else:
-        if 'success' != delete_recommendation_by_id(environment, data):
+        if 'success' != delete_recommendation_by_id(environment, data, country, account_id):
             logger.error(log(Message.DELETE_RECOMMENDER_ERROR, {'use_case_type': use_case, 'account_id': account_id}))

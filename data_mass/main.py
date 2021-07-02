@@ -238,8 +238,9 @@ def deals_information_menu():
         print_finish_application_menu()
 
     deals = request_get_deals_promo_fusion_service(zone, environment, abi_id)
+    combos = request_get_combos_promo_fusion_service(zone, environment, abi_id)
     if deals:
-        display_deals_information_promo_fusion(abi_id, deals)
+        display_deals_information_promo_fusion(abi_id, deals, combos)
     else:
         print_finish_application_menu()
 
