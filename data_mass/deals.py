@@ -1498,7 +1498,7 @@ def display_deals_information_promo_fusion(account_id, deals, combos):
             combo_information.append(combo_values)
 
         print(text.default_text_color + '\nCombo Information')
-        print(tabulate(combo_information, headers='keys', tablefmt='grid'))
+        print(tabulate(combo_information, headers='keys', tablefmt='fancy_grid'))
     
     if not deals.get("deals"):
         print(
