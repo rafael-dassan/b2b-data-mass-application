@@ -22,18 +22,19 @@ from data_mass.common import (
     validate_user_entry_date,
     validate_yes_no_change_date
 )
+from data_mass.config import get_settings
 
 
 def request_order_creation(
-    account_id: str,
-    delivery_center_id: str,
-    zone: str,
-    environment: str, 
-    allow_order_cancel: str, 
-    order_items: list, 
-    order_status: str,
-    delivery_date: str,
-    items = None) -> Optional[Any]:
+        account_id: str,
+        delivery_center_id: str,
+        zone: str,
+        environment: str,
+        allow_order_cancel: str,
+        order_items: list,
+        order_status: str,
+        delivery_date: str,
+        items = None) -> Optional[Any]:
     """
     Create an order through the Order Service.
 
@@ -63,7 +64,6 @@ def request_order_creation(
         (a str, bytes or bytearray instance containing a JSON document)\
         to a Python object.
     """
-
     # Define headers
     request_headers = get_header_request(
         zone,
@@ -78,6 +78,7 @@ def request_order_creation(
     if zone == "US":
         endpoint = "order-service/v2/"
         is_v1 = False
+        settings = get_settings()
 
         request_body = json.dumps({
             "accountId": account_id,
@@ -94,7 +95,7 @@ def request_order_creation(
             "total": order_items.get("total"),
             "vendor": {
                 "accountId": account_id,
-                "id": "9d72627a-02ea-4754-986b-0b29d741f5f0"
+                "id": settings.vendor_id
             },
             "paymentMethod": "CASH"
         })
@@ -104,14 +105,14 @@ def request_order_creation(
 
         # Get body
         request_body = create_order_payload(
-        account_id=account_id,
-        delivery_center_id=delivery_center_id,
-        allow_order_cancel=allow_order_cancel,
-        order_items=order_items,
-        order_status=order_status,
-        delivery_date=delivery_date,
-        is_v2="True"
-    )
+            account_id=account_id,
+            delivery_center_id=delivery_center_id,
+            allow_order_cancel=allow_order_cancel,
+            order_items=order_items,
+            order_status=order_status,
+            delivery_date=delivery_date,
+            is_v2=False
+        )
 
     base_url = get_microservice_base_url(environment, is_v1)
     request_url = f"{base_url}/{endpoint}"
@@ -134,13 +135,13 @@ def request_order_creation(
 
 
 def create_order_payload(
-    account_id: str,
-    delivery_center_id: str, 
-    allow_order_cancel: str, 
-    order_items: list, 
-    order_status: str,
-    delivery_date: str,
-    is_v2: Optional[bool] = False) -> str:
+        account_id: str,
+        delivery_center_id: str, 
+        allow_order_cancel: str, 
+        order_items: list, 
+        order_status: str,
+        delivery_date: str,
+        is_v2: Optional[bool] = False) -> str:
     """
     Create payload for order creation.
 
@@ -167,26 +168,25 @@ def create_order_payload(
     cancellable_date = (datetime.now() + timedelta(days=10)).strftime('%Y-%m-%dT%H:%M:%S') + '+00:00'
 
     line_items = order_items.get('lineItems')
-    item_list = []
+    items = []
 
-    for i in range(len(line_items)):
-        item_values = {
-            'price': line_items[i]['price'],
-            'unitPrice': line_items[i]['unitPrice'],
-            'unitPriceInclTax': line_items[i]['unitPriceInclTax'],
-            'quantity': line_items[i]['quantity'],
-            'discountAmount': line_items[i]['discountAmount'],
-            'deposit': line_items[i]['deposit'],
-            'subtotal': line_items[i]['subtotal'],
-            'taxAmount': line_items[i]['taxAmount'],
-            'total': line_items[i]['total'],
-            'totalExclDeposit': line_items[i]['totalExclDeposit'],
-            'sku': line_items[i]['sku'],
-            'hasInventory': line_items[i]['hasInventory'],
-            'freeGood': line_items[i]['freeGood'],
-            'originalPrice': line_items[i]['originalPrice'],
-        }
-        item_list.append(item_values)
+    for product in line_items:
+        items.append({
+            "price": product.get("price"),
+            "unitPrice": product.get("unitPrice"),
+            "unitPriceInclTax": product.get("unitPriceInclTax"),
+            "quantity": product.get("quantity"),
+            "discountAmount": product.get("discountAmount"),
+            "deposit": product.get("deposit"),
+            "subtotal": product.get("subtotal"),
+            "taxAmount": product.get("taxAmount"),
+            "total": product.get("total"),
+            "totalExclDeposit": product.get("totalExclDeposit"),
+            "sku": product.get("sku"),
+            "hasInventory": product.get("hasInventory"),
+            "freeGood": product.get("freeGood"),
+            "originalPrice": product.get("originalPrice"),
+        })
 
     dict_values = {
         'accountId': account_id,
@@ -201,7 +201,8 @@ def create_order_payload(
         'subtotal': order_items.get('subtotal'),
         'tax': order_items.get('taxAmount'),
         'placementDate': placement_date,
-        'status': order_status
+        'status': order_status,
+        'items': items
     }
 
     if is_v2:

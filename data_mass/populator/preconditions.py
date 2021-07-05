@@ -94,9 +94,8 @@ def delete_deal(account_id, country, environment):
         elif promotions == 'not_found':
             logger.debug("[Promotion Service] The account {account_id} does not have deals associated. Skipping..."
                         .format(account_id=account_id))
-
         else:
-            if False == request_delete_deal_by_id(account_id, country, environment, promotions):
+            if not request_delete_deal_by_id(account_id, country, environment, promotions):
                 logger.error(log(Message.DELETE_PROMOTION_ERROR, {'vendorAccountIds': account_id}))
 
 

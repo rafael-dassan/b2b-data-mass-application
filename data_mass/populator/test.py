@@ -24,7 +24,14 @@ from data_mass.populator.country.product import (
     populate_product
 )
 from data_mass.populator.country.recommendation import populate_recommendation
-from data_mass.populator.country.rewards import enroll_poc, populate_challenge
+from data_mass.populator.country.rewards import (
+    enroll_poc,
+    populate_challenge,
+    populate_challenge_mark_complete,
+    populate_challenge_purchase_multiple,
+    populate_challenge_purchase_single,
+    populate_challenge_take_photo
+)
 from data_mass.populator.country.user_iam import populate_user_iam_b2c
 from data_mass.populator.helpers.database_helper import (
     delete_from_database_by_account,
@@ -75,7 +82,7 @@ def execute_test(country, environment):
     logger.info("populate_accounts for %s/%s", country, environment)
     populate_poc(country, environment, account_params.get('id'), account_params.get('name'), account_params.get('payment_method'),
                  account_params.get('credit'), account_params.get('balance'), account_params.get('amount_of_products'),
-                 account_params.get('has_delivery_window'), [product_params.get('sku')])
+                 account_params.get('has_delivery_window'), account_params.get('eligible_rewards'), [product_params.get('sku')])
 
     logger.info("populate_users_iam_b2c for %s/%s", country, environment)
     populate_user_iam_b2c(country, environment, user_params.get('email'), user_params.get('password'), [account_params.get('id')])
@@ -124,7 +131,10 @@ def execute_test(country, environment):
     enroll_poc(country, environment, rewards_params.get('account_id'))
 
     logger.info("populate_rewards_challenges for %s/%s", country, environment)
-    populate_challenge(country, environment, rewards_params.get('challenge_id'))
+    populate_challenge_take_photo(country, environment, rewards_params.get('take_photo_challenge_id'))
+    populate_challenge_mark_complete(country, environment, rewards_params.get('mark_complete_challenge_id'))
+    populate_challenge_purchase_single(country, environment, rewards_params.get('purchase_single_challenge_id'))
+    populate_challenge_purchase_multiple(country, environment, rewards_params.get('purchase_multiple_challenge_id'))
 
     logger.info("enable_products_magento %s/%s", country, environment)
     enable_product_magento(country, environment, category_params.get('sku'))
@@ -256,7 +266,8 @@ def get_account_params(country):
         'credit': '30000',
         'balance': '30000',
         'amount_of_products': 100,
-        'has_delivery_window': True
+        'has_delivery_window': True,
+        'eligible_rewards': True
     }
 
 
@@ -395,5 +406,8 @@ def get_combo_params(country, combo_type):
 def get_rewards_params(country):
     return {
         'account_id': get_account_params(country).get('id'),
-        'challenge_id': 'DMA-{0}-TEST'.format(country)
+        'take_photo_challenge_id': 'DMA-{0}-01-TEST'.format(country),
+        'mark_complete_challenge_id': 'DMA-{0}-02-TEST'.format(country),
+        'purchase_single_challenge_id': 'DMA-{0}-03-TEST'.format(country),
+        'purchase_multiple_challenge_id': 'DMA-{0}-04-TEST'.format(country),
     }

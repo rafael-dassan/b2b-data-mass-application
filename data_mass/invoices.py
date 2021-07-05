@@ -7,7 +7,7 @@ from urllib.parse import urlencode
 
 import pkg_resources
 
-from data_mass.accounts import get_account_id
+from data_mass.accounts import get_multivendor_account_id
 from data_mass.classes.text import text
 # Local application imports
 from data_mass.common import (
@@ -21,9 +21,8 @@ from data_mass.common import (
 )
 from data_mass.config import get_settings
 
-logger = logging.getLogger(__name__)
 
-def create_invoice_request(zone, environment, order_id, status, order_details, order_items, account_id, invoice_id=None):
+def create_invoice_request(zone, environment, order_id, status, order_details, order_items, invoice_id=None):
     # get data from Data Mass files
     if zone == "US":
         content: bytes = pkg_resources.resource_string(
@@ -61,24 +60,22 @@ def create_invoice_request(zone, environment, order_id, status, order_details, o
     }
 
     dict_values = {
-        'accountId': account_id,
+        'accountId': order_details.get('accountId'),
         'channel': order_details.get('channel'),
-        'invoiceId': invoice_id,
-        'customerInvoiceNumber': invoice_id,
-        'accountId': account_id,
         'date': placement_date,
         'interestAmount': order_details.get('interestAmount'),
         'discount': abs(order_details.get('discount')),
         'orderDate': placement_date,
         'orderId': order_id,
         'subtotal': order_details.get('subtotal'),
+        'invoiceId': invoice_id,
         'status': status,
         'tax': order_details.get('tax', 0),
         'total': order_details.get('total'),
         'poNumber': order_id,
         'paymentType': order_details.get('paymentMethod'),
-        'itemsQuantity': order_details.get('itemsQuantity'),
-        'vendor': vendor_values
+        'discount': abs(order_details.get('discount')),
+        'itemsQuantity': order_details.get('itemsQuantity')
     }
 
     for key in dict_values.keys():
@@ -88,8 +85,6 @@ def create_invoice_request(zone, environment, order_id, status, order_details, o
 
     # Get base URL
     request_url = get_microservice_base_url(environment) + '/invoices-relay'
-    if zone == "US":
-        request_url += "/v2"
 
     # Get headers
     request_headers = get_header_request(zone, False, False, True, False)
@@ -110,10 +105,10 @@ def create_invoice_request(zone, environment, order_id, status, order_details, o
         return False
 
 
-def create_invoice_v2(
+def create_invoice_multivendor(
+        vendor_account_id: str,
         zone: str,
         environment: str,
-        account_id: str,
         order_id: str,
         status: str,
         order_details: dict) -> Optional[dict]:
@@ -122,6 +117,7 @@ def create_invoice_v2(
 
     Parameters
     ----------
+    vendor_account_id : str
     zone : str
     environment : str
     order_id : str
@@ -139,17 +135,28 @@ def create_invoice_v2(
     settings = get_settings()
 
     invoice_id = f"DM-{str(randint(1, 100000))}"
-    order_placement_date = order_details.get('placementDate')
-    placement_date = order_placement_date.split('+')[0] + 'Z'
+    order_placement_date = order_details.get("placementDate")
+    placement_date = order_placement_date.split('+')[0]
     items = []
     
+    if "Z" not in placement_date:
+        placement_date += "Z"
+
     for item in order_details.get("items", []):
+        # For some reason, `discount` and `tax` are not required when \
+        # creating an new Order, but it's required when creating an Invoice.
+        # Since dict's `get` method does not return a default value when a key's \
+        # value is `None` (only when the key does not exists), and `json.loads()` \
+        # turns `null` into `None`, we should change it manually.
+        discount = item.get("discount")
+        tax = item.get("tax")
+
         items.append({
-            "discount": item.get("discount", 0.0),
+            "discount": 0.0 if discount is None else discount,
             "price": item.get("price"),
             "quantity": item.get("quantity"),
             "subtotal": item.get("subtotal"),
-            "tax": item.get("tax"),
+            "tax": 0 if tax is None else tax,
             "total": item.get("total"),
             "vendorItemId": item.get("vendorItemId")
         })
@@ -159,7 +166,7 @@ def create_invoice_v2(
         "customerInvoiceNumber": invoice_id,
         "date": placement_date,
         "deleted": False,
-        "discount": abs(order_details.get("discount")),
+        "discount": abs(order_details.get("discount", 0)),
         "dueDate": placement_date,
         "fileAvailable": False,
         "items": items,
@@ -171,11 +178,11 @@ def create_invoice_v2(
         "poNumber": order_id,
         "status": status,
         "subtotal": order_details.get("subtotal"),
-        "tax": order_details.get("tax"),
+        "tax": order_details.get("tax", 0),
         "total": order_details.get("total"),
         "vendor": {
             "id": settings.vendor_id,
-            "accountId": order_details.get("accountId"),
+            "accountId": vendor_account_id,
             "invoiceId": invoice_id
         }
     }
@@ -198,6 +205,7 @@ def create_invoice_v2(
     )
 
     return False
+
 
 def update_invoice_request(zone, environment, account_id, invoice_id, payment_method, status):
     # get data from Data Mass files
@@ -316,7 +324,7 @@ def get_invoices(
     """
     if zone == "US":
         version = "v2"
-        account_id = get_account_id(account_id, zone, environment)
+        account_id = get_multivendor_account_id(account_id, zone, environment)
     else:
         version = "v1"
 

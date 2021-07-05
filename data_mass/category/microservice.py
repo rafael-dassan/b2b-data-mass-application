@@ -2,7 +2,7 @@ import json
 from urllib.parse import urlencode
 from uuid import uuid1
 
-from data_mass.accounts import get_account_id
+from data_mass.accounts import get_multivendor_account_id
 from data_mass.classes.text import text
 from data_mass.common import (
     get_header_request,
@@ -47,7 +47,12 @@ def get_categories(
 
     if service.lower() == "catalog":
         if account_id is not None:
-            account_id = get_account_id(account_id, zone, environment)
+            account_id = get_multivendor_account_id(
+                vendor_account_id=account_id,
+                zone=zone,
+                environment=environment
+            )
+
             header.update({
                 "accountId": account_id,
                 "Accept-Language": "en"
@@ -138,7 +143,12 @@ def get_category_by_id(
 
     if service.lower() == "catalog":
         if account_id is not None:
-            account_id = get_account_id(account_id, zone, environment)
+            account_id = get_multivendor_account_id(
+                vendor_account_id=account_id,
+                zone=zone,
+                environment=environment
+            )
+
             header.update({
                 "accountId": account_id,
                 "Accept-Language": "en"

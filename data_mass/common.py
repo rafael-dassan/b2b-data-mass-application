@@ -7,6 +7,7 @@ import time as t
 import warnings
 from datetime import date, datetime
 from time import time
+from typing import Text
 from urllib.parse import urlencode
 from uuid import uuid1
 
@@ -145,7 +146,7 @@ def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclus
         header['Authorization'] = get_jwt_token()
         header['Accept-Language'] = 'en-us'
     elif use_jwt_auth:
-        header['Authorization'] = generate_hmac_jwt(account_id, jwt_app_claim)
+        header['Authorization'] = generate_hmac_jwt(zone, account_id, jwt_app_claim)
     elif use_root_auth:
         header['Authorization'] = 'Basic cm9vdDpyb290'
     elif use_inclusion_auth:
@@ -453,24 +454,25 @@ def print_available_options(selection_structure):
 
 # Print welcome menu
 def print_welcome_script():
-    print(text.BackgroundLightYellow + text.Bold + text.Black)
+    print(text.Bold + text.Cyan)
     print("╭──────────────────────────────────╮")
-    print("│ 🝝                               │")
-    print("│   ANTARCTICA AUTOMATION SCRIPT   │")
-    print("│                               🝝 │")
+    print("│                                  │")
+    print("│         DATA-MASS SCRIPT         │")
+    print("│                                  │")
     print("╰──────────────────────────────────╯")
-    print(text.BackgroundDefault + text.ResetBold + text.default_text_color + "\n")
+    print(text.default_text_color + text.ResetAll + "\n")
+    print(text.Bold)
 
 
 # Print structure menu
 def print_structure_menu():
-    print(text.default_text_color + str(1), text.Yellow + 'Data creation - Microservice')
-    print(text.default_text_color + str(2), text.Yellow + 'Data searching - Microservice')    
-    print(text.default_text_color + str(3), text.Yellow + 'Token generator - Microservice')
-    print(text.default_text_color + str(4), text.Yellow + 'Data creation - Magento')
-    print(text.default_text_color + str(5), text.Yellow + 'Data creation - IAM')
-    print(text.default_text_color + str(6), text.Yellow + 'Data creation - Supplier/PIM')
-    print(text.default_text_color + str(7), text.Yellow + 'Data searching - Supplier/PIM')    
+    print(text.default_text_color + str(1), text.Yellow + 'Data creation - ' + text.White + 'Microservice')
+    print(text.default_text_color + str(2), text.Yellow + 'Data searching - ' + text.White + 'Microservice')    
+    print(text.default_text_color + str(3), text.Yellow + 'Token generator - ' + text.White + 'Microservice')
+    print(text.default_text_color + str(4), text.Yellow + 'Data creation - ' + text.White + 'Magento')
+    print(text.default_text_color + str(5), text.Yellow + 'Data creation - ' + text.White + 'IAM')
+    print(text.default_text_color + str(6), text.Yellow + 'Data creation - ' + text.White + 'Supplier/PIM')
+    print(text.default_text_color + str(7), text.Yellow + 'Data searching - ' + text.White + 'Supplier/PIM')    
     print(text.default_text_color + str(8), text.Yellow + 'Close application')
     structure = input(text.default_text_color + '\nPlease choose an option: ')
     while validate_structure(structure) is False:
@@ -937,18 +939,21 @@ def print_invoices(invoice_info: dict, status: list, zone: str = None):
     if zone == "US":
         key = "vendorItemId"
     else:
-        key = "sku"
+        key = "SKU"
 
     for invoice in invoice_info.get("data", []):
+        products = [item.get(key) for item in invoice.get("items")]
+
         if invoice.get("status") in status:
             invoices.append({
                 "Invoice ID": invoice.get("invoiceId"),
+                "Customer Invoice Number": invoice.get("customerInvoiceNumber"),
                 "Product Quantity": invoice.get("itemsQuantity", 0),
                 "Sub Total": invoice.get("subtotal"),
                 "Tax": invoice.get("tax"),
                 "Discount": invoice.get("discount"),
                 "Total": invoice.get("total"),
-                key: [item.get(key) for item in invoice.get("items")]
+                key: ", ".join(products)
             })
 
     if invoices:
@@ -1021,7 +1026,7 @@ def is_string(item):
     return isinstance(item, str)
 
 
-def generate_hmac_jwt(account_id, app_claim=None, expire_months=1):
+def generate_hmac_jwt(zone, account_id, app_claim=None, expire_months=1):
     now = int(t.time())
     expire_in = now + (2592000 * expire_months)
     
@@ -1035,6 +1040,7 @@ def generate_hmac_jwt(account_id, app_claim=None, expire_months=1):
     dict_values = {
         'exp': expire_in,
         'iat': now,
+        'country': zone,
         'accounts': [account_id]
     }
 
@@ -1043,7 +1049,9 @@ def generate_hmac_jwt(account_id, app_claim=None, expire_months=1):
     
     if app_claim is not None:
         set_to_dictionary(json_object, 'app', app_claim)
-
+        if app_claim == 'adminportal':
+            set_to_dictionary(json_object, 'scopes', ["Membership"])
+    
     encoded = jwt.encode(json_object, '20735d31-46b5-411d-af02-47897a01c0c9', algorithm='HS256')
     return f'Bearer {encoded}'
 
@@ -1180,11 +1188,14 @@ def resources_warning():
     """
     message = \
     """
-    Data Mass does not have persistent data creation power for \
-    services that make use of live call.
+    Data Mass does not have persistent data creation power for
+    services that make use of live-call.
 
-    All returned data is mocked. If there is a need for any \
+    All returned data (if any) is mocked. If there is a need for any
     specific data, we suggest that you notify the migration team or the Data Mass team.
     """
-
-    warnings.warn(message, ResourceWarning, stacklevel=2)
+    warnings.filterwarnings(action="once")
+    warnings.warn(
+        f"{text.ResetUnderlined}{text.Red}{message}{text.Underlined}",
+        ResourceWarning, stacklevel=2
+    )

@@ -20,6 +20,7 @@ def print_account_operations_menu():
     print(text.default_text_color + str(5), text.Yellow + 'Update account status')
     print(text.default_text_color + str(6), text.Yellow + 'Update minimum order type/value')
     print(text.default_text_color + str(7), text.Yellow + 'Update payment method')
+    print(text.default_text_color + str(8), text.Yellow + 'Update rewards eligibility')
     option = input(text.default_text_color + '\nPlease select: ')
     while validate_account_operations_structure(option) is False:
         print(text.Red + '\n- Invalid option')
@@ -31,6 +32,7 @@ def print_account_operations_menu():
         print(text.default_text_color + str(5), text.Yellow + 'Update account status')
         print(text.default_text_color + str(6), text.Yellow + 'Update minimum order type/value')
         print(text.default_text_color + str(7), text.Yellow + 'Update payment method')
+        print(text.default_text_color + str(8), text.Yellow + 'Update rewards eligibility')
         option = input(text.default_text_color + '\nPlease select: ')
 
     return option
@@ -292,3 +294,15 @@ def print_get_account_operations_menu():
         structure = input(text.default_text_color + '\nPlease select: ')
 
     return structure
+
+
+def print_eligible_rewards_menu():
+    option = input(text.default_text_color + 'Do you want to make this account eligible for rewards program? y/N: ')
+    while validate_yes_no_option(option.upper()) is False:
+        print(text.Red + '\n- Invalid option\n')
+        option = input(text.default_text_color + 'Do you want to make this account eligible for rewards program? y/N: ')
+
+    if option.upper() == 'Y':
+        return True
+    else:
+        return False

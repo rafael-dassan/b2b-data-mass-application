@@ -49,10 +49,14 @@ def populate_challenge_base(country, environment, dataframe_rewards):
 
 
 def apply_populate_challenge(row, country, environment):
-    populate_challenge(country, environment, row['challenge_id'])
+    logger.debug("Adding challenges in %s/%s", country, environment)
+    populate_challenge_take_photo(country, environment, row['take_photo_challenge_id'])
+    populate_challenge_mark_complete(country, environment, row['mark_complete_challenge_id'])
+    populate_challenge_purchase_single(country, environment, row['purchase_single_challenge_id'])
+    populate_challenge_purchase_multiple(country, environment, row['purchase_multiple_challenge_id'])
 
 
-def populate_challenge(country, environment, challenge_id=None):
+def populate_challenge(country, environment):
     logger.debug("Adding challenges in %s/%s", country, environment)
     
     logger.debug("Adding TAKE_PHOTO challenges")
@@ -79,9 +83,26 @@ def populate_challenge(country, environment, challenge_id=None):
     # Create an Expired PURCHASE_MULTIPLE challenge
     create_purchase_challenge(country, environment, True, None, True)
 
-    # Create an available PURCHASE challenge for regression testing with specific ID for PY
-    if country == 'PY':
-        create_purchase_challenge(country, environment, False, challenge_id, False)
-    else:
-        # Create an available MARK_COMPLETE challenge for regression testing with specific ID for all zones
-        create_mark_complete_challenge(country, environment, challenge_id, False)
+
+def populate_challenge_take_photo(country, environment, challenge_id):
+    logger.debug("Adding/Updating TAKE_PHOTO challenge")
+    # Create an Available TAKE_PHOTO challenge
+    create_take_photo_challenge(country, environment, challenge_id)
+
+
+def populate_challenge_mark_complete(country, environment, challenge_id):
+    logger.debug("Adding/Updating MARK_COMPLETE challenge")
+    # Create an Available MARK_COMPLETE challenge
+    create_mark_complete_challenge(country, environment, challenge_id)
+
+
+def populate_challenge_purchase_single(country, environment, challenge_id):
+    logger.debug("Adding/Updating PURCHASE challenge")
+    # Create an Available PURCHASE challenge
+    create_purchase_challenge(country, environment, False, challenge_id)
+
+
+def populate_challenge_purchase_multiple(country, environment, challenge_id):
+    logger.debug("Adding/Updating PURCHASE_MULTIPLE challenge")
+    # Create an Available PURCHASE_MULTIPLE challenge
+    create_purchase_challenge(country, environment, True, challenge_id)

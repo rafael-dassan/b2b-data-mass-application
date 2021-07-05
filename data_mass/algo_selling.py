@@ -17,6 +17,7 @@ from data_mass.common import (
     get_header_request,
     get_microservice_base_url,
     place_request,
+    resources_warning,
     set_to_dictionary,
     update_value_to_json
 )
@@ -32,8 +33,8 @@ def create_all_recommendations(zone, environment, account_id, products):
 
     if quick_order_response and sell_up_response and forgotten_items_response:
         return True
-    else:
-        return False
+
+    return False
 
 
 # Define JSON to submit QUICK ORDER recommendation type
@@ -80,6 +81,7 @@ def create_quick_order_payload(account_id, zone, product_list):
     }
     
     if zone == "US":
+        resources_warning()
         settings = get_settings()
         dict_values.update({"vendorId": settings.vendor_id})
 
@@ -141,6 +143,7 @@ def create_forgotten_items_payload(account_id, zone, product_list):
     }
 
     if zone == "US":
+        resources_warning()
         settings = get_settings()
         dict_values.update({"vendorId": settings.vendor_id})
 
@@ -200,6 +203,7 @@ def create_upsell_payload(account_id, zone, product_list):
     }
 
     if zone == "US":
+        resources_warning()
         settings = get_settings()
         dict_values.update({"vendorId": settings.vendor_id})
 
@@ -335,6 +339,7 @@ def get_recommendation_by_account(
         case_query.append(("useCase", case))
 
     if zone == "US":
+        resources_warning()
         settings = get_settings()
         query.update({"vendorId": settings.vendor_id})
 
@@ -365,6 +370,7 @@ def get_recommendation_by_account(
 
     return False
 
+
 def delete_recommendation_by_id(environment, recommendation_data, zone, account_id):
     recommendation_id = recommendation_data['content'][0]['id']
 
@@ -379,15 +385,19 @@ def delete_recommendation_by_id(environment, recommendation_data, zone, account_
     # }
 
     request_url = get_microservice_base_url(environment, True) + f'/global-recommendation/{recommendation_id}'
-    logger.info(recommendation_id)
     response = place_request('DELETE', request_url, '', headers)
-    logger.info(response.text)
+
     if response.status_code == 202:
         return True
-    else:
-        print(text.Red + '\n- [Global Recommendation Service] Failure to delete recommendation. Response Status: {}.'
-                         ' Response message: {}'.format(response.status_code, response.text))
-        return False
+
+    print(
+        f"{text.Red}\n"
+        "- [Global Recommendation Service] Failure to delete recommendation.\n"
+        f"Response Status: {response.status_code}.\n"
+        f"Response message: {response.text}\n"
+    )
+
+    return False
 
 
 def display_recommendations_by_account(data):

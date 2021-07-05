@@ -8,12 +8,14 @@ def print_deals_operations_menu(zone):
         print(text.default_text_color + '\nDeals operations')
         print(text.default_text_color + str(1), text.Yellow + 'Create deal type discount')
         print(text.default_text_color + str(2), text.Yellow + 'Create deal type free good')
+        print(text.default_text_color + str(3), text.Yellow + 'Create deal type Mix & Match')
         option = input(text.default_text_color + '\nPlease select: ')
         while validate_deals_options(option, zone) is False:
             print(text.Red + '\n- Invalid option')
             print(text.default_text_color + '\nDeals operations')
             print(text.default_text_color + str(1), text.Yellow + 'Create deal type discount')
             print(text.default_text_color + str(2), text.Yellow + 'Create deal type free good')
+            print(text.default_text_color + str(3), text.Yellow + 'Create deal type Mix & Match')
             option = input(text.default_text_color + '\nPlease select: ')
 
         return option

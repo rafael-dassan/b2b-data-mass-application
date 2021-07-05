@@ -19,7 +19,7 @@ from data_mass.supplier.gql.attributes import (
     create_edit_primitive_attribute,
     create_enum_generic_payload,
     create_group_attribute
-)
+    )
 from data_mass.supplier.gql.attributes import \
     create_legacy_group_attribute as create_legacy_group_attr
 from data_mass.supplier.gql.attributes import (
@@ -27,7 +27,7 @@ from data_mass.supplier.gql.attributes import (
     create_search_all_attribute_payload,
     create_search_all_legacy_attributes_payload,
     create_search_specific_attribute_payload
-)
+    )
 
 
 def create_attribute_primitive_type(
@@ -223,12 +223,11 @@ def create_attribute_group(
         response = client.execute(mut, variable_values=params)
         json_data = json.dumps(response)
 
-        if not json_data:
-            json_split = json_data.rsplit()
-            id_att = json_split[2]
-            id_att1 = id_att.lstrip('"')
-            id_att2 = id_att1.rsplit('"', 1)[0]
-            return id_att2
+        json_split = json_data.rsplit()
+        id_att = json_split[2]
+        id_att1 = id_att.lstrip('"')
+        id_att2 = id_att1.rsplit('"', 1)[0]
+        return id_att2
     except TransportQueryError as e:
         print(text.Red + str(e))
 

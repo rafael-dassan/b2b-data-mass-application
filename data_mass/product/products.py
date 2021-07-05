@@ -11,7 +11,7 @@ from typing import Any, Dict, Optional
 import pkg_resources
 from tabulate import tabulate
 
-from data_mass.accounts import get_account_id
+from data_mass.accounts import get_multivendor_account_id
 from data_mass.classes.text import text
 from data_mass.common import (
     convert_json_to_string,
@@ -227,9 +227,9 @@ def add_products_to_account_microservice(
 
 
 def request_get_products_microservice(
-    zone: str,
-    environment: str,
-    page_size: int = 100000) -> list:
+        zone: str,
+        environment: str,
+        page_size: int = 100000) -> list:
     """
     Get all available products for a specific zone via Item Service.
 
@@ -376,17 +376,18 @@ def request_post_price_inclusion_microservice(
     response = place_request("POST", request_url, request_body, request_headers)
     if response.status_code == 202:
         return "success"
-    else:
-        print(
-            text.Red
-            + "\n- [Product Assortment Relay Service] Failure to associate the SKU {sku}. Response status: "
-            "{response_status}. Response message: {response_message}".format(
-                sku=sku_product,
-                response_status=response.status_code,
-                response_message=response.text,
-            )
+
+    print(
+        text.Red
+        + "\n- [Product Assortment Relay Service] Failure to associate the SKU {sku}. Response status: "
+        "{response_status}. Response message: {response_message}".format(
+            sku=sku_product,
+            response_status=response.status_code,
+            response_message=response.text,
         )
-        return False
+    )
+
+    return False
 
 
 # Create body for product inclusion
@@ -394,60 +395,6 @@ def get_body_price_inclusion_microservice_request(delivery_center_id):
     body_price_inclusion = dumps({"deliveryCenters": [delivery_center_id]})
 
     return body_price_inclusion
-
-
-def get_avaliable_categories(
-    account_id: str,
-    zone: str,
-    environment: str,
-    include_empties: bool = False,
-    category_type: str = "MOBILE") -> Any:
-    """
-    Get avaliable categories using microservice.
-
-    Parameters
-    ----------
-    account_id : str
-    zone : str
-    environment : str
-    include_empties : bool
-        Default by `False`.
-    category_type : str
-        Default by `MOBILE`
-    
-    Returns
-    -------
-    Any
-        The response content.
-    """
-    headers: dict = get_header_request(zone)
-
-    headers.update({
-        "custId": account_id,
-        "regionId": zone,
-    })
-
-    base_url = get_microservice_base_url(zone)
-    request_url = (
-        f"{base_url}"
-        "/catalog-service"
-        "/categories"
-        f"/includeEmpties={include_empties}"
-        f"&categoryType={category_type}"
-    )
-    
-    response = place_request(
-        request_method="GET",
-        request_url=request_url,
-        request_body="",
-        request_headers=headers
-    )
-    
-    if response.status_code == 200:
-        return json.loads(response.text)
-
-    print(f"{text.Red}Generic message.")
-    return None
 
 
 def request_get_offers_microservice(
@@ -469,14 +416,15 @@ def request_get_offers_microservice(
     # Get headers
     headers = get_header_request(zone, True, False, False, False, account_id)
     base_url = get_microservice_base_url(environment, False)
-    vendor_account = get_account_id(account_id, zone, environment)
 
     if zone == "US":
+        account_id = get_multivendor_account_id(account_id, zone, environment)
+
         request_url = (
             f"{base_url}/v1"
             "/catalog-service"
             "/catalog"
-            f"/items?accountId={vendor_account}"
+            f"/items?accountId={account_id}"
             "&projection=SMALL"
         )
     else:
@@ -541,7 +489,8 @@ def check_item_enabled(sku, zone, environment):
     json_data = loads(response.text)
     if response.status_code == 200 and len(json_data) != 0:
         return json_data["sku"]
-    elif response.status_code == 404:
+
+    if response.status_code == 404:
         print(
             text.Red
             + "\n- [Item Service] SKU {sku} not found for country {country}".format(
@@ -549,15 +498,15 @@ def check_item_enabled(sku, zone, environment):
             )
         )
         return False
-    else:
-        print(
-            text.Red
-            + "\n- [Item Service] Failure to update an item. Response Status: {response_status}. Response "
-            "message: {response_message}".format(
-                response_status=response.status_code, response_message=response.text
-            )
+
+    print(
+        text.Red
+        + "\n- [Item Service] Failure to update an item. Response Status: {response_status}. Response "
+        "message: {response_message}".format(
+            response_status=response.status_code, response_message=response.text
         )
-        return False
+    )
+    return False
 
 
 def request_get_products_by_account_microservice(account_id, zone, environment):
@@ -579,7 +528,7 @@ def request_get_products_by_account_microservice(account_id, zone, environment):
 
     # Define base URL
     if zone == "US":
-        account_id = get_account_id(account_id, zone, environment)
+        account_id = get_multivendor_account_id(account_id, zone, environment)
         endpoint = "v1/catalog-service"
         v1 = False
     else:
@@ -756,6 +705,7 @@ def create_product(
 
         if update_item_response and get_item_response:
             return product_data
+
     print(
         f"\n{text.Red}- [Item Relay Service] Failure to update an item.\n"
         f"Response Status: {response.status_code}.\n"
@@ -851,9 +801,9 @@ def create_product_v2(
 
 
 def delete_item_v2(
-    zone: str,
-    environment: str,
-    vendor_item_id: str) -> bool:
+        zone: str,
+        environment: str,
+        vendor_item_id: str) -> bool:
     """
     Delete a item from microservice.
 
@@ -1067,9 +1017,9 @@ def display_product_information(product_offers):
     
 
 def get_sku_name(
-    zone: str,
-    environment: str,
-    sku_id: str) -> str:
+        zone: str,
+        environment: str,
+        sku_id: str) -> str:
     """
     Get SKU by name.
 
