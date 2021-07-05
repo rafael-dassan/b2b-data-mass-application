@@ -499,8 +499,8 @@ def get_order_details(order_data):
         'channel': order_data['channel'],
         'subtotal': order_data['subtotal'],
         'total': order_data['total'],
-        'tax': order_data['tax'],
-        'discount': order_data['discount'],
+        'tax': order_data.get('tax',0),
+        'discount': order_data.get('discount',0),
         'itemsQuantity': len(items),
         'interestAmount': interest_amount
     }
@@ -514,7 +514,7 @@ def get_order_items(order_data, zone):
 
     for i in range(len(items)):
         discount = 0
-        if 'pricingReasonDetail' in items[i] and len(items[i]['pricingReasonDetail']) != 0:
+        if items[i]['pricingReasonDetail']:
             discount = items[i]['pricingReasonDetail'][0]['discountAmount']
             if discount is None:
                 discount = 0
@@ -548,7 +548,8 @@ def get_order_items(order_data, zone):
                 'total': items[i]['total'],
                 'freeGood': items[i].get('freeGood', False),
                 'tax': tax,
-                'discount': discount
+                'discount': discount,
+                'vendorItemId': items[i].get("vendorItemId", None)
             }
             item_list.append(items_details)
 

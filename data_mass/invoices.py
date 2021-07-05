@@ -23,9 +23,9 @@ from data_mass.config import get_settings
 
 logger = logging.getLogger(__name__)
 
-def create_invoice_request(zone, environment, order_id, status, order_details, order_items, invoice_id=None):
+def create_invoice_request(zone, environment, order_id, status, order_details, order_items, account_id, invoice_id=None):
     # get data from Data Mass files
-    if zone == 'US':
+    if zone == "US":
         content: bytes = pkg_resources.resource_string(
             "data_mass",
             "data/create_invoice_payload_us.json"
@@ -40,23 +40,23 @@ def create_invoice_request(zone, environment, order_id, status, order_details, o
     if invoice_id is None:
         invoice_id = 'DM-' + str(randint(1, 100000))
 
+
+    
     order_placement_date = order_details.get('placementDate')
 
     if zone == 'DO':
         placement_date = order_placement_date.split('T')[0] + 'T00:00:00Z'
+    elif zone == 'US':
+        placement_date = order_placement_date
     else:
         placement_date = order_placement_date.split('+')[0] + 'Z'
 
-    vendor_item_id = "DM-VENDOR_SKU_001"
-
-    for i in range(len(order_items)):
-        order_items[i].update({"vendorItemId": vendor_item_id})
-
+    settings = get_settings()
     account_id = order_details.get('accountId')
 
     vendor_values = {
         'accountId': account_id,
-        'id': "VENDOR-12345",
+        'id': settings.vendor_id,
         'invoiceId': invoice_id
     }
 
@@ -69,12 +69,11 @@ def create_invoice_request(zone, environment, order_id, status, order_details, o
         'date': placement_date,
         'interestAmount': order_details.get('interestAmount'),
         'discount': abs(order_details.get('discount')),
-        'vendorItemId': vendor_item_id,
         'orderDate': placement_date,
         'orderId': order_id,
         'subtotal': order_details.get('subtotal'),
         'status': status,
-        'tax': order_details.get('tax'),
+        'tax': order_details.get('tax', 0),
         'total': order_details.get('total'),
         'poNumber': order_id,
         'paymentType': order_details.get('paymentMethod'),
@@ -249,7 +248,7 @@ def check_if_invoice_exists(
 
     Parameters
     ----------
-    account_id : [str
+    account_id : str
     invoice_id : str
     zone : str
     environment : str
@@ -264,10 +263,11 @@ def check_if_invoice_exists(
     
     if zone == "US":
         version = "v2"
+        query = {"customerInvoiceNumber": invoice_id}
     else:
         version = "v1"
-
-    query = {"customerInvoiceNumber": invoice_id}
+        query = {"invoiceId": invoice_id}
+        
     base_url = get_microservice_base_url(environment)
     request_url = f"{base_url}/invoices-service/{version}?{urlencode(query)}"
 
@@ -314,15 +314,14 @@ def get_invoices(
     Optional[dict]
         The invoice data.
     """
-    header_request = get_header_request(zone, True, False, False, False, account_id)
-    base_url = get_microservice_base_url(environment, False)
-
     if zone == "US":
         version = "v2"
         account_id = get_account_id(account_id, zone, environment)
     else:
         version = "v1"
 
+    header_request = get_header_request(zone, True, False, False, False, account_id)
+    base_url = get_microservice_base_url(environment, False)
     request_url = f"{base_url}/invoices-service/{version}?accountId={account_id}"
 
     # Place request

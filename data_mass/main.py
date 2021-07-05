@@ -1780,7 +1780,7 @@ def invoice_menu():
     operation = print_invoice_operations_menu()
     zone = print_zone_menu_for_ms()
 
-    if zone == "US" and operation != '1':
+    if zone == "USA" and operation != '1':
         print(text.Red + "\n- Function not available in this country.")
         print_finish_application_menu()
 
@@ -1804,16 +1804,23 @@ def invoice_menu():
 def flow_create_invoice(zone, environment, account_id):
     order_id = print_order_id_menu()
 
+    if zone == "US":
+        account_id = get_account_id(account_id, zone, environment)
+        print(account_id)
+
+
     response = check_if_order_exists(account_id, zone, environment, order_id)
     if not response or response == 'not_found':
         print_finish_application_menu()
+
+    
 
     order_data = response[0]
     order_details = get_order_details(order_data)
     order_items = get_order_items(order_data, zone)
     invoice_status = print_invoice_status_menu()
 
-    if zone == "US":
+    '''if zone == "US":
         invoice_response = create_invoice_v2(
             zone,
             environment,
@@ -1822,7 +1829,8 @@ def flow_create_invoice(zone, environment, account_id):
             order_data
         )
     else:
-        invoice_response = create_invoice_request(zone, environment, order_id, invoice_status, order_details, order_items)
+        '''
+    invoice_response = create_invoice_request(zone, environment, order_id, invoice_status, order_details, order_items, account_id)
 
     if invoice_response:
         print(text.Green + f'\n- Invoice {invoice_response} created successfully')
