@@ -573,18 +573,19 @@ def order_menu():
         item_list = []
         if zone == "US":
             for sku in unique_sku[:quantity]:
-                item, = list(filter(lambda item: item["sku"] == sku, product_offers))
+                items = list(filter(lambda item: item["sku"] == sku, product_offers))
                 default_price = round(uniform(9.99, 99.99), 2)
-                
-                item_list.append({
-                    "sku": item.get("sku"),
-                    "id": item.get("id"),
-                    "vendorItemId": item.get("sourceData").get("vendorItemId"),
-                    "price": item.get("price", default_price),
-                    "quantity": 1,
-                    "subtotal": item.get("price", default_price),
-                    "total": item.get("price", default_price)
-                })
+
+                for item in items:
+                    item_list.append({
+                        "sku": item.get("sku"),
+                        "id": item.get("id"),
+                        "vendorItemId": item.get("sourceData").get("vendorItemId"),
+                        "price": item.get("price", default_price),
+                        "quantity": 1,
+                        "subtotal": item.get("price", default_price),
+                        "total": item.get("price", default_price)
+                    })
         else:
             for sku in unique_sku[:quantity]:
                 data = {'sku': sku, 'itemQuantity': randint(0, 10)} 
