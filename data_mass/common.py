@@ -460,7 +460,8 @@ def print_welcome_script():
     print("│         DATA-MASS SCRIPT         │")
     print("│                                  │")
     print("╰──────────────────────────────────╯")
-    print(text.default_text_color + text.ResetAll + text.Bold + "\n")
+    print(text.default_text_color + text.ResetAll + "\n")
+    print(text.Bold)
 
 
 # Print structure menu
