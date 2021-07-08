@@ -186,7 +186,8 @@ def create_association_payload() -> DocumentNode:
             $attribute_id: ID!,
             $category_id: ID!,
             $min_cardinality: NonNegativeInt!,
-            $max_cardinality: NonNegativeInt!
+            $max_cardinality: NonNegativeInt!,
+            $metadata_values: [AssociateCardinalityInput!]
         ) {
             associateAttribute(
                 input:{
@@ -194,6 +195,7 @@ def create_association_payload() -> DocumentNode:
                     taxonomyNodeId: $category_id
                     minCardinality: $min_cardinality
                     maxCardinality: $max_cardinality
+                    metadata: $metadata_values
                     }
             ) {
                 id
