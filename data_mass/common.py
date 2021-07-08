@@ -1,10 +1,14 @@
 # Standard library imports
 import json
+import logging
 import os
 import sys
 import time as t
+import warnings
 from datetime import date, datetime
 from time import time
+from typing import Text
+from urllib.parse import urlencode
 from uuid import uuid1
 
 import click
@@ -19,11 +23,13 @@ from jsonpath_rw_ext import parse
 from requests import request
 from tabulate import tabulate
 
-# Local application imports
 from data_mass.classes.text import text
+# Local application imports
+from data_mass.config import get_settings
 from data_mass.logger import log_to_file
 from data_mass.validations import (
     is_number,
+    validate_account_name,
     validate_environment,
     validate_option_request_selection,
     validate_structure,
@@ -31,8 +37,9 @@ from data_mass.validations import (
     validate_supplier_search_menu_structure,
     validate_zone_for_interactive_combos_ms,
     validate_zone_for_ms
-    )
+)
 
+logger = logging.getLogger(__name__)
 
 # Validate option menu selection
 def validate_option_request_selection_for_structure_2(option):
@@ -120,9 +127,10 @@ def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclus
         'PA': 'America/Panama',
         'PE': 'America/Lima',
         'PY': 'America/Asuncion',
-        'ZA': 'Africa/Johannesburg'
+        'US': 'America/New_York',
+        'ZA': 'Africa/Johannesburg',
     }
-    timezone = switcher.get(zone, False)
+    timezone = switcher.get(zone.upper(), False)
 
     header = {
         'User-Agent': 'BEES - Data Mass Framework',
@@ -133,8 +141,11 @@ def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclus
         'cache-control': 'no-cache',
         'timezone': timezone
     }
-
-    if use_jwt_auth:
+    
+    if zone == "US":
+        header['Authorization'] = get_jwt_token()
+        header['Accept-Language'] = 'en-us'
+    elif use_jwt_auth:
         header['Authorization'] = generate_hmac_jwt(zone, account_id, jwt_app_claim)
     elif use_root_auth:
         header['Authorization'] = 'Basic cm9vdDpyb290'
@@ -161,6 +172,7 @@ def get_microservice_base_url(environment, is_v1=True):
         env_name = 'SIT' if (environment != 'SIT' and environment != 'UAT') else environment
         context = '/v1' if is_v1 else '/api'
         return f"https://services-{env_name.lower()}.bees-platform.dev{context}"
+    #todo   #return "https://bees-services-sit.eastus2.cloudapp.azure.com/api/price-relay/v2"
 
 
 
@@ -323,6 +335,7 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(6), text.Yellow + 'Invoice')
         print(text.default_text_color + str(7), text.Yellow + 'Create rewards')
         print(text.default_text_color + str(8), text.Yellow + 'Create credit statement')
+        print(text.default_text_color + str(9), text.Yellow + 'Categories')
         selection = input(text.default_text_color + '\nPlease select: ')
         while not validate_option_request_selection(selection):
             print(text.Red + '\n- Invalid option\n')
@@ -335,6 +348,7 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(6), text.Yellow + 'Invoice')
             print(text.default_text_color + str(7), text.Yellow + 'Create rewards')
             print(text.default_text_color + str(8), text.Yellow + 'Create credit statement')
+            print(text.default_text_color + str(9), text.Yellow + 'Categories')
             selection = input(text.default_text_color + '\nPlease select: ')
     elif selection_structure == '2':
         print(text.default_text_color + str(0), text.Yellow + 'Close application')
@@ -440,24 +454,24 @@ def print_available_options(selection_structure):
 
 # Print welcome menu
 def print_welcome_script():
-    print(text.BackgroundLightYellow + text.Bold + text.Black)
+    print(text.Bold + text.Cyan)
     print("╭──────────────────────────────────╮")
-    print("│ 🝝                               │")
-    print("│   ANTARCTICA AUTOMATION SCRIPT   │")
-    print("│                               🝝 │")
+    print("│                                  │")
+    print("│         DATA-MASS SCRIPT         │")
+    print("│                                  │")
     print("╰──────────────────────────────────╯")
-    print(text.BackgroundDefault + text.ResetBold + text.default_text_color + "\n")
+    print(text.default_text_color + text.ResetAll + text.Bold + "\n")
 
 
 # Print structure menu
 def print_structure_menu():
-    print(text.default_text_color + str(1), text.Yellow + 'Data creation - Microservice')
-    print(text.default_text_color + str(2), text.Yellow + 'Data searching - Microservice')    
-    print(text.default_text_color + str(3), text.Yellow + 'Token generator - Microservice')
-    print(text.default_text_color + str(4), text.Yellow + 'Data creation - Magento')
-    print(text.default_text_color + str(5), text.Yellow + 'Data creation - IAM')
-    print(text.default_text_color + str(6), text.Yellow + 'Data creation - Supplier/PIM')
-    print(text.default_text_color + str(7), text.Yellow + 'Data searching - Supplier/PIM')    
+    print(text.default_text_color + str(1), text.Yellow + 'Data creation - ' + text.White + 'Microservice')
+    print(text.default_text_color + str(2), text.Yellow + 'Data searching - ' + text.White + 'Microservice')    
+    print(text.default_text_color + str(3), text.Yellow + 'Token generator - ' + text.White + 'Microservice')
+    print(text.default_text_color + str(4), text.Yellow + 'Data creation - ' + text.White + 'Magento')
+    print(text.default_text_color + str(5), text.Yellow + 'Data creation - ' + text.White + 'IAM')
+    print(text.default_text_color + str(6), text.Yellow + 'Data creation - ' + text.White + 'Supplier/PIM')
+    print(text.default_text_color + str(7), text.Yellow + 'Data searching - ' + text.White + 'Supplier/PIM')    
     print(text.default_text_color + str(8), text.Yellow + 'Close application')
     structure = input(text.default_text_color + '\nPlease choose an option: ')
     while validate_structure(structure) is False:
@@ -509,7 +523,7 @@ def validate_combo_structure(option):
 # Print zone menu for Microservice
 def print_zone_menu_for_ms():
     zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
-    while validate_zone_for_ms(zone.upper()) is False:
+    while not validate_zone_for_ms(zone.upper()):
         print(text.Red + f'\n- {zone.upper()} is not a valid zone\n')
         zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
 
@@ -684,7 +698,7 @@ def validate_yes_no_change_date(
     str
         Y or N depending on user input.
     """
-    option = input(f'\n{text.default_text_color}{question}')
+    option = input(f'{text.default_text_color}{question}')
 
     while (option.upper() in ["Y", "N"]) is False:
         print(text.Red + '\n- Invalid option')
@@ -719,16 +733,17 @@ def validate_user_entry_date(text:str = "New Date entry"):
 
 def validate_country_menu_in_user_create_iam(zone):
     switcher = {
-        'BR': True,
-        'CO': True,
-        'DO': True,
-        'MX': True,
-        'EC': True,
-        'PE': True,
-        'ZA': True,
-        'AR': True,
-        'CA': True,
-        'PA': True
+        "BR": True,
+        "CO": True,
+        "DO": True,
+        "MX": True,
+        "EC": True,
+        "PE": True,
+        "ZA": True,
+        "AR": True,
+        "CA": True,
+        "US": True,
+        "PA": True
     }
     return switcher.get(zone, False)
 
@@ -907,26 +922,42 @@ def print_year_credit_statement():
     return year
 
 
-def print_invoices(invoice_info, status):
-    invoice_list = list()
-    for i in invoice_info['data']:
-        if i['status'] == status[0] or i['status'] == status[1]:
-            invoice_values = {
-                'Invoice ID': i['invoiceId'],
-                'Product Quantity': i['itemsQuantity'],
-                'Sub Total': i['subtotal'],
-                'Tax': i['tax'],
-                'Discount': i['discount'],
-                'Total': i['total']
-            }
-            for j in range(i['itemsQuantity']):
-                invoice_values.setdefault('SKU', []).append(i['items'][j-1]['sku'])
-            invoice_list.append(invoice_values)
-        else:
-            continue
-    if bool(invoice_list):
+def print_invoices(invoice_info: dict, status: list, zone: str = None):
+    """
+    Print invoices.
+
+    Parameters
+    ----------
+    invoice_info : dict
+    status : list
+    zone : str
+        Defaults by `None`.
+    """
+    invoices = []
+
+    if zone == "US":
+        key = "vendorItemId"
+    else:
+        key = "sku"
+
+    for invoice in invoice_info.get("data", []):
+        products = [item.get(key) for item in invoice.get("items")]
+
+        if invoice.get("status") in status:
+            invoices.append({
+                "Invoice ID": invoice.get("invoiceId"),
+                "Customer Invoice Number": invoice.get("customerInvoiceNumber"),
+                "Product Quantity": invoice.get("itemsQuantity", 0),
+                "Sub Total": invoice.get("subtotal"),
+                "Tax": invoice.get("tax"),
+                "Discount": invoice.get("discount"),
+                "Total": invoice.get("total"),
+                key: ", ".join(products)
+            })
+
+    if invoices:
         print(text.default_text_color + '\nInvoice Information By Account  -  Status:' + status[1])
-        print(tabulate(invoice_list, headers='keys', tablefmt='grid'))
+        print(tabulate(invoices, headers='keys', tablefmt='fancy_grid'))
     else:
         print(text.Red + '\nThere is no invoices with the status of ' + status[1] + ' for this account')
 
@@ -1064,3 +1095,106 @@ def get_header_request_supplier():
     }
 
     return header
+
+
+def get_jwt_token():
+    """
+    checks if there is any token, if it exists and has expired,\
+    a new one must be created.
+
+    Returns
+    -------
+    str
+        The jwt token.
+    """
+    access_token: str = None
+
+    try:
+        access_token = os.environ["TOKEN"]
+    except KeyError:
+        pass
+
+    if access_token is None or token_has_expired():
+        access_token = create_new_jwt_token()
+        os.environ["TOKEN"] = access_token
+
+    return access_token
+    
+
+def create_new_jwt_token():
+    """
+    Create a new jwt token.
+
+    Returns
+    -------
+    str
+        The new token.
+    """
+    settings = get_settings()
+    header: dict = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "requestTraceId": str(uuid1()),
+    }
+
+    query: str = urlencode({
+        "client_id": settings.client_id,
+        "client_secret": settings.client_secret,
+        "scope": "openid",
+        "grant_type": "client_credentials"
+    })
+
+    request_url: str = get_microservice_base_url("SIT", False)
+    request_url: str = f"{request_url}/auth/token?{query}"
+    response = place_request(
+        request_method="POST",
+        request_url=request_url,
+        request_body="",
+        request_headers=header
+    )
+    content: dict = json.loads(response.content)
+    token = content.get("access_token", None)
+
+    os.environ["EXPIRATION_TIME"] = str(round(t.time() + 1800))
+
+    return f"Bearer {token}"
+
+
+def token_has_expired() -> bool:
+    """
+    Check if the current token has expired.
+    
+    Returns
+    -------
+    bool
+        Whenever a token has expired or not.
+    """
+    current_time = round(t.time())
+
+    try:
+        expiration_date = os.environ["EXPIRATION_TIME"]
+    except KeyError:
+        return True
+
+    if current_time > int(expiration_date):
+        return True
+
+    return False
+
+
+def resources_warning():
+    """
+    Shows `ResourcesWarning` when using US features.
+    """
+    message = \
+    """
+    Data Mass does not have persistent data creation power for
+    services that make use of live-call.
+
+    All returned data (if any) is mocked. If there is a need for any
+    specific data, we suggest that you notify the migration team or the Data Mass team.
+    """
+    warnings.filterwarnings(action="once")
+    warnings.warn(
+        f"{text.ResetUnderlined}{text.Red}{message}{text.Underlined}",
+        ResourceWarning, stacklevel=2
+    )

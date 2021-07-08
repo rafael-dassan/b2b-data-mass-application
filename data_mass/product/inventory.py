@@ -2,6 +2,7 @@ import json
 import os
 from json import dumps, load, loads
 from typing import Optional
+from urllib.parse import urlencode
 
 import pkg_resources
 from tabulate import tabulate
@@ -13,7 +14,8 @@ from data_mass.common import (
     get_microservice_base_url,
     place_request,
     update_value_to_json
-    )
+)
+from data_mass.config import get_settings
 
 
 def request_inventory_creation(
@@ -49,24 +51,45 @@ def request_inventory_creation(
         use_root_auth=False,
         use_inclusion_auth=True
     )
+    
+    if zone == "US":
+        endpoint: str = f"inventory-relay/inventory/{delivery_center_id}"
+        is_v1: bool = False
 
-    base_url = get_microservice_base_url(environment)
-    request_url = f"{base_url}/inventory-relay/add"
+        response: dict = get_delivery_center_inventory_v2(
+            account_id=account_id,
+            zone=zone,
+            environment=environment,
+            delivery_center_id=delivery_center_id
+        )
 
-    request_body = get_inventory_payload(
-        zone=zone,
-        environment=environment,
-        account_id=account_id,
-        products=products,
-        delivery_center_id=delivery_center_id,
-        sku_id=sku_id,
-        sku_quantity=sku_quantity
-    )
+        request_body: dict = {"inventory": []}
+        for inventory in response:
+            for product in inventory.get("inventories", []):
+                if product.get("vendorItemId") == sku_id:
+                    product.update({"quantity": int(sku_quantity)})
+
+                request_body["inventory"].append(product)
+    else:
+        request_body = get_inventory_payload(
+            zone=zone,
+            environment=environment,
+            account_id=account_id,
+            products=products,
+            delivery_center_id=delivery_center_id,
+            sku_id=sku_id,
+            sku_quantity=sku_quantity
+        )
+        is_v1 = True
+        endpoint = "inventory-relay/add"
+
+    base_url = get_microservice_base_url(environment, is_v1)
+    request_url = f"{base_url}/{endpoint}"
 
     response = place_request(
         request_method="PUT",
         request_url=request_url,
-        request_body=request_body,
+        request_body=json.dumps(request_body),
         request_headers=request_headers
     )
 
@@ -90,7 +113,7 @@ def get_inventory_payload(
         products: list,
         delivery_center_id: str,
         sku_id: str,
-        sku_quantity: int) -> str:
+        sku_quantity: int) -> dict:
     """
     Get inventory from microservice.
 
@@ -106,7 +129,7 @@ def get_inventory_payload(
 
     Returns
     -------
-    str
+    dict
         The request body.
     """
     get_inventory_response = get_delivery_center_inventory(
@@ -163,13 +186,10 @@ def get_inventory_payload(
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
-    # Create body
-    request_body = convert_json_to_string(json_object)
-
-    return request_body
+    return json_object
 
 
-def display_inventory_by_account(inventory: list):
+def display_inventory_by_account(inventory: list, zone: str = None):
     """
     Display inventory on the screen.
 
@@ -179,16 +199,83 @@ def display_inventory_by_account(inventory: list):
     """
     inventory_info = []
 
-    for item in inventory["inventory"]:
-        inventory_values = {
-            "sku": item["sku"],
-            "quantity": item["quantity"]
-        }
+    if zone == "US":
+        inventory = inventory[0]
 
-        inventory_info.append(inventory_values)
+        for item in inventory["inventories"]:
+            inventory_values = {
+                "vendorItemId": item["vendorItemId"],
+                "quantity": item["quantity"]
+            }
+
+            inventory_info.append(inventory_values)
+    else:
+        for item in inventory["inventory"]:
+            inventory_values = {
+                "sku": item["sku"],
+                "quantity": item["quantity"]
+            }
+
+            inventory_info.append(inventory_values)
 
     print(text.default_text_color + '\nInventory/stock information ')
-    print(tabulate(inventory_info, headers='keys', tablefmt='grid'))
+    print(tabulate(inventory_info, headers='keys', tablefmt='fancy_grid'))
+
+
+def get_delivery_center_inventory_v2(
+        account_id: str,
+        zone: str,
+        environment: str,
+        delivery_center_id: str = None) -> dict:
+    """
+    Get inventory from a specific Delivery Center.
+
+    Parameters
+    ----------
+    account_id : str
+    zone : str
+    environment : str
+    delivery_center_id : str
+        Default by `None`.
+
+    Returns
+    -------
+    dict
+        List of all Delivery Center inventory.
+    """
+    header = get_header_request(zone)
+    base_url = get_microservice_base_url(environment, False)
+    settings = get_settings()
+
+    query = {"vendorId": settings.vendor_id}
+
+    if delivery_center_id:
+        query = f"{urlencode(query)}&deliveryCenters={delivery_center_id}"
+
+    request_url = f"{base_url}/inventory/inventories?{query}"
+    
+    response = place_request(
+        request_method="GET",
+        request_url=request_url,
+        request_body="",
+        request_headers=header
+    )
+
+    if response.status_code == 200:
+        data = loads(response.text)
+        return data
+
+    if response.status_code == 404:
+        return None
+
+    print(
+        f'\n{text.Red}'
+        '- [Inventory Service] Failure to retrieve inventory information. '
+        f'Response Status: {response.status_code}. '
+        f'Response message: {response.text}'
+    )
+
+    return None    
 
 
 def get_delivery_center_inventory(
@@ -237,14 +324,15 @@ def get_delivery_center_inventory(
 
     if response.status_code == 200:
         return json_data
-    elif response.status_code == 404:
-        return {}
-    else:
-        print((
-            f'\n{text.Red}'
-            '- [Inventory Service] Failure to retrieve inventory information. '
-            f'Response Status: {response.status_code}. '
-            f'Response message: {response.text}'
-        ))
 
-        return {}
+    if response.status_code == 404:
+        return None
+
+    print(
+        f'\n{text.Red}'
+        '- [Inventory Service] Failure to retrieve inventory information. '
+        f'Response Status: {response.status_code}. '
+        f'Response message: {response.text}'
+    )
+
+    return None

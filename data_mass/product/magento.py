@@ -6,7 +6,7 @@ from data_mass.common import (
     get_magento_base_url,
     get_magento_datamass_access_token,
     place_request
-    )
+)
 
 
 def enable_product(country: str, environment: str, product_sku: str):
@@ -53,8 +53,8 @@ def request_enable_product(
         The response.
     """
     # Get header request
-    base_rul = get_magento_base_url(environment, country)
-    url = f"{base_rul}/rest/V1/products/{product_sku}"
+    base_url = get_magento_base_url(environment, country)
+    url = f"{base_url}/rest/V1/products/{product_sku}"
 
     # Get base URL
     access_token = get_magento_datamass_access_token(environment, country)

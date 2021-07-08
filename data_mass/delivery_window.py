@@ -1,6 +1,7 @@
 # Standard library imports
 import calendar
 import json
+import logging
 import os
 import sys
 from datetime import datetime, timedelta
@@ -16,7 +17,9 @@ from data_mass.common import (
     get_microservice_base_url,
     place_request,
     update_value_to_json
-    )
+)
+
+logger = logging.getLogger(__name__)
 
 
 # Create payload for delivery date
@@ -80,47 +83,87 @@ def get_microservice_payload_post_delivery_fee(account_data, include_delivery_co
     return json_object
 
 
-# Create delivery date in microservice
-def create_delivery_window_microservice(zone, environment, account_data, is_alternative_delivery_date, option):
+def create_delivery_window_microservice(
+        zone: str,
+        environment: str,
+        account_data: dict,
+        is_alternative_delivery_date: bool,
+        option: str) -> bool:
+    """
+    Create delivery date in microservice.
+
+    Parameters
+    ----------
+    zone : str
+    environment : str
+    account_data : dict
+    is_alternative_delivery_date : bool
+    option : str
+
+    Returns
+    -------
+    bool
+        Whenever a post request was successfully completed.
+    """
     # Get headers
     request_headers = get_header_request(zone, False, True, False, False)
 
+    if zone == "US":
+        v1 = False
+    else:
+        v1 = True
+
     # Get base URL
-    request_url = get_microservice_base_url(environment) + '/account-relay/delivery-windows'
+    ms_base_url = get_microservice_base_url(environment, v1)
+    request_url = f"{ms_base_url}/account-relay/delivery-windows"
 
     # Return list of dates
     dates_list = return_dates_payload(option)
     if not dates_list:
         return False
-    else:
-        index = 0
-        request_body = list()
-        while index <= (len(dates_list) - 1):
-            # Force mixed values if it's is_alternative_delivery_date
-            if is_alternative_delivery_date:
-                if (index % 2) == 0:
-                    option_is_alternative_delivery_date = True
-                else:
-                    option_is_alternative_delivery_date = False
+    
+    index = 0
+    request_body = []
+
+    while index <= (len(dates_list) - 1):
+        # Force mixed values if it's is_alternative_delivery_date
+        if is_alternative_delivery_date:
+            if (index % 2) == 0:
+                option_is_alternative_delivery_date = True
             else:
-                option_is_alternative_delivery_date = is_alternative_delivery_date
+                option_is_alternative_delivery_date = False
+        else:
+            option_is_alternative_delivery_date = is_alternative_delivery_date
 
-            # Get body request
-            temporary_body = get_microservice_payload_post_delivery_date(account_data,
-                                                                         option_is_alternative_delivery_date,
-                                                                         dates_list[index], index)
-            request_body.append(temporary_body)
-            index = index + 1
+        # Get body request
+        temporary_body = get_microservice_payload_post_delivery_date(
+            account_data,
+            option_is_alternative_delivery_date,
+            dates_list[index],
+            index
+        )
+        request_body.append(temporary_body)
+        index = index + 1
 
-        # Place request
-        response = place_request('POST', request_url, json.dumps(request_body), request_headers)
-        if response.status_code != 202:
-            print(
-                text.Red + '\n- [Account Relay Service] Failure to create delivery window. Response Status: {response_status}. Response message: {response_message}'.format(
-                    response_status=str(response.status_code), response_message=response.text))
-            return False
+    # Place request
+    response = place_request(
+        request_method="POST",
+        request_url=request_url,
+        request_body=json.dumps(request_body),
+        request_headers=request_headers
+    )
 
-        return 'success'
+    if response.status_code in [200, 202]:
+        return True
+
+    print(
+        f"{text.Red}"
+        "- [Account Relay Service] Failure to create delivery window.\n"
+        f"Response Status: {response.status_code}.\n"
+        f"Response message: {response.text}"
+    )
+
+    return False
 
 
 # Return payload next date for delivery date

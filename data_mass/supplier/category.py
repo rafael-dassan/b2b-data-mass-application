@@ -392,16 +392,16 @@ def display_specific_category(category: Any):
             attributes_list.append(attributes_info)
 
     print(text.default_text_color + '\nCategory - General Information')
-    print(tabulate([info_category], headers='keys', tablefmt='grid'))
+    print(tabulate([info_category], headers='keys', tablefmt='fancy_grid'))
 
     print(text.default_text_color + '\nCategory - Parent Information')
-    print(tabulate([parent_info], headers='keys', tablefmt='grid'))
+    print(tabulate([parent_info], headers='keys', tablefmt='fancy_grid'))
 
     print(text.default_text_color + '\nCategory - Ancestor Information')
-    print(tabulate(ancestors_list, headers='keys', tablefmt='grid'))
+    print(tabulate(ancestors_list, headers='keys', tablefmt='fancy_grid'))
 
     print(text.default_text_color + '\nCategory - Attribute Information')
-    print(tabulate(attributes_list, headers='keys', tablefmt='grid'))
+    print(tabulate(attributes_list, headers='keys', tablefmt='fancy_grid'))
 
 
 def search_all_category(
@@ -490,7 +490,7 @@ def display_all_category(category: Any):
             information_cat.append(category_info)
 
     print(text.default_text_color + '\nCategory - General Information')
-    print(tabulate(information_cat, headers='keys', tablefmt='grid'))
+    print(tabulate(information_cat, headers='keys', tablefmt='fancy_grid'))
 
 
 def associate_all_legacy_attributes(

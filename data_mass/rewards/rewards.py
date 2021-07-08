@@ -199,7 +199,7 @@ def display_program_rules_skus(zone, environment, abi_id):
                     program_rules_skus.setdefault('SKU ID', []).append(sku)
                     program_rules_skus.setdefault('SKU name', []).append(sku_name)
 
-                print(text.default_text_color + tabulate(program_rules_skus, headers='keys', tablefmt='grid'))
+                print(text.default_text_color + tabulate(program_rules_skus, headers='keys', tablefmt='fancy_grid'))
 
 
 def get_rewards(account_id, zone, environment):

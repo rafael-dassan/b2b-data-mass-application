@@ -14,13 +14,13 @@ from data_mass.common import (
     place_request,
     return_first_and_last_date_year_payload,
     update_value_to_json
-    )
+)
 from data_mass.product.products import (
     check_item_enabled,
     get_sku_name,
     request_get_account_product_assortment,
     request_get_products_microservice
-    )
+)
 
 
 # Show all available SKUs of the account in the screen
@@ -97,8 +97,30 @@ def display_available_products(account_id, zone, environment, delivery_center_id
         return False
 
 
-# Update SKU Limit
-def update_sku_limit_enforcement_microservice(zone, environment, account_id, sku_id=None, sku_quantity=0):
+def update_sku_limit_enforcement_microservice(
+        zone: str,
+        environment: str,
+        account_id: str,
+        sku_id: str = None,
+        sku_quantity: int = 0) -> bool:
+    """
+    Update SKU limit.
+
+    Parameters
+    ----------
+    zone : str
+    environment : str
+    account_id : str
+    sku_id : str, optional
+        By default `None`.
+    sku_quantity : int, optional
+        By default `0`.
+
+    Returns
+    -------
+    bool
+        Whenever a update occours.
+    """
 
     # Define url request
     request_url = get_microservice_base_url(environment) + '/enforcement-relay-service/'

@@ -1,0 +1,27 @@
+{
+    "accountId": "string",
+    "channel": "B2B_WEB",
+    "delivery": {
+      "date": "string",
+      "note": "string",
+      "windowId": "string"
+    },
+    "deliveryCenterId": "string",
+    "deposit": 0,
+    "discount": 0,
+    "interestAmount": 0,
+    "itemsQuantity": 9,
+    "note": "string",
+    "paymentMethod": "CASH",
+    "paymentTerm": 0,
+    "poNumber": "string",
+    "total": 1427.00,
+    "subtotal": 1350.00,
+    "tax": 20,
+    "placementDate": "string",
+    "status": "string",
+    "vendor": {
+        "accountId": "string",
+        "id": "string"
+    }
+  }

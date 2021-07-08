@@ -9,7 +9,7 @@ from data_mass.common import (
     get_microservice_base_url,
     remove_from_dictionary,
     set_to_dictionary
-    )
+)
 from data_mass.logger import log_to_file
 
 
@@ -87,15 +87,15 @@ def create_file_api(
 
     if response.status_code == 200:
         return True
-    else:
-        print(
-            f"{text.Red}"
-            "- [File Management Service] Failure to create file.\n"
-            f"Response Status: {response.status_code}\n"
-            f"Response message: {response.text}"
-        )
 
-        return False
+    print(
+        f"{text.Red}"
+        "- [File Management Service] Failure to create file.\n"
+        f"Response Status: {response.status_code}\n"
+        f"Response message: {response.text}"
+    )
+
+    return False
 
 
 def get_file_metadata(account_id: str, purpose: str, data: dict) -> str:

@@ -1,22 +1,24 @@
 import json
+import os
+from typing import Union
 
 from data_mass.classes.text import text
 from data_mass.common import (
     get_header_request,
     get_microservice_base_url,
     place_request
-    )
+)
 
 
 def add_credit_to_account_microservice(
     account_id: str,
     zone: str,
     environment: str,
-    credit: str = 0,
-    balance: str = 0,
-    consumption: str = 0,
+    credit: int = 0,
+    balance: int = 0,
+    consumption: int = 0,
     payment_term: str = None,
-    overdue: str = 0,
+    overdue: int = 0,
     total: int = 0
 ) -> bool:
     """
@@ -31,12 +33,11 @@ def add_credit_to_account_microservice(
     environment : str
         envorinment used in the operation e.g., DEV, SIT, UAT.
     credit_info : dict
-        [description]
 
     Returns
     -------
     bool
-        return True if there were success in POST method, 
+        `True` if there were success in POST method, \
         else print the failure and return False.
     """
     request_headers = get_header_request(zone=zone, use_root_auth=True)
@@ -65,11 +66,11 @@ def add_credit_to_account_microservice(
 
     if response.status_code == 202:
         return True
-    else:
-        print(
-            f"{text.Red}\n- [Account Relay Service] "
-            f"Failure to add credit to the account {account_id}. "
-            f"Response Status: {str(response.status_code)}. "
-            f"Response message: {response.text}"
-        )
-        return False
+
+    print(
+        f"{text.Red}\n- [Account Relay Service] "
+        f"Failure to add credit to the account {account_id}. "
+        f"Response Status: {str(response.status_code)}. "
+        f"Response message: {response.text}"
+    )
+    return False

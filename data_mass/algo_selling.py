@@ -1,8 +1,10 @@
 import json
+import logging
 import os
 from json import loads
 from random import randint
 from time import time
+from urllib.parse import urlencode
 from uuid import uuid1
 
 import pkg_resources
@@ -15,10 +17,13 @@ from data_mass.common import (
     get_header_request,
     get_microservice_base_url,
     place_request,
+    resources_warning,
     set_to_dictionary,
     update_value_to_json
-    )
+)
+from data_mass.config import get_settings
 
+logger = logging.getLogger(__name__)
 
 def create_all_recommendations(zone, environment, account_id, products):
     # Get responses
@@ -26,10 +31,10 @@ def create_all_recommendations(zone, environment, account_id, products):
     sell_up_response = request_sell_up(zone, environment, account_id, products)
     forgotten_items_response = request_forgotten_items(zone, environment, account_id, products)
 
-    if quick_order_response == 'success' and sell_up_response == 'success' and forgotten_items_response == 'success':
-        return 'success'
-    else:
-        return False
+    if quick_order_response and sell_up_response and forgotten_items_response:
+        return True
+
+    return False
 
 
 # Define JSON to submit QUICK ORDER recommendation type
@@ -66,12 +71,19 @@ def create_quick_order_payload(account_id, zone, product_list):
         'recommendationId': f'DM-{zone}-{str(randint(1, 100000))}',
         'useCase': 'QUICK_ORDER',
         'useCaseId': account_id,
-        'descriptions[0].language': language,
-        'descriptions[0].text': text,
-        'descriptions[0].description': text_description,
+        'items': items,
+        'descriptions': [{
+            'language': language,
+            'text': text,
+            'description': text_description
+        }],
         'combos': None
     }
-    set_to_dictionary(dict_values, 'items', items)
+    
+    if zone == "US":
+        resources_warning()
+        settings = get_settings()
+        dict_values.update({"vendorId": settings.vendor_id})
 
     # Create file path
     path = os.path.abspath(os.path.dirname(__file__))
@@ -122,11 +134,19 @@ def create_forgotten_items_payload(account_id, zone, product_list):
         'recommendationId': f'DM-{zone}-{str(randint(1, 100000))}',
         'useCase': 'FORGOTTEN_ITEMS',
         'useCaseId': account_id,
-        'descriptions[0].language': language,
-        'descriptions[0].text': text,
-        'descriptions[0].description': text_description,
+        'descriptions': [{
+            'language': language,
+            'text': text,
+            'description': text_description,
+        }],
         'combos': None
     }
+
+    if zone == "US":
+        resources_warning()
+        settings = get_settings()
+        dict_values.update({"vendorId": settings.vendor_id})
+
     set_to_dictionary(dict_values, 'items', items)
 
     content = pkg_resources.resource_string("data_mass", "data/create_beer_recommender_payload.json") 
@@ -174,11 +194,19 @@ def create_upsell_payload(account_id, zone, product_list):
 
     dict_values = {
         'recommendationId': f'DM-{zone}-{str(randint(1, 100000))}',
-        'descriptions[0].language': language,
-        'descriptions[0].text': text,
-        'descriptions[0].description': text_description,
+        'descriptions': [{
+            'language': language,
+            'text': text,
+            'description': text_description
+        }],
         'useCaseId': account_id
     }
+
+    if zone == "US":
+        resources_warning()
+        settings = get_settings()
+        dict_values.update({"vendorId": settings.vendor_id})
+
     set_to_dictionary(dict_values, 'items', items)
 
     # get data from Data Mass files
@@ -212,7 +240,7 @@ def request_quick_order(zone, environment, account_id, products):
     response = place_request('POST', request_url, request_body, request_headers)
     
     if response.status_code == 202:
-        return 'success'
+        return True
     else:
         print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: {}. '
                          'Response message: {}'.format(response.status_code, response.text))
@@ -233,7 +261,7 @@ def request_forgotten_items(zone, environment, account_id, products):
     response = place_request('POST', request_url, request_body, request_headers)
 
     if response.status_code == 202:
-        return 'success'
+        return True
     else:
         print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: {}. '
                          'Response message: {}'.format(response.status_code, response.text))
@@ -254,7 +282,7 @@ def request_sell_up(zone, environment, account_id, products):
     response = place_request('POST', request_url, request_body, request_headers)
 
     if response.status_code == 202:
-        return 'success'
+        return True
     else:
         print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: {}. '
                          'Response message: {}'.format(response.status_code, response.text))
@@ -278,6 +306,7 @@ def get_header_request_recommender(zone, environment):
             'PA': 'America/Panama',
             'PE': 'America/Lima',
             'PY': 'America/Asuncion',
+            'US': 'America/New_York',
             'ZA': 'Africa/Johannesburg'
         }
         timezone = switcher.get(zone, False)
@@ -295,35 +324,57 @@ def get_header_request_recommender(zone, environment):
     return request_headers
 
 
-def get_recommendation_by_account(account_id, zone, environment, use_case):
+def get_recommendation_by_account(
+        account_id: str,
+        zone: str,
+        environment: str,
+        use_case: list):
     headers = get_header_request(zone, True, False, False, False, account_id)
 
-    request_url = get_microservice_base_url(environment, True) + '/global-recommendation/?useCase={}&useCaseId=' \
-                                                                   '{}&useCaseType=ACCOUNT'.format(use_case, account_id)
+    base_url = get_microservice_base_url(environment, True)
+    query: dict = {"useCaseId": account_id}
+    case_query: list = []
+    
+    for case in use_case:
+        case_query.append(("useCase", case))
 
+    if zone == "US":
+        resources_warning()
+        settings = get_settings()
+        query.update({"vendorId": settings.vendor_id})
+
+    request_url = f"{base_url}/global-recommendation/?{urlencode(query)}&{urlencode(case_query)}&useCaseType=ACCOUNT"
     response = place_request('GET', request_url, '', headers)
-
     recommendation_data = loads(response.text)
 
     if response.status_code == 200:
         content = recommendation_data['content']
-        if len(content) != 0:
+
+        if content:
             return recommendation_data
-        elif len(content) == 0:
-            print(text.Yellow + '\n- [Global Recommendation Service] The account {} does not have recommendation type'
-                                ' {}'.format(account_id, use_case))
-            return 'not_found'
-    else:
-        print(text.Red + '\n- [Global Recommendation Service] Failure to retrieve recommendation. Response Status: {}.'
-                         ' Response message: {}'.format(response.status_code, response.text))
-        return False
+
+        print(
+            f"{text.Yellow}\n"
+            "- [Global Recommendation Service] "
+            f"The account {account_id} does not contains any recommendation type: {use_case}"
+        )
+
+        return 'not_found'
+
+    print(
+        f"{text.Red}\n"
+        "- [Global Recommendation Service] Failure to retrieve recommendation."
+        f"Response Status: {response.status_code}."
+        f"Response message: {response.text}\n"
+    )
+
+    return False
 
 
 def delete_recommendation_by_id(environment, recommendation_data, zone, account_id):
     recommendation_id = recommendation_data['content'][0]['id']
 
     headers = get_header_request(zone, True, False, False, False, account_id)
-
 
     # headers = {
     #     'requestTraceId': str(uuid1()),
@@ -334,22 +385,26 @@ def delete_recommendation_by_id(environment, recommendation_data, zone, account_
     # }
 
     request_url = get_microservice_base_url(environment, True) + f'/global-recommendation/{recommendation_id}'
-
     response = place_request('DELETE', request_url, '', headers)
 
     if response.status_code == 202:
-        return 'success'
-    else:
-        print(text.Red + '\n- [Global Recommendation Service] Failure to delete recommendation. Response Status: {}.'
-                         ' Response message: {}'.format(response.status_code, response.text))
-        return False
+        return True
+
+    print(
+        f"{text.Red}\n"
+        "- [Global Recommendation Service] Failure to delete recommendation.\n"
+        f"Response Status: {response.status_code}.\n"
+        f"Response message: {response.text}\n"
+    )
+
+    return False
 
 
 def display_recommendations_by_account(data):
     recommendations = data['content']
-    recommender_list = list()
-    items_list = list()
-    combo_list = list()
+    recommender_list = []
+    items_list = []
+    combo_list = []
 
     for i in range(len(recommendations)):
         dict_value = {
@@ -396,22 +451,22 @@ def display_recommendations_by_account(data):
             combo_list.append(combos_value)
 
     print(text.default_text_color + '\nRecommendations Information By Account')
-    print(tabulate(recommender_list, headers='keys', tablefmt='grid'))
+    print(tabulate(recommender_list, headers='keys', tablefmt='fancy_grid'))
 
     print(text.default_text_color + '\nItems Recommendations Information By Account')
-    print(tabulate(items_list, headers='keys', tablefmt='grid'))
+    print(tabulate(items_list, headers='keys', tablefmt='fancy_grid'))
 
     print(text.default_text_color + '\nCombos Recommendations Information By Account')
-    print(tabulate(combo_list, headers='keys', tablefmt='grid'))
+    print(tabulate(combo_list, headers='keys', tablefmt='fancy_grid'))
 
 
 def input_combos_quick_order(zone, environment, account_id):
     # Retrieve quick order recommendation of the account
-    account_recommendation = get_recommendation_by_account(account_id, zone, environment, 'QUICK_ORDER')
+    account_recommendation = get_recommendation_by_account(account_id, zone, environment, ['QUICK_ORDER'])
     
     if account_recommendation == 'not_found' or not account_recommendation:
         return False
-    else: 
+    else:
         # Retrieve combos type discount of the account
         request_headers = get_header_request(zone, True, False, False, False, account_id)
 
@@ -451,7 +506,7 @@ def input_combos_quick_order(zone, environment, account_id):
         response = place_request('POST', request_url, updated_recommendation, request_headers)
 
         if response.status_code == 202:
-            return 'success'
+            return True
         else:
             print(text.Red + '\n- [Recommendation Relay Service] Failure to retrieve combos. Response Status: {}. '
                              'Response message: {}'.format(response.status_code, response.text))

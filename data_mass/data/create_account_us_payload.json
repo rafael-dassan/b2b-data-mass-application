@@ -1,0 +1,81 @@
+{
+  "vendorAccountId": "string",
+  "challengeIds": [
+    "string"
+  ],
+  "channel": null,
+  "contacts": [
+    {
+      "type": "PHONE",
+      "value": "13111111111"
+    }
+  ],
+  "customerAccountId": "string",
+  "deliveryAddress": {
+    "address": "string",
+    "city": "string",
+    "latitude": null,
+    "longitude": null,
+    "state": "string",
+    "zipcode": "string"
+  },
+  "deliveryCenterId": "string",
+  "deliveryRegion": null,
+  "deliveryRoute": null,
+  "deliveryScheduleId": "2021-12-12",
+  "erpSalesCenter": null,
+  "hasEmptiesLoan": true,
+  "hasPONumberRequirement": false,
+  "hasOverprice": true,
+  "liquorLicense": [
+    {
+      "description": null,
+      "expirationDate": "2021-12-12",
+      "number": "string",
+      "status": "VALID",
+      "type": "PERMANENT"
+    }
+  ],
+  "maximumOrder": {
+    "paymentMethods": "CASH",
+    "type": "PRODUCT_QUANTITY",
+    "value": 20
+  },
+  "minimumOrder": {
+    "paymentMethods": "CASH",
+    "type": "PRODUCT_QUANTITY",
+    "value": 20
+  },
+  "name": "string",
+  "owner": {
+    "email": "test@mailinator.com",
+    "firstName": "TEST OWNER FIRST NAME",
+    "lastName": "TEST OWNER LAST NAME",
+    "phone": "11999999999"
+  },
+  "paymentMethods": [
+    "CREDIT"
+  ],
+  "paymentTerms": [
+    {
+      "termPeriods": [
+        {
+          "days": 0
+        }
+      ],
+      "type": "CREDIT"
+    }
+  ],
+  "potential": "DM-POTENT",
+  "priceListId": "",
+  "salesRepresentative": {
+    "email": "test@zone.com",
+    "name": "BEES BDR",
+    "phone": "11000000000"
+  },
+  "salesRoute": "string",
+  "segment": "DM-SEG",
+  "status": "BLOCKED",
+  "subSegment": "DM-SUBSEG",
+  "taxId": "string"
+}

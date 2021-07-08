@@ -80,7 +80,7 @@ def get_rewards_combos_by_account(account_id, zone, environment):
         if len(json_data['combos']) > 0:
             return response
         else:
-            print(text.Red + '\n- [Rewards] There are no DT combos available for the account "{}". \n- Please use the menu option "" to associate DT combos to this account.'
+            print(text.Red + '\n- [Rewards] There are no DT combos available for the account "{}". \n- Please use the menu option "Associate Redeem Products (DT Combos) to a POC" to associate DT combos to this account.'
                 .format(account_id))    
     elif response.status_code == 404:
         print(text.Red + '\n- [Rewards] The account "{}" is not enrolled to any rewards program. \n- Please use the menu option "Enroll POC to a program" to enroll this account to a rewards program.'
@@ -188,7 +188,7 @@ def display_all_programs_info(list_all_programs, show_initial_balance=False, sho
         if show_redeem_limit:
             all_programs_dictionary.setdefault('Current redeem limit', []).append(program['redeemLimit'])
 
-    print(text.default_text_color + tabulate(all_programs_dictionary, headers='keys', tablefmt='grid'))
+    print(text.default_text_color + tabulate(all_programs_dictionary, headers='keys', tablefmt='fancy_grid'))
 
 
 # Displays all challenges information
@@ -204,7 +204,7 @@ def display_all_challenges_info(list_all_challenges):
         all_challenges_dictionary.setdefault('Start Date', []).append(challenge['startDate'])
         all_challenges_dictionary.setdefault('End Date', []).append(challenge['endDate'])
 
-    print(text.default_text_color + tabulate(all_challenges_dictionary, headers='keys', tablefmt='grid'))
+    print(text.default_text_color + tabulate(all_challenges_dictionary, headers='keys', tablefmt='fancy_grid'))
 
 
 # Make an account eligible to DM Rewards program

@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from data_mass.accounts import check_account_exists_microservice
 from data_mass.populator.country.product import check_product_associated_to_account
 from data_mass.populator.log import *
@@ -38,16 +40,18 @@ def populate_order(country, environment, account_id, allow_order_cancel, items, 
         delivery_center_id = account[0]['deliveryCenterId']
 
         not_associated_products = check_product_associated_to_account(account_id, country, environment, [items])
-        if not_associated_products:
+        if not not_associated_products:
             product_offers = request_get_offers_microservice(account_id, country, environment)
+            delivery_date = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
             if product_offers:
                 data = {'sku': items, 'itemQuantity': quantity}
 
                 order_items = request_order_simulation(country, environment, account_id, delivery_center_id, [data],
-                                                        None, None, 'CASH', 0)
+                                                        None, None, 'CASH', 0, delivery_date)
                 if not order_items:
                     logger.error(log(Message.ORDER_SIMULATION_ERROR, {'account_id': account_id}))
                 else:
+                    delivery_date = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
                     if False == request_order_creation(account_id, delivery_center_id, country, environment,
-                                                            allow_order_cancel, order_items, order_status):
+                                                            allow_order_cancel, order_items, order_status, delivery_date):
                         logger.error(log(Message.CREATE_ORDER_ERROR, {'account_id': account_id}))

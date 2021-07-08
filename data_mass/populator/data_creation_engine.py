@@ -1,19 +1,33 @@
 from data_mass.populator.country.account import populate_pocs
-from data_mass.populator.country.combo import populate_combo_discount_base, \
-    populate_combo_free_good_base, populate_combo_only_free_good_base
-from data_mass.populator.country.deal import populate_discount_base, \
-    populate_stepped_discount_base, populate_stepped_discount_with_limit_base, populate_free_good_base, \
+from data_mass.populator.country.category import (
+    associate_products_to_category_magento_base
+)
+from data_mass.populator.country.combo import (
+    populate_combo_discount_base,
+    populate_combo_free_good_base,
+    populate_combo_only_free_good_base
+)
+from data_mass.populator.country.deal import (
+    populate_discount_base,
+    populate_free_good_base,
+    populate_stepped_discount_base,
+    populate_stepped_discount_with_limit_base,
     populate_stepped_free_good_base
+)
 from data_mass.populator.country.invoice import populate_invoices_base
 from data_mass.populator.country.order import populate_orders_base
-from data_mass.populator.country.rewards import populate_challenge_base, disenroll_pocs, enroll_poc_base
+from data_mass.populator.country.product import \
+    enable_products_magento as enable_products_magento_base
+from data_mass.populator.country.recommendation import \
+    populate_recommendations as populate_recommendations_base
+from data_mass.populator.country.rewards import (
+    disenroll_pocs,
+    enroll_poc_base,
+    populate_challenge_base
+)
 from data_mass.populator.country.user_iam import populate_users_iam_b2c
-from data_mass.populator.country.recommendation import populate_recommendations as populate_recommendations_base
-from data_mass.populator.country.category import associate_products_to_category_magento_base
-from data_mass.populator.country.product import enable_products_magento as enable_products_magento_base
 from data_mass.populator.helpers.csv_helper import search_data_by
 from data_mass.populator.log import *
-
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +54,11 @@ def populate_deals(country, environment):
     populate_stepped_discount_with_limit_base(country, environment, search_data_by(country, 'discount_with_limit'))
     populate_free_good_base(country, environment, search_data_by(country, 'free_good'))
     populate_stepped_free_good_base(country, environment, search_data_by(country, 'stepped_free_good'))
+
+def populate_deals_us(country, environment):
+    logger.info("populate_deals for %s/%s", country, environment)
+    populate_discount_base(country, environment, search_data_by(country, 'discount'))
+    populate_free_good_base(country, environment, search_data_by(country, 'free_good'))
 
 
 def populate_combos(country, environment):

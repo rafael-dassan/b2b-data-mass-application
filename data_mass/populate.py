@@ -3,37 +3,44 @@ import sys
 
 from data_mass.populator.gateway import execute_gateway
 from data_mass.populator.log import *
-from data_mass.populator.regression import execute_regression
-from data_mass.populator.test import execute_test
 from data_mass.populator.product import execute_product
+from data_mass.populator.regression import (
+    execute_regression,
+    execute_regression_us
+)
 from data_mass.populator.rewards import execute_rewards
+from data_mass.populator.test import execute_test
 from data_mass.populator.validation import *
 
 logger = logging.getLogger(__name__)
 
 
 def gateway(country, environment):
-    logger.debug("GATEWAY method executed with Country/Environment: {a}/{b}".format(a=country, b=environment))
+    logger.debug(f"GATEWAY method executed with Country/Environment: {country}/{environment}")
     execute_gateway(country, environment)
 
 
 def regression(country, environment):
-    logger.debug("REGRESSION method executed with Country/Environment: {a}/{b}".format(a=country, b=environment))
-    execute_regression(country, environment)
-
+    logger.debug(f"REGRESSION method executed with Country/Environment: {country}/{environment}")
+    if country == "US":
+        execute_regression_us(country, environment)
+    else:
+        execute_regression(country, environment)
 
 def test(country, environment):
-    logger.debug("TEST method executed with Country/Environment: {a}/{b}".format(a=country, b=environment))
+    logger.debug(f"TEST method executed with Country/Environment: {country}/{environment}")
+    # if country == "US":
+    #     execute_test_us(country, environment)
+    # else:
     execute_test(country, environment)
 
-
 def product(country, environment):
-    logger.debug("PRODUCT method executed with Country/Environment: {a}/{b}".format(a=country, b=environment))
+    logger.debug(f"PRODUCT method executed with Country/Environment: {country}/{environment}")
     execute_product(country, environment)
 
 
 def rewards(country, environment):
-    logger.debug("REWARDS method executed with Country/Environment: {a}/{b}".format(a=country, b=environment))
+    logger.debug(f"REWARDS method executed with Country/Environment: {country}/{environment}")
     execute_rewards(country, environment)
 
 
@@ -80,5 +87,5 @@ if __name__ == '__main__':
 
         execute(country, environment, execution_type)
     except Exception as err:
-        logging.error("Exception: {}".format(err))
+        logging.error(f"Exception: {err}")
         sys.exit(1)

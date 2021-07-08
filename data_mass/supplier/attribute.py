@@ -1065,10 +1065,10 @@ def display_specific_attribute(attribute: str):
                 metadata.append(metadata_info)
 
     print(text.default_text_color + '\nAttribute - General Information')
-    print(tabulate([info_attribute], headers='keys', tablefmt='grid'))
+    print(tabulate([info_attribute], headers='keys', tablefmt='fancy_grid'))
 
     print(text.default_text_color + '\nAttribute - Metadata Information')
-    print(tabulate(metadata, headers='keys', tablefmt='grid'))
+    print(tabulate(metadata, headers='keys', tablefmt='fancy_grid'))
 
 
 def display_all_attribute(attributes: Any):
@@ -1119,7 +1119,7 @@ def display_all_attribute(attributes: Any):
             information_att.append(info_attribute)
 
     print(text.default_text_color + '\nAttribute - General Information')
-    print(tabulate(information_att, headers='keys', tablefmt='grid'))
+    print(tabulate(information_att, headers='keys', tablefmt='fancy_grid'))
 
 
 def edit_attribute_type(
