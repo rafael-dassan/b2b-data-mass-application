@@ -7,6 +7,7 @@ from distutils.util import strtobool
 from json import dumps, loads
 from random import randint, uniform
 from typing import Any, Dict, Optional
+from urllib.parse import urlencode
 
 import pkg_resources
 from tabulate import tabulate
@@ -22,6 +23,7 @@ from data_mass.common import (
     place_request,
     update_value_to_json
 )
+from data_mass.config import get_settings
 from data_mass.menus.product_menu import (
     print_is_alcoholic_menu,
     print_is_narcotic_menu,
@@ -56,23 +58,33 @@ def format_seconds_to_min_sec(seconds):
 
 
 def request_post_price_microservice(
-    account_id: str,
-    zone: str,
-    environment: str,
-    sku_product: str,
-    product_price_id: str,
-    price_values: dict,
-) -> bool:
+        account_id: str,
+        zone: str,
+        environment: str,
+        sku_product: str,
+        product_price_id: str,
+        price_values: dict) -> bool:
     """
     Define price for a specific product via Pricing Engine Relay Service
-    Args:
-        account_id: POC unique identifier
-        zone: e.g., AR, BR, CO, DO, MX, ZA
-        environment: e.g., DEV, SIT, UAT
-        sku_product: SKU unique identifier
-        product_price_id: price record unique identifier
-        price_values: price values dict, including tax, base price and deposit
-    Returns: `success` in case of successful response or `false` in case of failure
+
+    Parameters
+    ----------
+    account_id : str
+        POC unique identifier.
+    zone : str
+        e.g., AR, BR, CO, DO, MX, ZA or US.
+    environment : str
+        e.g., DEV, SIT or UAT.
+    sku_product : str
+        SKU unique identifier.
+    product_price_id : str
+        Price record unique identifier.
+    price_values : str
+        Price values dict, including tax, base price and deposit.
+
+    Returns
+    -------
+    `True` in case of successful response or `False` in case of failure.
     """
     request_headers = get_header_request(zone)
     base_url = get_microservice_base_url(environment, False)
@@ -80,11 +92,11 @@ def request_post_price_microservice(
     if zone in ZONES_NEW_ENDPOINT:
         request_url = f"{base_url}/price-relay/v1"
         request_body = get_body_price_microservice_request_v2(
-            account_id,
-            sku_product,
-            product_price_id,
-            price_values,
-            zone
+            abi_id=account_id,
+            sku_product=sku_product,
+            product_price_id=product_price_id,
+            price_values=price_values,
+            zone=zone
         )
     elif zone == "US":
         request_url = "https://bees-services-sit.eastus2.cloudapp.azure.com/api/price-relay/v2"
@@ -97,21 +109,26 @@ def request_post_price_microservice(
     else:
         request_url = f"{base_url}/cart-calculation-relay/v2/prices"
         request_body = get_body_price_microservice_request_v2(
-            account_id,
-            sku_product,
-            product_price_id,
-            price_values
+            abi_id=account_id,
+            sku_product=sku_product,
+            product_price_id=product_price_id,
+            price_values=price_values
         )
 
     # Send request
-    response = place_request("PUT", request_url, request_body, request_headers)
+    response = place_request(
+        request_method="PUT",
+        request_url=request_url,
+        request_body=request_body,
+        request_headers=request_headers
+    )
 
     if response.status_code == 202:
         return True
 
     print(
-        f"{text.Red}\n"
-        f"- [Pricing Engine Relay Service] Failure to define price for the SKU {sku_product}. Response:\n"
+        f"{text.Red}\n- [Pricing Engine Relay Service] "
+        f"Failure to define price for the SKU {sku_product}.\n"
         f"Status: {response.status_code}\n"
         f"Response message: {response.text}\n"
     )
@@ -291,14 +308,36 @@ def request_get_products_microservice(
 
 # Make the necessary requests to add a product in a microservice-based zone
 def product_post_requests_microservice(
-    product_data, account_id, zone, environment, delivery_center_id
-):
+        product_data: dict,
+        account_id: str,
+        zone: str,
+        environment: str,
+        delivery_center_id: str) -> bool:
+    """
+    Create prices for customers.
+
+    Parameters
+    ----------
+    product_data : dict
+    account_id : str
+    zone : str
+    environment : str
+    delivery_center_id : str
+
+    Returns
+    -------
+    bool
+        Whenever the request is successful or not.
+    """
     index, product = product_data
     price_values = generate_price_values(zone, product)
 
     # Call product association via Product Assortment Relay Service
     product_inclusion_ms_result = request_post_price_inclusion_microservice(
-        zone, environment, product["sku"], delivery_center_id
+        zone=zone,
+        environment=environment,
+        sku_product=product["sku"],
+        delivery_center_id=delivery_center_id
     )
 
     if not product_inclusion_ms_result:
@@ -306,7 +345,12 @@ def product_post_requests_microservice(
 
     # Call price inclusion via Pricing Engine Relay Service
     price_inclusion_result = request_post_price_microservice(
-        account_id, zone, environment, product["sku"], index, price_values
+        account_id=account_id,
+        zone=zone,
+        environment=environment,
+        sku_product=product["sku"],
+        product_price_id=index,
+        price_values=price_values
     )
 
     if not price_inclusion_result:
@@ -473,7 +517,18 @@ def check_item_enabled(sku, zone, environment):
     """
     # Get base URL
     base_url = get_microservice_base_url(environment, False)
-    request_url = f"{base_url}/items/{sku}?includeDisabled=false"
+
+    if zone == "US":
+        settings = get_settings()
+        query = {
+            "vendorId": settings.vendor_id,
+            "vendorItemIds": sku,
+            "includeDisabled": False
+        }
+
+        request_url = f"{base_url}/items/items?{urlencode(query)}"
+    else:
+        request_url = f"{base_url}/items/{sku}?includeDisabled=false"
 
     # Get headers
     request_headers = get_header_request(zone, True, False, False, False)
@@ -483,6 +538,11 @@ def check_item_enabled(sku, zone, environment):
 
     json_data = loads(response.text)
     if response.status_code == 200 and len(json_data) != 0:
+        if zone == "US":
+            item, = json_data.get("items")
+
+            return item.get("sku")
+
         return json_data["sku"]
 
     if response.status_code == 404:
@@ -687,13 +747,15 @@ def create_product(
     )
 
     if response.status_code == 202:
+        key = "vendorItemId" if zone == "US" else "sku"
+
         update_item_response = set_item_enabled(
             zone,
             environment,
             product_data
         )
         get_item_response = check_item_enabled(
-            product_data.get("sku"),
+            product_data.get(key),
             zone,
             environment
         )
@@ -824,18 +886,24 @@ def get_item_input_data(zone: str):
     Returns: a dictionary containing the customized product data
     """
     zone = zone.upper()
-    sku_identifier = input("{0}SKU identifier: ".format(text.default_text_color))
-    # Create random value for the SKU identifier if the entry is empty
-    if len(sku_identifier) == 0:
-        sku_identifier = "DM-{0}".format(str(randint(1, 100000)))
+    sku_identifier = None
+
+    if zone == "US":
+        vendor_item_id = input(f"{text.default_text_color}Vendor Item Id: ")
+
+        if not vendor_item_id:
+            vendor_item_id = "DM-{0}".format(str(randint(1, 100000)))
+    else:
+        sku_identifier = input("{0}SKU identifier: ".format(text.default_text_color))
+
+        # Create random value for the SKU identifier if the entry is empty
+        if not sku_identifier:
+            sku_identifier = "DM-{0}".format(str(randint(1, 100000)))
 
     name = input("{0}Item name: ".format(text.default_text_color))
     brand_name = input(
         "{0}Brand name (e.g., SKOL, PRESIDENTE): ".format(text.default_text_color)
     ).upper()
-
-    if zone == "US":
-        vendor_item_id = input(f"{text.default_text_color}Vendor Item Id: ")
 
     container_name = input(
         "{0}Container name (e.g., BOTTLE, PET, CAN): ".format(text.default_text_color)
@@ -886,6 +954,7 @@ def get_item_input_data(zone: str):
             has_category = input(f"\n{text.default_text_color}Is uncategorized? y/N: ")
 
         item_data.update({
+            "sku": vendor_item_id,
             "sourceData": {
                 "vendorItemId": vendor_item_id
             },
