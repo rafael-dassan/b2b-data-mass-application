@@ -233,7 +233,6 @@ def create_order_payload(
         payload_path
     )
     json_data: dict = json.loads(content.decode("utf-8"))
-    json_data.update(dict_values)
 
     if order_status == 'PLACED':
         if allow_order_cancel == 'Y':
@@ -243,6 +242,8 @@ def create_order_payload(
         dict_values.update({
             "cancellationReason": "Order cancelled for testing purposes"
         })
+
+    json_data.update(dict_values)
 
     return convert_json_to_string(json_data)
 
