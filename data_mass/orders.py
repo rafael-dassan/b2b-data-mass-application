@@ -1,8 +1,8 @@
 import json
-import os
+import logging
 from datetime import datetime, timedelta
-from random import choice, randint
-from typing import Dict
+from random import choice
+from typing import Any, Dict, Optional
 
 import pkg_resources
 from tabulate import tabulate
@@ -19,149 +19,230 @@ from data_mass.common import (
     update_value_to_json,
     validate_user_entry_date,
     validate_yes_no_change_date
-    )
+)
+from data_mass.config import get_settings
+
+logger = logging.getLogger(__name__)
 
 
 def request_order_creation(
-    account_id,
-    delivery_center_id,
-    zone,
-    environment,
-    allow_order_cancel,
-    order_items,
-    order_status,
-    delivery_date,
-):
-
+        account_id: str,
+        delivery_center_id: str,
+        zone: str,
+        environment: str,
+        allow_order_cancel: str,
+        order_items: list,
+        order_status: str,
+        delivery_date: str,
+        items: list = None,
+        has_empties: bool = False) -> Optional[Any]:
     """
-    Create an order through the Order Service
-    Args:
-        account_id: POC unique identifier
-        delivery_center_id: POC's delivery center
-        zone: e.g., AR, BR, CO, DO, MX, ZA
-        environment: e.g., DEV, SIT, UAT
-        order_status: e.g., PLACED, CANCELLED, etc
-        order_items: list of SKUs
-        allow_order_cancel: `Y` or `N`
+    Create an order through the Order Service.
 
-    Returns: new json_data if success or error message in case of failure
+    Parameters
+    ----------
+    account_id : str
+        POC unique identifier.
+    delivery_center_id : str
+        POC's delivery center.
+    zone : str
+        One of AR, BR, CO, DO, MX, ZA, ES and US.
+    environment : str
+        One of DEV, SIT and UAT.
+    allow_order_cancel : str
+        One of `Y` or `N`.
+    order_items : list
+        List of SKUs
+    order_status : str
+        PLACED, CANCELLED, etc.
+    delivery_date : str
+        The delivery date.
+
+    Returns
+    -------
+    Optional[Any]
+        A deserialized s \
+        (a str, bytes or bytearray instance containing a JSON document)\
+        to a Python object.
     """
-
     # Define headers
-    request_headers = get_header_request(zone, True, False, False, False, account_id)
+    request_headers = get_header_request(
+        zone,
+        True,
+        False,
+        False,
+        False,
+        account_id
+    )
 
     # Define url request
-    request_url = get_microservice_base_url(environment) + "/order-service"
+    if zone == "US":
+        endpoint = "order-service/v2/"
+        is_v1 = False
+        settings = get_settings()
 
-    # Get body
-    request_body = create_order_payload(
-        account_id,
-        delivery_center_id,
-        allow_order_cancel,
-        order_items,
-        order_status,
-        delivery_date,
-    )
+        request_body = json.dumps({
+            "accountId": account_id,
+            "channel": "B2B_WEB",
+            "deliveryCenterId": delivery_center_id,
+            "delivery":{
+              "date": delivery_date  
+            },
+            "itemsQuantity": len(order_items.get("items")),
+            "placementDate": datetime.now().strftime('%Y-%m-%dT%H:%M:%S') + '+00:00',
+            "status": order_status,
+            "items": items,
+            "empties": {
+                "hasEmpties": has_empties
+            },
+            "subtotal": order_items.get("subTotal"),
+            "total": order_items.get("total"),
+            "vendor": {
+                "accountId": account_id,
+                "id": settings.vendor_id
+            },
+            "paymentMethod": "CASH"
+        })
+    else:
+        endpoint = "order-service"
+        is_v1 = True
+
+        # Get body
+        request_body = create_order_payload(
+            account_id=account_id,
+            delivery_center_id=delivery_center_id,
+            allow_order_cancel=allow_order_cancel,
+            order_items=order_items,
+            order_status=order_status,
+            delivery_date=delivery_date,
+            is_v2=False
+        )
+
+    base_url = get_microservice_base_url(environment, is_v1)
+    request_url = f"{base_url}/{endpoint}"
 
     # Send request
     response = place_request("POST", request_url, request_body, request_headers)
+    json_data =json.loads(response.text)
 
-    json_data = json.loads(response.text)
-    if response.status_code == 200 and len(json_data) != 0:
+    if response.status_code in [200, 202] and json_data:
         return json_data
-    else:
-        print(
-            text.Red
-            + "\n- [Order Service] Failure to create an order. Response Status: {response_status}. "
-            "Response message {response_message}".format(
-                response_status=response.status_code, response_message=response.text
-            )
-        )
-        return False
+
+    print(
+        f"{text.Red}\n"
+        "[Order Service] Failure to create an order.\n"
+        f"Response Status: {response.status_code}.\n"
+        f"Response message {response.text}"
+    )
+
+    return None
 
 
 def create_order_payload(
-    account_id,
-    delivery_center_id,
-    allow_order_cancel,
-    order_items,
-    order_status,
-    delivery_date,
-):
+        account_id: str,
+        delivery_center_id: str, 
+        allow_order_cancel: str, 
+        order_items: list, 
+        order_status: str,
+        delivery_date: str,
+        is_v2: Optional[bool] = False) -> str:
     """
-    Create payload for order creation
-    Args:
-        account_id: POC unique identifier
-        delivery_center_id: POC's delivery center
-        order_items: list of SKUs
-        allow_order_cancel: `Y` or `N`
-        order_status: e.g., PLACED, CANCELLED, etc
-    Returns: order payload
+    Create payload for order creation.
+
+    Parameters
+    ----------
+    account_id : str
+    delivery_center_id : str
+    allow_order_cancel : str
+    order_items : list
+    order_status : str
+    delivery_date : str
+    zone : Optional[bool], optional
+        By default `False`.
+
+    Returns
+    -------
+    str
+        The payload as string.
     """
     # Sets the format of the placement date of the order (current date and time)
     placement_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") + "+00:00"
 
     # Sets the format of the cancellable date of the order (current date and time more ten days)
-    cancellable_date = (datetime.now() + timedelta(days=10)).strftime(
-        "%Y-%m-%dT%H:%M:%S"
-    ) + "+00:00"
+    cancellable_date = (datetime.now() + timedelta(days=10)).strftime('%Y-%m-%dT%H:%M:%S') + '+00:00'
+
+    line_items = order_items.get('lineItems')
+    items = []
+
+    for product in line_items:
+        items.append({
+            "price": product.get("price"),
+            "unitPrice": product.get("unitPrice"),
+            "unitPriceInclTax": product.get("unitPriceInclTax"),
+            "quantity": product.get("quantity"),
+            "discountAmount": product.get("discountAmount"),
+            "deposit": product.get("deposit"),
+            "subtotal": product.get("subtotal"),
+            "taxAmount": product.get("taxAmount"),
+            "total": product.get("total"),
+            "totalExclDeposit": product.get("totalExclDeposit"),
+            "sku": product.get("sku"),
+            "hasInventory": product.get("hasInventory"),
+            "freeGood": product.get("freeGood"),
+            "originalPrice": product.get("originalPrice"),
+        })
+
+    dict_values = {
+        'accountId': account_id,
+        'delivery': {
+            'date': delivery_date
+        },
+        'deposit': order_items.get('deposit'),
+        'discount': order_items.get('discountAmount'),
+        'interestAmount': order_items.get('interestAmount'),
+        'itemsQuantity': len(order_items.get('lineItems')),
+        'total': order_items.get('total'),
+        'subtotal': order_items.get('subtotal'),
+        'tax': order_items.get('taxAmount'),
+        'placementDate': placement_date,
+        'status': order_status,
+        'items': items
+    }
+
+    if is_v2:
+        payload_path = "data/create_order_payload_v2.json"
+        dict_values.update({
+            "deliveryCenterId": delivery_center_id,
+            "vendor": {
+                "accountId": account_id,
+                "id": "9d72627a-02ea-4754-986b-0b29d741f5f0"
+            }
+        })
+    else:
+        payload_path = "data/create_order_payload.json"
+        dict_values.update({
+            "deliveryCenter": delivery_center_id,
+        })
 
     # get data from Data Mass files
     content: bytes = pkg_resources.resource_string(
-        "data_mass", "data/create_order_payload.json"
+        "data_mass",
+        payload_path
     )
-    json_data = json.loads(content.decode("utf-8"))
+    json_data: dict = json.loads(content.decode("utf-8"))
 
-    line_items = order_items.get("lineItems", [])
-    item_list = list()
-    for i in range(len(line_items)):
-        item_values = {
-            "price": line_items[i]["price"],
-            "unitPrice": line_items[i]["unitPrice"],
-            "unitPriceInclTax": line_items[i]["unitPriceInclTax"],
-            "quantity": line_items[i]["quantity"],
-            "discountAmount": line_items[i]["discountAmount"],
-            "deposit": line_items[i]["deposit"],
-            "subtotal": line_items[i]["subtotal"],
-            "taxAmount": line_items[i]["taxAmount"],
-            "total": line_items[i]["total"],
-            "totalExclDeposit": line_items[i]["totalExclDeposit"],
-            "sku": line_items[i]["sku"],
-            "hasInventory": line_items[i]["hasInventory"],
-            "freeGood": line_items[i]["freeGood"],
-            "originalPrice": line_items[i]["originalPrice"],
-        }
-        item_list.append(item_values)
+    if order_status == 'PLACED':
+        if allow_order_cancel == 'Y':
+            dict_values.update({"cancellableUntil": cancellable_date})
 
-    dict_values = {
-        "accountId": account_id,
-        "deliveryCenter": delivery_center_id,
-        "delivery.date": delivery_date,
-        "deposit": order_items.get("deposit"),
-        "discount": order_items.get("discountAmount"),
-        "interestAmount": order_items.get("interestAmount"),
-        "itemsQuantity": len(order_items.get("lineItems")),
-        "total": order_items.get("total"),
-        "subtotal": order_items.get("subtotal"),
-        "tax": order_items.get("taxAmount"),
-        "placementDate": placement_date,
-        "status": order_status,
-    }
+    elif order_status == 'CANCELLED':
+        dict_values.update({
+            "cancellationReason": "Order cancelled for testing purposes"
+        })
 
-    for key in dict_values.keys():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
+    json_data.update(dict_values)
 
-    set_to_dictionary(json_object, "items", item_list)
-
-    if order_status == "PLACED":
-        if allow_order_cancel == "Y":
-            set_to_dictionary(json_object, "cancellableUntil", cancellable_date)
-    elif order_status == "CANCELLED":
-        set_to_dictionary(
-            json_object, "cancellationReason", "Order cancelled for testing purposes"
-        )
-
-    return convert_json_to_string(json_object)
+    return convert_json_to_string(json_data)
 
 
 def create_checkout_mobile_payload(
@@ -332,7 +413,7 @@ def display_specific_order_information(orders):
                 set_to_dictionary(item_values, "tax", tax)
             item_information.append(item_values)
 
-    combos = orders[0]["combos"]
+    combos = orders[0].get('combos', [])
     combo_information = list()
     if len(combos) == 0:
         combo_values = {"Combos": "None"}
@@ -356,14 +437,14 @@ def display_specific_order_information(orders):
         order_values = validate_order_parameters(orders[i])
         order_information.append(order_values)
 
-    print(text.default_text_color + "\nOrder Information By Account")
-    print(tabulate(order_information, headers="keys", tablefmt="grid"))
+    print(text.default_text_color + '\nOrder Information By Account')
+    print(tabulate(order_information, headers='keys', tablefmt='fancy_grid'))
 
-    print(text.default_text_color + "\nOrder items")
-    print(tabulate(item_information, headers="keys", tablefmt="grid"))
+    print(text.default_text_color + '\nOrder items')
+    print(tabulate(item_information, headers='keys', tablefmt='fancy_grid'))
 
-    print(text.default_text_color + "\nOrder combos")
-    print(tabulate(combo_information, headers="keys", tablefmt="grid"))
+    print(text.default_text_color + '\nOrder combos')
+    print(tabulate(combo_information, headers='keys', tablefmt='fancy_grid'))
 
 
 def display_all_order_information(orders):
@@ -380,8 +461,8 @@ def display_all_order_information(orders):
         order_values = validate_order_parameters(orders[i])
         order_information.append(order_values)
 
-    print(text.default_text_color + "\nAll Order Information By Account")
-    print(tabulate(order_information, headers="keys", tablefmt="grid"))
+    print(text.default_text_color + '\nAll Order Information By Account')
+    print(tabulate(order_information, headers='keys', tablefmt='fancy_grid'))
 
 
 def validate_order_parameters(order):
@@ -446,7 +527,9 @@ def check_if_order_exists(account_id, zone, environment, order_id, order_status=
     # Get header request
     request_headers = get_header_request(zone, True, False, False, False, account_id)
 
-    if order_status is not None:
+    if zone == "US":
+        request_url = f"{get_microservice_base_url(environment)}/order-service/v2?orderIds={order_id}&orderBy=placementDate&sort=ASC&pageSize=2147483647"
+    elif order_status is not None:
         # Get base URL
         request_url = (
             "{}/order-service/v1?orderIds={}&orderStatus={}&accountId={}".format(
@@ -520,10 +603,10 @@ def get_order_items(order_data, zone):
     for i in range(len(items)):
         discount = 0
         if (
-            "pricingReasonDetail" in items[i]
-            and len(items[i]["pricingReasonDetail"]) != 0
+            'pricingReasonDetail' in items[i] 
+            and items[i].get('pricingReasonDetail', [])
         ):
-            discount = items[i]["pricingReasonDetail"][0]["discountAmount"]
+            discount = items[i]['pricingReasonDetail'][0]['discountAmount']
             if discount is None:
                 discount = 0
 
@@ -588,13 +671,11 @@ def request_get_order_by_date_updated(zone, environment, account_id, order_prefi
     )
 
     # Place request
-    response = place_request("GET", request_url, "", request_headers)
-
-    json_data = json.loads(response.text)
+    response = place_request('GET', request_url, '', request_headers)
+    json_data =json.loads(response.text)
     if response.status_code == 200 and len(json_data) != 0:
-        for i in range(len(json_data)):
-            if f"{order_prefix}-{zone}" in json_data[i]["orderNumber"]:
-                return json_data
+        if json_data[0]['orderNumber']:
+            return json_data
     else:
         print(
             text.Red

@@ -1,10 +1,30 @@
 # Local application imports
 from data_mass.classes.text import text
-from data_mass.validations import validate_product_operations_structure, \
-    validate_get_products, validate_yes_no_option
+from data_mass.validations import (
+    validate_get_products,
+    validate_product_operations_structure,
+    validate_yes_no_option
+)
 
 
-def print_product_operations_menu():
+def print_product_operations_menu(zone):
+    if zone == "US":
+        print(text.default_text_color + '\nProduct operations')
+        print(text.default_text_color + str(1), text.Yellow + 'Create/update product')
+        print(text.default_text_color + str(2), text.Yellow + 'Associate products to an account')
+        print(text.default_text_color + str(3), text.Yellow + 'Input inventory to product')
+        print(text.default_text_color + str(4), text.Yellow + 'Input recommendations to an account')
+        option = input(text.default_text_color + '\nPlease select: ')
+        while validate_product_operations_structure(option, zone) is False:
+            print(text.Red + '\n- Invalid option')
+            print(text.default_text_color + '\nProduct operations')
+            print(text.default_text_color + str(1), text.Yellow + 'Create/update product')
+            print(text.default_text_color + str(2), text.Yellow + 'Associate products to an account')
+            print(text.default_text_color + str(3), text.Yellow + 'Input inventory to product')
+            print(text.default_text_color + str(4), text.Yellow + 'Input recommendations to an account')
+            option = input(text.default_text_color + '\nPlease select: ')
+
+        return option
     print(text.default_text_color + '\nProduct operations')
     print(text.default_text_color + str(1), text.Yellow + 'Create/update product')
     print(text.default_text_color + str(2), text.Yellow + 'Associate products to an account')
@@ -13,7 +33,7 @@ def print_product_operations_menu():
     print(text.default_text_color + str(5), text.Yellow + 'Input empties discounts')
     print(text.default_text_color + str(6), text.Yellow + 'Input an SKU Limit to account')
     option = input(text.default_text_color + '\nPlease select: ')
-    while validate_product_operations_structure(option) is False:
+    while validate_product_operations_structure(option, zone) is False:
         print(text.Red + '\n- Invalid option')
         print(text.default_text_color + '\nProduct operations')
         print(text.default_text_color + str(1), text.Yellow + 'Create/update product')
@@ -25,7 +45,6 @@ def print_product_operations_menu():
         option = input(text.default_text_color + '\nPlease select: ')
 
     return option
-
 
 def print_product_quantity_menu(all_products_zone):
     while True:

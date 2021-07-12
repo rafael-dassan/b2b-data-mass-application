@@ -10,6 +10,7 @@ def valid_country(country):
         "PA": True,
         "PE": True,
         "PY": True,
+        "US": True,
         "ZA": True
     }
     return switcher.get(country, False)

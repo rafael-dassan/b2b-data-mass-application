@@ -4,7 +4,7 @@ from data_mass.delivery_window import create_delivery_window_microservice
 from data_mass.populator.country.inventory import populate_default_inventory
 from data_mass.populator.country.product import (
     check_product_associated_to_account
-    )
+)
 from data_mass.populator.log import *
 from data_mass.product.products import (
     generate_random_price_ids,
@@ -12,7 +12,7 @@ from data_mass.product.products import (
     request_get_products_microservice,
     request_post_products_account_microservice,
     slice_array_products
-    )
+)
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +72,7 @@ def populate_delivery_window(country, environment, account_id, option):
         "deliveryScheduleId": account_id,
         "accountId": account_id
     }
-    if "success" != create_delivery_window_microservice(country, environment, account_data, False, option):
+    if not create_delivery_window_microservice(country, environment, account_data, False, option):
         logger.error(log(Message.DELIVERY_WINDOW_ERROR,
                          {"account_id": account_id}))
 
@@ -89,7 +89,7 @@ def populate_product(account_id, country, environment, amount_of_products):
         "deliveryCenterId": account_id,
         "accountId": account_id
     }
-    if "success" != add_products_to_account(account_data, country, environment, amount_of_products):
+    if not add_products_to_account(account_data, country, environment, amount_of_products):
         logger.error(log(Message.PRODUCT_ERROR, {"account_id": account_id}))
 
 
@@ -116,6 +116,8 @@ def add_products_to_account(account, country, environment, amount_of_products):
     # Get products by account
     products_by_account = request_get_products_by_account_microservice(
         account['accountId'], country, environment)
+    if not products_by_account:
+        return False 
     logger.debug("Products found on account {account_id}: {products} items".format(account_id=account['accountId'],
                                                                                    products=str(len(products_by_account))))
 
@@ -135,7 +137,7 @@ def add_products_to_account(account, country, environment, amount_of_products):
     else:
         logger.debug(
             "Account already has the desired amount of products, not needed to populate!")
-        return 'success'
+        return True
 
 
 # Populate association products for an account

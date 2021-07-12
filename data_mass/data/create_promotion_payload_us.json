@@ -1,0 +1,28 @@
+{
+  "vendorAccountIds": ["string"],
+  "deals": [
+    {
+      "vendorDealId": "01",
+      "vendorPromotionId": "542772A",
+      "conditions": {
+        "lineItem": {
+          "vendorItemIds": [
+            "1234567",
+            "456789"
+          ],
+          "minimumQuantity": 20,
+          "sharedMinimumQuantity": false,
+          "crossDiscount": false
+        }
+      },
+    "output": {
+        "orderTotalDiscount": {
+          "type": "$",
+          "discount": 80.3,
+          "proportion": 10,
+          "fixed": false
+        }
+      }
+    }
+  ]
+}

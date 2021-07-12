@@ -14,7 +14,7 @@ from data_mass.common import (
     place_request,
     print_input_number,
     update_value_to_json
-    )
+)
 from data_mass.orders import create_checkout_mobile_payload
 from data_mass.product.products import request_get_products_microservice
 from data_mass.simulation import request_order_simulation
@@ -94,10 +94,10 @@ def get_rewards_combos_by_account(account_id, zone, environment):
             return response
         else:
             print(
-                text.Red
-                + "\n- [Rewards] There are no DT combos available for "
-                f'the account "{account_id}".'
-                '\n- Please use the menu option "" to associate DT combos '
+                f"{text.Red}\n"
+                f"- [Rewards] There are no DT combos available for "
+                f'the account "{account_id}".\n'
+                '- Please use the menu option "" to associate DT combos '
                 "to this account."
             )
     elif response.status_code == 404:
@@ -242,7 +242,7 @@ def display_all_programs_info(
 
     print(
         text.default_text_color
-        + tabulate(all_programs_dictionary, headers="keys", tablefmt="grid")
+        + tabulate(all_programs_dictionary, headers="keys", tablefmt="fancy_grid")
     )
 
 
@@ -273,7 +273,7 @@ def display_all_challenges_info(list_all_challenges):
 
     print(
         text.default_text_color
-        + tabulate(all_challenges_dictionary, headers="keys", tablefmt="grid")
+        + tabulate(all_challenges_dictionary, headers="keys", tablefmt="fancy_grid")
     )
 
 

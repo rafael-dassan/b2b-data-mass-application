@@ -3,10 +3,13 @@ import json
 import os
 from datetime import datetime, timedelta
 from json import loads
+from typing import List
+from uuid import uuid1
 
 import pkg_resources
 from tabulate import tabulate
 
+from data_mass.accounts import get_multivendor_account_id
 from data_mass.classes.text import text
 from data_mass.common import (
     convert_json_to_string,
@@ -14,7 +17,7 @@ from data_mass.common import (
     get_microservice_base_url,
     place_request,
     update_value_to_json
-    )
+)
 
 
 def request_order_simulation(
@@ -73,7 +76,6 @@ def request_order_simulation(
         get_microservice_base_url(environment, False) + "/cart-service/v2"
     )
 
-
     # Inputs for default payload simulation
     dict_values = {
         "accountId": account_id,
@@ -113,6 +115,63 @@ def request_order_simulation(
             f"Response message: {response.text}"
         )
         return False
+
+
+def request_order_simulation_v3(
+        account_id: int,
+        zone: str,
+        environment: str,
+        items: List[dict],
+        delivery_date: str):
+    """
+    Request order simulation v3.
+
+    Parameters
+    ----------
+    zone : str
+    environment : str
+    account_id : int
+    items : list
+    has_empties : str
+        By default `None`.
+
+    Returns
+    -------
+    str or Bool
+        response payload in case of success or `false` in case of failure.
+    """
+    request_headers = get_header_request("US")
+    base_url = get_microservice_base_url(environment, True)
+    request_url = f"{base_url}/cart-service/v3"
+
+    dict_values = {
+        "accountId": get_multivendor_account_id(account_id, zone, environment),
+        "userId": str(uuid1()),
+        "deliveryDate": delivery_date,
+        "items": []
+    }
+
+    for item in items:
+        schema = {"id": item.get("id"), "quantity": item.get("quantity")}
+        dict_values["items"].append(schema)
+    
+    response = place_request(
+        request_method="POST",
+        request_url=request_url,
+        request_body=json.dumps(dict_values),
+        request_headers=request_headers
+    )
+    if response.status_code == 200:
+        return loads(response.text)
+
+    print(
+        text.Red
+        + "\n- [Cart Service] Failure to simulate the order."
+        f"Response Status: {response.status_code}. "
+        f"Response message: {response.text}"
+    )
+
+    return False
 
 
 # Order simulation by Microservice
@@ -168,14 +227,14 @@ def print_summary_order_simulation(
     summary_order_values, summary_items_values, summary_combo_values
 ):
     print(text.White + "Order Summary ")
-    print(tabulate(summary_order_values, headers="keys", tablefmt="grid"))
+    print(tabulate(summary_order_values, headers="keys", tablefmt='fancy_grid'))
 
     if len(summary_items_values) >= 1:
         print("\n")
         print(text.White + "Order Items Summary ")
-        print(tabulate(summary_items_values, headers="keys", tablefmt="grid"))
+        print(tabulate(summary_items_values, headers="keys", tablefmt='fancy_grid'))
 
     if len(summary_combo_values) >= 1:
         print("\n")
         print(text.White + "Order Combo Summary ")
-        print(tabulate(summary_combo_values, headers="keys", tablefmt="grid"))
+        print(tabulate(summary_combo_values, headers="keys", tablefmt='fancy_grid'))

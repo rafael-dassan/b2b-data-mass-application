@@ -14,17 +14,18 @@ from data_mass.common import (
     place_request,
     set_to_dictionary,
     update_value_to_json
-    )
+)
+from data_mass.config import get_settings
 from data_mass.menus.account_menu import (
     print_minimum_order_type_menu,
     print_minimum_order_value_menu
-    )
+)
 
 
 def check_account_exists_microservice(
-        account_id: int,
+        account_id: str,
         zone: str,
-        environment: str):
+        environment: str) -> bool:
     """
     Check if a given `accout_id` exists in the microservice.
 
@@ -48,8 +49,19 @@ def check_account_exists_microservice(
         account_id=account_id
     )
 
-    base_url = get_microservice_base_url(environment=environment)
+    base_url = get_microservice_base_url(environment)
     request_url = f"{base_url}/accounts?accountId={account_id}"
+
+    if zone == "US":
+        settings = get_settings()
+
+        request_url = (
+            f"{base_url}"
+            "/accounts"
+            f"?vendorAccountId={account_id}"
+            f"&vendorId={settings.vendor_id}"
+        )
+
     response = place_request(
         request_method='GET',
         request_url=request_url,
@@ -75,7 +87,7 @@ def check_account_exists_microservice(
             return False
         return json_data
 
-    elif response.status_code == 200 and len(json_data) == 0:
+    elif response.status_code == 200 and not json_data:
         print(
             f"{text.Red}\n- "
             f"[Account Service] "
@@ -83,16 +95,80 @@ def check_account_exists_microservice(
         )
 
         return False
-    else:
+
+    print(
+        f"{text.Red}\n-"
+        f" [Account Service]"
+        f" Failure to retrieve the account {account_id}."
+        f" Response Status: {str(response.status_code)}."
+        f" Response message: {response.text}"
+    )
+
+    return False
+
+
+def get_multivendor_account_id(
+        vendor_account_id: str,
+        zone: str,
+        environment: str) -> str:
+    """
+    Get accountId of the vendorAccountId
+
+    Parameters
+    ----------
+    vendor_account_id : str
+    zone : str
+    environment : str
+
+    Returns
+    -------
+    str
+        The accountId.
+    """
+    request_headers = get_header_request(zone=zone)
+    settings = get_settings()
+
+    base_url = get_microservice_base_url(environment)
+    request_url = (
+        f"{base_url}"
+        "/accounts/"
+        f"?vendorAccountId={vendor_account_id}"
+        f"&vendorId={settings.vendor_id}"
+    )
+
+    response = place_request(
+        request_method='GET',
+        request_url=request_url,
+        request_body='',
+        request_headers=request_headers
+    )
+
+    json_data: dict = json.loads(response.text)
+
+    if response.status_code == 200 and json_data:
+        account, = json_data
+        account_id = account.get("accountId", None)
+
+        return account_id
+
+    if response.status_code == 200 and not json_data:
         print(
-            f"{text.Red}\n-"
-            f" [Account Service]"
-            f" Failure to retrieve the account {account_id}."
-            f" Response Status: {str(response.status_code)}."
-            f" Response message: {response.text}"
+            f"{text.Red}\n- "
+            f"[Account Service] "
+            f"The account {vendor_account_id} does not exist"
         )
 
-        return False
+        return None
+
+    print(
+        f"{text.Red}\n-"
+        f" [Account Service] "
+        f"Failure to retrieve the account {vendor_account_id}.\n"
+        f"Response Status: {response.status_code}.\n"
+        f"Response message: {response.text}.\n"
+    )
+
+    return None
 
 
 def create_account_ms(
@@ -105,7 +181,8 @@ def create_account_ms(
         delivery_address: dict,
         account_status: str = 'ACTIVE',
         enable_empties_loan: bool = False,
-        eligible_rewards: bool = True):
+        eligible_rewards: bool = True,
+        **kwargs):
     """
     Create account on the microservice.
 
@@ -128,41 +205,61 @@ def create_account_ms(
         Whenever an account is successfully created.
     """
     payment_term = None
-    if zone == 'BR' and 'BANK_SLIP' in payment_method:
+    if zone == "BR" and "BANK_SLIP" in payment_method:
         payment_term = return_payment_term_bank_slip()
 
     dict_values = {
-        'accountId': account_id,
-        'challengeIds': [account_id],
-        'deliveryCenterId': account_id,
-        'deliveryScheduleId': account_id,
-        'liquorLicense[0].number': account_id,
-        'priceListId': account_id,
-        'taxId': account_id,
-        'name': name,
-        'paymentMethods': payment_method,
-        'deliveryAddress.address': delivery_address.get('address'),
-        'deliveryAddress.city': delivery_address.get('city'),
-        'deliveryAddress.state': delivery_address.get('state'),
-        'deliveryAddress.zipcode': delivery_address.get('zipcode'),
-        'paymentTerms': payment_term,
-        'status': account_status,
-        'hasEmptiesLoan': enable_empties_loan
+        "challengeIds": [account_id],
+        "deliveryCenterId": account_id,
+        "deliveryScheduleId": account_id,
+        "liquorLicense": [{
+            "number": account_id
+        }],
+        "priceListId": account_id,
+        "taxId": account_id,
+        "name": name,
+        "paymentMethods": payment_method,
+        "deliveryAddress": {
+            "address": delivery_address.get("address")
+        },
+        "deliveryAddress": {
+            "city": delivery_address.get("city"),
+            "state": delivery_address.get("state"),
+            "zipcode": delivery_address.get("zipcode")
+        },
+        "paymentTerms": payment_term,
+        "status": account_status,
+        "hasEmptiesLoan": enable_empties_loan
     }
 
-    if minimum_order is not None:
-        set_to_dictionary(
-            dict_values,
-            'minimumOrder.type',
-            minimum_order[0]
-        )
-        set_to_dictionary(
-            dict_values,
-            'minimumOrder.value',
-            int(minimum_order[1])
-        )
+    if zone == "US":
+        schema = "data/create_account_us_payload.json"
+
+        dict_values.update({
+            "vendorAccountId": account_id,
+            "hasPONumberRequirement": kwargs.get(
+                "hasPONumberRequirement",
+                False
+            )
+        })
+
+        use_jwt_auth = False
     else:
-        set_to_dictionary(dict_values, 'minimumOrder', minimum_order)
+        schema = "data/create_account_payload.json"
+        dict_values.update({"accountId": account_id})
+        use_jwt_auth = True
+
+    content = pkg_resources.resource_string("data_mass", schema)
+
+    if minimum_order is not None:
+        dict_values.update({
+            "minimumOrder": {
+                "type": minimum_order[0],
+                "value": int(minimum_order[1])
+            }
+        })
+    else:
+        dict_values.update({"minimumOrder": minimum_order})
 
     # If the user chooses to make an account eligible for rewards program,
     # we will include the necessary information to match with a Data Mass available one
@@ -179,33 +276,28 @@ def create_account_ms(
     request_headers = get_header_request(zone, False, True, False, False)
     request_url = get_microservice_base_url(environment) + '/account-relay/'
 
-    content = pkg_resources.resource_string("data_mass", "data/create_account_payload.json") 
-    json_data = json.loads(content.decode("utf-8"))
-
-    for key in dict_values.keys():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
-
-    list_dict_values = create_list(json_object)
-    request_body = convert_json_to_string(list_dict_values)
+    body: dict = json.loads(content.decode("utf-8"))
+    body.update(dict_values)
 
     response = place_request(
-        request_method='POST',
+        request_method="POST",
         request_url=request_url,
-        request_body=request_body,
+        request_body=json.dumps([body]),
         request_headers=request_headers
     )
 
-    if response.status_code == 202:
+    if response.status_code in [202, 200]:
         return True
-    else:
-        print(
-            f"\n- [Account Relay Service]"
-            f" Failure to create the account {account_id}."
-            f" Response status {str(response.status_code)}."
-            f" Response message: {response.text}"
-        )
 
-        return False
+    print(
+        f"{text.Red}"
+        f"\n- [Account Relay Service]"
+        f" Failure to create the account {account_id}."
+        f" Response status {str(response.status_code)}"
+        f" Response message: {response.text}"
+    )
+
+    return False
 
 
 def display_account_information(account: str):
@@ -220,8 +312,8 @@ def display_account_information(account: str):
     account_data = account[0]
 
     delivery_window = account_data['deliveryWindows']
-    delivery_window_information = list()
-    if len(delivery_window) == 0:
+    delivery_window_information = []
+    if not delivery_window:
         account_delivery_window_values = {
             'Delivery Windows': 'None'
         }
@@ -252,7 +344,7 @@ def display_account_information(account: str):
             .replace('\'', '')
 
     payment_methods = account_data['paymentMethods']
-    if len(payment_methods) == 0:
+    if not payment_methods:
         payment_methods = 'None'
     else:
         payment_methods = str(payment_methods)\
@@ -260,7 +352,7 @@ def display_account_information(account: str):
             .replace(']', '')\
             .replace('\'', '')
 
-    minimum_order_information = list()
+    minimum_order_information = []
     minimum_order = account_data['minimumOrder']
     if minimum_order is None:
         minimum_order_values = {
@@ -286,7 +378,7 @@ def display_account_information(account: str):
         }
     maximum_order_information.append(maximum_order_values)
 
-    basic_information = list()
+    basic_information = []
     account_values = {
         'Account ID': account_data['accountId'],
         'Name': account_data['name'],
@@ -318,35 +410,35 @@ def display_account_information(account: str):
     print(tabulate(
         tabular_data=basic_information,
         headers='keys',
-        tablefmt='grid'
+        tablefmt='fancy_grid'
     ))
 
     print(f"{text.default_text_color}\nAccount - Credit Information")
     print(tabulate(
         tabular_data=credit_information,
         headers='keys',
-        tablefmt='grid'
+        tablefmt='fancy_grid'
     ))
 
     print(f"{text.default_text_color}\nAccount - Delivery Window Information")
     print(tabulate(
         tabular_data=delivery_window_information,
         headers='keys',
-        tablefmt='grid'
+        tablefmt='fancy_grid'
     ))
 
     print(f"{text.default_text_color}\nAccount - Minimum Order Information")
     print(tabulate(
         tabular_data=minimum_order_information,
         headers='keys',
-        tablefmt='grid'
+        tablefmt='fancy_grid'
     ))
 
     print(f"{text.default_text_color}\nAccount - Maximum Order Information")
     print(tabulate(
         tabular_data=maximum_order_information,
         headers='keys',
-        tablefmt='grid'
+        tablefmt='fancy_grid'
     ))
 
 
@@ -354,31 +446,43 @@ def get_minimum_order_info():
     minimum_order_type = print_minimum_order_type_menu()
     minimum_order_value = print_minimum_order_value_menu()
 
-    minimum_order_values = list()
+    minimum_order_values = []
     minimum_order_values.append(minimum_order_type)
     minimum_order_values.append(minimum_order_value)
 
     return minimum_order_values
 
 
-def get_delivery_cost_values(option):
-    min_value = 0
-    tax_value = 0
+def get_delivery_cost_values(option: str) -> Dict[str, str]:
+    """
+    Get delivery cost values.
 
-    if option.upper() == 'Y':
+    Parameters
+    ----------
+    option : str
+
+    Returns
+    -------
+    dict
+        A dict delivery object with `min_order_value`\
+        and `fee_value` properties.
+    """
+    min_value = tax_value = "0"
+
+    if option.upper() == "Y":
         min_value = input(
-            f"{text.default_text_color} "
+            f"{text.default_text_color}"
             f"Define the minimum order value to not pay any delivery fee: "
         )
 
         tax_value = input(
-            f"{text.default_text_color} "
+            f"{text.default_text_color}"
             f"Define the delivery fee value: "
         )
 
     delivery_cost_values = {
-        'min_order_value': min_value,
-        'fee_value': tax_value
+        "min_order_value": min_value,
+        "fee_value": tax_value
     }
 
     return delivery_cost_values
@@ -392,9 +496,17 @@ def get_credit_info() -> Dict:
     Returns
     ------
     dict
-        The credit ammount for "available", "balance", "consumption" and
+        The credit ammount for "available", "balance", "consumption" and \
         "overdue".
     """
+    credit = input(
+        f"{text.default_text_color}"
+        "Desired credit available (Default 5000): "
+    )
+    balance = input(
+        f"{text.default_text_color}"
+        "Desired credit balance (Default 15000): "
+    )
 
     credit_types = {
         "available": 5000,
@@ -437,7 +549,7 @@ def get_user_prompt_credit_info(credit_type: str , value: int) -> Dict:
     )
     if user_choice == "y":
         value = click.prompt(
-            f"{text.default_text_color} "
+            f"{text.default_text_color}"
             f"Desired credit {credit_type}",
             type=int
         )
@@ -496,7 +608,7 @@ def return_payment_term_bank_slip(days: int = 5):
     return [list_payment_term]
 
 
-def get_account_delivery_address(zone):
+def get_account_delivery_address(zone: str) -> dict:
     params = {
         'AR': {
             'address': 'Guaiviravi 1486',
@@ -563,6 +675,12 @@ def get_account_delivery_address(zone):
             'city': 'Blood River',
             'state': 'KwaZulu-Natal',
             'zipcode': '3024'
+        },
+        'US': {
+            'address': 'McDowell Street, 1639',
+            'city': 'Nashville',
+            'state': 'Tennessee',
+            'zipcode': '87334'
         }
     }
 

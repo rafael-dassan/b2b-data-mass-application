@@ -1,7 +1,10 @@
 import json
+import logging
 import os
 from json import loads
 from random import randint
+from typing import Optional
+from urllib.parse import urlencode
 
 from tabulate import tabulate
 
@@ -14,7 +17,102 @@ from data_mass.common import (
     place_request,
     return_first_and_last_date_year_payload,
     update_value_to_json
+)
+from data_mass.config import get_settings
+
+
+def request_create_discount_multivendor(
+        vendor_account_id: str,
+        zone: str,
+        environment: str,
+        discount_value: int,
+        minimum_quantity: float,
+        deal_id: str = None,
+        vendor_item_id: list = None,
+        quantity: int = 10) -> str:
+    """
+    Create deal for multivendor.
+
+    Parameters
+    ----------
+    vendor_account_id : str
+    zone : str
+    environment : str
+    vendor_item_id : str
+    deal_id : str
+
+    Returns
+    -------
+    str
+        The deal ID.
+    """
+    request_headers = get_header_request(zone=zone)
+    base_url = get_microservice_base_url(environment, False)
+    request_url =  f"{base_url}/promotion-relay/v3/promotions"
+
+    if deal_id is None:
+        vendor_promotion_id = f"DM-{str(randint(1, 100000))}"
+    else:
+        vendor_promotion_id = deal_id
+ 
+    body = {
+        "vendorPromotionId": vendor_promotion_id,
+        "title": f"Discount Promotion: {vendor_promotion_id}",
+        "description": "Stepped Discount Promotion, Created by Data Mass",
+        "type": "STEPPED_DISCOUNT",
+        "startDate": "2020-01-01T00:00:00.000Z",
+        "endDate": "2050-03-31T23:59:59.999Z",
+        "image": None,
+        "budget": 10,
+        "quantityLimit": quantity
+    }
+    
+    response = place_request(
+        request_method="POST",
+        request_url=request_url,
+        request_body=json.dumps([body]),
+        request_headers=request_headers
     )
+    
+    if response.status_code in [200, 202]:
+        request_url = f"{base_url}/deal-relay/v2"
+        line_items_discounts = []
+
+        line_items_discounts.append({
+            "vendorItemId": vendor_item_id,
+            "value": discount_value,
+            "maxQuantity": quantity
+        })
+
+        deal_body = {
+            "vendorAccountIds": [vendor_account_id],
+            "deals": [{
+                "vendorDealId": vendor_promotion_id,
+                "vendorPromotionId": vendor_promotion_id,
+                "conditions": {
+                    "lineItem": {
+                        "vendorItemIds": [vendor_item_id]
+                    }
+                },
+                "output": {
+                    "lineItemDiscount": {
+                        "vendorItemIds": [vendor_item_id]
+                    }
+                }
+            }]
+        }
+
+        response = place_request(
+            request_method="PUT",
+            request_url=request_url,
+            request_body=json.dumps(deal_body),
+            request_headers=request_headers
+        )
+
+        if response.status_code in [200, 202]:
+            return vendor_promotion_id
+
+    return False
 
 
 def request_create_deal_v2(deal_type, zone, environment, deal_id=None):
@@ -53,7 +151,32 @@ def request_create_deal_v2(deal_type, zone, environment, deal_id=None):
         f"Response Status: {response.status_code}. "
         f"Response message: {response.text}."
     )
+
     return False
+
+
+def get_deals_payload_us(account_id, deal_id):
+
+    abs_path = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(abs_path, 'data/create_promotion_payload_us.json')
+
+    with open(file_path) as file:
+        json_data = json.load(file)
+
+    # Create dictionary with deal's values
+    dict_values = {
+        'vendorAccountIds': account_id,
+        'vendorDealId': deal_id
+    }
+
+    for key in dict_values.keys():
+        json_object = update_value_to_json(json_data, key, dict_values[key])
+
+    # Create body
+    list_dict_values = create_list(json_object)
+    request_body = convert_json_to_string(list_dict_values)
+
+    return request_body
 
 
 def get_deals_payload_v2(deal_id, deal_type):
@@ -96,24 +219,125 @@ def get_deals_payload_v2(deal_id, deal_type):
     return request_body
 
 
+def create_mix_match(
+        vendor_account_id: str,
+        zone: str,
+        environment: str,
+        vendor_item_ids: list,
+        max_quantity: int,
+        quantity: int = 10,
+    ) -> Optional[str]:
+    """
+    Create Mix & Match deal for multivendor POC.
+
+    Parameters
+    ----------
+    vendor_account_id : str
+        POC unique identifier.
+    zone : str
+        One of AR, BR, CO, DO, MX, ZA and US.
+    environment : str
+        One o DEV, SIT and UAT.
+    vendor_item_ids : str
+        List of products uniques identifiers.
+    max_quantity : int
+        Maximum quantity for each SKU to be applied.
+    quantity : int
+        The promotion quantity limit. By default `10`.
+
+    Returns
+    -------
+    str
+        Whenever a request was successfully completed, returns the deal id.
+    """
+    request_headers = get_header_request(zone=zone)
+    base_url = get_microservice_base_url(environment, False)
+    request_url =  f"{base_url}/promotion-relay/v3/promotions"
+
+    vendor_promotion_id = f"DM-{str(randint(1, 100000))}"
+
+    body = {
+        "vendorPromotionId": vendor_promotion_id,
+        "title": f"Mix & Match: {vendor_promotion_id}",
+        "description": "Mix & Match Promotion, Created by Data Mass",
+        "type": "FLEXIBLE_DISCOUNT",
+        "startDate": "2020-01-01T00:00:00.000Z",
+        "endDate": "2050-03-31T23:59:59.999Z",
+        "image": None,
+        "budget": 10,
+        "quantityLimit": quantity
+    }
+
+    response = place_request(
+        request_method="POST",
+        request_url=request_url,
+        request_body=json.dumps([body]),
+        request_headers=request_headers
+    )
+
+    if response.status_code in [200, 202]:
+        request_url =  f"{base_url}/deal-relay/v2"
+        line_items_discounts = []
+        items_id = []
+
+        for item in vendor_item_ids:
+            item_id = item.get("sourceData", {}).get("vendorItemId")
+
+            items_id.append(item_id)
+            line_items_discounts.append({
+                "vendorItemId": item_id,
+                "value": randint(10, 100),
+                "maxQuantity": max_quantity
+            })
+
+        deal_body = {
+            "vendorAccountIds": [vendor_account_id],
+            "deals": [{
+                "vendorDealId": vendor_promotion_id,
+                "vendorPromotionId": vendor_promotion_id,
+                "conditions": {
+                    "lineItem": {
+                        "vendorItemIds": items_id
+                    }
+                },
+                "output": {
+                    "lineItemDiscount": {
+                        "vendorItemIds": items_id
+                    }
+                }
+            }]
+        }
+
+        response = place_request(
+            request_method="PUT",
+            request_url=request_url,
+            request_body=json.dumps(deal_body),
+            request_headers=request_headers
+        )
+
+        if response.status_code in [200, 202]:
+            return vendor_promotion_id
+
+    return False
+
+
 def create_discount(
-    account_id,
-    sku,
-    zone,
-    environment,
-    discount_value,
-    minimum_quantity,
-    deal_id=None,
-    discount_type='percentOff',
-    deal_type='DISCOUNT'
-):
+        account_id: str,
+        sku: str,
+        zone: str,
+        environment: str,
+        discount_value: int,
+        minimum_quantity: int,
+        deal_id: str = None,
+        discount_type: str = 'percentOff',
+        deal_type: str = 'DISCOUNT'):
     """
     Input a deal type discount to a specific POC by calling the 
     Promotion Relay Service and Pricing Engine Relay Service
     Args:
         account_id: POC unique identifier
         sku: product unique identifier
-        zone: e.g., AR, BR, CO, DO, MX, ZA
+        zone: e.g., AR, BR, CO, DO, MX, ZA or US
         environment: e.g, DEV, SIT, UAT
         discount_value: value of discount to be applied
         minimum_quantity: minimum quantity for the discount to be applied
@@ -148,17 +372,16 @@ def create_discount(
 
 
 def create_stepped_discount_with_limit(
-    account_id,
-    sku,
-    zone,
-    environment,
-    index_range,
-    discount_range,
-    max_quantity,
-    deal_id=None,
-    discount_type='percentOff',
-    deal_type='STEPPED_DISCOUNT'
-):
+        account_id,
+        sku,
+        zone,
+        environment,
+        index_range,
+        discount_range,
+        max_quantity,
+        deal_id=None,
+        discount_type='percentOff',
+        deal_type='STEPPED_DISCOUNT'):
     """
     Input a deal type stepped discount with max quantity to a specific 
     POC by calling the Promotion Relay Service and
@@ -179,6 +402,8 @@ def create_stepped_discount_with_limit(
         deal_id: deal unique identifier
     Returns: `promotion_response` if success
     """
+    promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
+
     promotion_response = request_create_deal_v2(
         deal_type,
         zone,
@@ -200,8 +425,8 @@ def create_stepped_discount_with_limit(
 
     if promotion_response and cart_response == 'success':
         return promotion_response
-    else:
-        return False
+
+    return False
 
 
 def create_stepped_discount(
@@ -229,6 +454,8 @@ def create_stepped_discount(
             STEPPED_FREE_GOOD
     Returns: `promotion_response` if success
     """
+    promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
+
     promotion_response = request_create_deal_v2(
         deal_type=deal_type,
         zone=zone,
@@ -248,8 +475,8 @@ def create_stepped_discount(
 
     if promotion_response and cart_response:
         return promotion_response
-    else:
-        return False
+
+    return False
 
 
 def create_free_good(
@@ -281,6 +508,8 @@ def create_free_good(
         need_to_buy_product: e.g., `Y` or `N`
     Returns: `promotion_response` if success
     """
+    promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
+
     promotion_response = request_create_deal_v2(
         deal_type=deal_type,
         zone=zone,
@@ -302,8 +531,8 @@ def create_free_good(
 
     if promotion_response and cart_response == 'success':
         return promotion_response
-    else:
-        return False
+
+    return False
 
 
 def create_stepped_free_good(
@@ -330,6 +559,8 @@ def create_stepped_free_good(
         ranges: range of SKU quantities and free good values to be applied
     Returns: `promotion_response` if success
     """
+    promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
+
     promotion_response = request_create_deal_v2(
         deal_type=deal_type,
         zone=zone,
@@ -348,8 +579,8 @@ def create_stepped_free_good(
 
     if promotion_response and cart_response == 'success':
         return promotion_response
-    else:
-        return False
+
+    return False
 
 
 # Create Interactive Combos v1 List
@@ -375,6 +606,8 @@ def create_interactive_combos(
             STEPPED_FREE_GOOD, FLEXIBLE_DISCOUNT
     Returns: `promotion_response` if success
     """
+    promotion_response = request_create_deal_v2(deal_type, zone, environment)
+
     promotion_response = request_create_deal_v2(
         deal_type=deal_type,
         zone=zone,
@@ -392,8 +625,8 @@ def create_interactive_combos(
 
     if promotion_response and cart_response == 'success':
         return promotion_response
-    else:
-        return False
+
+    return False
 
 
 def create_interactive_combos_v2(
@@ -419,6 +652,8 @@ def create_interactive_combos_v2(
             STEPPED_FREE_GOOD, FLEXIBLE_DISCOUNT
     Returns: `promotion_response` if success
     """
+    promotion_response = request_create_deal_v2(deal_type, zone, environment)
+
     promotion_response = request_create_deal_v2(
         deal_type=deal_type,
         zone=zone,
@@ -436,8 +671,8 @@ def create_interactive_combos_v2(
 
     if promotion_response and cart_response == 'success':
         return promotion_response
-    else:
-        return False
+
+    return False
 
 
 def request_create_free_good_cart_calculation(
@@ -480,10 +715,14 @@ def request_create_free_good_cart_calculation(
         accumulation_type = 'UNIQUE'
     else:
         accumulation_type = None
+        
+    base_url = get_microservice_base_url(environment, False)
     
     # Get base URL
-    base_url = get_microservice_base_url(environment, False)
-    request_url = f"{base_url}/deal-relay/v1"
+    if zone == "US":
+        request_url = f"{base_url}/deal-relay/v2"
+    else:
+        request_url = f"{base_url}/deal-relay/v1"
 
     # Get deal's start and end dates
     dates_payload = return_first_and_last_date_year_payload()
@@ -494,6 +733,7 @@ def request_create_free_good_cart_calculation(
         dict_values = {
             'accounts': [account_id],
             'deals[0].dealId': deal_id,
+            'deals[0].promotionId': deal_id,
             'deals[0].externalId': deal_id,
             'deals[0].accumulationType': accumulation_type,
             'deals[0].conditions.simulationDateTime.startDateTime': dates_payload['startDate'],
@@ -511,6 +751,7 @@ def request_create_free_good_cart_calculation(
         dict_values = {
             'accounts': [account_id],
             'deals[0].dealId': deal_id,
+            'deals[0].promotionId': deal_id,
             'deals[0].externalId': deal_id,
             'deals[0].accumulationType': accumulation_type,
             'deals[0].quantityLimit': quantity,
@@ -571,9 +812,13 @@ def request_create_stepped_free_good_cart_calculation(account_id, deal_id, zone,
     else:
         accumulation_type = None
 
-    # Get base URL
     base_url = get_microservice_base_url(environment, False)
-    request_url = f"{base_url}/deal-relay/v1"
+
+    # Get base URL
+    if zone == "US":
+        request_url = f"{base_url}/deal-relay/v2"
+    else:
+        request_url = f"{base_url}/deal-relay/v1"
 
     # Get deal's start and end dates
     dates_payload = return_first_and_last_date_year_payload()
@@ -582,6 +827,7 @@ def request_create_stepped_free_good_cart_calculation(account_id, deal_id, zone,
     dict_values = {
         'accounts': [account_id],
         'deals[0].dealId': deal_id,
+        'deals[0].promotionId': deal_id,
         'deals[0].externalId': deal_id,
         'deals[0].accumulationType': accumulation_type,
         'deals[0].conditions.simulationDateTime.startDateTime': dates_payload['startDate'],
@@ -644,7 +890,6 @@ def request_create_discount_cart_calculation(account_id, deal_id, zone, environm
         minimum_quantity: SKU minimum's quantity for the discount to be applied
     Returns: Success if the request went ok and the status code if there's a problem
     """
-
     # Get the correct discount type
     if discount_type == 'percentOff':
         discount_type = '%'
@@ -654,10 +899,14 @@ def request_create_discount_cart_calculation(account_id, deal_id, zone, environm
         accumulation_type = 'UNIQUE'
     else:
         accumulation_type = None
+        
+    base_url = get_microservice_base_url(environment, False)
 
     # Get base URL
-    base_url = get_microservice_base_url(environment, False)
-    request_url = f"{base_url}/deal-relay/v1"
+    if zone == "US":
+        request_url = f"{base_url}/deal-relay/v2"
+    else:
+        request_url = f"{base_url}/deal-relay/v1"
 
     # Get deal's start and end dates
     dates_payload = return_first_and_last_date_year_payload()
@@ -666,6 +915,7 @@ def request_create_discount_cart_calculation(account_id, deal_id, zone, environm
     dict_values = {
         'accounts': [account_id],
         'deals[0].dealId': deal_id,
+        'deals[0].promotionId': deal_id,
         'deals[0].externalId': deal_id,
         'deals[0].accumulationType': accumulation_type,
         'deals[0].conditions.simulationDateTime.startDateTime': dates_payload['startDate'],
@@ -735,9 +985,13 @@ def request_create_stepped_discount_cart_calculation(
     else:
         accumulation_type = None
     
-    # Get base URL
     base_url = get_microservice_base_url(environment, False)
-    request_url = f"{base_url}/deal-relay/v1"
+    
+    # Get base URL
+    if zone == "US":
+        request_url = f"{base_url}/deal-relay/v2"
+    else:
+        request_url = f"{base_url}/deal-relay/v1"
 
     # Get deal's start and end dates
     dates_payload = return_first_and_last_date_year_payload()
@@ -836,10 +1090,14 @@ def create_stepped_discount_with_limit_cart_calculation(
         accumulation_type = 'UNIQUE'
     else:
         accumulation_type = None
-    
-    # Get base URL
+
     base_url = get_microservice_base_url(environment, False)
-    request_url = f"{base_url}/deal-relay/v1"
+
+    # Get base URL
+    if zone == "US":
+        request_url = f"{base_url}/deal-relay/v2"
+    else:
+        request_url = f"{base_url}/deal-relay/v1"
 
     # Get deal's start and end dates
     dates_payload = return_first_and_last_date_year_payload()
@@ -848,6 +1106,7 @@ def create_stepped_discount_with_limit_cart_calculation(
     dict_values = {
         'accounts': [account_id],
         'deals[0].dealId': deal_id,
+        'deals[0].promotionId': deal_id,
         'deals[0].externalId': deal_id,
         'deals[0].accumulationType': accumulation_type,
         'deals[0].conditions.simulationDateTime.startDateTime': dates_payload['startDate'],
@@ -912,16 +1171,20 @@ def request_create_interactive_combos_cart_calculation(
     Returns: Success if the request went ok and the status code if 
         there's a problem
     """
+    base_url = get_microservice_base_url(environment, False)
 
     # Get base URL
-    base_url = get_microservice_base_url(environment, False)
-    request_url = f"{base_url}/deal-relay/v1"
+    if zone == "US":
+        request_url = f"{base_url}/deal-relay/v2"
+    else:
+        request_url = f"{base_url}/deal-relay/v1"
 
     # Create dictionary with deal's values
     dict_values = {
 
         'accounts': [account_id],
         'deals[0].dealId': deal_id,
+        'deals[0].promotionId': deal_id,
         'deals[0].externalId': deal_id,
         'deals[0].conditions.multipleLineItem.items[0].skus': [sku[0]['sku']],
         'deals[0].conditions.multipleLineItem.items[1].skus': [sku[1]['sku']],
@@ -998,6 +1261,7 @@ def request_create_interactive_combos_cart_calculation_v2(
 
         'accounts': [account_id],
         'deals[0].dealId': deal_id,
+        'deals[0].promotionId': deal_id,
         'deals[0].externalId': deal_id,
         'deals[0].conditions.multipleLineItem.items[0].skus': [sku[0]['sku'], sku[1]['sku']],
         'deals[0].conditions.multipleLineItem.items[1].skus': [sku[2]['sku']],
@@ -1048,9 +1312,9 @@ def request_create_interactive_combos_cart_calculation_v2(
     return False
 
 
-def request_get_deals_promo_fusion_service(zone, environment, account_id=''):
+def request_get_combos_promo_fusion_service(zone, environment, account_id):
     """
-    Get deals data from the Promo Fusion Service
+    Get combos data from the Promo Fusion Service
     Args:
         account_id: POC unique identifier
         zone: e.g., AR, BR, CO, DO, MX, ZA
@@ -1060,26 +1324,83 @@ def request_get_deals_promo_fusion_service(zone, environment, account_id=''):
 
     # Get base URL
     base_url = get_microservice_base_url(environment)
-    request_url = f"{base_url}/promo-fusion-service/{account_id}"
-
+    request_url = f"{base_url}/catalog-service/combos"
+    
     # Define headers
     request_headers = get_header_request(
         zone=zone, use_jwt_auth=True, account_id=account_id
     )
+    request_headers.update({'custID': account_id, 'regionID': zone})
 
     # Send request
     response = place_request('GET', request_url, '', request_headers)
+    combos = loads(response.text)
 
-    json_data = loads(response.text)
-
-    if response.status_code == 200 and len(json_data) != 0:
-        return json_data
+    if response.status_code == 200 and len(combos) != 0:
+        return combos
     print(
-        f"{text.Red}\n- [Promo Fusion Service] Failure to retrieve deals. "
+        f"{text.Red}\n- [Catalog Service] Failure to retrieve combos. "
         f"Response Status: {response.status_code}. "
         f" Response message: {response.text}"
     )
     return False
+
+
+def request_get_deals_promo_fusion_service(zone, environment, account_id):
+    """
+    Get deals data from the Promo Fusion Service.
+
+    Parameters
+    ----------
+    account_id : str
+        POC unique identifier.
+    zone : str
+        e.g., AR, BR, CO, DO, MX, ZA.
+    environment : str
+        e.g., DEV, SIT, UAT.
+
+    Returns
+    -------
+    str
+        New json_object.
+    """
+    # Get base URL
+    base_url = get_microservice_base_url(environment)
+    request_url = f"{base_url}/deal-service/v1?accountId={account_id}"
+
+    # Define headers
+    request_headers = get_header_request(
+        zone=zone.lower(),
+        use_jwt_auth=True,
+        account_id=account_id
+    )
+
+    # Get base URL
+    if zone == "US":
+        settings = get_settings()
+        base_url = get_microservice_base_url(environment, False)
+
+        request_headers.update({
+            "vendorId": settings.vendor_id,
+            "vendorAccountId": account_id
+        })
+
+        request_url = f"{base_url}/deal-service/v2"
+
+    # Send request
+    response = place_request('GET', request_url, '', request_headers)
+    json_data = loads(response.text)
+
+    if response.status_code == 200 and json_data:
+        return json_data
+
+    print(
+        f"{text.Red}\n- [Deal Service] Failure to retrieve deals. "
+        f"Response Status: {response.status_code}. "
+        f" Response message: {response.text}"
+    )
+
+    return None
 
 
 def request_get_deals_promotion_service(account_id, zone, environment):
@@ -1148,10 +1469,57 @@ def display_deals_information_promotion(deals):
         promotion_information.append(promotion_values)
 
     print(text.default_text_color + '\nPromotion Information')
-    print(tabulate(promotion_information, headers='keys', tablefmt='grid'))
+    print(tabulate(promotion_information, headers='keys', tablefmt='fancy_grid'))
 
 
-def display_deals_information_promo_fusion(account_id, deals):
+def display_deals_information_multivendor(
+        vendor_account_id: str,
+        deals: list):
+    """
+    Display, using tabulate, deals and combos.
+
+    Parameters
+    ----------
+    vendor_account_id : str
+    deals : list
+    """
+    response = []
+
+    if deals:
+        for deal in deals:
+            output = list(deal.get("output", {}))
+            deal_type = output[0] if output else None
+            items = []
+
+            if deal_type == "freeGoods":
+                deal_items, = deal.get("output", {}).get(deal_type,{}).get("items", [])
+                
+                for item in deal_items.get("vendorItems", {}):
+                    items.append(item.get("vendorItemId"))
+            elif deal_type == "multipleLineItemDiscount":
+                deal_items = deal.get("output", {}).get(deal_type,{}).get("items", [])
+                
+                for item in deal_items:
+                    items.append(item.get("vendorItemId"))
+            else:
+                items = deal.get("output", {}).get(deal_type, {}).get("vendorItemIds")
+
+            response.append({
+                "Id": deal.get("vendorDealId"),
+                "Type": deal_type,
+                "Items": ", ".join(items) if isinstance(items, list) else items
+            })
+
+        print(tabulate(response, headers='keys', tablefmt='fancy_grid'))
+    else:
+        print(
+            f"{text.Yellow}\n"
+            "- There is no promotion available "
+            f"for the account {vendor_account_id}"
+        )
+
+
+def display_deals_information_promo_fusion(account_id, deals, combos):
     """
     Display deals information from the Promo Fusion Service
     Args:
@@ -1159,50 +1527,98 @@ def display_deals_information_promo_fusion(account_id, deals):
         deals: deals object
     Returns: a table containing the available deals information
     """
-
-    combos = deals['combos']
-    promotions = deals['promotions']
-
-    combo_information = list()
-    if len(combos) == 0:
+ 
+    combo_information = []
+    if not combos.get("combos"):
         print(
             f"{text.Yellow}\n- There is no combo available for the "
             f"account {account_id}"
         )
     else:
-        for i in range(len(combos)):
+        for combo in combos.get('combos'):
             combo_values = {
-                'ID': combos[i]['id'],
-                'Type': combos[i]['type'],
-                'Title': combos[i]['title'],
-                'Original Price': combos[i]['originalPrice'],
-                'Price': combos[i]['price'],
-                'Stock Available': combos[i]['availableToday']
+                'ID': combo.get('id'),
+                'Type': combo.get('type'),
+                'Title': combo.get('title'),
+                'Original Price': combo.get('originalPrice'),
+                'Price': combo.get('price'),
+                'Stock Available': combo.get('availableToday')
             }
             combo_information.append(combo_values)
 
         print(text.default_text_color + '\nCombo Information')
-        print(tabulate(combo_information, headers='keys', tablefmt='grid'))
-
-    promotion_information = list()
-    if len(promotions) == 0:
+        print(tabulate(combo_information, headers='keys', tablefmt='fancy_grid'))
+    
+    if not deals.get("deals"):
         print(
-            f"{text.Yellow}\n- There is no promotion available "
+            f"{text.Yellow}\n- There is no deal available "
             f"for the account {account_id}"
         )
     else:
-        for i in range(len(promotions)):
-            promotion_values = {
-                'SKU': promotions[i]['sku'],
-                'ID': promotions[i]['discountId'],
-                'Type': promotions[i]['type'],
-                'Title': promotions[i]['title'],
-                'Price': promotions[i]['price']
-            }
-            promotion_information.append(promotion_values)
-
-        print(text.default_text_color + '\nPromotion Information')
-        print(tabulate(promotion_information, headers='keys', tablefmt='grid'))
+        deal_info = []
+        for deal in deals.get('deals'):
+            name = list(deal.get('output'))[0]
+            if name == 'freeGoods':
+                id_ = deal['dealId']
+                temp_skus = deal['output'][name]['items'][0]['skus'][:]
+                skus = []
+                for temp_sku in temp_skus:
+                    skus.append(temp_sku['sku'])
+                    skus = list(set(skus))
+                deal_info.append({
+                    'id': id_,
+                    'type': name,
+                    'skus': skus 
+                })
+            elif name == 'lineItemDiscount':
+                id_ = deal['dealId']
+                temp_skus = deal['output'][name]
+                skus = []
+                for temp_sku in temp_skus['skus']:
+                    skus.append(temp_sku)
+                    skus = list(set(skus))
+                deal_info.append({
+                    'id': id_,
+                    'type': name,
+                    'skus': skus 
+                })
+            elif name == 'multipleLineItemDiscount':
+                id_ = deal['dealId']
+                temp_skus = deal['output'][name]['items'][:]
+                skus = []
+                for temp_sku in temp_skus:
+                    skus.append(temp_sku['sku'])
+                    skus = list(set(skus))
+                deal_info.append({
+                    'id': id_,
+                    'type': name,
+                    'skus': skus 
+                })
+            elif name == 'lineItemScaledDiscount':
+                id_ = deal['dealId']
+                temp_skus = deal['output'][name][:]
+                skus = []
+                for temp_sku in temp_skus:
+                    skus.append(temp_sku['skus'][0])
+                    skus = list(set(skus))
+                deal_info.append({
+                    'id': id_,
+                    'type': name,
+                    'skus': skus 
+                })
+            elif name == 'scaledFreeGoods':
+                id_ = deal['dealId']
+                temp_skus = deal['output'][name]["0"]["items"][0]['skus'][:]
+                skus = []
+                for temp_sku in temp_skus:
+                    skus.append(temp_sku['sku'])
+                deal_info.append({
+                    'id': id_,
+                    'type': name,
+                    'skus': skus 
+                })
+        print(text.default_text_color + '\nDeal Information')
+        print(tabulate(deal_info, headers='keys', tablefmt='fancy_grid'))
 
 
 def request_delete_deal_by_id(account_id, zone, environment, data):
@@ -1269,6 +1685,7 @@ def request_get_deals_pricing_service(account_id, zone, environment):
         environment: e.g., SIT, UAT
     Returns: new json_object
     """
+    
     # Get headers
     request_headers = get_header_request(
         zone, True, False, False, False, account_id

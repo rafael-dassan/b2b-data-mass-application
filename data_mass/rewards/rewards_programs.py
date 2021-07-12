@@ -14,7 +14,7 @@ from data_mass.common import (
     print_input_text,
     set_to_dictionary,
     update_value_to_json
-    )
+)
 from data_mass.rewards.rewards_utils import (
     build_request_url_with_projection_query,
     create_product_list_from_zone,
@@ -22,7 +22,7 @@ from data_mass.rewards.rewards_utils import (
     get_dt_combos_from_zone,
     print_input_combo_qty,
     print_input_decision
-    )
+)
 
 APP_ADMIN = "adminportal"
 BASE_URL_IMAGE = "https://cdn-b2b-abi.global.ssl.fastly.net"

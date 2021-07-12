@@ -79,8 +79,12 @@ def validate_accounts(option):
     return option in options
 
 
-def validate_deals_options(option):
-    options = ["1", "2", "3", "4", "5", "6", "7"]
+def validate_deals_options(option, zone):
+    if zone == "US":
+        options = ['1', '2', '3']
+        return option in options     
+
+    options = ['1', '2', '3', '4', '5', '6', '7']
     return option in options
 
 
@@ -103,17 +107,18 @@ def validate_zone_for_interactive_combos_ms(zone):
 
 def validate_zone_for_ms(zone):
     return {
-        "AR": True,
-        "BR": True,
-        "CA": True,
-        "CO": True,
-        "DO": True,
-        "EC": True,
-        "MX": True,
-        "PA": True,
-        "PE": True,
-        "PY": True,
-        "ZA": True,
+        'AR': True,
+        'BR': True,
+        'CA': True,
+        'CO': True,
+        'DO': True,
+        'EC': True,
+        'MX': True,
+        'PA': True,
+        'PE': True,
+        'PY': True,
+        'US': True,
+        'ZA': True,
     }.get(zone, False)
 
 
@@ -142,10 +147,12 @@ def validate_account_operations_structure(option):
     return option in options
 
 
-def validate_product_operations_structure(option):
-    options = ["1", "2", "3", "4", "5", "6"]
+def validate_product_operations_structure(option, zone):
+    if zone == "US":
+        options = ['1', '2', '3', '4']
+        return option in options
+    options = ['1', '2', '3', '4', '5', '6']
     return option in options
-
 
 def validate_recommendation_type(option):
     options = ["1", "2", "3", "4", "5"]

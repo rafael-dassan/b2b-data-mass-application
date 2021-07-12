@@ -1,9 +1,10 @@
 from data_mass.populator.log import *
 from data_mass.product.magento import enable_product
 from data_mass.product.products import (
+    create_product_v2,
     create_product,
     request_get_offers_microservice
-    )
+)
 
 logger = logging.getLogger(__name__)
 
@@ -52,11 +53,14 @@ def populate_product(country, environment, sku, name, brand_name, sub_brand_name
         'isNarcotic': is_narcotic,
         'isAlcoholic': is_alcoholic
     }
+    
+    if country == "US":
+        response = create_product_v2(country, environment, item_data)
+    else:
+        response = create_product(country, environment, item_data)
 
-    response = create_product(country, environment, item_data)
     if response is None:
         logger.error(log(Message.PRODUCT_CREATE_ERROR, {"sku": sku}))
-
 
 def enable_products_magento(country, environment, dataframe_products):
     if dataframe_products is not None:
@@ -110,5 +114,4 @@ def check_product_associated_to_account(account_id, country, environment, produc
                 not_associated_skus.append(products[i])
                 logger.debug("[Catalog Service] Product {product} is not associated to the account {account_id} and needs to be added."
                              .format(product=products[i], account_id=account_id))
-
         return not_associated_skus

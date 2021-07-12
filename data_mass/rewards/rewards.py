@@ -10,17 +10,17 @@ from data_mass.common import (
     get_header_request,
     get_microservice_base_url,
     place_request
-    )
+)
 from data_mass.menus.order_menu import print_allow_cancellable_order_menu
 from data_mass.product.products import (
     get_sku_name,
     request_get_offers_microservice
-    )
+)
 from data_mass.rewards.rewards_programs import (
     get_all_programs,
     get_DM_rewards_program_for_zone,
     get_specific_program
-    )
+)
 from data_mass.rewards.rewards_utils import (
     get_dt_combos_from_zone,
     get_rewards_combos_by_account,
@@ -29,7 +29,7 @@ from data_mass.rewards.rewards_utils import (
     post_orders_rewards,
     print_input_combo_qty,
     print_input_decision
-    )
+)
 
 APP_B2B = "b2b"
 APP_ADMIN = "adminportal"
@@ -311,10 +311,8 @@ def display_program_rules_skus(zone, environment, abi_id):
                     )
 
                 print(
-                    text.default_text_color
-                    + tabulate(
-                        program_rules_skus, headers="keys", tablefmt="grid"
-                    )
+                    f"{text.default_text_color}"
+                    f'{tabulate(program_rules_skus,headers="keys",tablefmt="fancy_grid")}'
                 )
 
 

@@ -223,12 +223,11 @@ def create_attribute_group(
         response = client.execute(mut, variable_values=params)
         json_data = json.dumps(response)
 
-        if not json_data:
-            json_split = json_data.rsplit()
-            id_att = json_split[2]
-            id_att1 = id_att.lstrip('"')
-            id_att2 = id_att1.rsplit('"', 1)[0]
-            return id_att2
+        json_split = json_data.rsplit()
+        id_att = json_split[2]
+        id_att1 = id_att.lstrip('"')
+        id_att2 = id_att1.rsplit('"', 1)[0]
+        return id_att2
     except TransportQueryError as e:
         print(text.Red + str(e))
 
@@ -1066,10 +1065,10 @@ def display_specific_attribute(attribute: str):
                 metadata.append(metadata_info)
 
     print(text.default_text_color + '\nAttribute - General Information')
-    print(tabulate([info_attribute], headers='keys', tablefmt='grid'))
+    print(tabulate([info_attribute], headers='keys', tablefmt='fancy_grid'))
 
     print(text.default_text_color + '\nAttribute - Metadata Information')
-    print(tabulate(metadata, headers='keys', tablefmt='grid'))
+    print(tabulate(metadata, headers='keys', tablefmt='fancy_grid'))
 
 
 def display_all_attribute(attributes: Any):
@@ -1120,7 +1119,7 @@ def display_all_attribute(attributes: Any):
             information_att.append(info_attribute)
 
     print(text.default_text_color + '\nAttribute - General Information')
-    print(tabulate(information_att, headers='keys', tablefmt='grid'))
+    print(tabulate(information_att, headers='keys', tablefmt='fancy_grid'))
 
 
 def edit_attribute_type(

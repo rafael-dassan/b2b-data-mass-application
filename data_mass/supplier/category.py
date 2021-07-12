@@ -8,20 +8,21 @@ from gql.transport.requests import RequestsHTTPTransport
 from tabulate import tabulate
 
 from data_mass.classes.text import text
-from data_mass.common import get_header_request_supplier, get_supplier_base_url
+from data_mass.common import get_header_request_supplier, get_supplier_base_url, set_to_dictionary
 from data_mass.supplier.attribute import (
     create_legacy_attribute_container,
     create_legacy_attribute_package,
     create_legacy_root_attribute,
-    get_all_legacy_attributes
-    )
+    get_all_legacy_attributes,
+    search_specific_attribute
+)
 from data_mass.supplier.gql.categories import (
     create_association_payload,
     create_root_category_payload,
     create_search_specific_category_payload,
     create_sub_category_payload,
     search_all_category_payload
-    )
+)
 
 
 def create_root_category(
@@ -208,7 +209,8 @@ def create_association_attribute_with_category(
         attribute_id: str,
         category_id: str,
         min_cardinality: int,
-        max_cardinality: int) -> Union[bool, str]:
+        max_cardinality: int,
+        metadata_values: list = None) -> Union[bool, str]:
     """
     Create association attribute with category.
 
@@ -219,6 +221,7 @@ def create_association_attribute_with_category(
     category_id : str
     min_cardinality : int
     max_cardinality : int
+    metadata_values : list
 
     Returns
     -------
@@ -252,7 +255,8 @@ def create_association_attribute_with_category(
         "attribute_id": attribute_id,
         "category_id": category_id,
         "min_cardinality": min_cardinality,
-        "max_cardinality": max_cardinality
+        "max_cardinality": max_cardinality,
+        "metadata_values": metadata_values
     }
 
     try:
@@ -388,16 +392,16 @@ def display_specific_category(category: Any):
             attributes_list.append(attributes_info)
 
     print(text.default_text_color + '\nCategory - General Information')
-    print(tabulate([info_category], headers='keys', tablefmt='grid'))
+    print(tabulate([info_category], headers='keys', tablefmt='fancy_grid'))
 
     print(text.default_text_color + '\nCategory - Parent Information')
-    print(tabulate([parent_info], headers='keys', tablefmt='grid'))
+    print(tabulate([parent_info], headers='keys', tablefmt='fancy_grid'))
 
     print(text.default_text_color + '\nCategory - Ancestor Information')
-    print(tabulate(ancestors_list, headers='keys', tablefmt='grid'))
+    print(tabulate(ancestors_list, headers='keys', tablefmt='fancy_grid'))
 
     print(text.default_text_color + '\nCategory - Attribute Information')
-    print(tabulate(attributes_list, headers='keys', tablefmt='grid'))
+    print(tabulate(attributes_list, headers='keys', tablefmt='fancy_grid'))
 
 
 def search_all_category(
@@ -486,7 +490,7 @@ def display_all_category(category: Any):
             information_cat.append(category_info)
 
     print(text.default_text_color + '\nCategory - General Information')
-    print(tabulate(information_cat, headers='keys', tablefmt='grid'))
+    print(tabulate(information_cat, headers='keys', tablefmt='fancy_grid'))
 
 
 def associate_all_legacy_attributes(
@@ -535,7 +539,8 @@ def associate_all_legacy_attributes(
                     attribute_id=all_attributes[attribute],
                     category_id=category_id,
                     min_cardinality=0,
-                    max_cardinality=1
+                    max_cardinality=1,
+                    metadata_values=get_group_sub_attributes_metadata(environment=environment, attribute_id=all_attributes[attribute])
                 )
         elif attribute == "container":
             container_abs_att_id = \
@@ -544,7 +549,8 @@ def associate_all_legacy_attributes(
                     attribute_id=all_attributes[attribute],
                     category_id=category_id,
                     min_cardinality=0,
-                    max_cardinality=1
+                    max_cardinality=1,
+                    metadata_values=get_group_sub_attributes_metadata(environment=environment, attribute_id=all_attributes[attribute])
                 )
         else:
             if attribute == "brand-id":
@@ -671,3 +677,51 @@ def verify_if_category_has_all_legacy_category(
         return True
 
     return False
+
+
+def get_group_sub_attributes_metadata(environment, attribute_id):
+    attribute = search_specific_attribute(environment, attribute_id)
+    attribute_model = json.loads(attribute)
+    info = attribute_model["attributeModel"]
+    metadata_att = info['metadata']
+    attr_metadata_dicts = list()
+
+    required_attrs = [
+        "Container Name",
+        "Size",
+        "Returnable",
+        "Unit of Measurement",
+        "Unit Count",
+        "Package ID",
+        "Package Name"
+    ]
+    optional_attrs = [
+        "Container Material",
+        "Item Count",
+        "Pack Material Type",
+        "Pack"
+    ]
+
+    for i in range(len(metadata_att)):
+        sub_attributes = metadata_att['subAttributes']
+
+        for sub_attribute in sub_attributes:
+            metadata_info = dict()
+            sub_attr_name = sub_attribute['name']
+            if sub_attr_name in required_attrs:
+                metadata_info = {
+                    'subAttributeId': sub_attribute['id'],
+                    'minCardinality': 1,
+                    'maxCardinality': 1
+                }
+
+            elif sub_attr_name in optional_attrs:
+                metadata_info = {
+                    'subAttributeId': sub_attribute['id'],
+                    'minCardinality': 0,
+                    'maxCardinality': 1
+                }
+
+            attr_metadata_dicts.append(metadata_info)
+
+    return attr_metadata_dicts
