@@ -441,7 +441,7 @@ def flow_create_order_rewards(
     Returns
     -------
     list
-        list of orders created or an empty list if error.
+        orders created or an empty list if error.
     """
     if order_status == "PLACED":
         allow_order_cancel = print_allow_cancellable_order_menu()
@@ -481,8 +481,9 @@ def flow_create_order_rewards(
             allow_order_cancel=allow_order_cancel,
             delivery_date=delivery_date
         )
-        orders.append(order)
+        order_item = loads(order.get("orderNumber", order))
+        orders.append(order_item)
 
     if orders:
-        return [orderid.get("orderId", orderid) for orderid in orders]
+        return [orderid.get("orderID", orderid) for orderid in orders]
     return []

@@ -3,6 +3,7 @@ import logging
 from datetime import datetime, timedelta
 from random import choice
 from typing import Any, Dict, Optional
+from uuid import uuid1
 
 import pkg_resources
 from tabulate import tabulate
@@ -300,7 +301,7 @@ def create_checkout_mobile_payload(
         "paymentMethod": pay_method,
         "paymentTerm": 0,
         "poNumber": f"Data-Mass-Order-Mobile {po_date}",
-        "truckUUID": False
+        "truckUUID": str(uuid1())
     }
 
     return json.dumps(dict_values)

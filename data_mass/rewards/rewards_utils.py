@@ -430,15 +430,12 @@ def post_orders_rewards(
 
 def request_order_creation_checkout(
     account_id: str,
-    delivery_center_id: str,
     zone: str,
     environment: str, 
-    allow_order_cancel: str, 
     order_items: list, 
-    order_status: str,
     delivery_date: str,
     pay_method: str
-) -> AnyStr:
+) -> Dict:
     """
     Post data payload to checkout endpoint.
 
@@ -497,5 +494,4 @@ def request_order_creation_checkout(
     json_data = json.loads(response.text)
     if response.status_code == 200 and not json_data:
         return json_data
-    else:
-        return {"orderNumber": response.text}
+    return {"orderNumber": response.text}
