@@ -1538,34 +1538,35 @@ def flow_create_account(zone, environment, account_id):
 
         has_po_number = bool(strtobool(has_po_number))
 
-    # Call create account function
-    create_account_response = create_account_ms(
-        account_id=account_id,
-        name=name,
-        payment_method=payment_method,
-        minimum_order=minimum_order,
-        zone=zone,
-        environment=environment,
-        delivery_address=delivery_address,
-        account_status=account_status,
-        enable_empties_loan=enable_empties_loan,
-        account_eligible_rewards=False,
-        kwargs={
-            "hasPONumberRequirement": has_po_number
-        }
-    )
-    create_account_response = create_account_ms(
-        account_id,
-        name,
-        payment_method,
-        minimum_order,
-        zone,
-        environment,
-        delivery_address,
-        account_status,
-        enable_empties_loan,
-        account_eligible_rewards
-    )
+        # Call create account function
+        create_account_response = create_account_ms(
+            account_id=account_id,
+            name=name,
+            payment_method=payment_method,
+            minimum_order=minimum_order,
+            zone=zone,
+            environment=environment,
+            delivery_address=delivery_address,
+            account_status=account_status,
+            enable_empties_loan=enable_empties_loan,
+            account_eligible_rewards=False,
+            kwargs={
+                "hasPONumberRequirement": has_po_number
+            }
+        )
+    else:
+        create_account_response = create_account_ms(
+            account_id,
+            name,
+            payment_method,
+            minimum_order,
+            zone,
+            environment,
+            delivery_address,
+            account_status,
+            enable_empties_loan,
+            account_eligible_rewards
+        )
 
     if create_account_response:
         print(text.Green + f'\n- Your account {account_id} has been created successfully')

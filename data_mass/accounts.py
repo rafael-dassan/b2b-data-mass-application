@@ -220,9 +220,7 @@ def create_account_ms(
         "name": name,
         "paymentMethods": payment_method,
         "deliveryAddress": {
-            "address": delivery_address.get("address")
-        },
-        "deliveryAddress": {
+            "address": delivery_address.get("address"),
             "city": delivery_address.get("city"),
             "state": delivery_address.get("state"),
             "zipcode": delivery_address.get("zipcode")
