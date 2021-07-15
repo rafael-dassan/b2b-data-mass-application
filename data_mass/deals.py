@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from distutils.util import strtobool
 from json import loads
 from random import randint
 from typing import Optional
@@ -219,6 +220,77 @@ def get_deals_payload_v2(deal_id, deal_type):
     return request_body
 
 
+def create_free_good_multivendor(
+        vendor_account_id: str,
+        zone: str,
+        environment: str,
+        vendor_item_ids: list,
+        quantity: int = 10) -> Optional[str]:
+
+    request_headers = get_header_request(zone=zone)
+    base_url = get_microservice_base_url(environment, False)
+    request_url =  f"{base_url}/promotion-relay/v3/promotions"
+
+    vendor_promotion_id = f"DM-{str(randint(1, 100000))}"
+
+    body = {
+        "vendorPromotionId": vendor_promotion_id,
+        "title": f"Free Goods: {vendor_promotion_id}",
+        "description": "Free Goods Promotion, Created by Data Mass",
+        "type": "FREE_GOOD",
+        "startDate": "2020-01-01T00:00:00.000Z",
+        "endDate": "2050-03-31T23:59:59.999Z",
+        "image": None,
+        "budget": 10,
+        "quantityLimit": quantity
+    }
+
+    response = place_request(
+        request_method="POST",
+        request_url=request_url,
+        request_body=json.dumps([body]),
+        request_headers=request_headers
+    )
+
+    if response.status_code in [200, 202]:
+        request_url =  f"{base_url}/deal-relay/v2"
+        items_id = []
+
+        for item in vendor_item_ids:
+            item_id = item.get("sourceData", {}).get("vendorItemId")
+            items_id.append(item_id)
+
+        deal_body = {
+            "vendorAccountIds": [vendor_account_id],
+            "deals": [{
+                "vendorDealId": vendor_promotion_id,
+                "vendorPromotionId": vendor_promotion_id,
+                "conditions": {
+                    "lineItem": {
+                        "vendorItemIds": items_id
+                    }
+                },
+                "output": {
+                    "lineItemDiscount": {
+                        "vendorItemIds": items_id
+                    }
+                },
+            }]
+        }
+
+        response = place_request(
+            request_method="PUT",
+            request_url=request_url,
+            request_body=json.dumps(deal_body),
+            request_headers=request_headers
+        )
+
+        if response.status_code in [200, 202]:
+            return vendor_promotion_id
+
+    return False
+
+
 def create_mix_match(
         vendor_account_id: str,
         zone: str,
@@ -282,13 +354,7 @@ def create_mix_match(
 
         for item in vendor_item_ids:
             item_id = item.get("sourceData", {}).get("vendorItemId")
-
             items_id.append(item_id)
-            line_items_discounts.append({
-                "vendorItemId": item_id,
-                "value": randint(10, 100),
-                "maxQuantity": max_quantity
-            })
 
         deal_body = {
             "vendorAccountIds": [vendor_account_id],
@@ -508,8 +574,6 @@ def create_free_good(
         need_to_buy_product: e.g., `Y` or `N`
     Returns: `promotion_response` if success
     """
-    promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
-
     promotion_response = request_create_deal_v2(
         deal_type=deal_type,
         zone=zone,

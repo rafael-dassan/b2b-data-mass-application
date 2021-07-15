@@ -1066,12 +1066,30 @@ def flow_create_free_good(zone, environment, account_id, sku_list):
     else:
         minimum_quantity = 1
         quantity = print_free_good_quantity_menu()
-
-    response = create_free_good(account_id, sku_list, zone, environment, minimum_quantity, quantity,
-                                partial_free_good, need_to_buy_product)
+        
+    if zone == "US":
+        response = create_free_good_multivendor(
+            vendor_account_id=account_id,
+            zone=zone,
+            environment=environment,
+            vendor_item_ids=sku_list,
+            quantity=quantity
+        )
+    else:
+        response = create_free_good(
+            account_id=account_id,
+            sku_list=sku_list,
+            zone=zone,
+            environment=environment,
+            proportion=minimum_quantity,
+            quantity=quantity,
+            partial_free_good=partial_free_good,
+            need_to_buy_product=need_to_buy_product
+        )
     if response:
         print(text.Green + f'\n- Deal {response} created successfully')
     else:
+        print(text.Red + f'\n- Fail on creating new deal.')
         print_finish_application_menu()
 
 
