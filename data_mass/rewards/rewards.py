@@ -412,7 +412,7 @@ def flow_create_order_rewards(
     zone: str,
     environment: str,
     account: list,
-    item_list: Union[List, List[List]],
+    items_list: Union[List, List[List]],
     order_status: str,
     delivery_date: str,
     quantity_orders: int = 1,
@@ -470,15 +470,14 @@ def flow_create_order_rewards(
 
     orders = []
     for value in range(quantity_orders):
+        combo = sample(combos, randint(1, len(combos))) if combos else []
         order = post_orders_rewards(
             zone=zone,
             environment=environment,
             account=account,
-            item_list=item_list[value],
-            dt_combos=sample(combos, 1) if combos else [],
+            item_list=items_list[value],
+            dt_combos=combo,
             pay_method=pay_method,
-            order_status=order_status,
-            allow_order_cancel=allow_order_cancel,
             delivery_date=delivery_date
         )
         order_item = loads(order.get("orderNumber", order))

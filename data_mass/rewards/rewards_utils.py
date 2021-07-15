@@ -356,8 +356,6 @@ def post_orders_rewards(
     item_list: list,
     dt_combos: list,
     pay_method: str,
-    order_status: str,
-    allow_order_cancel: str,
     delivery_date: str,
     empties: list = [],
     payment_term: bool = 0
@@ -413,12 +411,9 @@ def post_orders_rewards(
 
     response = request_order_creation_checkout(
         account_id=account[0]['accountId'],
-        delivery_center_id=account[0]['deliveryCenterId'],
         zone=zone,
         environment=environment,
-        allow_order_cancel=allow_order_cancel,
         order_items=order_items,
-        order_status=order_status,
         delivery_date=delivery_date,
         pay_method=pay_method
     )

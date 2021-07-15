@@ -633,23 +633,6 @@ def order_menu():
             account_id
         ),
     }.get(operation, lambda: None)()
-        
-
-    return {
-        '1': lambda: flow_create_order(
-            zone=zone,
-            environment=environment,
-            account_id=account_id,
-            delivery_center_id=delivery_center_id,
-            order_status=order_status,
-            item_list=items_associated
-        ),
-        '2': lambda: flow_create_changed_order(
-            zone,
-            environment,
-            account_id
-        ),
-    }.get(operation, lambda: None)()
 
 
 def flow_create_order(
