@@ -1,0 +1,49 @@
+{
+    "accounts": [
+        "string"
+    ],
+    "charges": [
+      {
+        "chargeId": "string",
+        "type": "string",
+        "conditions": {
+          "alternativeDeliveryDate": false,
+          "dependsOnChargeIds": [
+            "string"
+          ],
+          "orderTotal": {
+            "maximumValue": 0
+          },
+          "paymentMethod": "string",
+          "scaledFrom": "string",
+          "scaled": [
+            {
+              "from": 0,
+              "rangeIndex": "string"
+            }
+          ],
+          "productAttributes": {
+            "isAlcoholic": false
+          },
+          "paymentTerms": [
+            0
+          ]
+        },
+        "output": {
+          "scope": "string",
+          "applyTo": "string",
+          "type": "string",
+          "value": 0.0,
+          "ranges": [
+            {
+              "index": "string",
+              "value": 0
+            }
+          ],
+          "skus": [
+            "string"
+          ]
+        }
+      }
+    ]
+  }

@@ -1647,7 +1647,7 @@ def flow_create_delivery_window(zone, environment, account_id, option):
                 delivery_cost = create_delivery_fee_microservice(zone, environment, account_data,
                                                                  delivery_cost_values)
                 if delivery_cost == 'success':
-                    print(text.Green + '\n- Delivery cost (interest) added successfully for the account {account_id}'
+                    print(text.Green + '\n- Delivery cost interest/Charge added successfully for the account {account_id}'
                           .format(account_id=account_id))
             else:
                 print_finish_application_menu()
