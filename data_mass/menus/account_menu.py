@@ -1,7 +1,10 @@
+import click
+
 # Local application imports
 from data_mass.classes.text import text
 from data_mass.validations import (
     validate_account,
+    validate_account_email_owner,
     validate_account_name,
     validate_account_operations_structure,
     validate_accounts,
@@ -109,14 +112,64 @@ def print_account_status_menu():
     return status
 
 
-# Print account name menu
 def print_account_name_menu():
+    """
+    Print account name menu.
+
+    Returns
+    -------
+    str: name prompt by the user.
+    """
     name = input(text.default_text_color + 'Account name: ')
-    while validate_account_name(name) is False:
+    while not validate_account_name(name):
         print(text.Red + '\n- The account name should not be empty')
         name = input(text.default_text_color + 'Account name: ')
-
     return name
+
+
+def print_owner_fisrt_name_menu():
+    """
+    Print account owner first name prompt.
+
+    Returns
+    -------
+    str: name prompt by the user.
+    """
+    first_name = input(text.default_text_color + 'Account name: ')
+    while not validate_account_name(first_name):
+        print(text.Red + '\n- The account name should not be empty')
+        first_name = input(text.default_text_color + 'Account name: ')
+    return first_name
+
+
+def print_owner_last_name_menu():
+    """
+    Print account owner last name prompt.
+
+    Returns
+    -------
+    str: last name prompt by the user.
+    """
+    last_name = input(text.default_text_color + 'Account last name: ')
+    while not validate_account_name(last_name):
+        print(text.Red + '\n- The last name should not be empty')
+        last_name = input(text.default_text_color + 'Account last name: ')
+    return last_name
+
+
+def print_account_email_owner_menu():
+    """
+    Prompt account e-mail owner.
+
+    Returns
+    -------
+    ownder : dict
+    """
+    email = input(f"{text.default_text_color}Account e-mail owner: ")
+    while not validate_account_email_owner(email):
+        print(text.Red + '\n- The account e-mail is not valid')
+        email = input(f"{text.default_text_color}Account e-mail owner: ")
+    return email
 
 
 def print_account_enable_empties_loan_menu():
@@ -137,7 +190,7 @@ def print_account_enable_empties_loan_menu():
 # Print alternative delivery date menu application
 def print_alternative_delivery_date_menu():
     option = input(text.default_text_color + 'Do you want to register an alternative delivery date? y/N: ')
-    while validate_yes_no_option(option.upper()) is False:
+    while not validate_yes_no_option(option.upper()):
         print(text.Red + '\n- Invalid option')
         option = input(text.default_text_color + '\nDo you want to register an alternative delivery date? y/N: ')
 
@@ -147,7 +200,7 @@ def print_alternative_delivery_date_menu():
 # Print delivery cost (interest) menu
 def print_include_delivery_cost_menu():
     option = input(text.default_text_color + '\nDo you want to add delivery fee (interest)? y/N: ')
-    while validate_yes_no_option(option.upper()) is False:
+    while not validate_yes_no_option(option.upper()):
         print(text.Red + '\n- Invalid option')
         option = input(text.default_text_color + '\nDo you want to add delivery fee (interest)? y/N: ')
 
@@ -306,3 +359,24 @@ def print_eligible_rewards_menu():
         return True
     else:
         return False
+
+
+def print_input_owner_infos():
+    user_choice = click.prompt(
+        f"{text.LightYellow}"
+        f"Would like to insert value for owner account? ",
+        type=click.Choice(["y", "n"], case_sensitive=False),
+    )
+    if user_choice.upper() == "Y":
+        owner_infos = {
+            "email": print_account_email_owner_menu(),
+            "first_name": print_owner_fisrt_name_menu(),
+            "last_name": print_owner_last_name_menu(),
+        }
+    else:
+        owner_infos = {
+            "email": "test@mailinator.com",
+            "first_name": "TEST OWNER FIRST NAME",
+            "last_name": "TEST OWNER LAST NAME",
+        }
+    return owner_infos

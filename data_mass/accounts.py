@@ -179,10 +179,12 @@ def create_account_ms(
         zone: str,
         environment: str,
         delivery_address: dict,
+        owner: dict = None,
         account_status: str = 'ACTIVE',
         enable_empties_loan: bool = False,
         eligible_rewards: bool = True,
-        **kwargs):
+        **kwargs
+) -> bool:
     """
     Create account on the microservice.
 
@@ -195,6 +197,7 @@ def create_account_ms(
     zone : str
     environment : str
     delivery_address : dict
+    owner: dict
     account_status : str
     enable_empties_loan : bool
     eligible_rewards : bool
@@ -204,6 +207,8 @@ def create_account_ms(
     bool
         Whenever an account is successfully created.
     """
+    if not owner:
+        owner = {}
     payment_term = None
     if zone == "BR" and "BANK_SLIP" in payment_method:
         payment_term = return_payment_term_bank_slip()
@@ -227,7 +232,13 @@ def create_account_ms(
         },
         "paymentTerms": payment_term,
         "status": account_status,
-        "hasEmptiesLoan": enable_empties_loan
+        "hasEmptiesLoan": enable_empties_loan,
+        "owner": {
+            "email": owner.get("email", "test@mailinator.com"),
+            "firstName":owner.get("first_name", "TEST OWNER FIRST NAME"),
+            "lastName": owner.get("last_name", "TEST OWNER LAST NAME"),
+            "phone": 11999999999
+        }
     }
 
     if zone == "US":
@@ -240,12 +251,9 @@ def create_account_ms(
                 False
             )
         })
-
-        use_jwt_auth = False
     else:
         schema = "data/create_account_payload.json"
         dict_values.update({"accountId": account_id})
-        use_jwt_auth = True
 
     content = pkg_resources.resource_string("data_mass", schema)
 
@@ -272,7 +280,7 @@ def create_account_ms(
         set_to_dictionary(dict_values, 'subSegment', 'DM-SUBSEG_NO_REWARDS')
 
     request_headers = get_header_request(zone, False, True, False, False)
-    request_url = get_microservice_base_url(environment) + '/account-relay/'
+    request_url = f"{get_microservice_base_url(environment)}/account-relay/"
 
     body: dict = json.loads(content.decode("utf-8"))
     body.update(dict_values)
@@ -290,8 +298,8 @@ def create_account_ms(
     print(
         f"{text.Red}"
         f"\n- [Account Relay Service]"
-        f" Failure to create the account {account_id}."
-        f" Response status {str(response.status_code)}"
+        f" Failure to create the account {account_id}.\n"
+        f" Response status {str(response.status_code)}.\n"
         f" Response message: {response.text}"
     )
 
@@ -388,6 +396,16 @@ def display_account_information(account: str):
     }
     basic_information.append(account_values)
 
+    owner_info = []
+    owner_info_values = {
+        'Owner E-mail': account_data.get('owner').get("email", ""),
+        'Owner Name': (
+            f'{account_data.get("owner").get("firstName", "")} '
+            f'{account_data.get("owner").get("lastName", "")}'
+        ),
+    }
+    owner_info.append(owner_info_values)
+
     credit_information = list()
     credit = account_data['credit']
     if credit is None:
@@ -407,6 +425,13 @@ def display_account_information(account: str):
     print(f"{text.default_text_color}\nAccount - Basic Information")
     print(tabulate(
         tabular_data=basic_information,
+        headers='keys',
+        tablefmt='fancy_grid'
+    ))
+
+    print(f"{text.default_text_color}\nAccount - Owner Information")
+    print(tabulate(
+        tabular_data=owner_info,
         headers='keys',
         tablefmt='fancy_grid'
     ))
@@ -543,9 +568,9 @@ def get_user_prompt_credit_info(credit_type: str , value: int) -> Dict:
     user_choice = click.prompt(
         f"{text.LightYellow}"
         f"Would like to insert value for {credit_type}? (Default {value})",
-        type=click.Choice(["y", "n"]),
+        type=click.Choice(["y", "n"], case_sensitive=False),
     )
-    if user_choice == "y":
+    if user_choice.upper() == "Y":
         value = click.prompt(
             f"{text.default_text_color}"
             f"Desired credit {credit_type}",
