@@ -61,8 +61,18 @@ def populate_poc(country, environment, account_id, account_name, payment_method,
 # Populate an account
 def populate_account(country, environment, account_id, account_name, payment_method, eligible_rewards):
     delivery_address = get_account_delivery_address(country)
-    if not create_account_ms(account_id, account_name, payment_method, None, country, environment, delivery_address, 'ACTIVE', False,
-                             eligible_rewards):
+    if not create_account_ms(
+        account_id=account_id,
+        name=account_name,
+        payment_method=payment_method,
+        minimum_order=None,
+        zone=country,
+        environment=environment,
+        delivery_address=delivery_address,
+        account_status='ACTIVE',
+        enable_empties_loan=False,
+        eligible_rewards=eligible_rewards
+    ):
         logger.error(log(Message.ACCOUNT_ERROR, {"account_id": account_id}))
 
 

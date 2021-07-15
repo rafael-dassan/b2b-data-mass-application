@@ -47,6 +47,32 @@ def get_microservice_payload_post_delivery_date(account_data, is_alternative_del
     
     return json_object
 
+def get_microservice_delivery_fee_charge_relay(account_data, include_delivery_cost):
+    dict_values = {
+        'accounts': [account_data['accountId']],
+        'charges' : [{
+            'chargeId' : 'CHARGE-01',
+            'type' : 'DELIVERY_DATE_FEE',
+            'output' : {
+                'scope' : 'ORDER',
+                'applyTo' : 'BASE_PRICE',
+                'type' : 'AMOUNT',
+                'value' : include_delivery_cost['fee_value']
+            }
+        }]        
+    }
+
+    content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_delivery_fee_charge-relay.json"
+    )
+    json_data = json.loads(content.decode("utf-8"))
+
+    # Update the delivery window values in runtime
+    for key in dict_values.keys():
+        json_object = update_value_to_json(json_data, key, dict_values[key])
+    
+    return json_object
 
 # Create payload for delivery fee
 def get_microservice_payload_post_delivery_fee(account_data, include_delivery_cost):
@@ -220,11 +246,15 @@ def create_delivery_fee_microservice(zone, environment, account_data, include_de
     # Get headers
     request_headers = get_header_request(zone, False, False, False, False)
 
+    charge_relay_countries = ["AR", "BR", "CO", "DO", "EC", "MX", "PE", "ZA"]
+    
     # Get base URL
-    request_url = get_microservice_base_url(environment) + '/cart-calculation-relay/v2/interest'
-
-    # Get body request
-    request_body = get_microservice_payload_post_delivery_fee(account_data, include_delivery_cost)
+    if zone in charge_relay_countries:
+        request_url = get_microservice_base_url(environment) + '/charge-relay/v1'
+        request_body = get_microservice_delivery_fee_charge_relay(account_data, include_delivery_cost)
+    else:
+        request_url = get_microservice_base_url(environment) + '/cart-calculation-relay/v2/interest'
+        request_body = get_microservice_payload_post_delivery_fee(account_data, include_delivery_cost)
     
     # Place request
     response = place_request('PUT', request_url, json.dumps(request_body), request_headers)

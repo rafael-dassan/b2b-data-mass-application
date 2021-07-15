@@ -1,3 +1,5 @@
+import re
+from typing import Any
 from unicodedata import numeric
 
 
@@ -6,12 +8,40 @@ def validate_yes_no_option(option):
     return option in options
 
 
-# Validate length of account name
-def validate_account_name(name):
+def validate_account_name(name: str) -> bool:
+    """
+    Validate length of account name.
+
+    Parameters
+    ----------
+    name : str
+        name inputed by user.
+
+    Returns
+    -------
+    bool
+        True if is valid, if it's empty return False.
+    """
     if len(name) == 0:
         return False
-    else:
-        return name
+    return True
+
+
+def validate_account_email_owner(email: str) -> bool:
+    """
+    Validate input of email owner for account.
+
+    Parameters
+    ----------
+    email : str
+        input by the user.
+
+    Returns
+    -------
+    bool
+        True if is valid structure of an email address.
+    """
+    return bool(re.search(r"^[\w\.\+\-]+\@[\w\-]+\.[a-z]{2,3}$", email))
 
 
 def validate_payments_method(payments_method, zone=None):
