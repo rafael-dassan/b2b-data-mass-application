@@ -268,7 +268,9 @@ def create_checkout_mobile_payload(
     Dict
         an Dict with payload to checkout
     """
-    po_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") + "+00:00"
+    date_now = datetime.now()
+    po_date = date_now.strftime("%Y-%m-%dT%H:%M:%S")
+    deliver_window = f'{delivery_date} {date_now.strftime("%H:%M:%S")}'
 
     line_items = order_items.get("lineItems", [])
     item_list = []
@@ -291,7 +293,7 @@ def create_checkout_mobile_payload(
         
 
     dict_values = {
-        "deliveryWindowID": delivery_date,
+        "deliveryWindowID": deliver_window,
         "empties": [],
         "emptiesQuantity": 0,
         "freeGoodsSelection": [],
