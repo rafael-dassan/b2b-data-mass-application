@@ -17,7 +17,7 @@ def create_product_payload() -> DocumentNode:
         mutation createProduct(
               $name: String!
               $description: String!
-              $category: ID!
+              $category: UUID!
               $varName: String!
               $attributes: [ConcreteAttributeInput!]!
               $skus: [String!]!

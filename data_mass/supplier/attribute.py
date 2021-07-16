@@ -19,7 +19,7 @@ from data_mass.supplier.gql.attributes import (
     create_edit_primitive_attribute,
     create_enum_generic_payload,
     create_group_attribute
-    )
+)
 from data_mass.supplier.gql.attributes import \
     create_legacy_group_attribute as create_legacy_group_attr
 from data_mass.supplier.gql.attributes import (
@@ -27,7 +27,7 @@ from data_mass.supplier.gql.attributes import (
     create_search_all_attribute_payload,
     create_search_all_legacy_attributes_payload,
     create_search_specific_attribute_payload
-    )
+)
 
 
 def create_attribute_primitive_type(
@@ -143,10 +143,11 @@ def create_attribute_enum(
         values.append(str(randint(1, 100000)) + '2')
         values.append(str(randint(1, 100000)) + '3')
     elif type_attribute == 'DATE':
-        time = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
-        time += 'T00:00:00'
-
+        i = 0
         for _ in range(3):
+            i += 1
+            time = (datetime.now() - timedelta(days=i)).strftime('%Y-%m-%d')
+            time += 'T00:00:00'
             values.append(time)
 
     elif type_attribute == 'TEXT':

@@ -17,7 +17,7 @@ def create_sub_category_payload() -> DocumentNode:
         mutation createCategory(
             $name: String!,
             $description: String!,
-            $parent: ID
+            $parent: UUID
         ) {
             createCategory(
                 input:{
@@ -79,7 +79,7 @@ def create_search_specific_category_payload() -> DocumentNode:
     """
     return gql(
         """
-        query category($id: ID!){
+        query category($id: UUID!){
             category(id: $id) {
                 name
                 description
@@ -183,8 +183,8 @@ def create_association_payload() -> DocumentNode:
     return gql(
         """
         mutation associateAttribute(
-            $attribute_id: ID!,
-            $category_id: ID!,
+            $attribute_id: UUID!,
+            $category_id: UUID!,
             $min_cardinality: NonNegativeInt!,
             $max_cardinality: NonNegativeInt!,
             $metadata_values: [AssociateCardinalityInput!]

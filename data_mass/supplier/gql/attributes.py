@@ -82,7 +82,7 @@ def create_search_specific_attribute_payload() -> DocumentNode:
     """
     return gql(
         """
-        query attributeModel($id: ID!){
+        query attributeModel($id: UUID!){
             attributeModel(id: $id) {
                 id
                 name
@@ -213,7 +213,7 @@ def create_edit_primitive_attribute() -> DocumentNode:
     """
     return gql(
         """
-        mutation updateAttribute($id: ID!, $type: AttributeType){
+        mutation updateAttribute($id: UUID!, $type: AttributeType){
             updateAttributeModel(id: $id,
                 input: {
                     attributeType: $type
@@ -239,7 +239,7 @@ def create_edit_enum_attribute() -> DocumentNode:
     return gql(
         """
         mutation updateAttribute(
-            $id: ID!,
+            $id: UUID!,
             $values: [String!]!,
             $enum_primitive_type: AttributePrimitiveType
         ) {
@@ -271,7 +271,7 @@ def create_edit_group_attribute() -> DocumentNode:
     """
     return gql(
         """
-        mutation updateAttribute($id: ID!, $values: [ID!] ){
+        mutation updateAttribute($id: UUID!, $values: [UUID!] ){
             updateAttributeModel(id: $id,
                 input: {
                     attributeType: GROUP,
@@ -309,7 +309,7 @@ def create_group_attribute() -> DocumentNode:
         mutation createAttributeModel(
             $name: String!,
             $description: String!,
-            $values: [ID!]
+            $values: [UUID!]
         ){
             createAttributeModel(
                 input: {
@@ -355,7 +355,7 @@ def create_legacy_group_attribute() -> DocumentNode:
         mutation createAttributeModel(
             $name: String!,
             $description: String!,
-            $values: [ID!]
+            $values: [UUID!]
         ){
             createAttributeModel(
                 input: {
