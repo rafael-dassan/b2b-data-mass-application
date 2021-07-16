@@ -1,5 +1,5 @@
 import json
-from typing import Dict
+from typing import Dict, Union
 
 import click
 import pkg_resources
@@ -7,13 +7,10 @@ from tabulate import tabulate
 
 from data_mass.classes.text import text
 from data_mass.common import (
-    convert_json_to_string,
-    create_list,
     get_header_request,
     get_microservice_base_url,
     place_request,
     set_to_dictionary,
-    update_value_to_json
 )
 from data_mass.config import get_settings
 from data_mass.menus.account_menu import (
@@ -72,16 +69,23 @@ def check_account_exists_microservice(
     json_data = json.loads(response.text)
 
     if response.status_code == 200 and len(json_data) != 0:
-        verification_list = ['DM-SUBSEG', 'DM-SEG', 'DM-SUBSEG_NO_REWARDS', 'DM-SEG_NO_REWARDS']
-        if (zone == "PY" and json_data[0]['segment'] not in verification_list
-        and json_data[0]['subSegment'] not in verification_list):
-
+        verification_list = [
+            'DM-SUBSEG',
+            'DM-SEG', 'DM-SUBSEG_NO_REWARDS',
+            'DM-SEG_NO_REWARDS'
+        ]
+        if (
+            zone == "PY"
+            and json_data[0]['segment'] not in verification_list
+            and json_data[0]['subSegment'] not in verification_list
+        ):
             print(
                 f"{text.Red}\n-"
                 f" [Account Service]"
                 f" The account {account_id} was not created by Data Mass."
                 f" Response message: "
-                "https://ab-inbev.atlassian.net/secure/RapidBoard.jspa?rapidView=1565&modal=detail&selectedIssue=BEESDM-81"
+                "https://ab-inbev.atlassian.net/secure/RapidBoard.jspa?\
+                rapidView=1565&modal=detail&selectedIssue=BEESDM-81"
             )
 
             return False
@@ -110,7 +114,7 @@ def check_account_exists_microservice(
 def get_multivendor_account_id(
         vendor_account_id: str,
         zone: str,
-        environment: str) -> str:
+        environment: str) -> Union[bool, str]:
     """
     Get accountId of the vendorAccountId
 
@@ -235,7 +239,7 @@ def create_account_ms(
         "hasEmptiesLoan": enable_empties_loan,
         "owner": {
             "email": owner.get("email", "test@mailinator.com"),
-            "firstName":owner.get("first_name", "TEST OWNER FIRST NAME"),
+            "firstName": owner.get("first_name", "TEST OWNER FIRST NAME"),
             "lastName": owner.get("last_name", "TEST OWNER LAST NAME"),
             "phone": 11999999999
         }
@@ -268,8 +272,10 @@ def create_account_ms(
         dict_values.update({"minimumOrder": minimum_order})
 
     # If the user chooses to make an account eligible for rewards program,
-    # we will include the necessary information to match with a Data Mass available one
-    # If not, we associate random information that will not match with any available program
+    # we will include the necessary information
+    # to match with a Data Mass available one
+    # If not, we associate random information that
+    # will not match with any available program
     if eligible_rewards:
         set_to_dictionary(dict_values, 'potential', 'DM-POTENT')
         set_to_dictionary(dict_values, 'segment', 'DM-SEG')
@@ -306,16 +312,11 @@ def create_account_ms(
     return False
 
 
-def display_account_information(account: str):
-    """
-    Display account information.
-
-    Parameters
-    ---------
-    account: str
-        All account data
-    """
-    account_data = account[0]
+def account_information_logic(
+        account_data,
+        challenge_ids,
+        liquor_license,
+        payment_methods):
 
     delivery_window = account_data['deliveryWindows']
     delivery_window_information = []
@@ -334,30 +335,6 @@ def display_account_information(account: str):
             }
             delivery_window_information.append(account_delivery_window_values)
 
-    liquor_license = account_data['liquorLicense']
-    if len(liquor_license) == 0:
-        liquor_license = 'None'
-    else:
-        liquor_license = liquor_license[0]['number']
-
-    challenge_ids = account_data['challengeIds']
-    if challenge_ids is None:
-        challenge_ids = 'None'
-    else:
-        challenge_ids = str(challenge_ids)\
-            .replace('[', '')\
-            .replace(']', '')\
-            .replace('\'', '')
-
-    payment_methods = account_data['paymentMethods']
-    if not payment_methods:
-        payment_methods = 'None'
-    else:
-        payment_methods = str(payment_methods)\
-            .replace('[', '')\
-            .replace(']', '')\
-            .replace('\'', '')
-
     minimum_order_information = []
     minimum_order = account_data['minimumOrder']
     if minimum_order is None:
@@ -371,7 +348,7 @@ def display_account_information(account: str):
         }
     minimum_order_information.append(minimum_order_values)
 
-    maximum_order_information = list()
+    maximum_order_information = []
     maximum_order = account_data['maximumOrder']
     if maximum_order is None:
         maximum_order_values = {
@@ -406,7 +383,7 @@ def display_account_information(account: str):
     }
     owner_info.append(owner_info_values)
 
-    credit_information = list()
+    credit_information = []
     credit = account_data['credit']
     if credit is None:
         account_credit_values = {
@@ -422,44 +399,96 @@ def display_account_information(account: str):
         }
     credit_information.append(account_credit_values)
 
+    return {
+        'delivery_window_information': delivery_window_information,
+        'minimum_order_information': minimum_order_information,
+        'maximum_order_information': maximum_order_information,
+        'basic_information': basic_information,
+        'owner_info': owner_info,
+        'credit_information': credit_information
+    }
+
+
+def display_account_information(account: str):
+    """
+    Display account information.
+
+    Parameters
+    ---------
+    account: str
+        All account data
+    """
+    account_data = account[0]
+
+    liquor_license = account_data['liquorLicense']
+    if len(liquor_license) == 0:
+        liquor_license = 'None'
+    else:
+        liquor_license = liquor_license[0]['number']
+
+    challenge_ids = account_data['challengeIds']
+    if challenge_ids is None:
+        challenge_ids = 'None'
+    else:
+        challenge_ids = str(challenge_ids)\
+            .replace('[', '')\
+            .replace(']', '')\
+            .replace('\'', '')
+
+    payment_methods = account_data['paymentMethods']
+    if not payment_methods:
+        payment_methods = 'None'
+    else:
+        payment_methods = str(payment_methods)\
+            .replace('[', '')\
+            .replace(']', '')\
+            .replace('\'', '')
+
+    tabulate_info = account_information_logic(
+        account_data,
+        challenge_ids,
+        liquor_license,
+        payment_methods
+    )
+
     print(f"{text.default_text_color}\nAccount - Basic Information")
     print(tabulate(
-        tabular_data=basic_information,
+        tabular_data=tabulate_info.get('basic_information'),
         headers='keys',
         tablefmt='fancy_grid'
     ))
 
     print(f"{text.default_text_color}\nAccount - Owner Information")
     print(tabulate(
-        tabular_data=owner_info,
+        tabular_data=tabulate_info.get('owner_info'),
         headers='keys',
         tablefmt='fancy_grid'
     ))
 
     print(f"{text.default_text_color}\nAccount - Credit Information")
     print(tabulate(
-        tabular_data=credit_information,
+        tabular_data=tabulate_info.get('credit_information'),
         headers='keys',
         tablefmt='fancy_grid'
     ))
 
     print(f"{text.default_text_color}\nAccount - Delivery Window Information")
     print(tabulate(
-        tabular_data=delivery_window_information,
+        tabular_data=tabulate_info.get('delivery_window_information'),
         headers='keys',
         tablefmt='fancy_grid'
     ))
 
     print(f"{text.default_text_color}\nAccount - Minimum Order Information")
     print(tabulate(
-        tabular_data=minimum_order_information,
+        tabular_data=tabulate_info.get('minimum_order_information'),
         headers='keys',
         tablefmt='fancy_grid'
     ))
 
     print(f"{text.default_text_color}\nAccount - Maximum Order Information")
     print(tabulate(
-        tabular_data=maximum_order_information,
+        tabular_data=tabulate_info.get('maximum_order_information'),
         headers='keys',
         tablefmt='fancy_grid'
     ))
@@ -522,14 +551,6 @@ def get_credit_info() -> Dict:
         The credit ammount for "available", "balance", "consumption" and \
         "overdue".
     """
-    credit = input(
-        f"{text.default_text_color}"
-        "Desired credit available (Default 5000): "
-    )
-    balance = input(
-        f"{text.default_text_color}"
-        "Desired credit balance (Default 15000): "
-    )
 
     credit_types = {
         "available": 5000,
@@ -548,7 +569,7 @@ def get_credit_info() -> Dict:
     return credit_types
 
 
-def get_user_prompt_credit_info(credit_type: str , value: int) -> Dict:
+def get_user_prompt_credit_info(credit_type: str, value: int) -> Dict:
     """
     Ask user two questions, one y_n answer and another to input the desired
     value to credit type.
