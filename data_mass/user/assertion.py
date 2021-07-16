@@ -135,8 +135,10 @@ def assert_otp_request(email, params, confirmed_email_response):
     assert_otp_response = place_request("GET", url, data, headers)
 
     if assert_otp_response.status_code != 200:
-        print("\n{0}- Fail [assert_otp_request]. Response status: {1}. Response message: {2}".format(text.Red),
-              assert_otp_response.status_code, assert_otp_response.text)
+        print(f"{text.Red}\n{0}- Fail [assert_otp_request]."
+        f" Response status: {assert_otp_response.status_code}."
+        f" Response message: {assert_otp_response.text}"
+        )
         return False
     else:
         return {

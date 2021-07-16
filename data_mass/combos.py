@@ -17,6 +17,7 @@ from data_mass.common import (
     )
 from data_mass.product.products import get_sku_price
 
+CREATE_COMBO_PAYLOAD = "data/create_combo_payload.json"
 
 def input_combo_type_discount(account_id, zone, environment, sku, discount_value, combo_id=None):
     if combo_id is None:
@@ -32,23 +33,25 @@ def input_combo_type_discount(account_id, zone, environment, sku, discount_value
     # get data from Data Mass files
     content = pkg_resources.resource_string(
         "data_mass",
-        "data/create_combo_payload.json"
+        CREATE_COMBO_PAYLOAD
     )
     json_data = json.loads(content.decode("utf-8"))
 
     dict_values = {
         'accounts': [account_id],
-        'combos[0].description': description,
-        'combos[0].id': combo_id,
-        'combos[0].items[0].sku': sku,
-        'combos[0].originalPrice': original_price,
-        'combos[0].price': price,
-        'combos[0].score': score,
-        'combos[0].title': title,
-        'combos[0].type': 'D',
-        'combos[0].externalId': combo_id,
-        'combos[0].discountPercentOff': discount_value,
-        'combos[0].freeGoods': None
+        'combos': {
+        'description': description,
+        'id': combo_id,
+        'items[0].sku': sku,
+        'originalPrice': original_price,
+        'price': price,
+        'score': score,
+        'title': title,
+        'type': 'D',
+        'externalId': combo_id,
+        'discountPercentOff': discount_value,
+        'freeGoods': None
+        }
     }
 
     for key in dict_values.keys():
@@ -89,7 +92,7 @@ def input_combo_type_digital_trade(abi_id, zone, environment):
     # get data from Data Mass files
     content: bytes = pkg_resources.resource_string(
         "data_mass",
-        "data/create_combo_payload.json"
+        CREATE_COMBO_PAYLOAD
     )
     json_data = json.loads(content.decode("utf-8"))
 
@@ -140,7 +143,7 @@ def input_combo_type_free_good(account_id, zone, environment, sku, combo_id=None
     # get data from Data Mass files
     content: bytes = pkg_resources.resource_string(
         "data_mass",
-        "data/create_combo_payload.json"
+        CREATE_COMBO_PAYLOAD
     )
     json_data = json.loads(content.decode("utf-8"))
 
@@ -198,7 +201,7 @@ def input_combo_only_free_good(account_id, zone, environment, sku, combo_id=None
     # get data from Data Mass files
     content: bytes = pkg_resources.resource_string(
         "data_mass",
-        "data/create_combo_payload.json"
+        CREATE_COMBO_PAYLOAD
     )
     json_data = json.loads(content.decode("utf-8"))
 
