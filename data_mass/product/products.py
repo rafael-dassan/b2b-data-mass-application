@@ -269,25 +269,14 @@ def request_get_products_microservice(
     request_headers = get_header_request(zone, True, False, False, False)
 
     # Get base URL
-    if zone == "US":
-        base_url = get_microservice_base_url(environment)
-
-        request_url = (
-            f"{base_url}"
-            "/items/?"
-            "includeDeleted=false"
-            "&includeDisabled=false"
-            f"&pageSize={page_size}"
-        )
-    else:
-        base_url = get_microservice_base_url(environment)
-        request_url = (
-            f"{base_url}"
-            "/items/?"
-            "includeDeleted=false"
-            "&includeDisabled=false"
-            f"&pageSize={page_size}"
-        )
+    base_url = get_microservice_base_url(environment)
+    request_url = (
+        f"{base_url}"
+        "/items/?"
+        "includeDeleted=false"
+        "&includeDisabled=false"
+        f"&pageSize={page_size}"
+    )
 
     # Send request
     response = place_request("GET", request_url, "", request_headers)
