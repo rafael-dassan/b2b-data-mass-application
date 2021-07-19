@@ -20,9 +20,11 @@ CREATE_COMBO_PAYLOAD = "data/create_combo_payload.json"
 
 
 def input_combo_type_discount(
-        account_id, zone,
+        account_id,
+        zone,
         environment,
-        sku, discount_value,
+        sku,
+        discount_value,
         combo_id=None):
 
     if combo_id is None:
