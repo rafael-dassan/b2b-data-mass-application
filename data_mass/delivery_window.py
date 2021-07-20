@@ -50,16 +50,22 @@ def get_microservice_payload_post_delivery_date(account_data, is_alternative_del
 def get_microservice_delivery_fee_charge_relay(account_data, include_delivery_cost):
     dict_values = {
         'accounts': [account_data['accountId']],
-        'charges' : [{
-            'chargeId' : 'CHARGE-01',
-            'type' : 'DELIVERY_DATE_FEE',
-            'output' : {
-                'scope' : 'ORDER',
-                'applyTo' : 'BASE_PRICE',
-                'type' : 'AMOUNT',
-                'value' : include_delivery_cost['fee_value']
+        'charges': [{
+            'chargeId': 'CHARGE-01',
+            'type': 'DELIVERY_DATE_FEE',
+            'conditions': {
+                'alternativeDeliveryDate': True,
+                'orderTotal': {
+                    'maximumValue': include_delivery_cost['min_order_value']
+                }
+            },
+            'output': {
+                'scope': 'ORDER',
+                'applyTo': 'TOTAL',
+                'type': 'AMOUNT',
+                'value': include_delivery_cost['fee_value']
             }
-        }]        
+        }]
     }
 
     content: bytes = pkg_resources.resource_string(
