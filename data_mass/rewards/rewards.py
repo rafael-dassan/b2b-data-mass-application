@@ -463,7 +463,7 @@ def flow_create_order_rewards(
         {
             "comboId": dt_combo["id"],
             "quantity": dt_combo["redeemLimit"],
-            "comboType": dt_combo["type"],
+            # "comboType": dt_combo["type"],
         }
         for dt_combo in dt_combos
     ]

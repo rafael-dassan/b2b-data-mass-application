@@ -732,9 +732,8 @@ def flow_create_order(
 
     if order_data:
         print(
-            text.Green 
-            + f'\n- Order {order_data.get("orderNumber")} '
-            'created successfully'
+            f"{text.Green}\n"
+            f'- Order {order_data.get("orderNumber")} created successfully'
         )
 
     print_finish_application_menu()

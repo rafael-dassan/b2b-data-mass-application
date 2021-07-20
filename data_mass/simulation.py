@@ -107,14 +107,14 @@ def request_order_simulation(
     )
     if response.status_code == 200:
         return loads(response.text)
-    else:
-        print(
-            text.Red
-            + "\n- [Cart Service] Failure to simulate the order. "
-            f"Response Status: {response.status_code}. "
-            f"Response message: {response.text}"
-        )
-        return False
+        
+    print(
+        f"{text.Red}\n"
+        "- [Cart Service] Failure to simulate the order.\n"
+        f"Response Status: {response.status_code}.\n"
+        f"Response message: {response.text}."
+    )
+    return False
 
 
 def request_order_simulation_v3(

@@ -35,7 +35,7 @@ def create_order_rewards_redeem(
             environment=environment
         )
     if not account:
-        return []
+        return None
 
     order_status = print_order_status_menu()
 
@@ -45,7 +45,7 @@ def create_order_rewards_redeem(
         environment=environment
     )
     if not valid_acc:
-        return []
+        return None
     
     option_change_date = validate_yes_no_change_date()
     if option_change_date.upper() == "Y": 
@@ -68,7 +68,7 @@ def create_order_rewards_redeem(
         qty_lists=qty_orders
     )
     if not items_list:
-        return []
+        return None
 
     response = flow_create_order_rewards(
         zone=zone,

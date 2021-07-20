@@ -417,10 +417,10 @@ def post_orders_rewards(
         delivery_date=delivery_date,
         pay_method=pay_method
     )
-    if not response:
+    if response.status_code not in [200, 201]:
         return {}
 
-    return response
+    return json.loads(response)
 
 
 def request_order_creation_checkout(

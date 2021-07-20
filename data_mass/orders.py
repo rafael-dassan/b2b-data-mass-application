@@ -179,7 +179,7 @@ def create_order_payload(
         items.append({
             "price": product.get("price"),
             "unitPrice": product.get("unitPrice"),
-            "unitPriceInclTax": product.get("unitPriceInclTax"),
+            # "unitPriceInclTax": product.get("unitPriceInclTax"),
             "quantity": product.get("quantity"),
             "discountAmount": product.get("discountAmount"),
             "deposit": product.get("deposit"),
