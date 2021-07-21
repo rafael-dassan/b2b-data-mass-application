@@ -7,13 +7,10 @@ from tabulate import tabulate
 
 from data_mass.classes.text import text
 from data_mass.common import (
-    convert_json_to_string,
-    create_list,
     get_header_request,
     get_microservice_base_url,
     place_request,
     set_to_dictionary,
-    update_value_to_json
 )
 from data_mass.config import get_settings
 from data_mass.menus.account_menu import (
@@ -72,16 +69,25 @@ def check_account_exists_microservice(
     json_data = json.loads(response.text)
 
     if response.status_code == 200 and len(json_data) != 0:
-        verification_list = ['DM-SUBSEG', 'DM-SEG', 'DM-SUBSEG_NO_REWARDS', 'DM-SEG_NO_REWARDS']
-        if (zone == "PY" and json_data[0]['segment'] not in verification_list
-        and json_data[0]['subSegment'] not in verification_list):
+        verification_list = [
+            'DM-SUBSEG',
+            'DM-SEG',
+            'DM-SUBSEG_NO_REWARDS',
+            'DM-SEG_NO_REWARDS'
+        ]
+        if (
+            zone == "PY"
+            and json_data[0]['segment'] not in verification_list
+            and json_data[0]['subSegment'] not in verification_list
+          ):
 
             print(
                 f"{text.Red}\n-"
                 f" [Account Service]"
                 f" The account {account_id} was not created by Data Mass."
                 f" Response message: "
-                "https://ab-inbev.atlassian.net/secure/RapidBoard.jspa?rapidView=1565&modal=detail&selectedIssue=BEESDM-81"
+                "https://ab-inbev.atlassian.net/secure/RapidBoard.jspa?r\
+                    apidView=1565&modal=detail&selectedIssue=BEESDM-81"
             )
 
             return False
@@ -226,6 +232,7 @@ def create_account_ms(
         "paymentMethods": payment_method,
         "deliveryAddress": {
             "address": delivery_address.get("address"),
+            "street": delivery_address.get('street'),
             "city": delivery_address.get("city"),
             "state": delivery_address.get("state"),
             "zipcode": delivery_address.get("zipcode")
@@ -235,7 +242,7 @@ def create_account_ms(
         "hasEmptiesLoan": enable_empties_loan,
         "owner": {
             "email": owner.get("email", "test@mailinator.com"),
-            "firstName":owner.get("first_name", "TEST OWNER FIRST NAME"),
+            "firstName": owner.get("first_name", "TEST OWNER FIRST NAME"),
             "lastName": owner.get("last_name", "TEST OWNER LAST NAME"),
             "phone": 11999999999
         }
@@ -268,8 +275,10 @@ def create_account_ms(
         dict_values.update({"minimumOrder": minimum_order})
 
     # If the user chooses to make an account eligible for rewards program,
-    # we will include the necessary information to match with a Data Mass available one
-    # If not, we associate random information that will not match with any available program
+    # we will include the necessary information to match
+    # with a Data Mass available one
+    # If not, we associate random information that will
+    # not match with any available program
     if eligible_rewards:
         set_to_dictionary(dict_values, 'potential', 'DM-POTENT')
         set_to_dictionary(dict_values, 'segment', 'DM-SEG')
@@ -539,7 +548,7 @@ def get_credit_info() -> Dict:
     return credit_types
 
 
-def get_user_prompt_credit_info(credit_type: str , value: int) -> Dict:
+def get_user_prompt_credit_info(credit_type: str, value: int) -> Dict:
     """
     Ask user two questions, one y_n answer and another to input the desired
     value to credit type.
@@ -626,72 +635,84 @@ def get_account_delivery_address(zone: str) -> dict:
     params = {
         'AR': {
             'address': 'Guaiviravi 1486',
+            'street': 'Guaiviravi',
             'city': 'Isidro Casanova',
             'state': 'Buenos Aires',
             'zipcode': 'N/A'
         },
         'BR': {
             'address': 'Rua Carlos Maul 315',
+            'street': 'Rua Carlos Maul',
             'city': 'Duque de Caxias',
             'state': 'Rio de Janeiro',
             'zipcode': '25261-270'
         },
         'CA': {
             'address': '1305  Heatherleigh',
+            'strret': 'Heatherleigh',
             'city': 'Cooksville',
             'state': 'Ontario',
             'zipcode': 'L5A 1V9'
         },
         'CO': {
             'address': 'Cr 72 No. 74B-39, C.P 11001',
+            'street': 'Bogota street',
             'city': 'Bogota',
             'state': 'Bogota',
             'zipcode': 'N/A'
         },
         'DO': {
             'address': '14 D Junio, No 150',
+            'street': '14 D Junio',
             'city': 'Santo Domingo',
             'state': 'Santo Domingo',
             'zipcode': 'N/A'
         },
         'EC': {
             'address': 'Rocafuerte 742',
+            'street': 'Rocafuerte',
             'city': 'Guayas',
             'state': 'Guayaquil',
             'zipcode': 'N/A'
         },
         'MX': {
             'address': 'Aguacate No. 19 El Rosario',
+            'street': 'Aguacate',
             'city': 'Actopan',
             'state': 'Hidalgo',
             'zipcode': 'N/A'
         },
         'PA': {
-            'address': 'Via Rdo J Alfaro',
+            'address': 'Via Rdo J Alfaro, 155',
+            'street': 'Via Rdo J Alfaro',
             'city': 'Panama',
             'state': 'Panama',
             'zipcode': 'N/A'
         },
         'PE': {
             'address': 'Avenida Salaverry, 674',
+            'street': 'Avenida Salaverry',
             'city': 'Jesus Maria',
             'state': 'Lima',
             'zipcode': 'N/A'
         },
         'PY': {
             'address': 'De las Llanas 3.796',
+            'street': 'De las Llanas',
             'city': 'N/A',
             'state': 'Asuncion',
             'zipcode': 'N/A'
         },
         'ZA': {
             'address': '726  Thomas St',
+            'street': 'Thomas St',
             'city': 'Blood River',
             'state': 'KwaZulu-Natal',
             'zipcode': '3024'
         },
         'US': {
             'address': 'McDowell Street, 1639',
+            'street': 'McDowell Street',
             'city': 'Nashville',
             'state': 'Tennessee',
             'zipcode': '87334'
