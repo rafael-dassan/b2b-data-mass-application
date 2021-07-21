@@ -880,6 +880,7 @@ def delete_item_v2(
     base_url = get_microservice_base_url(environment, False)
     request_url = f"{base_url}/item-relay/v2/items"
 
+
 def get_item_input_data(zone: str):
     """
     Get input data from the user

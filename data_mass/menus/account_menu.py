@@ -13,66 +13,83 @@ from data_mass.validations import (
     validate_yes_no_option
 )
 
+DEFAULT_TEXT_COLOR = text.default_text_color
+YELLOW = text.Yellow
+INVALID_OPTION = f"{text.Red}\n- Invalid option"
+
 
 def print_account_operations_menu():
-    print(text.default_text_color + '\nAccount operations')
-    print(text.default_text_color + str(1), text.Yellow + 'Create/update account')
-    print(text.default_text_color + str(2), text.Yellow + 'Create/update delivery window')
-    print(text.default_text_color + str(3), text.Yellow + 'Create/update credit information')
-    print(text.default_text_color + str(4), text.Yellow + 'Update account name')
-    print(text.default_text_color + str(5), text.Yellow + 'Update account status')
-    print(text.default_text_color + str(6), text.Yellow + 'Update minimum order type/value')
-    print(text.default_text_color + str(7), text.Yellow + 'Update payment method')
-    print(text.default_text_color + str(8), text.Yellow + 'Update rewards eligibility')
-    option = input(text.default_text_color + '\nPlease select: ')
+    print(DEFAULT_TEXT_COLOR + '\nAccount operations')
+    print(DEFAULT_TEXT_COLOR + str(1), YELLOW + 'Create/update account')
+    print(DEFAULT_TEXT_COLOR + str(2), YELLOW + 'Create/update delivery window')
+    print(DEFAULT_TEXT_COLOR + str(3), YELLOW + 'Create/update credit information')
+    print(DEFAULT_TEXT_COLOR + str(4), YELLOW + 'Update account name')
+    print(DEFAULT_TEXT_COLOR + str(5), YELLOW + 'Update account status')
+    print(DEFAULT_TEXT_COLOR + str(6), YELLOW + 'Update minimum order type/value')
+    print(DEFAULT_TEXT_COLOR + str(7), YELLOW + 'Update payment method')
+    print(DEFAULT_TEXT_COLOR + str(8), YELLOW + 'Update rewards eligibility')
+    option = input(DEFAULT_TEXT_COLOR + '\nPlease select: ')
     while validate_account_operations_structure(option) is False:
-        print(text.Red + '\n- Invalid option')
-        print(text.default_text_color + '\nAccount operations')
-        print(text.default_text_color + str(1), text.Yellow + 'Create/update account')
-        print(text.default_text_color + str(2), text.Yellow + 'Create/update delivery window')
-        print(text.default_text_color + str(3), text.Yellow + 'Create/update credit information')
-        print(text.default_text_color + str(4), text.Yellow + 'Update account name')
-        print(text.default_text_color + str(5), text.Yellow + 'Update account status')
-        print(text.default_text_color + str(6), text.Yellow + 'Update minimum order type/value')
-        print(text.default_text_color + str(7), text.Yellow + 'Update payment method')
-        print(text.default_text_color + str(8), text.Yellow + 'Update rewards eligibility')
-        option = input(text.default_text_color + '\nPlease select: ')
+        print(f"{text.Red}\n- Invalid option")
+        print(DEFAULT_TEXT_COLOR + '\nAccount operations')
+        print(DEFAULT_TEXT_COLOR + str(1), YELLOW + 'Create/update account')
+        print(DEFAULT_TEXT_COLOR + str(2), YELLOW + 'Create/update delivery window')
+        print(DEFAULT_TEXT_COLOR + str(3), YELLOW + 'Create/update credit information')
+        print(DEFAULT_TEXT_COLOR + str(4), YELLOW + 'Update account name')
+        print(DEFAULT_TEXT_COLOR + str(5), YELLOW + 'Update account status')
+        print(DEFAULT_TEXT_COLOR + str(6), YELLOW + 'Update minimum order type/value')
+        print(DEFAULT_TEXT_COLOR + str(7), YELLOW + 'Update payment method')
+        print(DEFAULT_TEXT_COLOR + str(8), YELLOW + 'Update rewards eligibility')
+        option = input(DEFAULT_TEXT_COLOR + '\nPlease select: ')
 
     return option
 
 
 def delivery_window_menu():
-    print(text.default_text_color + '\nDelivery window options')
-    print(text.default_text_color + str(1), text.Yellow + 'Create default delivery window')
-    print(text.default_text_color + str(2), text.Yellow + 'Create delivery window with specific date')
-    option = input(text.default_text_color + '\nPlease select: ')
-    while validate_delivery_window_structure(option) is False:
-        print(text.Red + '\n- Invalid option')
-        print(text.default_text_color + '\nAccount operations')
-        print(text.default_text_color + str(1), text.Yellow + 'Create/update account')
-        print(text.default_text_color + str(2), text.Yellow + 'Create/update delivery window')
-        option = input(text.default_text_color + '\nPlease select: ')
-
+    print(f"{DEFAULT_TEXT_COLOR}\nDelivery window options:")
+    print(f"{DEFAULT_TEXT_COLOR}1 {YELLOW}Create default delivery window")
+    print(
+        f"{DEFAULT_TEXT_COLOR}2 "
+        f"{YELLOW}Create delivery window with specific date"
+    )
+    print(
+        f"{DEFAULT_TEXT_COLOR}3 "
+        f"{YELLOW}Create delivery window with range date"
+    )
+    option = input(f"{DEFAULT_TEXT_COLOR}\nPlease select: ")
+    while not validate_delivery_window_structure(option):
+        print(INVALID_OPTION)
+        print(f"{DEFAULT_TEXT_COLOR}\nDelivery window options:")
+        print(f"{DEFAULT_TEXT_COLOR}1 {YELLOW}Create default delivery window")
+        print(
+            f"{DEFAULT_TEXT_COLOR}2 "
+            f"{YELLOW}Create delivery window with specific date"
+        )
+        print(
+            f"{DEFAULT_TEXT_COLOR}3 "
+            f"{YELLOW}Create delivery window with range date"
+        )
+        option = input(f"{DEFAULT_TEXT_COLOR}\nPlease select: ")
     return option
 
 
 def print_minimum_order_menu():
-    option = input(text.default_text_color + 'Do you want to include the minimum order parameter? y/N: ')
+    option = input(DEFAULT_TEXT_COLOR + 'Do you want to include the minimum order parameter? y/N: ')
     while validate_yes_no_option(option.upper()) is False:
-        print(text.Red + '\n- Invalid option\n')
-        option = input(text.default_text_color + 'Do you want to include the minimum order parameter? y/N: ')
+        print(INVALID_OPTION)
+        option = input(DEFAULT_TEXT_COLOR + 'Do you want to include the minimum order parameter? y/N: ')
 
     return option.upper()
 
 
 def print_minimum_order_type_menu():
     minimum_order_type = input(
-        text.default_text_color + 'Minimum order type (1. Product quantity / 2. Order volume / 3. Order total): ')
+        DEFAULT_TEXT_COLOR + 'Minimum order type (1. Product quantity / 2. Order volume / 3. Order total): ')
     while minimum_order_type == '' or (int(minimum_order_type) != 1 and int(minimum_order_type) != 2
                                        and int(minimum_order_type) != 3):
-        print(text.Red + '\n- Invalid option\n')
+        print(INVALID_OPTION)
         minimum_order_type = input(
-            text.default_text_color + 'Minimum order type (1. Product quantity / 2. Order volume / 3. Order total): ')
+            DEFAULT_TEXT_COLOR + 'Minimum order type (1. Product quantity / 2. Order volume / 3. Order total): ')
 
     switcher = {
         '1': 'PRODUCT_QUANTITY',
@@ -86,21 +103,21 @@ def print_minimum_order_type_menu():
 
 
 def print_minimum_order_value_menu():
-    minimum_order_value = input(text.default_text_color + 'Minimum order value: ')
+    minimum_order_value = input(DEFAULT_TEXT_COLOR + 'Minimum order value: ')
     while minimum_order_value == '' or int(minimum_order_value) <= 0:
         print(text.Red + '\n- SKU quantity must be greater than 0\n')
-        minimum_order_value = input(text.default_text_color + 'Minimum order value: ')
+        minimum_order_value = input(DEFAULT_TEXT_COLOR + 'Minimum order value: ')
 
     return minimum_order_value
 
 
 def print_account_status_menu():
     option = input(
-        text.default_text_color + 'Account status (1. Active / 2. Blocked): ')
+        DEFAULT_TEXT_COLOR + 'Account status (1. Active / 2. Blocked): ')
     while option == '' and option != '1' and option != '2':
-        print(text.Red + '\n- Invalid option')
+        print(INVALID_OPTION)
         option = input(
-            text.default_text_color + '\nAccount status (1. Active / 2. Blocked): ')
+            DEFAULT_TEXT_COLOR + '\nAccount status (1. Active / 2. Blocked): ')
 
     switcher = {
         '1': 'ACTIVE',
@@ -120,10 +137,10 @@ def print_account_name_menu():
     -------
     str: name prompt by the user.
     """
-    name = input(text.default_text_color + 'Account name: ')
+    name = input(DEFAULT_TEXT_COLOR + 'Account name: ')
     while not validate_account_name(name):
         print(text.Red + '\n- The account name should not be empty')
-        name = input(text.default_text_color + 'Account name: ')
+        name = input(DEFAULT_TEXT_COLOR + 'Account name: ')
     return name
 
 
@@ -135,10 +152,10 @@ def print_owner_fisrt_name_menu():
     -------
     str: name prompt by the user.
     """
-    first_name = input(text.default_text_color + 'Account name: ')
+    first_name = input(DEFAULT_TEXT_COLOR + 'Account name: ')
     while not validate_account_name(first_name):
         print(text.Red + '\n- The account name should not be empty')
-        first_name = input(text.default_text_color + 'Account name: ')
+        first_name = input(DEFAULT_TEXT_COLOR + 'Account name: ')
     return first_name
 
 
@@ -150,10 +167,10 @@ def print_owner_last_name_menu():
     -------
     str: last name prompt by the user.
     """
-    last_name = input(text.default_text_color + 'Account last name: ')
+    last_name = input(DEFAULT_TEXT_COLOR + 'Account last name: ')
     while not validate_account_name(last_name):
         print(text.Red + '\n- The last name should not be empty')
-        last_name = input(text.default_text_color + 'Account last name: ')
+        last_name = input(DEFAULT_TEXT_COLOR + 'Account last name: ')
     return last_name
 
 
@@ -165,20 +182,20 @@ def print_account_email_owner_menu():
     -------
     ownder : dict
     """
-    email = input(f"{text.default_text_color}Account e-mail owner: ")
+    email = input(f"{DEFAULT_TEXT_COLOR}Account e-mail owner: ")
     while not validate_account_email_owner(email):
         print(text.Red + '\n- The account e-mail is not valid')
-        email = input(f"{text.default_text_color}Account e-mail owner: ")
+        email = input(f"{DEFAULT_TEXT_COLOR}Account e-mail owner: ")
     return email
 
 
 def print_account_enable_empties_loan_menu():
     option = input(
-        text.default_text_color + 'Would you like to enable the loan of empties for this account? (1. Yes / 2. No): ')
+        DEFAULT_TEXT_COLOR + 'Would you like to enable the loan of empties for this account? (1. Yes / 2. No): ')
     while option == '' and option != '1' and option != '2':
-        print(text.Red + '\n- Invalid option')
+        print(INVALID_OPTION)
         option = input(
-            text.default_text_color + 'Would you like to enable the loan of empties for this account? (1. Yes / '
+            DEFAULT_TEXT_COLOR + 'Would you like to enable the loan of empties for this account? (1. Yes / '
                                       '2. No): ')
 
     return {
@@ -189,26 +206,39 @@ def print_account_enable_empties_loan_menu():
 
 # Print alternative delivery date menu application
 def print_alternative_delivery_date_menu():
-    option = input(text.default_text_color + 'Do you want to register an alternative delivery date? y/N: ')
+    option = input(DEFAULT_TEXT_COLOR + 'Do you want to register an alternative delivery date? y/N: ')
     while not validate_yes_no_option(option.upper()):
-        print(text.Red + '\n- Invalid option')
-        option = input(text.default_text_color + '\nDo you want to register an alternative delivery date? y/N: ')
+        print(INVALID_OPTION)
+        option = input(DEFAULT_TEXT_COLOR + '\nDo you want to register an alternative delivery date? y/N: ')
 
     return option
 
 
-# Print delivery cost (interest) menu
 def print_include_delivery_cost_menu():
-    option = input(text.default_text_color + '\nDo you want to add delivery fee (interest)? y/N: ')
-    while not validate_yes_no_option(option.upper()):
-        print(text.Red + '\n- Invalid option')
-        option = input(text.default_text_color + '\nDo you want to add delivery fee (interest)? y/N: ')
+    """
+    Print delivery cost (interest) menu.
 
+    Returns
+    -------
+    str: user option.
+    """
+    option = input(
+        f"{DEFAULT_TEXT_COLOR}\n"
+        "Do you want to add delivery fee (interest/charge)? y/N: "
+    )
+    while not validate_yes_no_option(option.upper()):
+        print(INVALID_OPTION)
+        option = input(
+            f"{DEFAULT_TEXT_COLOR}\n"
+            "Do you want to add delivery fee (interest/charge)? y/N: "
+        )
     return option
 
 
 # Print payment method menu
 def print_payment_method_menu(zone):
+    payment_cash = ['CASH']
+
     if zone == 'BR':
         menu = (
             "Choose the payment method: \n"
@@ -233,7 +263,6 @@ def print_payment_method_menu(zone):
                 print(text.Red + '\n- Payments Method should be 1, 2, 3, 4, 5 or 6')
                 payment_method = input(text.default_text_color + menu)
 
-        payment_cash = ['CASH']
         payment_credit = ['BANK_SLIP']
         payment_credit_pos = ['CREDIT_CARD_POS']
         payment_check = ['CHECK']
@@ -261,20 +290,20 @@ def print_payment_method_menu(zone):
     elif zone == 'AR' or zone == 'PY':
         
         payment_method = input(
-            text.default_text_color + 'Choose the payment method (1. CASH): ')
+            DEFAULT_TEXT_COLOR + 'Choose the payment method (1. CASH): ')
         while validate_payments_method(payment_method, zone) != True:
             if validate_payments_method(payment_method, zone) == 'error_0':
                 print(text.Red + '\n- Payments Method should not be empty')
                 payment_method = input(
-                    text.default_text_color + 'Choose the payment method (1. CASH): ')
+                    DEFAULT_TEXT_COLOR + 'Choose the payment method (1. CASH): ')
             elif validate_payments_method(payment_method, zone) == 'not_number':
                 print(text.Red + '\n- Payments Method should be numeric')
                 payment_method = input(
-                    text.default_text_color + 'Choose the payment method (1. CASH): ')
+                    DEFAULT_TEXT_COLOR + 'Choose the payment method (1. CASH): ')
             elif validate_payments_method(payment_method, zone) == 'not_payments_method' or payment_method != '1':
                 print(text.Red + '\n- Payments Method should be 1')
                 payment_method = input(
-                    text.default_text_color + 'Choose the payment method (1. CASH): ')
+                    DEFAULT_TEXT_COLOR + 'Choose the payment method (1. CASH): ')
 
         switcher = {
             '1': payment_cash
@@ -285,20 +314,20 @@ def print_payment_method_menu(zone):
 
     else:
         payment_method = input(
-            text.default_text_color + 'Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ')
+            DEFAULT_TEXT_COLOR + 'Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ')
         while validate_payments_method(payment_method) != True:
             if validate_payments_method(payment_method) == 'error_0':
                 print(text.Red + '\n- Payments Method should not be empty')
                 payment_method = input(
-                    text.default_text_color + 'Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ')
+                    DEFAULT_TEXT_COLOR + 'Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ')
             elif validate_payments_method(payment_method) == 'not_number':
                 print(text.Red + '\n- Payments Method should be numeric')
                 payment_method = input(
-                    text.default_text_color + 'Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ')
+                    DEFAULT_TEXT_COLOR + 'Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ')
             elif validate_payments_method(payment_method) == 'not_payments_method':
                 print(text.Red + '\n- Payments Method should be 1, 2 or 3')
                 payment_method = input(
-                    text.default_text_color + 'Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ')
+                    DEFAULT_TEXT_COLOR + 'Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ')
 
         payment_credit = ['CREDIT']
         payment_list = ['CASH', 'CREDIT']
@@ -324,52 +353,52 @@ def print_account_id_menu(zone):
     else:
         message = "Account ID: "
 
-    abi_id = str(input(text.default_text_color + message))
+    abi_id = str(input(DEFAULT_TEXT_COLOR + message))
     attempt = 0
 
     while validate_account(abi_id, zone) != True and attempt <= 2 and zone != "US":
         if validate_account(abi_id, zone) == 'error_0':
             print(text.Red + '\n- Account ID should not be empty')
             if attempt < 2:
-                abi_id = str(input(text.default_text_color + 'Account ID: '))
+                abi_id = str(input(DEFAULT_TEXT_COLOR + 'Account ID: '))
         if validate_account(abi_id, zone) == 'error_10':
             print(text.Red + '\n- Account ID must contain at least 10 characters')
             if attempt < 2:
-                abi_id = str(input(text.default_text_color + 'Account ID: '))
+                abi_id = str(input(DEFAULT_TEXT_COLOR + 'Account ID: '))
         elif validate_account(abi_id, zone) == 'not_number':
             print(text.Red + '\n- The account ID must be Numeric')
             if attempt < 2:
-                abi_id = str(input(text.default_text_color + 'Account ID: '))
+                abi_id = str(input(DEFAULT_TEXT_COLOR + 'Account ID: '))
         elif validate_account(abi_id, zone) == 'error_cnpj_cpf':
             print(text.Red + '\n- Account ID must contain at least 11 or 14 characters')
             if attempt < 2:
-                abi_id = str(input(text.default_text_color + 'Account ID: '))
+                abi_id = str(input(DEFAULT_TEXT_COLOR + 'Account ID: '))
         attempt = attempt + 1
     if attempt == 3:
-        print(text.Yellow + '\n- You have reached maximum attempts')
+        print(YELLOW + '\n- You have reached maximum attempts')
         return False
     else:
         return abi_id
 
 
 def print_get_account_operations_menu():
-    print(text.default_text_color + '\nAccount operations')
-    print(text.default_text_color + str(1), text.Yellow + 'All information from one account')
-    structure = input(text.default_text_color + '\nPlease select: ')
+    print(DEFAULT_TEXT_COLOR + '\nAccount operations')
+    print(DEFAULT_TEXT_COLOR + str(1), YELLOW + 'All information from one account')
+    structure = input(DEFAULT_TEXT_COLOR + '\nPlease select: ')
     while validate_accounts(structure) is False:
-        print(text.Red + '\n- Invalid option')
-        print(text.default_text_color + '\nAccount operations')
-        print(text.default_text_color + str(1), text.Yellow + 'All information from one account')
-        structure = input(text.default_text_color + '\nPlease select: ')
+        print(INVALID_OPTION)
+        print(DEFAULT_TEXT_COLOR + '\nAccount operations')
+        print(DEFAULT_TEXT_COLOR + str(1), YELLOW + 'All information from one account')
+        structure = input(DEFAULT_TEXT_COLOR + '\nPlease select: ')
 
     return structure
 
 
 def print_eligible_rewards_menu():
-    option = input(text.default_text_color + 'Do you want to make this account eligible for rewards program? y/N: ')
+    option = input(DEFAULT_TEXT_COLOR + 'Do you want to make this account eligible for rewards program? y/N: ')
     while validate_yes_no_option(option.upper()) is False:
         print(text.Red + '\n- Invalid option\n')
-        option = input(text.default_text_color + 'Do you want to make this account eligible for rewards program? y/N: ')
+        option = input(DEFAULT_TEXT_COLOR + 'Do you want to make this account eligible for rewards program? y/N: ')
 
     if option.upper() == 'Y':
         return True

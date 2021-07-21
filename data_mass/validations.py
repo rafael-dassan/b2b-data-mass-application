@@ -244,7 +244,7 @@ def validate_option_request_selection(selection):
 
 
 def validate_delivery_window_structure(option):
-    options = ['1', '2']
+    options = ['1', '2', '3']
     return option in options
 
 

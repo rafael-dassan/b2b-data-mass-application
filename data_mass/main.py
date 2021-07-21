@@ -1607,8 +1607,12 @@ def flow_create_account(zone, environment, account_id):
 
 
 def flow_create_delivery_window(zone, environment, account_id, option):
-    allow_flexible_delivery_dates = ['BR', 'ZA', 'MX', 'DO', 'CO', 'PE', 'EC', 'US']
-    allow_delivery_cost = ['BR', 'MX', 'DO', 'CO','PE', 'EC', 'US']
+    allow_flexible_delivery_dates = [
+        "AR", "BR", "CO", "DO", "EC", "MX", "PE", "US", "ZA"
+    ]
+    allow_delivery_cost = [
+        "AR", "BR", "CO", "DO", "EC", "MX", "PE", "US", "ZA"
+    ]
 
     # Call check account exists function
     account = check_account_exists_microservice(account_id, zone, environment)
@@ -1636,19 +1640,29 @@ def flow_create_delivery_window(zone, environment, account_id, option):
     )
 
     if delivery_window:
-        print(text.Green + '\n- Delivery window created successfully for the account {account_id}'
-              .format(account_id=account_id))
+        print(
+            f"{text.Green}\n- Delivery window created "
+            f"successfully for the account {account_id}"
+        )
 
         # Check if delivery cost (interest) should be included
         if is_alternative_delivery_date and zone in allow_delivery_cost:
             option_include_delivery_cost = print_include_delivery_cost_menu()
             if option_include_delivery_cost.upper() == 'Y':
-                delivery_cost_values = get_delivery_cost_values(option_include_delivery_cost)
-                delivery_cost = create_delivery_fee_microservice(zone, environment, account_data,
-                                                                 delivery_cost_values)
-                if delivery_cost == 'success':
-                    print(text.Green + '\n- Delivery cost interest/Charge added successfully for the account {account_id}'
-                          .format(account_id=account_id))
+                delivery_cost_values = get_delivery_cost_values(
+                    option=option_include_delivery_cost
+                )
+                delivery_cost = create_delivery_fee_microservice(
+                    zone=zone,
+                    environment=environment,
+                    account_data=account_data,
+                    include_delivery_cost=delivery_cost_values
+                )
+                if delivery_cost:
+                    print(
+                        f"{text.Green}\n- Delivery cost interest/Charge "
+                        f"added successfully for the account {account_id}."
+                    )
             else:
                 print_finish_application_menu()
     else:

@@ -522,15 +522,6 @@ def get_credit_info() -> Dict:
         The credit ammount for "available", "balance", "consumption" and \
         "overdue".
     """
-    credit = input(
-        f"{text.default_text_color}"
-        "Desired credit available (Default 5000): "
-    )
-    balance = input(
-        f"{text.default_text_color}"
-        "Desired credit balance (Default 15000): "
-    )
-
     credit_types = {
         "available": 5000,
         "balance": 15000,
