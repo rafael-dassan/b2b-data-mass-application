@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 from json import loads
 from random import randint
 from time import time
@@ -25,11 +24,22 @@ from data_mass.config import get_settings
 
 logger = logging.getLogger(__name__)
 
+
 def create_all_recommendations(zone, environment, account_id, products):
     # Get responses
-    quick_order_response = request_quick_order(zone, environment, account_id, products)
+    quick_order_response = request_quick_order(
+        zone,
+        environment,
+        account_id,
+        products
+    )
     sell_up_response = request_sell_up(zone, environment, account_id, products)
-    forgotten_items_response = request_forgotten_items(zone, environment, account_id, products)
+    forgotten_items_response = request_forgotten_items(
+        zone,
+        environment,
+        account_id,
+        products
+    )
 
     if quick_order_response and sell_up_response and forgotten_items_response:
         return True
@@ -37,8 +47,24 @@ def create_all_recommendations(zone, environment, account_id, products):
     return False
 
 
-# Define JSON to submit QUICK ORDER recommendation type
-def create_quick_order_payload(account_id, zone, product_list):
+def create_quick_order_payload(
+        account_id: str,
+        zone: str,
+        product_list: list) -> dict:
+    """
+    Define JSON to submit QUICK ORDER recommendation type
+
+    Parameters
+    ----------
+    account_id : str
+    zone : str
+    product_list : list
+
+    Returns
+    -------
+    dict
+        A `payload` for quick order creation.
+    """
     countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PA', 'PE', 'PY']
 
     if zone in countries_es:
@@ -79,15 +105,18 @@ def create_quick_order_payload(account_id, zone, product_list):
         }],
         'combos': None
     }
-    
+
     if zone == "US":
         resources_warning()
         settings = get_settings()
         dict_values.update({"vendorId": settings.vendor_id})
 
     # Create file path
-    path = os.path.abspath(os.path.dirname(__file__))
-    content = pkg_resources.resource_string("data_mass", "data/create_beer_recommender_payload.json") 
+    content = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_beer_recommender_payload.json"
+    )
+
     json_data = json.loads(content.decode("utf-8"))
 
     for key in dict_values.keys():
@@ -100,8 +129,24 @@ def create_quick_order_payload(account_id, zone, product_list):
     return request_body
 
 
-# Define JSON to submit FORGOTTEN ITEMS recommendation type
-def create_forgotten_items_payload(account_id, zone, product_list):
+def create_forgotten_items_payload(
+        account_id: str,
+        zone: str,
+        product_list: list) -> dict:
+    """
+    Define JSON to submit FORGOTTEN ITEMS recommendation type
+
+    Parameters
+    ----------
+    account_id : str
+    zone : str
+    product_list : list
+
+    Returns
+    -------
+    dict
+        A `payload` for forgotten items creation.
+    """
     countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PA', 'PE', 'PY']
 
     if zone in countries_es:
@@ -149,7 +194,11 @@ def create_forgotten_items_payload(account_id, zone, product_list):
 
     set_to_dictionary(dict_values, 'items', items)
 
-    content = pkg_resources.resource_string("data_mass", "data/create_beer_recommender_payload.json") 
+    content = pkg_resources.resource_string(
+        "data_mass",
+        "data/create_beer_recommender_payload.json"
+    )
+
     json_data = json.loads(content.decode("utf-8"))
 
     for key in dict_values.keys():
@@ -230,7 +279,7 @@ def request_quick_order(zone, environment, account_id, products):
     # Define headers
     request_headers = get_header_request_recommender(zone, environment)
 
-    # Define url request 
+    # Define url request
     request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
 
     # Get body
@@ -238,7 +287,7 @@ def request_quick_order(zone, environment, account_id, products):
 
     # Send request
     response = place_request('POST', request_url, request_body, request_headers)
-    
+
     if response.status_code == 202:
         return True
     else:
@@ -320,7 +369,7 @@ def get_header_request_recommender(zone, environment):
             'timezone': timezone,
             'Authorization': 'Basic ZGV4dGVyOktZTVU5MndHUjNZaENlRHI='
         }
-        
+
     return request_headers
 
 
@@ -334,7 +383,7 @@ def get_recommendation_by_account(
     base_url = get_microservice_base_url(environment, True)
     query: dict = {"useCaseId": account_id}
     case_query: list = []
-    
+
     for case in use_case:
         case_query.append(("useCase", case))
 
@@ -463,15 +512,20 @@ def display_recommendations_by_account(data):
 def input_combos_quick_order(zone, environment, account_id):
     # Retrieve quick order recommendation of the account
     account_recommendation = get_recommendation_by_account(account_id, zone, environment, ['QUICK_ORDER'])
-    
+
     if account_recommendation == 'not_found' or not account_recommendation:
         return False
     else:
         # Retrieve combos type discount of the account
         request_headers = get_header_request(zone, True, False, False, False, account_id)
+        base_url = get_microservice_base_url(environment, True)
 
-        request_url = get_microservice_base_url(environment, True) + '/combos/?accountID={}&types=D&includeDeleted' \
-                                                                       '=false&includeDisabled=false'.format(account_id)
+        request_url = (
+            f'{base_url}'
+            f'/combos/?accountID={account_id}'
+            '&types=D&includeDeleted'
+            '=false&includeDisabled=false'
+        )
 
         response = place_request('GET', request_url, '', request_headers)
 
@@ -499,7 +553,7 @@ def input_combos_quick_order(zone, environment, account_id):
         # Define headers
         request_headers = get_header_request_recommender(zone, environment)
 
-        # Define url request 
+        # Define url request
         request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
 
         # Send request

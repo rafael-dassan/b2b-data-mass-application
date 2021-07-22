@@ -1,8 +1,11 @@
-from data_mass.accounts import check_account_exists_microservice
-from data_mass.algo_selling import request_forgotten_items, request_quick_order
+from data_mass.account.accounts import check_account_exists_microservice
 from data_mass.populator.log import *
 from data_mass.populator.preconditions import logger
-from data_mass.product.products import request_get_offers_microservice
+from data_mass.product.service import request_get_offers_microservice
+from data_mass.recommendations.algo_selling import (
+    request_forgotten_items,
+    request_quick_order
+)
 
 logger = logging.getLogger(__name__)
 

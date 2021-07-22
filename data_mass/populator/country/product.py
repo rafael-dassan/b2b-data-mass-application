@@ -1,10 +1,7 @@
 from data_mass.populator.log import *
 from data_mass.product.magento import enable_product
-from data_mass.product.products import (
-    create_product_v2,
-    create_product,
-    request_get_offers_microservice
-)
+from data_mass.product.relay import create_product, create_product_v2
+from data_mass.product.service import request_get_offers_microservice
 
 logger = logging.getLogger(__name__)
 

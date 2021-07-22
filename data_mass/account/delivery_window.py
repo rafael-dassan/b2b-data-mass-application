@@ -2,6 +2,7 @@ import calendar
 import json
 import logging
 from datetime import datetime, timedelta
+from typing import Union
 
 import pkg_resources
 
@@ -96,8 +97,9 @@ def get_microservice_delivery_fee_charge_relay(
     # Update the delivery window values in runtime
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
-    
+
     return json_object
+
 
 def get_microservice_payload_post_delivery_fee(
     account_data: dict,
@@ -185,7 +187,7 @@ def create_delivery_window_microservice(
     dates_list = return_dates_payload(option)
     if not dates_list:
         return False
-    
+
     index = 0
     request_body = []
     while index <= (len(dates_list) - 1):

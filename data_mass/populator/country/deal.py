@@ -1,10 +1,15 @@
-from data_mass.accounts import check_account_exists_microservice
-from data_mass.deals import create_stepped_discount_with_limit, create_discount, create_stepped_discount, create_free_good, \
+from data_mass.account.accounts import check_account_exists_microservice
+from data_mass.deals.relay import (
+    create_discount,
+    create_free_good,
+    create_stepped_discount,
+    create_stepped_discount_with_limit,
     create_stepped_free_good
+)
 from data_mass.populator.log import *
-from data_mass.populator.log import log, Message
+from data_mass.populator.log import Message, log
 from data_mass.populator.preconditions import logger
-from data_mass.product.products import request_get_offers_microservice
+from data_mass.product.service import request_get_offers_microservice
 
 logger = logging.getLogger(__name__)
 

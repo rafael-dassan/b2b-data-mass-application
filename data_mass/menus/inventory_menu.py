@@ -2,9 +2,8 @@ from itertools import repeat
 from multiprocessing import Pool
 
 from data_mass.classes.text import text
-from data_mass.product.products import get_sku_name
-from data_mass.validations import validate_yes_no_option, \
-    validate_sku
+from data_mass.product.service import get_sku_name
+from data_mass.validations import validate_sku, validate_yes_no_option
 
 
 def print_inventory_option_menu():

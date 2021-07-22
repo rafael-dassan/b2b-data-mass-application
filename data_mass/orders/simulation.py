@@ -1,15 +1,12 @@
-# Standard library imports
 import json
-import os
-from datetime import datetime, timedelta
 from json import loads
-from typing import List
+from typing import List, Union
 from uuid import uuid1
 
 import pkg_resources
 from tabulate import tabulate
 
-from data_mass.accounts import get_multivendor_account_id
+from data_mass.account.accounts import get_multivendor_account_id
 from data_mass.classes.text import text
 from data_mass.common import (
     convert_json_to_string,
@@ -21,17 +18,16 @@ from data_mass.common import (
 
 
 def request_order_simulation(
-    zone: str,
-    environment: str,
-    account_id: int,
-    delivery_center_id: int,
-    items: list,
-    combos: list,
-    empties: list,
-    payment_method: str,
-    payment_term: bool,
-    delivery_date: str
-):
+        zone: str,
+        environment: str,
+        account_id: int,
+        delivery_center_id: int,
+        items: list,
+        combos: list,
+        empties: list,
+        payment_method: str,
+        payment_term: bool,
+        delivery_date: str) -> Union[dict, bool]:
     """
     Request order simulation through Cart Service
 
@@ -58,7 +54,7 @@ def request_order_simulation(
 
     Returns
     -------
-    str or Bool
+    Union[dict, bool]
         response payload in case of success or `false` in case of failure
     """
     if empties is None:
@@ -87,11 +83,10 @@ def request_order_simulation(
         "deliveryDate": delivery_date,
         "empties": empties,
     }
-    
+
     # get data from Data Mass files
     content: bytes = pkg_resources.resource_string(
-        "data_mass",
-        "data/order_simulation_microservice_payload.json"
+        "data_mass", "data/order_simulation_microservice_payload.json"
     )
     json_data = json.loads(content.decode("utf-8"))
 
@@ -107,22 +102,22 @@ def request_order_simulation(
     )
     if response.status_code == 200:
         return loads(response.text)
-    else:
-        print(
-            text.Red
-            + "\n- [Cart Service] Failure to simulate the order."
-            f"Response Status: {response.status_code}. "
-            f"Response message: {response.text}"
-        )
-        return False
+
+    print(
+        text.Red + "\n- [Cart Service] Failure to simulate the order."
+        f"Response Status: {response.status_code}. "
+        f"Response message: {response.text}"
+    )
+    return False
 
 
 def request_order_simulation_v3(
-        account_id: int,
-        zone: str,
-        environment: str,
-        items: List[dict],
-        delivery_date: str):
+    account_id: int,
+    zone: str,
+    environment: str,
+    items: List[dict],
+    delivery_date: str,
+):
     """
     Request order simulation v3.
 
@@ -148,25 +143,24 @@ def request_order_simulation_v3(
         "accountId": get_multivendor_account_id(account_id, zone, environment),
         "userId": str(uuid1()),
         "deliveryDate": delivery_date,
-        "items": []
+        "items": [],
     }
 
     for item in items:
         schema = {"id": item.get("id"), "quantity": item.get("quantity")}
         dict_values["items"].append(schema)
-    
+
     response = place_request(
         request_method="POST",
         request_url=request_url,
         request_body=json.dumps(dict_values),
-        request_headers=request_headers
+        request_headers=request_headers,
     )
     if response.status_code == 200:
         return loads(response.text)
 
     print(
-        text.Red
-        + "\n- [Cart Service] Failure to simulate the order."
+        text.Red + "\n- [Cart Service] Failure to simulate the order."
         f"Response Status: {response.status_code}. "
         f"Response message: {response.text}"
     )
@@ -227,14 +221,23 @@ def print_summary_order_simulation(
     summary_order_values, summary_items_values, summary_combo_values
 ):
     print(text.White + "Order Summary ")
-    print(tabulate(summary_order_values, headers="keys", tablefmt='fancy_grid'))
+    print(
+        tabulate(summary_order_values, headers="keys", tablefmt="fancy_grid")
+    )
 
     if len(summary_items_values) >= 1:
-        print("\n")
-        print(text.White + "Order Items Summary ")
-        print(tabulate(summary_items_values, headers="keys", tablefmt='fancy_grid'))
+        print(f"\n{text.White}Order Items Summary ")
+        print(
+            tabulate(
+                summary_items_values, headers="keys", tablefmt="fancy_grid"
+            )
+        )
 
     if len(summary_combo_values) >= 1:
         print("\n")
         print(text.White + "Order Combo Summary ")
-        print(tabulate(summary_combo_values, headers="keys", tablefmt='fancy_grid'))
+        print(
+            tabulate(
+                summary_combo_values, headers="keys", tablefmt="fancy_grid"
+            )
+        )

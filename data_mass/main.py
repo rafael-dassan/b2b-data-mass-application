@@ -1,25 +1,27 @@
 from datetime import datetime, timedelta
 from distutils.util import strtobool
-from random import choice, random, sample
+from random import choice, sample
 
 import click
 import pyperclip
 
-from data_mass.accounts import *
-from data_mass.algo_selling import *
+from data_mass.account.accounts import *
+from data_mass.account.credit import add_credit_to_account_microservice
+from data_mass.account.delivery_window import *
 from data_mass.category.magento import *
-from data_mass.category.microservice import \
-    create_category as create_category_ms
-from data_mass.category.microservice import get_categories as get_categories_ms
-from data_mass.category.microservice import get_category_by_id
+from data_mass.category.relay import create_category as create_category_ms
+from data_mass.category.service import get_categories as get_categories_ms
+from data_mass.category.service import get_category_by_id
 from data_mass.combos import *
 from data_mass.common import *
-from data_mass.credit import add_credit_to_account_microservice
-from data_mass.deals import *
-from data_mass.delivery_window import *
+from data_mass.deals.relay import *
+from data_mass.deals.service import *
 from data_mass.enforcement import *
 from data_mass.files import create_file_api
-from data_mass.invoices import *
+from data_mass.inventory.relay import *
+from data_mass.inventory.service import *
+from data_mass.invoices.relay import *
+from data_mass.invoices.service import *
 from data_mass.menus.account_menu import (
     delivery_window_menu,
     print_account_enable_empties_loan_menu,
@@ -90,37 +92,40 @@ from data_mass.menus.supplier_menu import (
     print_new_attribute,
     print_new_page
 )
-from data_mass.orders import *
-from data_mass.product.inventory import *
+from data_mass.orders.relay import *
+from data_mass.orders.service import *
+from data_mass.orders.simulation import (
+    process_simulation_microservice,
+    request_order_simulation,
+    request_order_simulation_v3
+)
 from data_mass.product.magento import *
-from data_mass.product.products import *
+from data_mass.product.relay import *
+from data_mass.product.service import *
+from data_mass.product.utils import *
+from data_mass.recommendations.algo_selling import *
+from data_mass.rewards.challenges import (
+    create_mark_complete_challenge,
+    create_purchase_challenge,
+    create_take_photo_challenge,
+    remove_challenge
+)
+from data_mass.rewards.programs import (
+    create_new_program,
+    patch_program_root_field,
+    remove_program_dt_combos,
+    update_program_dt_combos
+)
 from data_mass.rewards.rewards import (
     associate_dt_combos_to_poc,
     disenroll_poc_from_program,
     display_program_rules_skus,
     enroll_poc_to_program
 )
-from data_mass.rewards.rewards_challenges import (
-    create_mark_complete_challenge,
-    create_purchase_challenge,
-    create_take_photo_challenge,
-    remove_challenge
-)
-from data_mass.rewards.rewards_programs import (
-    create_new_program,
-    patch_program_root_field,
-    remove_program_dt_combos,
-    update_program_dt_combos
-)
-from data_mass.rewards.rewards_transactions import (
+from data_mass.rewards.transactions import (
     create_points_removal,
     create_redemption,
     create_rewards_offer
-)
-from data_mass.simulation import (
-    process_simulation_microservice,
-    request_order_simulation,
-    request_order_simulation_v3
 )
 from data_mass.supplier.attribute import (
     check_if_attribute_exist,
@@ -1292,7 +1297,7 @@ def flow_associate_products_to_account(zone, environment):
             all_products_zone=all_products_zone
         )
 
-        if add_products != 'success':
+        if not add_products:
             print(text.Red + '\n- [Products] Something went wrong, please try again')
             print_finish_application_menu()
 

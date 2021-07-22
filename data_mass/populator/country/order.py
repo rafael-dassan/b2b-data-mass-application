@@ -1,11 +1,13 @@
 from datetime import datetime, timedelta
 
-from data_mass.accounts import check_account_exists_microservice
-from data_mass.populator.country.product import check_product_associated_to_account
+from data_mass.account.accounts import check_account_exists_microservice
+from data_mass.orders.relay import request_order_creation
+from data_mass.orders.simulation import request_order_simulation
+from data_mass.populator.country.product import (
+    check_product_associated_to_account
+)
 from data_mass.populator.log import *
-from data_mass.orders import request_order_creation
-from data_mass.product.products import request_get_offers_microservice
-from data_mass.simulation import request_order_simulation
+from data_mass.product.service import request_get_offers_microservice
 
 logger = logging.getLogger(__name__)
 
