@@ -87,7 +87,7 @@ def print_stepped_discount_ranges_menu(indexes=2):
 
 def print_discount_range_menu(indexes=2):
     index_list = list()
-    for x in range(indexes):
+    for _ in range(indexes):
         discount_value = input(text.default_text_color + 'Discount percentage (%): ')
         while discount_value == '' or float(discount_value) <= 0:
             print(text.Red + '\n- Discount value must be greater than 0')
@@ -135,28 +135,27 @@ def print_free_good_quantity_menu():
 
 # Maximum and Mininum index for Interactive Combos v1
 def print_interactive_combos_quantity_range_menu():
-    index_list_min = list()
-    index_list_max = list()
-    index_dict = dict()
+    index_list_min = []
+    index_list_max = []
+    index_dict = {}
     index_dict['minimum'] = {}
     index_dict['maximum'] = {}
 
-    for x in range(3):
-        min_quantity = input(text.default_text_color + 'Type the ' + str(x + 1) + '° minimum value: ')
-        while min_quantity == '' or int(min_quantity) < 0:
+    for product_position in range(1, 4):
+        min_quantity = input(text.default_text_color + 'Type the ' + str(product_position) + '° minimum value: ')
+        while min_quantity == '' or int(min_quantity) <= 0:
             print(text.Red + '\n- SKU minimum quantity must be greater than 0')
-            min_quantity = input(text.default_text_color + '\nType the ' + str(x) + '° minimum value: ')
+            min_quantity = input(text.default_text_color + '\nType the ' + str(product_position) + '° minimum value: ')
 
         index_list_min.append(min_quantity)
 
     index_dict['minimum'] = index_list_min
 
-    for x in range(3):
-        max_quantity = input(text.default_text_color + 'Type the ' + str(x + 1) + '° maximum value: ')
+    for product_position in range(1, 4):
+        max_quantity = input(text.default_text_color + 'Type the ' + str(product_position) + '° maximum value: ')
         while max_quantity == '' or int(max_quantity) <= 0:
             print(text.Red + '\n- SKU maximum quantity must be greater than 0')
-            max_quantity = input(text.default_text_color + '\nType the ' + str(x) + '° maximum value:1'
-                                                                                    ' ')
+            max_quantity = input(text.default_text_color + '\nType the ' + str(product_position) + '° maximum value:1 ')
 
         index_list_max.append(max_quantity)
 
@@ -166,28 +165,27 @@ def print_interactive_combos_quantity_range_menu():
 
 # Maximum and Minimum index for Interactive Combos v2
 def print_interactive_combos_quantity_range_menu_v2():
-    index_list_min = list()
-    index_list_max = list()
-    index_dict = dict()
+    index_list_min = []
+    index_list_max = []
+    index_dict = {}
     index_dict['minimum'] = {}
     index_dict['maximum'] = {}
 
-    for x in range(2):
-        min_quantity = input(text.default_text_color + 'Type the ' + str(x + 1) + '° minimum value: ')
+    for product_position in range(1, 4):
+        min_quantity = input(text.default_text_color + 'Type the ' + str(product_position) + '° minimum value: ')
         while min_quantity == '' or int(min_quantity) < 0:
             print(text.Red + '\n- SKU minimum quantity must be greater than 0') 
-            min_quantity = input(text.default_text_color + '\nType the ' + str(x) + '° minimum value: ')
+            min_quantity = input(text.default_text_color + '\nType the ' + str(product_position) + '° minimum value: ')
 
         index_list_min.append(min_quantity)
 
     index_dict['minimum'] = index_list_min
 
-    for x in range(3):
-        max_quantity = input(text.default_text_color + 'Type the ' + str(x + 1) + '° maximum value: ')
+    for product_position in range(1, 4):
+        max_quantity = input(text.default_text_color + 'Type the ' + str(product_position) + '° maximum value: ')
         while max_quantity == '' or int(max_quantity) <= 0:
             print(text.Red + '\n- SKU maximum quantity must be greater than 0')
-            max_quantity = input(text.default_text_color + '\nType the ' + str(x) + '° maximum value:'
-                                                                                    ' ')
+            max_quantity = input(text.default_text_color + '\nType the ' + str(product_position) + '° maximum value: ')
 
         index_list_max.append(max_quantity)
 
