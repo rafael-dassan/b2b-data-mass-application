@@ -7,10 +7,10 @@ from data_mass.validations import validate_sku, validate_yes_no_option
 
 
 def print_inventory_option_menu():
-    option = input('\n{0}Do you want to choose which product will have the stock updated? y/N: '.format(text.Yellow))
+    option = input(f"{text.Yellow}\nDo you want to choose which product will have the stock updated? y/N: ")
     while validate_yes_no_option(option.upper()) is False:
-        print('\n{0}- Invalid option'.format(text.Red))
-        option = input('\n{0}Do you want to choose which product will have the stock updated? y/N: '.format(text.Yellow))
+        print(f"{text.Red}\n- Invalid option")
+        option = input(f"{text.Yellow}\nDo you want to choose which product will have the stock updated? y/N: ")
 
     return option.upper()
 
@@ -26,18 +26,18 @@ def print_inventory_sku_quantity_menu(zone, environment, products):
         if not products[aux]:
             aux = aux + 1
         else:
-            print('\n{0}SKU: {1}{2} || {3}'.format(text.default_text_color, text.Blue, products[aux], sku_name[aux].upper()))
+            print(f"{text.default_text_color}\nSKU: {text.Blue}{products[aux]} || {str(sku_name[aux]).upper()}")
             aux = aux + 1
 
-    sku_id = input('\n{0}Input the SKU you want to add inventory: '.format(text.default_text_color))
+    sku_id = input(f"{text.default_text_color}\nInput the SKU you want to add inventory: ")
     while validate_sku(sku_id, products) is False:
-        print('\n{0}- Invalid option'.format(text.Red))
-        sku_id = input('\n{0}Input the SKU you want to add inventory: '.format(text.default_text_color))
+        print(f"{text.Red}\n- Invalid option")
+        sku_id = input(f"{text.default_text_color}\nInput the SKU you want to add inventory: ")
 
-    sku_quantity = input('\n{0}Inventory quantity: '.format(text.default_text_color))
+    sku_quantity = input(f"{text.default_text_color}\nInventory quantity: ")
     while not sku_quantity.isdigit():
-        print('\n{0}- Invalid option'.format(text.Red))
-        sku_quantity = input('\n{0}Inventory quantity: '.format(text.default_text_color))
+        print(f"{text.Red}\n- Invalid option")
+        sku_quantity = input(f"{text.default_text_color}\nInventory quantity: ")
 
     return {
         'sku': sku_id,
