@@ -116,7 +116,7 @@ def get_delivery_center_inventory(
         return json_data
 
     if response.status_code == 404:
-        return None
+        return {}
 
     print(
         f'\n{text.Red}'
