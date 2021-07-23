@@ -1,5 +1,5 @@
 import json
-from typing import Dict, Union
+from typing import Dict, Optional
 
 import click
 import pkg_resources
@@ -114,7 +114,7 @@ def check_account_exists_microservice(
 def get_multivendor_account_id(
         vendor_account_id: str,
         zone: str,
-        environment: str) -> Union[bool, str]:
+        environment: str) -> Optional[str]:
     """
     Get accountId of the vendorAccountId
 
@@ -230,6 +230,7 @@ def create_account_ms(
         "paymentMethods": payment_method,
         "deliveryAddress": {
             "address": delivery_address.get("address"),
+            "street": delivery_address.get("street"),
             "city": delivery_address.get("city"),
             "state": delivery_address.get("state"),
             "zipcode": delivery_address.get("zipcode")
@@ -655,72 +656,84 @@ def get_account_delivery_address(zone: str) -> dict:
     params = {
         'AR': {
             'address': 'Guaiviravi 1486',
+            'street': 'Guaiviravi',
             'city': 'Isidro Casanova',
             'state': 'Buenos Aires',
             'zipcode': 'N/A'
         },
         'BR': {
             'address': 'Rua Carlos Maul 315',
+            'street': 'Rua Carlos Maul',
             'city': 'Duque de Caxias',
             'state': 'Rio de Janeiro',
             'zipcode': '25261-270'
         },
         'CA': {
             'address': '1305  Heatherleigh',
+            'strret': 'Heatherleigh',
             'city': 'Cooksville',
             'state': 'Ontario',
             'zipcode': 'L5A 1V9'
         },
         'CO': {
             'address': 'Cr 72 No. 74B-39, C.P 11001',
+            'street': 'Bogota street',
             'city': 'Bogota',
             'state': 'Bogota',
             'zipcode': 'N/A'
         },
         'DO': {
             'address': '14 D Junio, No 150',
+            'street': '14 D Junio',
             'city': 'Santo Domingo',
             'state': 'Santo Domingo',
             'zipcode': 'N/A'
         },
         'EC': {
             'address': 'Rocafuerte 742',
+            'street': 'Rocafuerte',
             'city': 'Guayas',
             'state': 'Guayaquil',
             'zipcode': 'N/A'
         },
         'MX': {
             'address': 'Aguacate No. 19 El Rosario',
+            'street': 'Aguacate',
             'city': 'Actopan',
             'state': 'Hidalgo',
             'zipcode': 'N/A'
         },
         'PA': {
-            'address': 'Via Rdo J Alfaro',
+            'address': 'Via Rdo J Alfaro, 155',
+            'street': 'Via Rdo J Alfaro',
             'city': 'Panama',
             'state': 'Panama',
             'zipcode': 'N/A'
         },
         'PE': {
             'address': 'Avenida Salaverry, 674',
+            'street': 'Avenida Salaverry',
             'city': 'Jesus Maria',
             'state': 'Lima',
             'zipcode': 'N/A'
         },
         'PY': {
             'address': 'De las Llanas 3.796',
+            'street': 'De las Llanas',
             'city': 'N/A',
             'state': 'Asuncion',
             'zipcode': 'N/A'
         },
         'ZA': {
             'address': '726  Thomas St',
+            'street': 'Thomas St',
             'city': 'Blood River',
             'state': 'KwaZulu-Natal',
             'zipcode': '3024'
         },
         'US': {
             'address': 'McDowell Street, 1639',
+            'street': 'McDowell Street',
             'city': 'Nashville',
             'state': 'Tennessee',
             'zipcode': '87334'
