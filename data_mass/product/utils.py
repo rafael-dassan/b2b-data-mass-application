@@ -149,7 +149,7 @@ def get_item_input_data(zone: str):
         if not vendor_item_id:
             vendor_item_id = "DM-{0}".format(str(randint(1, 100000)))
     else:
-        sku_identifier = input(f"{text.default_text_color} SKU identifier: ")
+        sku_identifier = input(f"{text.default_text_color}SKU identifier: ")
 
         # Create random value for the SKU identifier if the entry is empty
         if not sku_identifier:

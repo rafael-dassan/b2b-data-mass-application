@@ -269,9 +269,6 @@ def request_get_account_product_assortment(
     base_url = get_microservice_base_url(environment)
     request_url = f"{base_url}/product-assortment/?accountId={account_id}&deliveryCenterId={delivery_center_id}"
 
-    base_url = get_microservice_base_url(environment)
-    request_url = f"{base_url}/product-assortment/?accountId={account_id}&deliveryCenterId={delivery_center_id}"
-
     response = place_request("GET", request_url, "", headers)
     json_data = loads(response.text)
     skus = json_data["skus"]

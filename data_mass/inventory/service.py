@@ -125,7 +125,7 @@ def get_delivery_center_inventory(
         f'Response message: {response.text}'
     )
 
-    return None
+    return {}
 
 
 def display_inventory_by_account(inventory: list, zone: str = None):
