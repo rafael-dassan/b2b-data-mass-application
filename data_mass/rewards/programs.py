@@ -25,7 +25,7 @@ from data_mass.rewards.utils import (
     print_input_decision
 )
 
-APP_ADMIN = "membership"
+APP_ADMIN = "adminportal"
 
 
 def create_new_program(
@@ -881,11 +881,10 @@ def delete_program_combo(
     Response
         The http response.
     """
-    jwt_app_claim = f"{APP_ADMIN}-{zone.lower()}"
     request_headers = get_header_request(
         zone=zone,
         use_jwt_auth=True,
-        jwt_app_claim=jwt_app_claim
+        jwt_app_claim=APP_ADMIN
     )
 
     # Define url request to delete the Rewards program combo
