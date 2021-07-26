@@ -1,5 +1,6 @@
 import json
 from uuid import uuid1
+from typing import Optional
 
 from data_mass.classes.text import text
 from data_mass.common import (
@@ -12,7 +13,7 @@ from data_mass.common import (
 def create_category(
         zone: str,
         environment: str,
-        category_data: dict) -> dict:
+        category_data: dict) -> Optional[dict]:
     """
     Create/Update category via Category API.
 
@@ -51,7 +52,7 @@ def create_category(
     )
 
     if response.status_code in [200, 202]:
-        content: dict = json.dumps(response.text)
+        content: str = json.dumps(response.text)
 
         return content
 

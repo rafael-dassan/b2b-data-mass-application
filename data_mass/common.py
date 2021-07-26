@@ -29,7 +29,6 @@ from data_mass.config import get_settings
 from data_mass.logger import log_to_file
 from data_mass.validations import (
     is_number,
-    validate_account_name,
     validate_environment,
     validate_option_request_selection,
     validate_structure,

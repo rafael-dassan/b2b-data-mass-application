@@ -1,5 +1,6 @@
 import json
 from urllib.parse import urlencode
+from typing import List, Optional
 
 from data_mass.account.accounts import get_multivendor_account_id
 from data_mass.classes.text import text
@@ -15,7 +16,7 @@ def get_categories(
         zone: str,
         environment: str,
         service: str = "category",
-        account_id: str = None) -> list:
+        account_id: str = None) -> Optional[list]:
     """
     Get categories.
 
@@ -107,7 +108,7 @@ def get_category_by_id(
         environment: str,
         category_id: str,
         service: str = "category",
-        account_id: str = None) -> dict:
+        account_id: str = None) -> Optional[dict]:
     """
     Get a specific category.
 

@@ -1,27 +1,109 @@
 from datetime import datetime, timedelta
 from distutils.util import strtobool
 from random import choice, sample
+import sys
+from random import randint
 
 import click
 import pyperclip
 
-from data_mass.account.accounts import *
+from data_mass.account.accounts import(
+    check_account_exists_microservice,
+    display_account_information,
+    get_minimum_order_info,
+    get_account_delivery_address,
+    create_account_ms,
+    get_minimum_order_list,
+    get_delivery_cost_values,
+    get_credit_info
+)
 from data_mass.account.credit import add_credit_to_account_microservice
-from data_mass.account.delivery_window import *
-from data_mass.category.magento import *
+from data_mass.account.delivery_window import(
+    create_delivery_fee_microservice,
+    create_delivery_window_microservice
+)
+from data_mass.category.magento import(
+    text,
+    get_categories,
+    associate_product_to_category,
+    create_category,
+    loads
+)
 from data_mass.category.relay import create_category as create_category_ms
 from data_mass.category.service import get_categories as get_categories_ms
 from data_mass.category.service import get_category_by_id
-from data_mass.combos import *
-from data_mass.common import *
-from data_mass.deals.relay import *
-from data_mass.deals.service import *
-from data_mass.enforcement import *
+from data_mass.combos import(
+    input_combo_type_discount,
+    input_combo_type_free_good,
+    input_combo_type_digital_trade,
+    input_combo_only_free_good,
+    check_combo_exists_microservice,
+    update_combo_consumption
+)
+
+from data_mass.common import(
+    clear_terminal,
+    print_welcome_script,
+    print_structure_menu,
+    print_available_options,
+    print_zone_menu_for_ms,
+    print_environment_menu,
+    print_payment_method_simulation_menu,
+    validate_zone_for_interactive_combos_ms,
+    print_combos_menu,
+    print_combo_id_menu,
+    print_environment_menu_in_user_create_iam,
+    print_input_email,
+    print_input_password,
+    print_input_tax_id,
+    print_environment_menu_user_creation,
+    print_input_number_with_default,
+    validate_option_request_selection,
+    validate_environment,
+    validate_zone_for_ms,
+    print_input_text,
+    print_input_number,
+    print_invoices,
+    print_zone_credit_statement,
+    print_month_credit_statement,
+    print_year_credit_statement,
+)
+
+from data_mass.deals.relay import(
+    request_create_discount_multivendor,
+    create_discount,
+    create_stepped_discount,
+    create_stepped_discount_with_limit,
+    create_free_good_multivendor,
+    create_free_good,
+    create_stepped_free_good,
+    create_mix_match,
+    create_interactive_combos,
+    create_interactive_combos_v2
+)
+from data_mass.deals.service import(
+    request_get_deals_promo_fusion_service,
+    request_get_combos_promo_fusion_service,
+    display_deals_information_multivendor,
+    display_deals_information_promo_fusion
+)
+from data_mass.enforcement import display_available_products
 from data_mass.files import create_file_api
-from data_mass.inventory.relay import *
-from data_mass.inventory.service import *
-from data_mass.invoices.relay import *
-from data_mass.invoices.service import *
+from data_mass.inventory.relay import request_inventory_creation
+from data_mass.inventory.service import(
+    get_delivery_center_inventory_v2,
+    get_delivery_center_inventory,
+    display_inventory_by_account
+)
+from data_mass.invoices.relay import(
+    create_invoice_multivendor,
+    create_invoice_request,
+    update_invoice_request
+)
+from data_mass.invoices.service import(
+    check_if_invoice_exists,
+    get_invoices
+)
 from data_mass.menus.account_menu import (
     delivery_window_menu,
     print_account_enable_empties_loan_menu,
@@ -92,18 +174,54 @@ from data_mass.menus.supplier_menu import (
     print_new_attribute,
     print_new_page
 )
-from data_mass.orders.relay import *
-from data_mass.orders.service import *
+from data_mass.orders.relay import(
+    validate_yes_no_change_date,
+    validate_user_entry_date,
+    request_order_creation,
+    request_changed_order_creation
+)
+from data_mass.orders.service import(
+    check_if_order_exists,
+    get_order_details,
+    get_order_items,
+    display_specific_order_information,
+    display_all_order_information
+)
 from data_mass.orders.simulation import (
     process_simulation_microservice,
     request_order_simulation,
     request_order_simulation_v3
 )
-from data_mass.product.magento import *
-from data_mass.product.relay import *
-from data_mass.product.service import *
-from data_mass.product.utils import *
-from data_mass.recommendations.algo_selling import *
+from data_mass.product.magento import request_enable_product
+from data_mass.product.relay import(
+    create_product_v2,
+    create_product,
+    add_products_to_account_microservice,
+    request_empties_discounts_creation
+)
+from data_mass.product.service import(
+    finish_application,
+    request_get_account_product_assortment,
+    request_get_offers_microservice,
+    request_get_products_by_account_microservice,
+    request_get_products_microservice
+)
+from data_mass.product.utils import(
+    display_items_information_zone,
+    display_product_information,
+    uniform,
+    get_item_input_data
+)
+from data_mass.recommendations.algo_selling import(
+    resources_warning,
+    request_forgotten_items,
+    request_quick_order,
+    request_sell_up,
+    create_all_recommendations,
+    input_combos_quick_order,
+    get_recommendation_by_account,
+    display_recommendations_by_account
+)
 from data_mass.rewards.challenges import (
     create_mark_complete_challenge,
     create_purchase_challenge,
@@ -132,9 +250,6 @@ from data_mass.supplier.attribute import (
     create_attribute_enum,
     create_attribute_group,
     create_attribute_primitive_type,
-    create_legacy_attribute_container,
-    create_legacy_attribute_package,
-    create_legacy_root_attribute,
     delete_attribute_supplier,
     display_all_attribute,
     display_specific_attribute,

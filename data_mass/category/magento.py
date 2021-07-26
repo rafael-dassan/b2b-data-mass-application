@@ -10,6 +10,8 @@ from data_mass.common import (
     place_request
 )
 
+CONTENT_TYPE = "application/json"
+
 
 def get_categories(country, environment, parent_id):
     """Get Categories
@@ -19,17 +21,28 @@ def get_categories(country, environment, parent_id):
         - Parent ID
     Return list of categories
     """
-    response = request_get_categories(country, environment, {'parent_id': parent_id})
+    response = request_get_categories(
+        country,
+        environment,
+        {'parent_id': parent_id})
+
     if response.status_code == 200:
         arr = loads(response.text)
         return arr['items']
-    else:
-        print('\n{}- Error when retrieving categories. Response status: {}. Response message: {}'.format(text.Red, response.status_code,
-                                                                                                            response.text))
-        return False
+
+    print(
+        f'\n{text.Red}- Error when retrieving categories.'
+        f'Response status: {response.status_code}.'
+        f'Response message: {response.text}'
+    )
+    return False
 
 
-def associate_product_to_category(country, environment, product_sku, category_id):
+def associate_product_to_category(
+        country,
+        environment,
+        product_sku,
+        category_id):
     """Associate product to category
     Input Arguments:
         - Country (BR, DO, AR, ZA, CO)
@@ -38,14 +51,23 @@ def associate_product_to_category(country, environment, product_sku, category_id
         - Category ID
     Return str (success: association has been succeeded)
     """
-    response = request_associate_product_to_category(country, environment, product_sku, category_id)
+    response = request_associate_product_to_category(
+        country,
+        environment,
+        product_sku,
+        category_id)
     if response.status_code == 200 and response.text:
         return 'success'
-    else:
-        return False
+
+    return False
 
 
-def create_category(country, environment, category_name, parent_id, custom_attributes={}):
+def create_category(
+        country,
+        environment,
+        category_name,
+        parent_id,
+        custom_attributes={}):
     """Create Category
     Input Arguments:
         - Country (BR, DO, AR, ZA, CO)
@@ -54,21 +76,34 @@ def create_category(country, environment, category_name, parent_id, custom_attri
         - Parent ID
     Return category object
     """
-    response = request_create_category(country, environment, category_name, parent_id, custom_attributes)
+    response = request_create_category(
+        country,
+        environment,
+        category_name,
+        parent_id,
+        custom_attributes)
     return response
 
 
-def request_associate_product_to_category(country, environment, product_sku, category_id):
+def request_associate_product_to_category(
+        country,
+        environment,
+        product_sku,
+        category_id):
     # Get header request
-    url = "{url_base}/rest/V1/categories/{product_sku}/products".format(
-        url_base=get_magento_base_url(environment, country), product_sku=product_sku)
+    url_base = get_magento_base_url(
+                environment,
+                country,
+                )
+
+    url = f'{url_base}/rest/V1/categories/{product_sku}/products'
 
     # Get base URL
     access_token = get_magento_datamass_access_token(environment, country)
 
     # Get header request
     headers = {
-        "Content-Type": "application/json",
+        "Content-Type": CONTENT_TYPE,
         "x-access-token": access_token
     }
 
@@ -85,21 +120,29 @@ def request_associate_product_to_category(country, environment, product_sku, cat
     return place_request("POST", url, convert_json_to_string(data), headers)
 
 
-def request_get_categories(country, environment, searchCriteria={'parent_id': 0}):
+def request_get_categories(
+        country,
+        environment,
+        search_criteria={'parent_id': 0}):
     search = '&'.join([
-                          'searchCriteria[filterGroups][{0}][filters][0][field]={1}&searchCriteria[filterGroups][{0}][filters][0][value]={2}'
-                      .format(index, searchField, searchValue)
-                          for index, (searchField, searchValue) in enumerate(searchCriteria.items())])
+        f'searchCriteria[filterGroups]'
+        f'[{index}][filters][0][field]={search_field}'
+        f'&searchCriteria[filterGroups]'
+        f'[{index}][filters][0][value]={search_value}'
+        for index, (
+            search_field,
+            search_value) in enumerate(search_criteria.items())])
 
     # Get header request
-    url = get_magento_base_url(environment, country) + "/rest/V1/categories/list?" + search
+    url = get_magento_base_url(environment, country) \
+        + "/rest/V1/categories/list?" + search
 
     # Get base URL
     access_token = get_magento_datamass_access_token(environment, country)
 
     # Get header request
     headers = {
-        "Content-Type": "application/json",
+        "Content-Type": CONTENT_TYPE,
         "x-access-token": access_token
     }
 
@@ -107,7 +150,12 @@ def request_get_categories(country, environment, searchCriteria={'parent_id': 0}
     return place_request("GET", url, '', headers)
 
 
-def request_create_category(country, environment, category_name, parent_id=0, custom_attributes={}):
+def request_create_category(
+        country,
+        environment,
+        category_name,
+        parent_id=0,
+        custom_attributes={}):
     # Get header request
     url = f"{get_magento_base_url(environment, country)}/rest/V1/categories"
 
@@ -116,7 +164,7 @@ def request_create_category(country, environment, category_name, parent_id=0, cu
 
     # Get header request
     headers = {
-        "Content-Type": "application/json",
+        "Content-Type": CONTENT_TYPE,
         "x-access-token": access_token
     }
 
