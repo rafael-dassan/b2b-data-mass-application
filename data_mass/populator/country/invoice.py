@@ -1,10 +1,13 @@
-from data_mass.accounts import check_account_exists_microservice
-from data_mass.invoices import create_invoice_request
+from data_mass.account.accounts import check_account_exists_microservice
+from data_mass.invoices.relay import create_invoice_request
+from data_mass.orders.service import (
+    get_order_details,
+    get_order_items,
+    request_get_order_by_date_updated
+)
 from data_mass.populator.log import *
-from data_mass.populator.log import log, Message
+from data_mass.populator.log import Message, log
 from data_mass.populator.preconditions import logger
-from data_mass.orders import request_get_order_by_date_updated, get_order_details, \
-    get_order_items
 
 logger = logging.getLogger(__name__)
 

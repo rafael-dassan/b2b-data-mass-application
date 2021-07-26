@@ -50,14 +50,9 @@ def validate_payments_method(payments_method, zone=None):
     if size_payments_method == 0:
         return "error_0"
     elif (size_payments_method > 0) and not is_number(payments_method):
-        return "not_number"
-    elif (
-        (int(payments_method) != 1)
-        and (int(payments_method) != 2)
-        and (int(payments_method) != 3)
-        and (int(payments_method) != 4)
-    ):
-        return "not_payments_method"
+        return 'not_number'
+    elif payments_method not in ['1', '2', '3', '4', '5', '6']:
+        return 'not_payments_method'
     elif zone == "AR" and int(payments_method) != 1:
         return "not_payments_method"
     else:
@@ -258,7 +253,7 @@ def validate_option_request_selection(selection):
 
 
 def validate_delivery_window_structure(option):
-    options = ["1", "2"]
+    options = ['1', '2', '3']
     return option in options
 
 

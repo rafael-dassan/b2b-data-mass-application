@@ -1,7 +1,9 @@
-from json import loads
+"""Rewards file."""
+import json
 from random import choice, randint, sample
 from typing import List, Union
 
+from requests import Response
 from tabulate import tabulate
 
 from data_mass.classes.text import text
@@ -11,17 +13,16 @@ from data_mass.common import (
     get_microservice_base_url,
     place_request
 )
-from data_mass.menus.order_menu import print_allow_cancellable_order_menu
-from data_mass.product.products import (
+from data_mass.product.service import (
     get_sku_name,
     request_get_offers_microservice
 )
-from data_mass.rewards.rewards_programs import (
+from data_mass.rewards.programs import (
     get_all_programs,
-    get_DM_rewards_program_for_zone,
+    get_dm_rewards_program_for_zone,
     get_specific_program
 )
-from data_mass.rewards.rewards_utils import (
+from data_mass.rewards.utils import (
     get_dt_combos_from_zone,
     get_rewards_combos_by_account,
     make_account_eligible,
@@ -36,26 +37,47 @@ APP_ADMIN = "adminportal"
 COUNTRIES_USE_DTCOMBO_ITEMS = ['BR', 'EC', 'MX', 'PE']
 
 
-# Enroll POC to a zone's reward program
-def enroll_poc_to_program(account_id, zone, environment, account_info):
+def enroll_poc_to_program(
+        account_id: str,
+        zone: str,
+        environment: str,
+        account_info: str) -> Union[None, Response]:
+    """
+    Enroll POC to a zone's reward program.
 
-    enroll_response = put_rewards(account_id, zone, environment)
+    Parameters
+    ----------
+    account_id : str
+    zone : str
+    environment : str
+    account_info : str
 
+    Returns
+    -------
+    None or Response
+        None when there's no program in the selected zone, \
+        else, the http response.
+    """
+    enroll_response = put_rewards(
+        account_id=account_id,
+        zone=zone,
+        environment=environment
+    )
     if enroll_response.status_code == 406:
-
         response_all_programs = get_all_programs(
-            zone, environment, {"DEFAULT"}
+            zone=zone,
+            environment=environment,
+            projections={"DEFAULT"}
         )
         if response_all_programs is None:
             return None
 
         # Verify if the zone already have a reward program created
-        DM_program = get_DM_rewards_program_for_zone(
-            loads(response_all_programs.text)
+        dm_program = get_dm_rewards_program_for_zone(
+            json.loads(response_all_programs.text)
         )
 
-        if DM_program is not None:
-
+        if dm_program is not None:
             # Getting account information to check eligibility
             # for DM Rewards program
             seg_account = account_info[0]["segment"]
@@ -78,178 +100,236 @@ def enroll_poc_to_program(account_id, zone, environment, account_info):
 
                     if is_account_eligible:
                         print(
-                            text.Green
-                            + f'\n- [Rewards] The account "{account_id}" '
-                            'is now eligible. Back to menu option '
-                            '"Enroll POC" to resume the enrollment process'
+                            f'{text.Green}\n'
+                            f'- [Rewards] The account "{account_id}" '
+                            'is now eligible. '
+                            'Back to menu option "Enroll POC" '
+                            'to resume the enrollment process'
                         )
 
     return enroll_response
 
 
-# Disenroll a POC from the rewards program
-def disenroll_poc_from_program(account_id, zone, environment):
+def disenroll_poc_from_program(
+        account_id: str,
+        zone: str,
+        environment: str) -> Response:
+    """
+    Disenroll a POC from the rewards program.
 
-    # Define headers
+    Parameters
+    ----------
+    account_id : str
+    zone : str
+    environment : str
+
+    Returns
+    -------
+    Response
+        The http response.
+    """
     request_headers = get_header_request(
-        zone, True, False, False, False, account_id, APP_ADMIN
+        zone=zone,
+        use_jwt_auth=True,
+        account_id=account_id,
+        jwt_app_claim=APP_ADMIN
     )
 
-    # Define url request
-    request_url = (
-        get_microservice_base_url(environment, False)
-        + "/rewards-service/rewards/"
-        + account_id
-    )
+    base_url = get_microservice_base_url(environment, False)
+    request_url = f"{base_url}/rewards-service/rewards/{account_id}"
 
-    response = place_request("DELETE", request_url, "", request_headers)
+    response = place_request(
+        request_method="DELETE",
+        request_url=request_url,
+        request_body='',
+        request_headers=request_headers
+    )
 
     if response.status_code == 204:
         print(
-            text.Green
-            + f'\n- [Rewards] The account "{account_id}" was successfully '
+            f'{text.Green}\n'
+            f'- [Rewards] The account "{account_id}" was successfully '
             'disenrolled from the Rewards program.'
         )
 
     elif response.status_code == 404:
         print(
-            text.Red
-            + f'\n- [Rewards] The account "{account_id}" is not enrolled to '
-            'a Rewards program.'
+            f'{text.Red}\n'
+            f'- [Rewards] The account "{account_id}" is not '
+            'enrolled to a Rewards program.'
         )
 
     else:
         print(
-            text.Red
-            + '\n- [Rewards] Failure when disenrolling the account '
-            f'"{account_id}" from rewards program.'
-            f'\n- Response Status: "{str(response.status_code)}". '
-            f'\n- Response message "{response.text}".'
+            f'{text.Red}\n'
+            '- [Rewards] Failure when disenrolling the account '
+            f'"{account_id}" from rewards program.\n'
+            f'- Response Status: "{response.status_code}".\n'
+            f'- Response message "{response.text}".'
         )
 
     return response
 
 
-# Add Redeem products to account
-def associate_dt_combos_to_poc(account_id, zone, environment):
+def associate_dt_combos_to_poc(
+        account_id: str,
+        zone: str,
+        environment: str) -> Union[None, Response]:
+    """
+    Add Redeem products to account.
 
-    # Get the reward information for the account
+    Parameters
+    ----------
+    account_id : str
+    zone : str
+    environment : str
+
+    Returns
+    -------
+    None or Response
+
+    """
     reward_response = get_rewards(account_id, zone, environment)
 
     if reward_response is None:
         return None
 
-    json_reward_response = loads(reward_response.text)
-
-    program_id = json_reward_response["programId"]
+    json_reward_response = json.loads(reward_response.text)
+    program_id = json_reward_response['programId']
 
     print(
-        text.Yellow
-        + f'\n- [Rewards] The account "{account_id}" is enrolled to '
-        f'the rewards program "{program_id}".'
+        f'{text.Yellow}\n'
+        f'- [Rewards] The account "{account_id}" '
+        f'is enrolled to the rewards program "{program_id}".'
     )
 
-    # Get the account's rewards program information
     response_program = get_specific_program(
-        program_id, zone, environment, {"COMBOS"}
+        program_id=program_id,
+        zone=zone,
+        environment=environment,
+        projections={"COMBOS"}
     )
 
     if response_program is None:
         print(
-            text.Red
-            + '- Please use the menu option "Unenroll a POC from a program" '
-            'to disenroll this account and the option '
-            '"Enroll POC to a program" to enroll this account to an '
-            'existing rewards program.'
+            f"{text.Red}"
+            '- Please use the menu option "Unenroll a POC from a program" '
+            "to disenroll this account and the option "
+            '"Enroll POC to a program" to enroll this "'
+            "account to an existing rewards program."
         )
+
         return None
 
     # Getting the DT combos configured in the rewards program
-    json_program_combos = loads(response_program.text)
-    program_dt_combos = json_program_combos["combos"]
+    json_program_combos = json.loads(response_program.text)
+    program_dt_combos = json_program_combos['combos']
 
-    if len(program_dt_combos) == 0:
+    if not program_dt_combos:
         print(
-            text.Red
-            + '\n- [Rewards] There are no combos configured '
+            f'{text.Red}\n'
+            '- [Rewards] There are no combos configured '
             f'for rewards program "{program_id}".'
         )
+
         return None
 
-    # Get all the DT combos of the specified zone
-    response_combos_from_zone = get_dt_combos_from_zone(zone, environment)
+    response_combos_from_zone = get_dt_combos_from_zone(
+        zone=zone,
+        environment=environment
+    )
 
     if response_combos_from_zone is None:
         return None
 
-    # Get all the combos that exists on the specified zone
-    json_combos_from_zone = loads(response_combos_from_zone.text)
-    zone_dt_combos = json_combos_from_zone["combos"]
+    json_combos_from_zone = json.loads(response_combos_from_zone.text)
+    zone_dt_combos = json_combos_from_zone['combos']
 
-    # Get a SKU to be used on FreeGood's list below
     response_product_offers = request_get_offers_microservice(
-        account_id, zone, environment
+        account_id=account_id,
+        zone=zone,
+        environment=environment
     )
 
-    if response_product_offers == "not_found":
+    if response_product_offers == 'not_found':
         print(
-            text.Red
-            + '\n- [Catalog Service] There are no products '
+            f'{text.Red}\n'
+            '- [Catalog Service] There are no products '
             f'associated with the account "{account_id}"'
         )
         return None
-    elif not response_product_offers:
+
+    if not response_product_offers:
         return None
 
     # Define the list of FreeGoods for the main payload
     index_offers = randint(0, (len(response_product_offers) - 1))
-    sku = response_product_offers[index_offers]["sku"]
+    sku = response_product_offers[index_offers]['sku']
 
     dt_combos_to_associate = match_dt_combos_to_associate(
-        program_dt_combos, zone_dt_combos
+        program_dt_combos,
+        zone_dt_combos
     )
-    if len(dt_combos_to_associate) == 0:
+
+    if not dt_combos_to_associate:
         return None
 
     associate_matched_combos = print_input_decision(
         "Do you want to associate the matched DT combos to the POC"
     )
 
-    if associate_matched_combos == "Y":
+    if associate_matched_combos == 'Y':
         dt_combos_qty = print_input_combo_qty(
-            "Number of DT combos to associate", len(dt_combos_to_associate)
+            "Number of DT combos to associate",
+            len(dt_combos_to_associate)
         )
+
         dt_combos_to_associate = dt_combos_to_associate[0:dt_combos_qty]
 
         print(
-            text.Yellow + "\n- Associating matched DT combos, please wait..."
+            f'{text.Yellow}\n'
+            '- Associating matched DT combos, please wait...'
         )
 
         return post_combo_relay_account(
-            zone, environment, account_id, dt_combos_to_associate, sku
+            zone=zone,
+            environment=environment,
+            account_id=account_id,
+            dt_combos_to_associate=dt_combos_to_associate,
+            sku=sku
         )
 
-    else:
-        return None
+    return None
 
 
-def match_dt_combos_to_associate(program_dt_combos, zone_dt_combos):
+def match_dt_combos_to_associate(
+        program_dt_combos: list,
+        zone_dt_combos: list) -> list:
+    """
+    Verify which combos of the zone matchs with \
+    the ones added to the rewards program.
 
+    Parameters
+    ----------
+    program_dt_combos : list
+    zone_dt_combos : list
+
+    Returns
+    -------
+    list
+        Macthed combos list.
+    """
     print(
-        text.Yellow
-        + f'\n- Found "{str(len(program_dt_combos))}" DT '
-        'combos configured for the program.'
+        f"{text.Yellow}\n"
+        f'- Found "{len(program_dt_combos)}" '
+        'DT combos configured for the program.'
+    )
+    print(
+        f"{text.Yellow}\n"
+        f'- Found "{len(zone_dt_combos)}" DT combos configured for the zone.'
     )
 
-    print(
-        text.Yellow
-        + f'\n- Found "{str(len(zone_dt_combos))}" DT combos '
-        'configured for the zone.'
-    )
-
-    # Verify which combos of the zone matchs with the ones
-    # added to the rewards program
-    dt_combos_matched = list()
+    dt_combos_matched = []
     for program_dt_combo in program_dt_combos:
         for zone_dt_combo in zone_dt_combos:
             if zone_dt_combo["id"] == program_dt_combo["comboId"]:
@@ -257,152 +337,214 @@ def match_dt_combos_to_associate(program_dt_combos, zone_dt_combos):
                 break
 
     print(
-        text.Yellow
-        + f'\n- Found "{str(len(dt_combos_matched))}" DT combos matching '
-        'the program and the zone configuration.'
+        f'{text.Yellow}\n'
+        f'- Found "{len(dt_combos_matched)}" '
+        'DT combos matching the program and the zone configuration.'
     )
 
     return dt_combos_matched
 
 
-# Displays the SKU's for rewards shopping
-def display_program_rules_skus(zone, environment, abi_id):
+def display_program_rules_skus(zone: str, environment: str, abi_id: str):
+    """
+    Displays the SKU's for rewards shopping.
 
+    Parameters
+    ----------
+    zone : str
+    environment : str
+    abi_id : str
+    """
     reward_response = get_rewards(abi_id, zone, environment)
 
     if reward_response is not None:
-        json_reward_response = loads(reward_response.text)
+        json_reward_response = json.loads(reward_response.text)
+        program_id = json_reward_response['programId']
 
-        program_id = json_reward_response["programId"]
         program_response = get_specific_program(
-            program_id, zone, environment, {"RULES"}
+            program_id=program_id,
+            zone=zone,
+            environment=environment,
+            projections={"RULES"}
         )
 
         if program_response is not None:
-            json_program_response = loads(program_response.text)
+            json_program_response = json.loads(program_response.text)
+            p_response_id = json_program_response['id']
+            p_response_response = json_program_response['name']
 
             print(
-                text.Yellow
-                + '\nProgram ID: "{}" | Program Name: "{}"'.format(
-                    json_program_response["id"], json_program_response["name"]
-                )
+                f'{text.Yellow}\n'
+                f'Program ID: "{p_response_id}" | '
+                f'Program Name: "{p_response_response}"'
             )
 
-            program_rules_skus = dict()
+            program_rules_skus = {}
 
-            for rule in json_program_response["rules"]:
+            for rule in json_program_response['rules']:
+                money_spent_name = rule['moneySpentSkuRule']['name']
+                money_spent_points = rule['moneySpentSkuRule']['points']
+                money_spent_amount = rule['moneySpentSkuRule']['amountSpent']
+
                 print(
-                    text.Yellow + "\nRule name: ",
-                    rule["moneySpentSkuRule"]["name"],
-                )
-                print(
-                    text.Yellow
-                    + "Earn {} points per {} spent".format(
-                        str(rule["moneySpentSkuRule"]["points"]),
-                        str(rule["moneySpentSkuRule"]["amountSpent"]),
-                    )
+                    f'{text.Yellow}\n'
+                    f'Rule name: {money_spent_name}'
                 )
 
-                for sku in rule["moneySpentSkuRule"]["skus"]:
+                print(
+                    f'{text.Yellow}'
+                    f'Earn {money_spent_points} points '
+                    f'per {money_spent_amount} spent.'
+                )
+
+                for sku in rule['moneySpentSkuRule']['skus']:
                     sku_name = get_sku_name(zone, environment, sku)
-                    program_rules_skus.setdefault("SKU ID", []).append(sku)
-                    program_rules_skus.setdefault("SKU name", []).append(
-                        sku_name
-                    )
+                    program_rules_skus.setdefault(
+                        'SKU ID',
+                        []
+                    ).append(sku)
 
-                print(
-                    f"{text.default_text_color}"
-                    f'{tabulate(program_rules_skus,headers="keys",tablefmt="fancy_grid")}'
+                    program_rules_skus.setdefault(
+                        'SKU name',
+                        []
+                    ).append(sku_name)
+
+                tabulate_data = tabulate(
+                    tabular_data=program_rules_skus,
+                    headers="keys",
+                    tablefmt="fancy_grid"
                 )
 
+                print(f"{text.default_text_color}{tabulate_data}")
 
-def get_rewards(account_id, zone, environment):
-    header_request = get_header_request(
-        zone, True, False, False, False, account_id, APP_B2B
+
+def get_rewards(
+        account_id: str,
+        zone: str,
+        environment: str) -> Union[None, Response]:
+    """
+    Get rewards from the microservices.
+
+    Parameters
+    ----------
+    account_id : str
+    zone : str
+    environment : str
+
+    Returns
+    -------
+    None or Response
+        None when any http error accours, else, the http response.
+    """
+    request_headers = get_header_request(
+        zone=zone,
+        use_jwt_auth=True,
+        account_id=account_id,
+        jwt_app_claim=APP_B2B
     )
 
-    request_url = (
-        get_microservice_base_url(environment, False)
-        + "/loyalty-business-service/rewards/"
-        + account_id
-    )
+    base_url = get_microservice_base_url(environment, False)
+    request_url = f"{base_url}/loyalty-business-service/rewards/{account_id}"
 
-    response = place_request("GET", request_url, "", header_request)
+    response = place_request(
+        request_method="GET",
+        request_url=request_url,
+        request_body="",
+        request_headers=request_headers
+    )
 
     if response.status_code == 200:
         return response
-    elif response.status_code == 404 or response.status_code == 406:
+
+    if response.status_code in [404, 406]:
         print(
-            text.Red
-            + f'\n- [Rewards] The account "{account_id}" is not enrolled '
-            'to any rewards program. \n- Please use the menu option '
-            '"Enroll POC to a program" to enroll this account '
-            'to a rewards program.'
+            f'{text.Red}\n'
+            f'- [Rewards] The account "{account_id}" is not enrolled '
+            'to any rewards program.\n'
+            '- Please use the menu option "Enroll POC to a program" '
+            'to enroll this account to a rewards program.'
         )
     else:
         print(
-            text.Red
-            + '\n- [Rewards] Failure when getting enrollment information '
-            f'for account "{account_id}". '
-            f'\n- Response Status: "{str(response.status_code)}". '
-            f'\n- Response message "{response.text}".'
+            f"{text.Red}\n"
+            "- [Rewards] Failure when getting enrollment "
+            f'information for account "{account_id}".\n'
+            f'- Response Status: "{response.status_code}".\n'
+            f'- Response message "{response.text}".'
         )
 
     return None
 
 
-def put_rewards(account_id, zone, environment):
-    # Define headers
+def put_rewards(
+        account_id: str,
+        zone: str,
+        environment: str) -> Response:
+    """
+    Create new rewards on the microservice.
+
+    Parameters
+    ----------
+    account_id : str
+    zone : str
+    environment : str
+
+    Returns
+    -------
+    Response
+        The http response.
+    """
     request_headers = get_header_request(
-        zone, True, False, False, False, account_id, APP_B2B
+        zone=zone,
+        use_jwt_auth=True,
+        account_id=account_id,
+        jwt_app_claim=APP_B2B,
     )
 
-    # Define url request
-    request_url = (
-        get_microservice_base_url(environment, False)
-        + "/loyalty-business-service/rewards"
-    )
+    base_url = get_microservice_base_url(environment, False)
+    request_url = f"{base_url}/loyalty-business-service/rewards"
 
-    # Create request body
     dict_values = {"accountId": account_id}
-
     request_body = convert_json_to_string(dict_values)
 
     response = place_request(
-        "POST", request_url, request_body, request_headers
+        request_method="POST",
+        request_url=request_url,
+        request_body=request_body,
+        request_headers=request_headers
     )
 
     if response.status_code == 201:
-        json_data = loads(response.text)
-        program_id = json_data["programId"]
+        json_data = json.loads(response.text)
+        program_id = json_data['programId']
 
         print(
-            text.Green
-            + f'\n- [Rewards] The account "{account_id}" has been '
-            f'successfully enrolled to the Rewards program "{program_id}".'
+            f'{text.Green}\n'
+            f'- [Rewards] The account "{account_id}" has been successfully '
+            f'enrolled to the Rewards program "{program_id}".'
         )
 
     elif response.status_code == 409:
         print(
-            text.Red
-            + f'\n- [Rewards] The account "{account_id}" '
+            f'{text.Red}\n'
+            f'- [Rewards] The account "{account_id}" '
             'is already enrolled to a Rewards program.'
         )
 
     elif response.status_code == 406:
         print(
-            text.Red
-            + f'\n- [Rewards] The account "{account_id}" is not '
-            'eligible to a Rewards program.'
+            f'{text.Red}\n'
+            f'- [Rewards] The account "{account_id}" '
+            'is not eligible to a Rewards program.'
         )
 
     else:
         print(
-            text.Red
-            + '\n- [Rewards] Failure when enrolling the account '
-            f'"{account_id}" to a rewards program.'
-            f'\n- Response Status: "{str(response.status_code)}".'
-            f'\n- Response message "{response.text}".'
+            f'{text.Red}\n'
+            f'- [Rewards] Failure when enrolling the account "{account_id}" '
+            'to a rewards program.\n'
+            f'- Response Status: "{response.status_code}".\n'
+            f'- Response message "{response.text}".'
         )
 
     return response
@@ -443,11 +585,6 @@ def flow_create_order_rewards(
     list
         orders created or an empty list if error.
     """
-    if order_status == "PLACED":
-        allow_order_cancel = print_allow_cancellable_order_menu()
-    else:
-        allow_order_cancel = "N"
-
     pay_method = choice(account[0]["paymentMethods"])
 
     get_combos = get_rewards_combos_by_account(
@@ -458,7 +595,7 @@ def flow_create_order_rewards(
     if not get_combos:
         return []
 
-    dt_combos = loads(get_combos.text).get('combos', [])
+    dt_combos = json.loads(get_combos.text).get('combos', [])
     combos = [
         {
             "comboId": dt_combo["id"],
@@ -480,7 +617,7 @@ def flow_create_order_rewards(
             pay_method=pay_method,
             delivery_date=delivery_date
         )
-        order_item = loads(order.get("orderNumber", order))
+        order_item = json.loads(order.get("orderNumber", order))
         orders.append(order_item)
 
     if orders:

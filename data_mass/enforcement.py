@@ -15,7 +15,7 @@ from data_mass.common import (
     return_first_and_last_date_year_payload,
     update_value_to_json
 )
-from data_mass.product.products import (
+from data_mass.product.service import (
     check_item_enabled,
     get_sku_name,
     request_get_account_product_assortment,

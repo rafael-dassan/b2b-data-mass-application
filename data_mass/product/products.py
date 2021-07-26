@@ -13,11 +13,10 @@ import click
 import pkg_resources
 from tabulate import tabulate
 
-from data_mass.accounts import get_multivendor_account_id
+from data_mass.account.accounts import get_multivendor_account_id
 from data_mass.classes.text import text
 from data_mass.common import (
     convert_json_to_string,
-    create_list,
     finish_application,
     get_header_request,
     get_microservice_base_url,
@@ -882,6 +881,7 @@ def delete_item_v2(
     # Get base URL
     base_url = get_microservice_base_url(environment, False)
     request_url = f"{base_url}/item-relay/v2/items"
+
 
 def get_item_input_data(zone: str):
     """

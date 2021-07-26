@@ -1,6 +1,4 @@
 import json
-import os
-from typing import Union
 
 from data_mass.classes.text import text
 from data_mass.common import (
@@ -11,16 +9,15 @@ from data_mass.common import (
 
 
 def add_credit_to_account_microservice(
-    account_id: str,
-    zone: str,
-    environment: str,
-    credit: int = 0,
-    balance: int = 0,
-    consumption: int = 0,
-    payment_term: str = None,
-    overdue: int = 0,
-    total: int = 0
-) -> bool:
+        account_id: str,
+        zone: str,
+        environment: str,
+        credit: int = 0,
+        balance: int = 0,
+        consumption: int = 0,
+        payment_term: str = None,
+        overdue: int = 0,
+        total: int = 0) -> bool:
     """
     Include credit for account in microservice
 
@@ -73,4 +70,5 @@ def add_credit_to_account_microservice(
         f"Response Status: {str(response.status_code)}. "
         f"Response message: {response.text}"
     )
+
     return False

@@ -13,7 +13,8 @@
                 "simulationDateTime": {
                         "startDateTime": "string",
                         "endDateTime": "string"
-                },
+                }
+            },
             "output": {
                 "freeGoods": {
                     "partial": "string",

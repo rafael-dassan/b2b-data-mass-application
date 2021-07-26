@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 import click
 
-from data_mass.accounts import check_account_exists_microservice
+from data_mass.account.accounts import check_account_exists_microservice
 from data_mass.classes.text import text
 from data_mass.common import (
     validate_user_entry_date,
@@ -46,12 +46,12 @@ def create_order_rewards_redeem(
     )
     if not valid_acc:
         return None
-    
+
     option_change_date = validate_yes_no_change_date()
-    if option_change_date.upper() == "Y": 
+    if option_change_date.upper() == "Y":
         delivery_date = validate_user_entry_date(
             'Enter Date for Delivery-Date (YYYY-mm-dd)'
-    )
+        )
     else:
         tomorrow = datetime.today() + timedelta(1)
         delivery_date = str(datetime.date(tomorrow))

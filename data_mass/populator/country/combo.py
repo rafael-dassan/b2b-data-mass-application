@@ -1,5 +1,9 @@
-from data_mass.accounts import check_account_exists_microservice
-from data_mass.combos import input_combo_type_discount, input_combo_type_free_good, input_combo_only_free_good
+from data_mass.account.accounts import check_account_exists_microservice
+from data_mass.combos import (
+    input_combo_only_free_good,
+    input_combo_type_discount,
+    input_combo_type_free_good
+)
 from data_mass.populator.log import *
 
 logger = logging.getLogger(__name__)

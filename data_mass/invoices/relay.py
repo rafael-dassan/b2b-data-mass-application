@@ -1,15 +1,10 @@
-# Standard library imports
 import json
-import logging
 from random import randint
 from typing import Optional
-from urllib.parse import urlencode
 
 import pkg_resources
 
-from data_mass.accounts import get_multivendor_account_id
 from data_mass.classes.text import text
-# Local application imports
 from data_mass.common import (
     convert_json_to_string,
     create_list,
@@ -22,7 +17,33 @@ from data_mass.common import (
 from data_mass.config import get_settings
 
 
-def create_invoice_request(zone, environment, order_id, status, order_details, order_items, invoice_id=None):
+def create_invoice_request(
+        zone: str,
+        environment: str,
+        order_id: str,
+        status: str,
+        order_details: dict,
+        order_items: dict,
+        invoice_id: str = None) -> str:
+    """
+    Create Invoice.
+
+    Parameters
+    ----------
+    zone : str
+    environment : str
+    order_id : str
+    status : str
+    order_details : dict
+    order_items : dict
+    invoice_id : str, optional
+        The invoice_id, by default None.
+
+    Returns
+    -------
+    str
+        The invoice id that was just created.
+    """
     # get data from Data Mass files
     content: bytes = pkg_resources.resource_string(
         "data_mass",
@@ -74,15 +95,24 @@ def create_invoice_request(zone, environment, order_id, status, order_details, o
     request_body = convert_json_to_string(list_dict_values)
 
     # Send request
-    response = place_request('POST', request_url, request_body, request_headers)
+    response = place_request(
+        request_method='POST',
+        request_url=request_url,
+        request_body=request_body,
+        request_headers=request_headers
+    )
 
     if response.status_code == 202:
         return invoice_id
-    else:
-        print(text.Red + '\n- [Invoice Relay Service] Failure to create an invoice. Response Status: '
-                         '{response_status}. Response message: {response_message}'
-              .format(response_status=response.status_code, response_message=response.text))
-        return False
+
+    print(
+        f"{text.Red}\n"
+        "- [Invoice Relay Service] Failure to create an invoice.\n"
+        f"Response Status: {response.status_code}\n"
+        f"Response message: {response.text}"
+    )
+
+    return False
 
 
 def create_invoice_multivendor(
@@ -118,15 +148,16 @@ def create_invoice_multivendor(
     order_placement_date = order_details.get("placementDate")
     placement_date = order_placement_date.split('+')[0]
     items = []
-    
+
     if "Z" not in placement_date:
         placement_date += "Z"
 
     for item in order_details.get("items", []):
         # For some reason, `discount` and `tax` are not required when \
         # creating an new Order, but it's required when creating an Invoice.
-        # Since dict's `get` method does not return a default value when a key's \
-        # value is `None` (only when the key does not exists), and `json.loads()` \
+        # Since dict's `get` method does not return a default \
+        # value when a key's value is `None` \
+        # (only when the key does not exists), and `json.loads()` \
         # turns `null` into `None`, we should change it manually.
         discount = item.get("discount")
         tax = item.get("tax")
@@ -187,7 +218,30 @@ def create_invoice_multivendor(
     return False
 
 
-def update_invoice_request(zone, environment, account_id, invoice_id, payment_method, status):
+def update_invoice_request(
+        zone: str,
+        environment: str,
+        account_id: str,
+        invoice_id: str,
+        payment_method: str,
+        status: str) -> bool:
+    """
+    Update Invoice.
+
+    Parameters
+    ----------
+    zone : str
+    environment : str
+    account_id : str
+    invoice_id : str
+    payment_method : str
+    status : str
+
+    Returns
+    -------
+    bool
+        Whenever an invoice was successfully updated.
+    """
     # get data from Data Mass files
     content: bytes = pkg_resources.resource_string(
         "data_mass",
@@ -205,137 +259,80 @@ def update_invoice_request(zone, environment, account_id, invoice_id, payment_me
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
     # Get base URL
-    request_url = get_microservice_base_url(environment) + '/invoices-service'
+    base_url = get_microservice_base_url(environment)
+    request_url = f'{base_url}/invoices-service'
 
     # Get headers
-    request_headers = get_header_request(zone, True, False, False, False, account_id)
+    request_headers = get_header_request(
+        zone=zone,
+        use_jwt_auth=True,
+        use_root_auth=False,
+        use_inclusion_auth=False,
+        sku_product=False,
+        account_id=account_id
+    )
 
     # Create body
     request_body = convert_json_to_string(json_object)
 
     # Send request
-    #TODO change to PATCH v2 as soon as available
-    response = place_request('PATCH', request_url, request_body, request_headers)
+    # TODO change to PATCH v2 as soon as available
+    response = place_request(
+        request_method='PATCH',
+        request_url=request_url,
+        request_body=request_body,
+        request_headers=request_headers
+    )
 
     if response.status_code == 202:
         return True
-    else:
-        print(text.Red + '\n- [Invoice Service] Failure to update an invoice. Response Status: {response_status}. '
-                         'Response message: {response_message}'
-              .format(response_status=response.status_code, response_message=response.text))
-        return False
-
-
-def check_if_invoice_exists(
-        account_id: str,
-        invoice_id: str,
-        zone: str,
-        environment: str) -> Optional[dict]:
-    """
-    Check if invoice exists on API.
-
-    Parameters
-    ----------
-    account_id : [str
-    invoice_id : str
-    zone : str
-    environment : str
-
-    Returns
-    -------
-    Optional[dict]
-        The invoice data.
-    """
-    # Get header request
-    request_headers = get_header_request(zone, True, False, False, False, account_id)
-    
-    if zone == "US":
-        version = "v2"
-    else:
-        version = "v1"
-
-    query = {"invoiceId": invoice_id}
-    base_url = get_microservice_base_url(environment)
-    request_url = f"{base_url}/invoices-service/{version}?{urlencode(query)}"
-
-    # Place request
-    response = place_request("GET", request_url, "", request_headers)
-
-    json_data = json.loads(response.text)
-    if response.status_code == 200 and len(json_data['data']) != 0:
-        return json_data
-
-    if response.status_code == 200 and len(json_data['data']) == 0:
-        print(
-            f"{text.Red}\n"
-            f"- [Invoice Service] The invoice {invoice_id} does not exist"
-        )
-
-        return False
 
     print(
         f"{text.Red}\n"
-        f"- [Invoice Service] Failure to retrieve the invoice {invoice_id}."
-        f"Response status: {response.status_code}\n"
+        "- [Invoice Service] Failure to update an invoice.\n"
+        f"Response Status: {response.status_code}.\n"
         f"Response message: {response.text}"
     )
 
     return False
 
 
-def get_invoices(
+def delete_invoice_by_id(
         zone: str,
-        account_id: str,
-        environment: str) -> Optional[dict]:
+        environment: str,
+        invoice_id: str) -> bool:
     """
-    Get invoice by id.
+    Delete invoice by id.
 
     Parameters
     ----------
     zone : str
-    account_id : str
     environment : str
+    invoice_id : str
 
     Returns
     -------
-    Optional[dict]
-        The invoice data.
+    bool
+        Whenever an invoice is successfully deleted.
     """
-    header_request = get_header_request(zone, True, False, False, False, account_id)
-    base_url = get_microservice_base_url(environment, False)
-
-    if zone == "US":
-        version = "v2"
-        account_id = get_multivendor_account_id(account_id, zone, environment)
-    else:
-        version = "v1"
-
-    request_url = f"{base_url}/invoices-service/{version}?accountId={account_id}"
-
-    # Place request
-    response = place_request("GET", request_url, "", header_request)
-    invoice_info = json.loads(response.text)
-
-    if response.status_code == 200:
-        return invoice_info
-
-    return None
-
-
-def delete_invoice_by_id(zone, environment, invoice_id):
     # Get base URL
-    request_url = get_microservice_base_url(environment) + f'/invoices-relay/id/{invoice_id}'
+    base_url = get_microservice_base_url(environment)
+    request_url = f'{base_url}/invoices-relay/id/{invoice_id}'
 
     # Get headers
     request_headers = get_header_request(zone, False, False, True, False)
 
     # Send request
-    response = place_request('DELETE', request_url, '', request_headers)
+    response = place_request("DELETE", request_url, "", request_headers)
 
     if response.status_code == 202:
-        return 'success'
-    else:
-        print(text.Red + '\n- [Invoice Relay Service] Failure to delete the invoice {invoice_id}. Response status: '
-                         '{response_status}. Response message: {response_message}'
-              .format(invoice_id=invoice_id, response_status=response.status_code, response_message=response.text))
-        return False
+        return True
+
+    print(
+        f"{text.Red}\n"
+        f"[Invoice Relay Service]Failure to delete the invoice {invoice_id}\n"
+        f"Response status: {response.status_code}"
+        f"Response message: {response.text}'"
+    )
+
+    return False

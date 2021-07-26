@@ -1,16 +1,23 @@
-from data_mass.accounts import create_account_ms, get_account_delivery_address
-from data_mass.credit import add_credit_to_account_microservice
-from data_mass.delivery_window import create_delivery_window_microservice
+from data_mass.account.accounts import (
+    create_account_ms,
+    get_account_delivery_address
+)
+from data_mass.account.credit import add_credit_to_account_microservice
+from data_mass.account.delivery_window import (
+    create_delivery_window_microservice
+)
 from data_mass.populator.country.inventory import populate_default_inventory
 from data_mass.populator.country.product import (
     check_product_associated_to_account
 )
 from data_mass.populator.log import *
-from data_mass.product.products import (
-    generate_random_price_ids,
+from data_mass.product.relay import request_post_products_account_microservice
+from data_mass.product.service import (
     request_get_products_by_account_microservice,
-    request_get_products_microservice,
-    request_post_products_account_microservice,
+    request_get_products_microservice
+)
+from data_mass.product.utils import (
+    generate_random_price_ids,
     slice_array_products
 )
 
@@ -168,7 +175,7 @@ def associate_products_to_account(country, environment, account_id, products):
     products_data = list(zip(generate_random_price_ids(products_length), [{'sku': products[i]} for i in
                                                                           range(products_length)]))
 
-    if "success" != request_post_products_account_microservice(account['accountId'], country, environment,
+    if request_post_products_account_microservice(account['accountId'], country, environment,
                                                                account['deliveryCenterId'], products_data):
         logger.error(log(Message.PRODUCT_ERROR, {"account_id": account_id}))
 
