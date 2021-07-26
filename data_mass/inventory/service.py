@@ -116,7 +116,7 @@ def get_delivery_center_inventory(
         return json_data
 
     if response.status_code == 404:
-        return None
+        return {}
 
     print(
         f'\n{text.Red}'
@@ -125,7 +125,7 @@ def get_delivery_center_inventory(
         f'Response message: {response.text}'
     )
 
-    return None
+    return {}
 
 
 def display_inventory_by_account(inventory: list, zone: str = None):

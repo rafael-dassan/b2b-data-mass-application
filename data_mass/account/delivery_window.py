@@ -17,6 +17,8 @@ from data_mass.common import (
 
 logger = logging.getLogger(__name__)
 
+DATE_FORMAT = "%Y-%m-%d"
+
 
 def get_microservice_payload_post_delivery_date(
     account_data: str,
@@ -251,9 +253,9 @@ def default_delivery_window():
     ):
         clone_initial_date = initial_date
         clone_initial_date = clone_initial_date + timedelta(days=1)
-        start_date = clone_initial_date.strftime("%Y-%m-%d")
+        start_date = clone_initial_date.strftime(DATE_FORMAT)
         end_date = start_date
-        expiration_date = initial_date.strftime("%Y-%m-%d") + "T20:00:00Z"
+        expiration_date = initial_date.strftime(DATE_FORMAT) + "T20:00:00Z"
 
         list_delivery_dates.append(
             {
@@ -276,12 +278,12 @@ def delivery_window_specific():
         start_date = validate_user_entry_date(
             text=f"{text.LightYellow}Date"
         )
-    date = datetime.strptime(start_date, "%Y-%m-%d").date()
+    date = datetime.strptime(start_date, DATE_FORMAT).date()
     list_delivery_dates = [
         {
-            "startDate": date.strftime("%Y-%m-%d"),
-            "endDate": date.strftime("%Y-%m-%d"),
-            "expirationDate": date.strftime("%Y-%m-%d") + "T20:00:00Z",
+            "startDate": date.strftime(DATE_FORMAT),
+            "endDate": date.strftime(DATE_FORMAT),
+            "expirationDate": date.strftime(DATE_FORMAT) + "T20:00:00Z",
         }
     ]
     return list_delivery_dates
@@ -301,15 +303,15 @@ def delivery_window_range():
         date_begin = validate_user_entry_date()
         date_end = validate_user_entry_date()
 
-    datetime_begin = datetime.strptime(date_begin, "%Y-%m-%d").date()
-    datetime_end = datetime.strptime(date_end, "%Y-%m-%d").date()
+    datetime_begin = datetime.strptime(date_begin, DATE_FORMAT).date()
+    datetime_end = datetime.strptime(date_end, DATE_FORMAT).date()
 
     list_delivery_dates = list()
     while datetime_begin <= datetime_end:
-        start_date = datetime_begin.strftime("%Y-%m-%d")
+        start_date = datetime_begin.strftime(DATE_FORMAT)
         end_date = start_date
         expiration_date = (
-            datetime_begin.strftime("%Y-%m-%d") + "T20:00:00Z"
+            datetime_begin.strftime(DATE_FORMAT) + "T20:00:00Z"
         )
 
         list_delivery_dates.append(

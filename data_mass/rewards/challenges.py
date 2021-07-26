@@ -24,7 +24,7 @@ from data_mass.rewards.utils import (
     generate_id
 )
 
-APP_ADMIN = "membership"
+APP_ADMIN = "adminportal"
 DO_CHALLENGE_BASE_URL = (
     "https://b2bstaticwebsagbdev.blob.core.windows.net"
     "/challenge-uat/DO"
@@ -34,6 +34,7 @@ DO_CHALLENGE_BASE_URL = (
 def create_take_photo_challenge(
         zone: str,
         environment: str,
+        challenge_id: str = None,
         is_expired: Optional[bool] = False) -> [None, Response]:
     """
     Create Take Photo challenge.
@@ -42,6 +43,8 @@ def create_take_photo_challenge(
     ----------
     zone : str
     environment : str
+    challenge_id : str
+        By default `None`.
     is_expired : bool
         Default to False.
 
@@ -50,7 +53,8 @@ def create_take_photo_challenge(
     None or Response
         None if the request fails, else, the response from the service.
     """
-    challenge_id = generate_id()
+    if challenge_id is None:
+        challenge_id = generate_id()
 
     if not is_expired:
         json_object = create_challenge_payload(
@@ -78,6 +82,7 @@ def create_take_photo_challenge(
 def create_mark_complete_challenge(
         zone: str,
         environment: str,
+        challenge_id: str = None,
         is_expired: Optional[bool] = False) -> [None, Response]:
     """
     Create Mark Complete challenge.
@@ -86,6 +91,8 @@ def create_mark_complete_challenge(
     ----------
     zone : str
     environment : str
+    challenge_id : str
+        By default `None`.
     is_expired : bool
         Default to False.
 
@@ -94,7 +101,8 @@ def create_mark_complete_challenge(
     None or Response
         None if the request fails, else, the response from the service.
     """
-    challenge_id = generate_id()
+    if challenge_id is None:
+        challenge_id = generate_id()
 
     if is_expired is False:
         json_object = create_challenge_payload(
@@ -123,6 +131,7 @@ def create_purchase_challenge(
         zone: str,
         environment: str,
         is_multiple: bool,
+        challenge_id: str = None,
         is_expired: Optional[bool] = False) -> Union[None, Response]:
     """
     Create Purchase challenge.
@@ -132,6 +141,8 @@ def create_purchase_challenge(
     zone : str
     environment : str
     is_multiple : bool
+    challenge_id : str
+        By default `None`.
     is_expired : bool
         Default to False.
 
@@ -290,16 +301,15 @@ def put_challenge(
     None or Response
         None if the request fails, else, the response from the service.
     """
-    jwt_app_claim = f"{APP_ADMIN}-{zone.lower()}"
     base_url = get_microservice_base_url(environment, False)
     request_headers = get_header_request(
         zone=zone,
         use_jwt_auth=True,
-        jwt_app_claim=jwt_app_claim
+        jwt_app_claim=APP_ADMIN
     )
     request_url = f"{base_url}/rewards-service/challenges/{challenge_id}"
     response = place_request(
-        request_method='PUT',
+        request_method="PUT",
         request_url=request_url,
         request_body=request_body,
         request_headers=request_headers
@@ -311,7 +321,6 @@ def put_challenge(
             f"- [Rewards] The challenge {challenge_id}"
             f" was successfully created."
         )
-
     else:
         print(
             f"{text.Red}\n"
@@ -341,7 +350,12 @@ def remove_challenge(zone: str, environment: str):
         json_all_challenges = json.loads(response_all_challenges.text)
         display_all_challenges_info(json_all_challenges)
         challenge_id = print_input_text("\nPlease inform the Challenge ID: ")
-        return delete_challenge(challenge_id, zone, environment)
+
+        return delete_challenge(
+            challenge_id=challenge_id,
+            zone=zone,
+            environment=environment
+        )
 
 
 def delete_challenge(
@@ -362,12 +376,11 @@ def delete_challenge(
     Response
         The response data.
     """
-    jwt_app_claim = f"{APP_ADMIN}-{zone.lower()}"
     base_url = get_microservice_base_url(environment, False)
     request_headers = get_header_request(
         zone=zone,
         use_jwt_auth=True,
-        jwt_app_claim=jwt_app_claim
+        jwt_app_claim=APP_ADMIN
     )
     request_url = f"{base_url}/rewards-service/challenges/{challenge_id}"
     response = place_request(

@@ -80,9 +80,9 @@ def get_dt_combos_from_zone(
     base_url = get_microservice_base_url(environment)
     query_params = (
         "?types=DT&includeDeleted=false&"
-        "includeDisabled=false&page=0&pageSize="
+        f"includeDisabled=false&page=0&pageSize={page_size}"
     )
-    request_url = f"{base_url}/combos/{query_params}{page_size}"
+    request_url = f"{base_url}/combos/{query_params}"
 
     response = place_request(
         request_method="GET",
@@ -466,14 +466,14 @@ def make_account_eligible(
 
 def build_request_url_with_projection_query(
         request_url: str,
-        projections: list) -> str:
+        projections: str) -> str:
     """
     Format request.
 
     Parameters
     ----------
     request_url : str
-    projections : list
+    projections : str
 
     Returns
     -------
