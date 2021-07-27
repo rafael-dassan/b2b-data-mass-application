@@ -1192,6 +1192,6 @@ def resources_warning():
     """
     warnings.filterwarnings(action="once")
     warnings.warn(
-        f"{text.ResetUnderlined}{text.Red}{message}{text.Underlined}",
+        f"{text.Red}{message}",
         ResourceWarning, stacklevel=2
     )
