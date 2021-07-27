@@ -3,6 +3,7 @@ import json
 import logging
 from datetime import datetime, timedelta
 from typing import Union
+from uuid import uuid1
 
 import pkg_resources
 
@@ -24,7 +25,6 @@ def get_microservice_payload_post_delivery_date(
     account_data: str,
     is_alternative_delivery_date: bool,
     dates_list: list,
-    index: int
 ) -> dict:
     """
     Create payload for delivery date.
@@ -34,7 +34,6 @@ def get_microservice_payload_post_delivery_date(
     account_data : str
     is_alternative_delivery_date : bool
     dates_list : list
-    index : int
 
     Returns
     -------
@@ -46,7 +45,7 @@ def get_microservice_payload_post_delivery_date(
         "deliveryScheduleId": account_data["deliveryScheduleId"],
         "endDate": dates_list["endDate"],
         "expirationDate": dates_list["expirationDate"],
-        "id": f'{index}_{account_data["accountId"]}',
+        "id": f'{uuid1()}_{account_data["accountId"]}',
         "startDate": dates_list["startDate"],
     }
 
@@ -207,7 +206,6 @@ def create_delivery_window_microservice(
             account_data=account_data,
             is_alternative_delivery_date=option_is_alternative_delivery_date,
             dates_list=dates_list[index],
-            index=index
         )
         request_body.append(temporary_body)
         index = index + 1
