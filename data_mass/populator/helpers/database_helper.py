@@ -1,7 +1,7 @@
 import ssl
 import pymongo
-from data_mass.populator.log import *
-
+from data_mass.populator.log import logging
+    
 logger = logging.getLogger(__name__)
 
 
@@ -38,7 +38,7 @@ def get_database_params(country, environment, microservice):
         }
     except pymongo.errors.PyMongoError as e:
         logger.error(e)
-        SystemExit()
+        raise SystemExit()
 
     return params[microservice]
 
@@ -52,7 +52,7 @@ def delete_from_database_by_id(client, db_name, collection_name, prefix):
                 collection.remove({'_id': {'$regex': '{0}.*'.format(prefix[j])}})
     except pymongo.errors.PyMongoError as e:
         logger.error(e)
-        SystemExit()
+        raise SystemExit()
 
 
 def delete_from_database_by_account(client, db_name, collection_name, account_id):
@@ -63,4 +63,4 @@ def delete_from_database_by_account(client, db_name, collection_name, account_id
             collection.remove({'accountId': account_id})
     except pymongo.errors.PyMongoError as e:
         logger.error(e)
-        SystemExit()
+        raise SystemExit()
