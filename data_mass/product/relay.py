@@ -71,10 +71,7 @@ def request_post_price_microservice(
             zone=zone
         )
     elif zone == "US":
-        request_url = (
-            "https://bees-services-sit.eastus2.cloudapp.azure.com"
-            "/api/price-relay/v2"
-        )
+        request_url = f"{base_url}/price-relay/v2"
         request_body = get_body_price_microservice_request_v2_us(
             account_id=account_id,
             sku_product=sku_product,

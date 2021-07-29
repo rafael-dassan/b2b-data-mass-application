@@ -6,7 +6,7 @@ import time as t
 import warnings
 from datetime import date, datetime
 from time import time
-from typing import Text
+from typing import Text, Optional
 from urllib.parse import urlencode
 from uuid import uuid1
 
@@ -38,6 +38,13 @@ from data_mass.validations import (
 )
 
 logger = logging.getLogger(__name__)
+
+PLEASE_SELECT = "\nPlease select: "
+DATE_FORMAT = "%Y-%m-%d"
+CLOSE_APPLICATION = "Close application"
+INVALID_OPTION = "\n- Invalid option\n"
+DATA_CREATION = "Data creation - "
+ZONE_SELECTION = "Zone (e.g., AR, BR, CO): "
 
 # Validate option menu selection
 def validate_option_request_selection_for_structure_2(option):
@@ -322,7 +329,7 @@ def finish_application():
 # Print init menu
 def print_available_options(selection_structure):
     if selection_structure == '1':
-        print(text.default_text_color + str(0), text.Yellow + 'Close application')
+        print(text.default_text_color + str(0), text.Yellow + CLOSE_APPLICATION)
         print(text.default_text_color + str(1), text.Yellow + 'Account')
         print(text.default_text_color + str(2), text.Yellow + 'Product')
         print(text.default_text_color + str(3), text.Yellow + 'Orders')
@@ -332,10 +339,10 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(7), text.Yellow + 'Create rewards')
         print(text.default_text_color + str(8), text.Yellow + 'Create credit statement')
         print(text.default_text_color + str(9), text.Yellow + 'Categories')
-        selection = input(text.default_text_color + '\nPlease select: ')
+        selection = input(text.default_text_color + PLEASE_SELECT)
         while not validate_option_request_selection(selection):
-            print(text.Red + '\n- Invalid option\n')
-            print(text.default_text_color + str(0), text.Yellow + 'Close application')
+            print(text.Red + INVALID_OPTION)
+            print(text.default_text_color + str(0), text.Yellow + CLOSE_APPLICATION)
             print(text.default_text_color + str(1), text.Yellow + 'Account')
             print(text.default_text_color + str(2), text.Yellow + 'Product')
             print(text.default_text_color + str(3), text.Yellow + 'Orders')
@@ -345,9 +352,9 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(7), text.Yellow + 'Create rewards')
             print(text.default_text_color + str(8), text.Yellow + 'Create credit statement')
             print(text.default_text_color + str(9), text.Yellow + 'Categories')
-            selection = input(text.default_text_color + '\nPlease select: ')
+            selection = input(text.default_text_color + PLEASE_SELECT)
     elif selection_structure == '2':
-        print(text.default_text_color + str(0), text.Yellow + 'Close application')
+        print(text.default_text_color + str(0), text.Yellow + CLOSE_APPLICATION)
         print(text.default_text_color + str(1), text.Yellow + 'Order simulation via Microservice')
         print(text.default_text_color + str(2), text.Yellow + 'POC information')
         print(text.default_text_color + str(3), text.Yellow + 'Product information')
@@ -356,10 +363,10 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(6), text.Yellow + 'Recommender information by account')
         print(text.default_text_color + str(7), text.Yellow + 'Retrieve available invoices')
         print(text.default_text_color + str(8), text.Yellow + 'SKUs for Reward Shopping')
-        selection = input(text.default_text_color + '\nPlease select: ')
+        selection = input(text.default_text_color + PLEASE_SELECT)
         while not validate_option_request_selection(selection):
-            print(text.Red + '\n- Invalid option\n')
-            print(text.default_text_color + str(0), text.Yellow + 'Close application')
+            print(text.Red + INVALID_OPTION)
+            print(text.default_text_color + str(0), text.Yellow + CLOSE_APPLICATION)
             print(text.default_text_color + str(1), text.Yellow + 'Order simulation via Microservice')
             print(text.default_text_color + str(2), text.Yellow + 'POC information')
             print(text.default_text_color + str(3), text.Yellow + 'Product information')
@@ -368,80 +375,80 @@ def print_available_options(selection_structure):
             print(text.default_text_color + str(6), text.Yellow + 'Recommender information by account')
             print(text.default_text_color + str(7), text.Yellow + 'Retrieve available invoices')
             print(text.default_text_color + str(8), text.Yellow + 'SKUs for Reward Shopping')
-            selection = input(text.default_text_color + '\nPlease select: ')
+            selection = input(text.default_text_color + PLEASE_SELECT)
     elif selection_structure == '3':
-        print(text.default_text_color + str(0), text.Yellow + 'Close application')
+        print(text.default_text_color + str(0), text.Yellow + CLOSE_APPLICATION)
         print(text.default_text_color + str(1), text.Yellow + 'Generate GET token')
         print(text.default_text_color + str(2), text.Yellow + 'Generate Root token')
         print(text.default_text_color + str(3), text.Yellow + 'Generate Inclusion token')
         print(text.default_text_color + str(4), text.Yellow + 'Generate Basic token')
-        selection = input(text.default_text_color + '\nPlease select: ')
+        selection = input(text.default_text_color + PLEASE_SELECT)
         while not validate_option_request_selection(selection):
-            print(text.Red + '\n- Invalid option\n')
-            print(text.default_text_color + str(0), text.Yellow + 'Close application')
+            print(text.Red + INVALID_OPTION)
+            print(text.default_text_color + str(0), text.Yellow + CLOSE_APPLICATION)
             print(text.default_text_color + str(1), text.Yellow + 'Generate GET token')
             print(text.default_text_color + str(2), text.Yellow + 'Generate Root token')
             print(text.default_text_color + str(3), text.Yellow + 'Generate Inclusion token')
             print(text.default_text_color + str(4), text.Yellow + 'Generate Basic token')
-            selection = input(text.default_text_color + '\nPlease select: ')
+            selection = input(text.default_text_color + PLEASE_SELECT)
     elif selection_structure == '4':
-        print(text.default_text_color + str(0), text.Yellow + 'Close application')
+        print(text.default_text_color + str(0), text.Yellow + CLOSE_APPLICATION)
         print(text.default_text_color + str(1), text.Yellow + 'List categories')
         print(text.default_text_color + str(2), text.Yellow + 'Associate product to category')
         print(text.default_text_color + str(3), text.Yellow + 'Create category')
-        selection = input(text.default_text_color + '\nPlease select: ')
+        selection = input(text.default_text_color + PLEASE_SELECT)
         while not validate_option_request_selection(selection):
-            print(text.Red + '\n- Invalid option\n')
-            print(text.default_text_color + str(0), text.Yellow + 'Close application')
+            print(text.Red + INVALID_OPTION)
+            print(text.default_text_color + str(0), text.Yellow + CLOSE_APPLICATION)
             print(text.default_text_color + str(1), text.Yellow + 'List categories')
             print(text.default_text_color + str(2), text.Yellow + 'Associate product to category')
             print(text.default_text_color + str(3), text.Yellow + 'Create category')
-            selection = input(text.default_text_color + '\nPlease select: ')
+            selection = input(text.default_text_color + PLEASE_SELECT)
     elif selection_structure == '5':
-        print(text.default_text_color + str(0), text.Yellow + 'Close application')
+        print(text.default_text_color + str(0), text.Yellow + CLOSE_APPLICATION)
         print(text.default_text_color + str(1), text.Yellow + 'Create User')
         print(text.default_text_color + str(2), text.Yellow + 'Delete User')
-        selection = input(text.default_text_color + '\nPlease select: ')
+        selection = input(text.default_text_color + PLEASE_SELECT)
         while not validate_option_request_selection_for_structure_2(selection):
-            print(text.Red + '\n- Invalid option\n')
-            print(text.default_text_color + str(0), text.Yellow + 'Close application')
+            print(text.Red + INVALID_OPTION)
+            print(text.default_text_color + str(0), text.Yellow + CLOSE_APPLICATION)
             print(text.default_text_color + str(1), text.Yellow + 'Create User')
             print(text.default_text_color + str(2), text.Yellow + 'Delete User')
-            selection = input(text.default_text_color + '\nPlease select: ')
+            selection = input(text.default_text_color + PLEASE_SELECT)
     elif selection_structure == '6':
-        print(text.default_text_color + str(0), text.Yellow + 'Close application')
+        print(text.default_text_color + str(0), text.Yellow + CLOSE_APPLICATION)
         print(text.default_text_color + str(1), text.Yellow + 'Create Attribute')
         print(text.default_text_color + str(2), text.Yellow + 'Create Category')
         print(text.default_text_color + str(3), text.Yellow + 'Create association between attribute and category')
         print(text.default_text_color + str(4), text.Yellow + 'Delete Attribute')
         print(text.default_text_color + str(5), text.Yellow + 'Edit Attribute Type')
         print(text.default_text_color + str(6), text.Yellow + 'Create Product')
-        selection = input(text.default_text_color + '\nPlease select: ')
+        selection = input(text.default_text_color + PLEASE_SELECT)
         while not validate_supplier_menu_structure(selection):
-            print(text.Red + '\n- Invalid option\n')
-            print(text.default_text_color + str(0), text.Yellow + 'Close application')
+            print(text.Red + INVALID_OPTION)
+            print(text.default_text_color + str(0), text.Yellow + CLOSE_APPLICATION)
             print(text.default_text_color + str(1), text.Yellow + 'Create Attribute')
             print(text.default_text_color + str(2), text.Yellow + 'Create Category')
             print(text.default_text_color + str(3), text.Yellow + 'Create association between attribute and category')
             print(text.default_text_color + str(4), text.Yellow + 'Delete Attribute')
             print(text.default_text_color + str(5), text.Yellow + 'Edit Attribute Type')
             print(text.default_text_color + str(6), text.Yellow + 'Create Product')
-            selection = input(text.default_text_color + '\nPlease select: ')
+            selection = input(text.default_text_color + PLEASE_SELECT)
     elif selection_structure == '7':
-        print(text.default_text_color + str(0), text.Yellow + 'Close application')
+        print(text.default_text_color + str(0), text.Yellow + CLOSE_APPLICATION)
         print(text.default_text_color + str(1), text.Yellow + 'Search a specific attribute')
         print(text.default_text_color + str(2), text.Yellow + 'Search all attributes')
         print(text.default_text_color + str(3), text.Yellow + 'Search a specific category')
         print(text.default_text_color + str(4), text.Yellow + 'Search all category')
-        selection = input(text.default_text_color + '\nPlease select: ')
+        selection = input(text.default_text_color + PLEASE_SELECT)
         while not validate_supplier_search_menu_structure(selection):
-            print(text.Red + '\n- Invalid option\n')
-            print(text.default_text_color + str(0), text.Yellow + 'Close application')
+            print(text.Red + INVALID_OPTION)
+            print(text.default_text_color + str(0), text.Yellow + CLOSE_APPLICATION)
             print(text.default_text_color + str(1), text.Yellow + 'Search a specific attribute')
             print(text.default_text_color + str(2), text.Yellow + 'Search all attributes')
             print(text.default_text_color + str(3), text.Yellow + 'Search a specific category')
             print(text.default_text_color + str(4), text.Yellow + 'Search all category')
-            selection = input(text.default_text_color + '\nPlease select: ')
+            selection = input(text.default_text_color + PLEASE_SELECT)
     else:
         finish_application()
 
@@ -461,17 +468,17 @@ def print_welcome_script():
 
 # Print structure menu
 def print_structure_menu():
-    print(text.default_text_color + str(1), text.Yellow + 'Data creation - ' + text.White + 'Microservice')
+    print(text.default_text_color + str(1), text.Yellow + DATA_CREATION + text.White + 'Microservice')
     print(text.default_text_color + str(2), text.Yellow + 'Data searching - ' + text.White + 'Microservice')    
     print(text.default_text_color + str(3), text.Yellow + 'Token generator - ' + text.White + 'Microservice')
-    print(text.default_text_color + str(4), text.Yellow + 'Data creation - ' + text.White + 'Magento')
-    print(text.default_text_color + str(5), text.Yellow + 'Data creation - ' + text.White + 'IAM')
-    print(text.default_text_color + str(6), text.Yellow + 'Data creation - ' + text.White + 'Supplier/PIM')
+    print(text.default_text_color + str(4), text.Yellow + DATA_CREATION + text.White + 'Magento')
+    print(text.default_text_color + str(5), text.Yellow + DATA_CREATION + text.White + 'IAM')
+    print(text.default_text_color + str(6), text.Yellow + DATA_CREATION + text.White + 'Supplier/PIM')
     print(text.default_text_color + str(7), text.Yellow + 'Data searching - ' + text.White + 'Supplier/PIM')    
-    print(text.default_text_color + str(8), text.Yellow + 'Close application')
+    print(text.default_text_color + str(8), text.Yellow + CLOSE_APPLICATION)
     structure = input(text.default_text_color + '\nPlease choose an option: ')
     while validate_structure(structure) is False:
-        print(text.Red + '\n- Invalid option\n')
+        print(text.Red + INVALID_OPTION)
         print(text.default_text_color + str(1), text.Yellow + 'Data creation - Microservice')
         print(text.default_text_color + str(2), text.Yellow + 'Data searching - Microservice') 
         print(text.default_text_color + str(3), text.Yellow + 'Token generator - Microservice')
@@ -479,7 +486,7 @@ def print_structure_menu():
         print(text.default_text_color + str(5), text.Yellow + 'Data creation - IAM')
         print(text.default_text_color + str(6), text.Yellow + 'Data creation - Supplier/PIM')
         print(text.default_text_color + str(7), text.Yellow + 'Data searching - Supplier/PIM')
-        print(text.default_text_color + str(8), text.Yellow + 'Close application')
+        print(text.default_text_color + str(8), text.Yellow + CLOSE_APPLICATION)
         structure = input(text.default_text_color + '\nPlease choose an option: ')
 
     return structure
@@ -493,16 +500,16 @@ def print_combos_menu():
     print(text.default_text_color + str(3), text.Yellow + 'Input combo type digital trade')
     print(text.default_text_color + str(4), text.Yellow + 'Input combo with only free goods')
     print(text.default_text_color + str(5), text.Yellow + 'Reset combo consumption to zero')
-    structure = input(text.default_text_color + '\nPlease select: ')
+    structure = input(text.default_text_color + PLEASE_SELECT)
     while not validate_combo_structure(structure):
-        print(text.Red + '\n- Invalid option')
+        print(text.Red + INVALID_OPTION)
         print(text.default_text_color + '\nWhich type of combo do you want to create?')
         print(text.default_text_color + str(1), text.Yellow + 'Input combo type discount')
         print(text.default_text_color + str(2), text.Yellow + 'Input combo type free good')
         print(text.default_text_color + str(3), text.Yellow + 'Input combo type digital trade')
         print(text.default_text_color + str(4), text.Yellow + 'Input combo with only free goods')
         print(text.default_text_color + str(5), text.Yellow + 'Reset combo consumption to zero')
-        structure = input(text.default_text_color + '\nPlease select: ')
+        structure = input(text.default_text_color + PLEASE_SELECT)
 
     return structure
 
@@ -518,20 +525,20 @@ def validate_combo_structure(option):
 
 # Print zone menu for Microservice
 def print_zone_menu_for_ms():
-    zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
+    zone = input(text.default_text_color + ZONE_SELECTION)
     while not validate_zone_for_ms(zone.upper()):
         print(text.Red + f'\n- {zone.upper()} is not a valid zone\n')
-        zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
+        zone = input(text.default_text_color + ZONE_SELECTION)
 
     return zone.upper()
 
 
 # For interactive combos
 def print_zone_for_interactive_combos_menu_for_ms():
-    zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
+    zone = input(text.default_text_color + ZONE_SELECTION)
     while not validate_zone_for_interactive_combos_ms(zone.upper()):
         print(text.Red + f'\n- {zone.upper()} is not a valid zone\n')
-        zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
+        zone = input(text.default_text_color + ZONE_SELECTION)
 
     return zone.upper()
 
@@ -697,7 +704,7 @@ def validate_yes_no_change_date(
     option = input(f'{text.default_text_color}{question}')
 
     while (option.upper() in ["Y", "N"]) is False:
-        print(text.Red + '\n- Invalid option')
+        print(text.Red + INVALID_OPTION)
         option = input(f'\n{text.default_text_color}{question}')
 
     if option.upper() == "Y": 
@@ -721,7 +728,7 @@ def validate_user_entry_date(text:str = "New Date entry"):
     str
         str valid date.
     """
-    date = prompt(text, type=click.DateTime(formats=["%Y-%m-%d"]))
+    date = prompt(text, type=click.DateTime(formats=[DATE_FORMAT]))
 
     new_date = str(datetime.date(date))
     return new_date
@@ -762,7 +769,7 @@ def print_environment_menu_in_user_create_iam():
     """
     environment = input(text.default_text_color + 'Environment (QA, SIT, UAT): ')
     while not validate_environment_menu_in_user_create_iam(environment.upper()):
-        print(text.Red + '\n- Invalid option')
+        print(text.Red + INVALID_OPTION)
         environment = input(text.default_text_color + 'Environment (QA, SIT, UAT): ')
     return environment.upper()
 
@@ -773,7 +780,7 @@ def print_payment_method_simulation_menu(zone):
         payment_choice = input(
             text.default_text_color + 'Select payment method for simulation: 1 - CASH, 2 - BANK_SLIP ')
         while payment_choice != '1' and payment_choice != '2':
-            print(text.Red + '\n- Invalid option\n')
+            print(text.Red + INVALID_OPTION)
             payment_choice = input(
                 text.default_text_color + 'Select payment method for simulation: 1 - CASH, 2 - BANK_SLIP ')
 
@@ -785,7 +792,7 @@ def print_payment_method_simulation_menu(zone):
     elif zone == 'DO' and zone == 'CO' or zone == 'EC' or zone == 'PE':
         payment_choice = input(text.default_text_color + 'Select payment method for simulation: 1 - CASH, 2 - CREDIT ')
         while payment_choice != '1' and payment_choice != '2':
-            print(text.Red + '\n- Invalid option\n')
+            print(text.Red + INVALID_OPTION)
             payment_choice = input(
                 text.default_text_color + 'Select payment method for simulation: 1 - CASH, 2 - CREDIT ')
 
@@ -802,9 +809,9 @@ def print_payment_method_simulation_menu(zone):
 # Return first and last day in the year
 def return_first_and_last_date_year_payload():
     first_date = date(date.today().year, 1, 1)
-    first_date = first_date.strftime("%Y-%m-%d")
+    first_date = first_date.strftime(DATE_FORMAT)
     last_date = date(date.today().year, 12, 31)
-    last_date = last_date.strftime("%Y-%m-%d")
+    last_date = last_date.strftime(DATE_FORMAT)
     return {'startDate': first_date, 'endDate': last_date}
 
 
@@ -850,7 +857,7 @@ def validate_zone_for_credit_statement(zone):
 def print_zone_credit_statement():
     zone = input(text.default_text_color + 'Zone (ZA): ')
     while not validate_zone_for_credit_statement(zone):
-        print(text.Red + '\n- Invalid option\n')
+        print(text.Red + INVALID_OPTION)
         zone = input(text.default_text_color + 'Zone (ZA): ')
 
     return zone.upper()
@@ -883,7 +890,7 @@ def print_month_credit_statement():
         month = '0' + month
 
     while not validate_month(month):
-        print(text.Red + '\n- Invalid option\n')
+        print(text.Red + INVALID_OPTION)
         month = input(text.default_text_color + 'Which month do you want to create the document? (please put the number'
                                                 'referent the month): ')
 
@@ -902,18 +909,19 @@ def validate_years_credit_statement(year):
 
 
 def print_year_credit_statement():
-    year = input(text.default_text_color + 'Which year do you want to create the document?: ')
+    which_year = 'Which year do you want to create the document?: '
+    year = input(text.default_text_color + which_year)
 
     while validate_years_credit_statement(year) != True:
         if validate_years_credit_statement(year) == 'error_0':
             print(text.Red + '\n- Year should not be empty')
-            year = input(text.default_text_color + 'Which year do you want to create the document?: ')
+            year = input(text.default_text_color + which_year)
         if validate_years_credit_statement(year) == 'error_4':
             print(text.Red + '\n- Year must contain at least 4 characters')
-            year = input(text.default_text_color + 'Which year do you want to create the document?: ')
+            year = input(text.default_text_color + which_year)
         elif validate_years_credit_statement(year) == 'not_number':
             print(text.Red + '\n- The year must be Numeric')
-            year = input(text.default_text_color + 'Which year do you want to create the document?: ')
+            year = input(text.default_text_color + which_year)
 
     return year
 
@@ -1103,7 +1111,7 @@ def get_jwt_token():
     str
         The jwt token.
     """
-    access_token: str = None
+    access_token: Optional[str] = None
 
     try:
         access_token = os.environ["TOKEN"]
@@ -1191,6 +1199,6 @@ def resources_warning():
     """
     warnings.filterwarnings(action="once")
     warnings.warn(
-        f"{text.ResetUnderlined}{text.Red}{message}{text.Underlined}",
+        f"{text.Red}{message}",
         ResourceWarning, stacklevel=2
     )
