@@ -600,7 +600,7 @@ def flow_create_order_rewards(
         {
             "comboId": dt_combo["id"],
             "quantity": dt_combo["redeemLimit"],
-            # "comboType": dt_combo["type"],
+            "comboType": dt_combo["type"],
         }
         for dt_combo in dt_combos
     ]
@@ -617,7 +617,7 @@ def flow_create_order_rewards(
             pay_method=pay_method,
             delivery_date=delivery_date
         )
-        order_item = json.loads(order.get("orderNumber", order))
+        order_item = order.get("orderNumber", order)
         orders.append(order_item)
 
     if orders:

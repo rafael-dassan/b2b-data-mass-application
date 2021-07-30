@@ -1,15 +1,13 @@
 import json
 import logging
-import os
+import random
 from datetime import datetime, timedelta
-from json import loads
-from typing import Any, Dict, Optional
+from typing import Any, Optional
+from uuid import uuid1
 
 import pkg_resources
-from tabulate import tabulate
 
 from data_mass.classes.text import text
-# Local application imports
 from data_mass.common import (
     convert_json_to_string,
     find_values,
@@ -90,7 +88,9 @@ def request_order_creation(
               "date": delivery_date  
             },
             "itemsQuantity": len(order_items.get("items")),
-            "placementDate": datetime.now().strftime('%Y-%m-%dT%H:%M:%S') + '+00:00',
+            "placementDate": (
+                datetime.now().strftime('%Y-%m-%dT%H:%M:%S') + '+00:00'
+            ),
             "status": order_status,
             "items": items,
             "empties": {
@@ -123,8 +123,10 @@ def request_order_creation(
     request_url = f"{base_url}/{endpoint}"
 
     # Send request
-    response = place_request("POST", request_url, request_body, request_headers)
-    json_data = loads(response.text)
+    response = place_request(
+        "POST", request_url, request_body, request_headers
+    )
+    json_data = json.loads(response.text)
 
     if response.status_code in [200, 202] and json_data:
         return json_data
@@ -166,11 +168,15 @@ def create_order_payload(
     str
         The payload as string.
     """
-    # Sets the format of the placement date of the order (current date and time)
-    placement_date = datetime.now().strftime('%Y-%m-%dT%H:%M:%S') + '+00:00'
+    # Sets the format of the placement date of the order 
+    # (current date and time)
+    placement_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") + "+00:00"
 
-    # Sets the format of the cancellable date of the order (current date and time more ten days)
-    cancellable_date = (datetime.now() + timedelta(days=10)).strftime('%Y-%m-%dT%H:%M:%S') + '+00:00'
+    # Sets the format of the cancellable date of the order 
+    # (current date and time more ten days)
+    cancellable_date = (datetime.now() + timedelta(days=10)).strftime(
+        "%Y-%m-%dT%H:%M:%S"
+    ) + "+00:00"
 
     line_items = order_items.get('lineItems')
     items = []
@@ -260,27 +266,31 @@ def request_changed_order_creation(zone, environment, order_data):
     request_headers = get_header_request(zone, False, False, True, False)
 
     # Define url request
-    request_url = get_microservice_base_url(environment) + '/order-relay/'
+    request_url = f"{get_microservice_base_url(environment)}/order-relay/"
 
     # Get body
     request_body = get_changed_order_payload(order_data)
 
     # Send request
-    response = place_request('POST', request_url, request_body, request_headers)
+    response = place_request(
+        'POST', request_url, request_body, request_headers
+    )
     if response.status_code == 202:
-        return 'success'
-    else:
-        print(text.Red + '\n- [Order Relay Service] Failure to change an order. Response Status: {response_status}. '
-                         'Response message: {response_message}'
-              .format(response_status=response.status_code, response_message=response.text))
-        return False
+        return True
+
+    print(
+        f"{text.Red}- [Order Relay Service] Failure to change an order.\n"
+        f"Response Status: {response.status_code}.\n"
+        f"Response message: {response.text}."
+    )
+    return False
 
 
 def create_checkout_mobile_payload(
     order_items: list,
     delivery_date: str,
     pay_method: str,
-) -> Dict:
+) -> str:
     """
     Create payload to checkout-mobile.
 
@@ -315,7 +325,7 @@ def create_checkout_mobile_payload(
         quantity = int(combo.get("quantity", 2))
         combo_item = {
             "comboId": combo.get("comboId", ""),
-            "quantity": choice(range(1, quantity))
+            "quantity": random.choice(range(1, quantity))
         }
         combos_list.append(combo_item)
         

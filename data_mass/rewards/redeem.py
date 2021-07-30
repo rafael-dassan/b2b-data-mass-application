@@ -9,7 +9,7 @@ from data_mass.common import (
     validate_yes_no_change_date
 )
 from data_mass.menus.order_menu import print_order_status_menu
-from data_mass.product.products import get_items_associated_account
+from data_mass.product.utils import get_items_associated_account
 from data_mass.rewards.rewards import flow_create_order_rewards, get_rewards
 
 

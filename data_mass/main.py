@@ -63,6 +63,8 @@ from data_mass.common import (
     print_zone_menu_for_ms,
     validate_environment,
     validate_option_request_selection,
+    validate_user_entry_date,
+    validate_yes_no_change_date,
     validate_zone_for_interactive_combos_ms,
     validate_zone_for_ms
 )
@@ -171,9 +173,7 @@ from data_mass.menus.supplier_menu import (
 )
 from data_mass.orders.relay import (
     request_changed_order_creation,
-    request_order_creation,
-    validate_user_entry_date,
-    validate_yes_no_change_date
+    request_order_creation
 )
 from data_mass.orders.service import (
     check_if_order_exists,
@@ -267,7 +267,7 @@ from data_mass.supplier.category import (
 from data_mass.supplier.product import create_product_supplier
 from data_mass.user.creation import create_user
 from data_mass.user.deletion import delete_user_v3
-from data_mass.validations import is_number
+from data_mass.validations import is_number, validate_yes_no_option
 
 TEXT_GREEN = text.Green
 
@@ -931,7 +931,7 @@ def flow_create_changed_order(
     order_data[0]["delivery"]["date"] = delivery_date
 
     response = request_changed_order_creation(zone, environment, order_data)
-    if response == "success":
+    if response:
         print(
             text.Green + f"\n- The order {order_id} was changed successfully"
         )

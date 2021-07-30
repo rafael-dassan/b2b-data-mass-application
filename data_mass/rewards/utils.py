@@ -20,7 +20,7 @@ from data_mass.common import (
 )
 from data_mass.orders.relay import create_checkout_mobile_payload
 from data_mass.orders.simulation import request_order_simulation
-from data_mass.product.products import request_get_products_microservice
+from data_mass.product.service import request_get_products_microservice
 from data_mass.validations import validate_yes_no_option
 
 APP_B2B = "b2b"
@@ -621,10 +621,10 @@ def post_orders_rewards(
         delivery_date=delivery_date,
         pay_method=pay_method
     )
-    if response.status_code not in [200, 201]:
+    if not response:
         return {}
 
-    return json.loads(response)
+    return response
 
 
 def request_order_creation_checkout(
@@ -634,7 +634,7 @@ def request_order_creation_checkout(
     order_items: list,
     delivery_date: str,
     pay_method: str
-) -> Dict:
+) -> Optional[str]:
     """
     Post data payload to checkout endpoint.
 
@@ -690,7 +690,4 @@ def request_order_creation_checkout(
         request_headers=request_headers
     )
 
-    json_data = json.loads(response.text)
-    if response.status_code == 200 and not json_data:
-        return json_data
-    return {"orderNumber": response.text}
+    return json.loads(response.text)

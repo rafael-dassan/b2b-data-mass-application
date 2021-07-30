@@ -2,8 +2,9 @@ import json
 from datetime import datetime
 from distutils.util import strtobool
 from json import dumps
-from random import randint, uniform
+from random import randint, sample, uniform
 
+import click
 import pkg_resources
 from tabulate import tabulate
 
@@ -14,8 +15,12 @@ from data_mass.menus.product_menu import (
     print_is_narcotic_menu,
     print_is_returnable_menu
 )
+from data_mass.product.service import (
+    request_get_products_by_account_microservice
+)
 
 ZONES_DIFF_CONTRACT = ["AR", "PY", "US"]
+TEXT_GREEN = text.Green
 
 
 def generate_random_price_ids(qtd):
@@ -312,3 +317,74 @@ def get_body_price_microservice_request_v2(
     put_price_microservice_body = convert_json_to_string(json_object)
 
     return put_price_microservice_body
+
+
+def get_items_associated_account(
+    account_id: str,
+    zone: str,
+    environment: str,
+    qty_lists: int = 1,
+) -> list:
+    """
+    Get items associated in the POC.
+
+    Parameters
+    ----------
+    account_id : str
+        POC unique identifier
+    zone : str
+        e.g., AR, BR, DO, etc
+    environment : str
+        e.g., DEV, SIT, UAT
+    qty_lists : int
+        value to identify quantity of lists with skus.
+
+    Returns
+    -------
+    Union[List, List[List]]
+        list of dict with sku and quantity of products
+        associated in the account.
+        List of lists with dict of sku and quantity of products.
+    """
+    product_offers = request_get_products_by_account_microservice(
+        account_id=account_id,
+        zone=zone,
+        environment=environment
+    )
+    if not product_offers or product_offers == "not_found":
+        print(
+            f"{text.Red}"
+            f"\n- [Catalog Service] - There is no product associated: "
+            f"with the account {account_id}"
+        )
+        return []
+
+    unique_sku = {item['sku'] for item in product_offers}
+    unique_sku = sample(list(unique_sku), len(unique_sku))
+    print(
+        f"{TEXT_GREEN}"
+        f"The account has {len(unique_sku)} products associated!"
+    )
+    quantity = click.prompt(
+        f"{text.default_text_color}"
+        "Quantity of products you want to include in this order",
+        type=click.IntRange(1, len(unique_sku)),
+    )
+    if qty_lists > 1:
+        items_list = [
+            generate_list_skus(unique_sku, quantity) for _ in range(qty_lists)
+        ]
+    else:
+        items_list = generate_list_skus(items=unique_sku, qty_items=quantity)
+    return items_list
+
+
+def generate_list_skus(
+    items: list,
+    qty_items:int,
+)->list:
+    items_list = []
+    for sku in sample(items, qty_items):
+        data = {"sku": sku, "itemQuantity": randint(0, 10)}
+        items_list.append(data)
+    return items_list
