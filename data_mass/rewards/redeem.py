@@ -17,7 +17,7 @@ def create_order_rewards_redeem(
     account_id: str, zone: str, environment: str
 ) -> None:
     """
-    Collect user prompt, call the process of order creatio
+    Collect user prompt, call the process of order creation
      and print the returned orders.
 
     Parameters
