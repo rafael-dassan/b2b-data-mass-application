@@ -1073,7 +1073,7 @@ def deals_menu():
     if option_sku == '1':
         if operation == '6' or operation == '7':
             sku_list.clear()
-            for y in range(3):
+            for _ in range(3):
                 sku = input(text.default_text_color + 'SKU: ')
                 sku_id = sku.strip()
                 for i in range(len(product_offers)):

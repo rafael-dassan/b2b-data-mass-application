@@ -70,7 +70,7 @@ def generate_price_values(zone, product):
     # Check if the SKU is returnable for ZA and DO
     # (the ones that have deposit value enabled in order summary)
     if zone == "ZA" or zone == "DO":
-        if "container" in product and product["container"]["returnable"]:
+        if "container" in product and product.get("container", {}) is not None and product.get("container", {}).get("returnable"):
             deposit = (2 / 100) * base_price
 
     # Create dictionary with price values

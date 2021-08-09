@@ -468,16 +468,6 @@ def make_account_eligible(
     # values to associate to a Reward program
     json_object = update_value_to_json(
         account_info,
-        '[0][potential]',
-        'DM-POTENT'
-    )
-    json_object = update_value_to_json(
-        account_info,
-        '[0][segment]',
-        'DM-SEG'
-    )
-    json_object = update_value_to_json(
-        account_info,
         '[0][subSegment]',
         'DM-SUBSEG'
     )

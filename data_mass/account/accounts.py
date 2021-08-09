@@ -232,6 +232,8 @@ def create_account_ms(
             "address": delivery_address.get("address"),
             "street": delivery_address.get("street"),
             "city": delivery_address.get("city"),
+            "latitude": delivery_address.get("latitude", None),
+            "longitude": delivery_address.get("longitude", None),
             "state": delivery_address.get("state"),
             "zipcode": delivery_address.get("zipcode")
         },
@@ -666,7 +668,9 @@ def get_account_delivery_address(zone: str) -> dict:
             'street': 'Rua Carlos Maul',
             'city': 'Duque de Caxias',
             'state': 'Rio de Janeiro',
-            'zipcode': '25261-270'
+            'zipcode': '25261-270',
+            'latitude': '-22.6374579',
+            'longitude': '-43.2629351'
         },
         'CA': {
             'address': '1305  Heatherleigh',

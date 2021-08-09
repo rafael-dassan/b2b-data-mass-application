@@ -246,8 +246,7 @@ def print_payment_method_menu(zone):
             f"{text.default_text_color}2. {text.Yellow}BANK SLIP\n"
             f"{text.default_text_color}3. {text.Yellow}CREDIT_CARD_POS\n"
             f"{text.default_text_color}4. {text.Yellow}CHECK\n"
-            f"{text.default_text_color}5. {text.Yellow}TERM_CHECK\n"
-            f"{text.default_text_color}6. {text.Yellow}CASH, BANK SLIP, CHECK, CREDIT_CARD_POS, TERM_CHECK\n"
+            f"{text.default_text_color}5. {text.Yellow}CASH, BANK SLIP, CHECK, CREDIT_CARD_POS\n"
             f"{text.default_text_color}Option: "
         )
 
@@ -260,19 +259,17 @@ def print_payment_method_menu(zone):
                 print(text.Red + '\n- Payments Method should be numeric')
                 payment_method = input(text.default_text_color + menu)
             elif validate_payments_method(payment_method) == 'not_payments_method':
-                print(text.Red + '\n- Payments Method should be 1, 2, 3, 4, 5 or 6')
+                print(text.Red + '\n- Payments Method should be 1, 2, 3, 4, or 5')
                 payment_method = input(text.default_text_color + menu)
 
         payment_credit = ['BANK_SLIP']
         payment_credit_pos = ['CREDIT_CARD_POS']
         payment_check = ['CHECK']
-        payment_term_check = ['TERM_CHECK']
         payment_list = [
             'CASH',
             'BANK_SLIP',
             'CREDIT_CARD_POS',
             'CHECK',
-            'TERM_CHECK'
         ]
 
         switcher = {
@@ -280,30 +277,30 @@ def print_payment_method_menu(zone):
             '2': payment_credit,
             '3': payment_credit_pos,
             '4': payment_check,
-            '5': payment_term_check,
-            '6': payment_list,
+            '5': payment_list,
         }
 
         value = switcher.get(payment_method, False)
         return value
 
+
     elif zone == 'AR':
-        
+        payment_option = 'Choose the payment method (1. CASH): '
         payment_method = input(
-            DEFAULT_TEXT_COLOR + 'Choose the payment method (1. CASH): ')
+            DEFAULT_TEXT_COLOR + payment_option)
         while validate_payments_method(payment_method, zone) != True:
             if validate_payments_method(payment_method, zone) == 'error_0':
                 print(text.Red + '\n- Payments Method should not be empty')
                 payment_method = input(
-                    DEFAULT_TEXT_COLOR + 'Choose the payment method (1. CASH): ')
+                    DEFAULT_TEXT_COLOR + payment_option)
             elif validate_payments_method(payment_method, zone) == 'not_number':
                 print(text.Red + '\n- Payments Method should be numeric')
                 payment_method = input(
-                    DEFAULT_TEXT_COLOR + 'Choose the payment method (1. CASH): ')
+                    DEFAULT_TEXT_COLOR + payment_option)
             elif validate_payments_method(payment_method, zone) == 'not_payments_method' or payment_method != '1':
                 print(text.Red + '\n- Payments Method should be 1')
                 payment_method = input(
-                    DEFAULT_TEXT_COLOR + 'Choose the payment method (1. CASH): ')
+                    DEFAULT_TEXT_COLOR + payment_option)
 
         switcher = {
             '1': payment_cash
@@ -313,21 +310,22 @@ def print_payment_method_menu(zone):
         return value
 
     else:
+        payment_options = 'Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): '
         payment_method = input(
-            DEFAULT_TEXT_COLOR + 'Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ')
+            DEFAULT_TEXT_COLOR + payment_options)
         while validate_payments_method(payment_method) != True:
             if validate_payments_method(payment_method) == 'error_0':
                 print(text.Red + '\n- Payments Method should not be empty')
                 payment_method = input(
-                    DEFAULT_TEXT_COLOR + 'Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ')
+                    DEFAULT_TEXT_COLOR + payment_options)
             elif validate_payments_method(payment_method) == 'not_number':
                 print(text.Red + '\n- Payments Method should be numeric')
                 payment_method = input(
-                    DEFAULT_TEXT_COLOR + 'Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ')
+                    DEFAULT_TEXT_COLOR + payment_options)
             elif validate_payments_method(payment_method) == 'not_payments_method':
                 print(text.Red + '\n- Payments Method should be 1, 2 or 3')
                 payment_method = input(
-                    DEFAULT_TEXT_COLOR + 'Choose the payment method (1. CASH / 2. CREDIT / 3. CASH, CREDIT): ')
+                    DEFAULT_TEXT_COLOR + payment_options)
 
         payment_credit = ['CREDIT']
         payment_list = ['CASH', 'CREDIT']
