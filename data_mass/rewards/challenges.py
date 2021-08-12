@@ -170,7 +170,9 @@ def create_purchase_challenge(
 
         return None
 
-    challenge_id = generate_id()
+    if challenge_id is None:
+        challenge_id = generate_id()
+        
     execution_method = "PURCHASE" if not is_multiple else "PURCHASE_MULTIPLE"
 
     if not is_expired:
