@@ -263,7 +263,7 @@ def post_combo_relay_account(
             "id": dt_combo["id"],
             "externalId": dt_combo["id"],
             "title": dt_combo["title"],
-            "description": dt_combo["description"],
+            "description": dt_combo.get("description", dt_combo["title"]),
             "startDate": dt_combo["startDate"],
             "endDate": dt_combo["endDate"],
             "type": "DT",
