@@ -1173,7 +1173,7 @@ def request_create_free_good_cart_calculation(
         boolean_partial_free_good = False
 
     # Change the accumulationType to UNIQUE only for AR
-    if zone == 'AR':
+    if zone in ['AR', 'UY']:
         accumulation_type = 'UNIQUE'
     else:
         accumulation_type = None
@@ -1350,7 +1350,7 @@ def request_create_discount_cart_calculation(account_id, deal_id, zone, environm
         discount_type = '%'
 
     # Change the accumulationType to UNIQUE only for AR
-    if zone == 'AR':
+    if zone in ['AR', 'UY']:
         accumulation_type = 'UNIQUE'
     else:
         accumulation_type = None
@@ -1562,7 +1562,7 @@ def create_stepped_discount_with_limit_cart_calculation(
         discount_type = '%'
 
     # Change the accumulationType to UNIQUE only for AR
-    if zone == 'AR':
+    if zone in ['AR', 'UY']:
         accumulation_type = 'UNIQUE'
     else:
         accumulation_type = None

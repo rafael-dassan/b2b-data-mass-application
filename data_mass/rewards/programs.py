@@ -1231,7 +1231,7 @@ def generate_terms_information(zone: str) -> list:
     """
     terms_info = []
 
-    if zone in ["DO", "CO", "AR", "MX", "EC", "PE", "PY"]:
+    if zone in ["DO", "CO", "AR", "MX", "EC", "PE", "PY", "UY"]:
         terms_info.append(
             "https://cdn-b2b-abi.global.ssl.fastly.net"
             "/terms/terms-co.html"

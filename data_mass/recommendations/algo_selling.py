@@ -65,20 +65,20 @@ def create_quick_order_payload(
     dict
         A `payload` for quick order creation.
     """
-    countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PA', 'PE', 'PY']
+    countries_es = ["AR", "CO", "DO", "EC", "MX", "PA", "PE", "PY", "UY"]
 
     if zone in countries_es:
-        language = 'es'
-        text = 'Pedido Fácil'
-        text_description = 'Productos que ordenaste anteriormente <link>Añadir todo al camión</link>'
-    elif zone == 'BR':
-        language = 'pt'
-        text = 'Pedido Facil'
-        text_description = 'Produtos comprados anteriormente <link>Adicionar todos itens ao carrinho</link>'
+        language = "es"
+        text = "Pedido Fácil"
+        text_description = "Productos que ordenaste anteriormente <link>Añadir todo al camión</link>"
+    elif zone == "BR":
+        language = "pt"
+        text = "Pedido Facil"
+        text_description = "Produtos comprados anteriormente <link>Adicionar todos itens ao carrinho</link>"
     else:
-        language = 'en'
-        text = 'Quick Order'
-        text_description = 'Products ordered before <link>Add all items to cart</link>'
+        language = "en"
+        text = "Quick Order"
+        text_description = "Products ordered before <link>Add all items to cart</link>"
 
     items = list()
     index = 0
@@ -151,8 +151,8 @@ def create_forgotten_items_payload(
 
     if zone in countries_es:
         language = 'es'
-        text = 'Productos Populares para Negocios como el tuyo'
-        text_description = ''
+        text = '¡Socio! Complete tu order'
+        text_description = 'Clientes como tu tambíen compraron'
     elif zone == 'BR':
         language = 'pt'
         text = 'Produtos Populares para Negocios como o seu'
@@ -213,7 +213,7 @@ def create_forgotten_items_payload(
 
 # Define JSON to submit UP SELL recommendation type
 def create_upsell_payload(account_id, zone, product_list):
-    countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PA', 'PE', 'PY']
+    countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PA', 'PE', 'PY', 'UY']
 
     if zone in countries_es:
         language = 'es'
@@ -356,7 +356,8 @@ def get_header_request_recommender(zone, environment):
             'PE': 'America/Lima',
             'PY': 'America/Asuncion',
             'US': 'America/New_York',
-            'ZA': 'Africa/Johannesburg'
+            'ZA': 'Africa/Johannesburg',
+            'UY': 'America/Montevideo'
         }
         timezone = switcher.get(zone, False)
 

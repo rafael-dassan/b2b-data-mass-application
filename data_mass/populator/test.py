@@ -256,7 +256,9 @@ def get_email_param(country):
         'PE': 'test-populator-pe@mailinator.com',
         'PY': 'test-populator-py@mailinator.com',
         'US': 'test-populator-us@mailinator.com',
+        'UY': 'test-populator-uy@mailinator.com',
         'ZA': 'test-populator-za@mailinator.com'
+        
     }.get(country, False)
 
 

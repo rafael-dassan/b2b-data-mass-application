@@ -283,7 +283,7 @@ def print_payment_method_menu(zone):
         value = switcher.get(payment_method, False)
         return value
 
-    elif zone == 'AR':
+    elif zone in ['AR', 'UY']:
         payment_option = 'Choose the payment method (1. CASH): '
         payment_method = input(
             DEFAULT_TEXT_COLOR + payment_option)
