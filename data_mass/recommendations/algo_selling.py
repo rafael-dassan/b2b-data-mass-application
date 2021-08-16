@@ -147,7 +147,7 @@ def create_forgotten_items_payload(
     dict
         A `payload` for forgotten items creation.
     """
-    countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PA', 'PE', 'PY']
+    countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PA', 'PE', 'PY', 'UY']
 
     if zone in countries_es:
         language = 'es'
