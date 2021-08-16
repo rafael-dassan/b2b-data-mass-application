@@ -345,7 +345,7 @@ def print_payment_method_menu(zone):
 #   Therefore, for simulation, this parameter was created to allow using accounts that do not
 #   follow this pattern of more than 10 characters
 def print_account_id_menu(zone):
-    if zone == "US":
+    if zone in ["US", "CA"]:
         message = "Vendor Account Id: "
     else:
         message = "Account ID: "
@@ -357,19 +357,19 @@ def print_account_id_menu(zone):
         if validate_account(abi_id, zone) == 'error_0':
             print(text.Red + '\n- Account ID should not be empty')
             if attempt < 2:
-                abi_id = str(input(DEFAULT_TEXT_COLOR + 'Account ID: '))
+                abi_id = str(input(DEFAULT_TEXT_COLOR + message))
         if validate_account(abi_id, zone) == 'error_10':
             print(text.Red + '\n- Account ID must contain at least 10 characters')
             if attempt < 2:
-                abi_id = str(input(DEFAULT_TEXT_COLOR + 'Account ID: '))
+                abi_id = str(input(DEFAULT_TEXT_COLOR + message))
         elif validate_account(abi_id, zone) == 'not_number':
             print(text.Red + '\n- The account ID must be Numeric')
             if attempt < 2:
-                abi_id = str(input(DEFAULT_TEXT_COLOR + 'Account ID: '))
+                abi_id = str(input(DEFAULT_TEXT_COLOR + message))
         elif validate_account(abi_id, zone) == 'error_cnpj_cpf':
             print(text.Red + '\n- Account ID must contain at least 11 or 14 characters')
             if attempt < 2:
-                abi_id = str(input(DEFAULT_TEXT_COLOR + 'Account ID: '))
+                abi_id = str(input(DEFAULT_TEXT_COLOR + message))
         attempt = attempt + 1
     if attempt == 3:
         print(YELLOW + '\n- You have reached maximum attempts')

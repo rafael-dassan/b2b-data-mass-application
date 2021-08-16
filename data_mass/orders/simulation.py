@@ -1,7 +1,6 @@
 import json
 from json import loads
 from typing import List, Union
-from uuid import uuid1
 
 import pkg_resources
 from tabulate import tabulate
@@ -112,12 +111,11 @@ def request_order_simulation(
 
 
 def request_order_simulation_v3(
-    account_id: int,
-    zone: str,
-    environment: str,
-    items: List[dict],
-    delivery_date: str,
-):
+        account_id: int,
+        zone: str,
+        environment: str,
+        items: List[dict],
+        delivery_date: str):
     """
     Request order simulation v3.
 
@@ -135,13 +133,12 @@ def request_order_simulation_v3(
     str or Bool
         response payload in case of success or `false` in case of failure.
     """
-    request_headers = get_header_request("US")
+    request_headers = get_header_request(zone)
     base_url = get_microservice_base_url(environment, True)
     request_url = f"{base_url}/cart-service/v3"
 
     dict_values = {
         "accountId": get_multivendor_account_id(account_id, zone, environment),
-        "userId": str(uuid1()),
         "deliveryDate": delivery_date,
         "items": [],
     }

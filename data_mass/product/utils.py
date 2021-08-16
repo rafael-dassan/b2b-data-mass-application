@@ -143,7 +143,7 @@ def get_item_input_data(zone: str):
     zone = zone.upper()
     sku_identifier = None
 
-    if zone == "US":
+    if zone in ["CA", "US"]:
         vendor_item_id = input(f"{text.default_text_color}Vendor Item Id: ")
 
         if not vendor_item_id:
@@ -195,16 +195,18 @@ def get_item_input_data(zone: str):
         "brandName": brand_name,
         "subBrandName": brand_name,
         "package.id": str(randint(1, 1000)),
-        "container.name": container_name,
-        "container.size": container_size,
-        "container.returnable": is_returnable,
-        "container.unitOfMeasurement": container_unit_measurement,
+        "container": {
+            "name": container_name,
+            "size": container_size,
+            "returnable": is_returnable,
+            "unitOfMeasurement": container_unit_measurement
+        },
         "salesRanking": randint(1, 100),
         "isNarcotic": is_narcotic,
         "isAlcoholic": is_alcoholic,
     }
 
-    if zone == "US":
+    if zone in ["CA", "US"]:
         has_category = input(
             f"{text.default_text_color}"
             "Is uncategorized? y/N: "

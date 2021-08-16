@@ -21,11 +21,10 @@ DATE_FORMAT = "%Y-%m-%d"
 
 
 def get_microservice_payload_post_delivery_date(
-    account_data: str,
-    is_alternative_delivery_date: bool,
-    dates_list: list,
-    index: int
-) -> dict:
+        account_data: str,
+        is_alternative_delivery_date: bool,
+        dates_list: list,
+        index: int) -> dict:
     """
     Create payload for delivery date.
 
@@ -54,9 +53,8 @@ def get_microservice_payload_post_delivery_date(
 
 
 def get_microservice_delivery_fee_charge_relay(
-    account_data: dict,
-    include_delivery_cost: dict
-) -> dict:
+        account_data: dict,
+        include_delivery_cost: dict) -> dict:
     """
     Create payload for delivery fee for endpoint charge relay.
 
@@ -104,9 +102,8 @@ def get_microservice_delivery_fee_charge_relay(
 
 
 def get_microservice_payload_post_delivery_fee(
-    account_data: dict,
-    include_delivery_cost: dict
-) -> dict:
+        account_data: dict,
+        include_delivery_cost: dict) -> dict:
     """
     Create payload for delivery fee.
 
@@ -176,7 +173,7 @@ def create_delivery_window_microservice(
     # Get headers
     request_headers = get_header_request(zone, False, True, False, False)
 
-    if zone == "US":
+    if zone == ["CA", "US"]:
         v1 = False
     else:
         v1 = True
@@ -352,8 +349,7 @@ def create_delivery_fee_microservice(
     zone: str,
     environment: str,
     account_data: dict,
-    include_delivery_cost: dict
-) -> bool:
+    include_delivery_cost: dict) -> bool:
     """
     Create delivery fee (interest) in microservice.
 

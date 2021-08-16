@@ -1,26 +1,16 @@
 import json
-import logging
-import os
 from datetime import datetime, timedelta
 from json import loads
 from typing import Any, Optional
 
 import pkg_resources
-from tabulate import tabulate
 
 from data_mass.classes.text import text
-# Local application imports
 from data_mass.common import (
     convert_json_to_string,
-    find_values,
-    generate_erp_token,
     get_header_request,
     get_microservice_base_url,
-    place_request,
-    set_to_dictionary,
-    update_value_to_json,
-    validate_user_entry_date,
-    validate_yes_no_change_date
+    place_request
 )
 from data_mass.config import get_settings
 from data_mass.orders.service import get_changed_order_payload
@@ -47,7 +37,7 @@ def request_order_creation(
     delivery_center_id : str
         POC's delivery center.
     zone : str
-        One of AR, BR, CO, DO, MX, ZA, ES and US.
+        One of AR, BR, CA, CO, DO, MX, ZA, ES and US.
     environment : str
         One of DEV, SIT and UAT.
     allow_order_cancel : str
@@ -77,7 +67,7 @@ def request_order_creation(
     )
 
     # Define url request
-    if zone == "US":
+    if zone in ["CA", "US"]:
         endpoint = "order-service/v2/"
         is_v1 = False
         settings = get_settings()
@@ -90,14 +80,16 @@ def request_order_creation(
               "date": delivery_date  
             },
             "itemsQuantity": len(order_items.get("items")),
-            "placementDate": datetime.now().strftime('%Y-%m-%dT%H:%M:%S') + '+00:00',
+            "placementDate": (
+                datetime.now().strftime('%Y-%m-%dT%H:%M:%S') + '+00:00'
+            ),
             "status": order_status,
             "items": items,
             "empties": {
                 "hasEmpties": has_empties
             },
             "subtotal": order_items.get("subTotal"),
-            "total": order_items.get("total"),
+            "total": order_items.get("subTotal"), # como pega esse campo?
             "vendor": {
                 "accountId": account_id,
                 "id": settings.vendor_id
@@ -123,7 +115,9 @@ def request_order_creation(
     request_url = f"{base_url}/{endpoint}"
 
     # Send request
-    response = place_request("POST", request_url, request_body, request_headers)
+    response = place_request(
+        "POST", request_url, request_body, request_headers
+    )
     json_data = loads(response.text)
 
     if response.status_code in [200, 202] and json_data:
@@ -146,7 +140,7 @@ def create_order_payload(
         order_items: list, 
         order_status: str,
         delivery_date: str,
-        is_v2: Optional[bool] = False) -> str:
+        is_v2: bool = False) -> str:
     """
     Create payload for order creation.
 
@@ -158,7 +152,7 @@ def create_order_payload(
     order_items : list
     order_status : str
     delivery_date : str
-    zone : Optional[bool], optional
+    zone : bool
         By default `False`.
 
     Returns
@@ -246,7 +240,7 @@ def create_order_payload(
     return convert_json_to_string(json_data)
 
 
-def request_changed_order_creation(zone, environment, order_data):
+def request_changed_order_creation(zone, environment, order_data) -> bool:
     """
     Change/Update order information through the Order Relay Service
     Args:
@@ -254,23 +248,27 @@ def request_changed_order_creation(zone, environment, order_data):
         environment: e.g., DEV, SIT, UAT
         order_data: order information
 
-    Returns `success` or error message in case of failure
+    Returns True or False message in case of failure
     """
     # Define headers
     request_headers = get_header_request(zone, False, False, True, False)
 
     # Define url request
-    request_url = get_microservice_base_url(environment) + '/order-relay/'
+    request_url = f"{get_microservice_base_url(environment)}/order-relay/"
 
     # Get body
     request_body = get_changed_order_payload(order_data)
 
     # Send request
-    response = place_request('POST', request_url, request_body, request_headers)
+    response = place_request(
+        'POST', request_url, request_body, request_headers
+    )
     if response.status_code == 202:
-        return 'success'
-    else:
-        print(text.Red + '\n- [Order Relay Service] Failure to change an order. Response Status: {response_status}. '
-                         'Response message: {response_message}'
-              .format(response_status=response.status_code, response_message=response.text))
-        return False
+        return True
+
+    print(
+        f"{text.Red}- [Order Relay Service] Failure to change an order.\n"
+        f"Response Status: {response.status_code}.\n"
+        f"Response message: {response.text}.\n"
+    )
+    return False

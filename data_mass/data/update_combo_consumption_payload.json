@@ -1,12 +1,19 @@
 {
-    "accountId": "string",
-    "combos": [
-      {
-        "comboId": "string",
-        "consumedLimit": {
-          "daily": 0,
-          "monthly": 0
-        }
-      }
-    ]
+  "accountId": "string",
+  "combos": [
+    {
+      "comboId": "string",
+      "availableToday": 333,
+      "consumedLimit": {
+        "daily": 201,
+        "monthly": 201,
+        "availableToday": 222
+      },
+      "limit": {
+        "daily": 201,
+        "monthly": 201,
+        "availableToday": 222
+    }
+    }
+  ]
 }

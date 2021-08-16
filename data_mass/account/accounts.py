@@ -9,8 +9,7 @@ from data_mass.classes.text import text
 from data_mass.common import (
     get_header_request,
     get_microservice_base_url,
-    place_request,
-    set_to_dictionary
+    place_request
 )
 from data_mass.config import get_settings
 from data_mass.menus.account_menu import (
@@ -49,7 +48,7 @@ def check_account_exists_microservice(
     base_url = get_microservice_base_url(environment)
     request_url = f"{base_url}/accounts?accountId={account_id}"
 
-    if zone == "US":
+    if zone in ["CA", "US"]:
         settings = get_settings()
 
         request_url = (
@@ -184,11 +183,10 @@ def create_account_ms(
         environment: str,
         delivery_address: dict,
         owner: dict = None,
-        account_status: str = 'ACTIVE',
+        account_status: str = "ACTIVE",
         enable_empties_loan: bool = False,
         eligible_rewards: bool = True,
-        **kwargs
-) -> bool:
+        **kwargs) -> bool:
     """
     Create account on the microservice.
 
@@ -213,6 +211,7 @@ def create_account_ms(
     """
     if not owner:
         owner = {}
+
     payment_term = None
     if zone == "BR" and "BANK_SLIP" in payment_method:
         payment_term = return_payment_term_bank_slip()
@@ -249,15 +248,20 @@ def create_account_ms(
     }
 
     if zone == "US":
-        schema = "data/create_account_us_payload.json"
+        schema = "data/create_account_multivendor.json"
 
         dict_values.update({
             "vendorAccountId": account_id,
-            "hasPONumberRequirement": kwargs.get(
-                "hasPONumberRequirement",
-                False
-            )
+            "hasPONumberRequirement": kwargs.get("has_po_number", False)
         })
+    elif zone == "CA":
+        schema = "data/create_account_multivendor.json"
+
+        dict_values.update({
+            "vendorAccountId": account_id,
+            "customerAccountId": kwargs.get("customer_id")
+        })
+
     else:
         schema = "data/create_account_payload.json"
         dict_values.update({"accountId": account_id})
@@ -280,16 +284,23 @@ def create_account_ms(
     # If not, we associate random information that
     # will not match with any available program
     if eligible_rewards:
-        set_to_dictionary(dict_values, 'potential', 'DM-POTENT')
-        set_to_dictionary(dict_values, 'segment', 'DM-SEG')
-        set_to_dictionary(dict_values, 'subSegment', 'DM-SUBSEG')
+        dict_values.update({
+            "potential": "DM-POTENT",
+            "segment": "DM-SEG",
+            "subSegment": "DM-SUBSEG"
+        })
     else:
-        set_to_dictionary(dict_values, 'potential', 'DM-POTENT_NO_REWARDS')
-        set_to_dictionary(dict_values, 'segment', 'DM-SEG_NO_REWARDS')
-        set_to_dictionary(dict_values, 'subSegment', 'DM-SUBSEG_NO_REWARDS')
+        dict_values.update({
+            "potential": "DM-POTENT_NO_REWARDS",
+            "segment": "DM-SEG_NO_REWARDS",
+            "subSegment": "DM-SUBSEG_NO_REWARDS"
+        })
 
     request_headers = get_header_request(zone, False, True, False, False)
-    request_url = f"{get_microservice_base_url(environment)}/account-relay/"
+    is_v1 = False if zone in ["CA", "US"] else True
+
+    base_url = get_microservice_base_url(environment, is_v1)
+    request_url = f"{base_url}/account-relay/"
 
     body: dict = json.loads(content.decode("utf-8"))
     body.update(dict_values)
@@ -376,15 +387,17 @@ def account_information_logic(
     }
     basic_information.append(account_values)
 
-    owner_info = []
-    owner_info_values = {
-        'Owner E-mail': account_data.get('owner').get("email", ""),
-        'Owner Name': (
-            f'{account_data.get("owner").get("firstName", "")} '
-            f'{account_data.get("owner").get("lastName", "")}'
-        ),
-    }
-    owner_info.append(owner_info_values)
+    owner = account_data.get("owner", {})
+    owner_info = None
+
+    if owner:
+        owner_info = [{
+            'Owner E-mail': owner.get("email", ""),
+            'Owner Name': (
+                f'{owner.get("firstName", "")} '
+                f'{owner.get("lastName", "")}'
+            ),
+        }]
 
     credit_information = []
     credit = account_data['credit']

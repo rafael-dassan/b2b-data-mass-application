@@ -106,7 +106,9 @@ def validate_deals_options(option, zone):
     if zone == "US":
         options = ['1', '2', '3']
         return option in options     
-
+    elif zone == "CA":
+        options = ['1']
+        return option in options
     options = ['1', '2', '3', '4', '5', '6', '7']
     return option in options
 

@@ -138,7 +138,7 @@ def display_inventory_by_account(inventory: list, zone: str = None):
     """
     inventory_info = []
 
-    if zone == "US":
+    if zone in ["CA", "US"]:
         inventory = inventory[0]
 
         for item in inventory["inventories"]:

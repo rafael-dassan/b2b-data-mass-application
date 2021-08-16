@@ -19,6 +19,19 @@ def print_deals_operations_menu(zone):
             option = input(text.default_text_color + '\nPlease select: ')
 
         return option
+
+    elif zone == "CA":
+        print(text.default_text_color + '\nDeals operations')
+        print(text.default_text_color + str(1), text.Yellow + 'Create deal type stepped discount')
+        option = input(text.default_text_color + '\nPlease select: ')
+        while validate_deals_options(option, zone) is False:
+            print(text.Red + '\n- Invalid option')
+            print(text.default_text_color + '\nDeals operations')
+            print(text.default_text_color + str(1), text.Yellow + 'Create deal type stepped discount')
+            option = input(text.default_text_color + '\nPlease select: ')
+
+        return option
+
     print(text.default_text_color + '\nDeals operations')
     print(text.default_text_color + str(1), text.Yellow + 'Create deal type discount')
     print(text.default_text_color + str(2), text.Yellow + 'Create deal type stepped discount')
@@ -84,6 +97,22 @@ def print_stepped_discount_ranges_menu(indexes=2):
 
     return range_list
 
+
+def print_stepped_discount_ranges_menu_canada(indexes=2):
+    range_list = list()
+    for i in range(indexes):
+        print(text.Yellow + 'Range #{0}'.format(str(i + 1)))
+        dict_values = {
+            'from': int(input(text.default_text_color + 'From: ')),
+            'to': int(input(text.default_text_color + 'To: ')),
+            'value': int(input(text.default_text_color + 'Discount percentage (%): ')),
+            'type': '%',
+            'fixed': True
+        }
+
+        range_list.append(dict_values)
+
+    return range_list
 
 def print_discount_range_menu(indexes=2):
     index_list = list()

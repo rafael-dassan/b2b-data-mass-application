@@ -69,7 +69,8 @@ def request_get_products_microservice(
 def request_get_offers_microservice(
         account_id: str,
         zone: str,
-        environment: str) -> dict:
+        environment: str,
+        **kwargs) -> dict:
     """
     Get available SKUs for a specific account via Catalog Service
     Projection: SMALL
@@ -85,23 +86,24 @@ def request_get_offers_microservice(
     # Get headers
     headers = get_header_request(zone, True, False, False, False, account_id)
     base_url = get_microservice_base_url(environment, False)
+    projection = kwargs.get("projection", "SMALL")
 
-    if zone == "US":
+    if zone in ["CA", "US"]:
         account_id = get_multivendor_account_id(account_id, zone, environment)
 
         request_url = (
-            f"{base_url}/v1"
+            f"{base_url}"
             "/catalog-service"
             "/catalog"
             f"/items?accountId={account_id}"
-            "&projection=SMALL"
+            f"&projection={projection}"
         )
     else:
         request_url = (
             f"{base_url}"
             "/catalog-service"
             f"/catalog?accountId={account_id}"
-            "&projection=SMALL"
+            f"&projection={projection}"
         )
 
     # Send request
@@ -128,7 +130,7 @@ def request_get_offers_microservice(
         return False
 
 
-def check_item_enabled(sku, zone, environment):
+def check_item_enabled(sku, zone, environment) -> Optional[str]:
     """
     Check if a SKU is enabled via Item Service
     Args:
@@ -172,10 +174,8 @@ def check_item_enabled(sku, zone, environment):
 
     if response.status_code == 404:
         print(
-            text.Red
-            + "\n- [Item Service] SKU {sku} not found for country {country}".format(
-                sku=sku, country=zone
-            )
+            f"{text.Red}"
+            f"- [Item Service] SKU {sku} not found for country {zone}"
         )
         return False
 
@@ -251,40 +251,73 @@ def request_get_products_by_account_microservice(account_id, zone, environment):
 
 
 def request_get_account_product_assortment(
-    account_id, zone, environment, delivery_center_id
-):
+        account_id: str,
+        zone: str,
+        environment: str,
+        delivery_center_id: str) -> list:
     """
-    Get product association for a specific account via Product Assortment Service
-    Args:
-        account_id: POC unique identifier
-        zone: e.g., AR, BR, CO, DO, MX, ZA
-        environment: e.g., DEV, SIT, UAT
-        delivery_center_id: POC's delivery center unique identifier
-    Returns: array of SKUs in case of success and `false` in case of failure
+    Get product association for a specific account via Product Assortment Service.
+
+    Parameters
+    ----------
+    account_id : str
+        POC unique identifier.
+    zone : str
+        e.g., AR, BR, CO, DO, MX, ZA.
+    environment : str
+        e.g., DEV, SIT, UAT.
+    delivery_center_id : str
+        POC's delivery center unique identifier.
+
+    Returns
+    -------
+    list
+        A list of SKUs in case of success and `false` in case of failure
     """
     # Get headers
     headers = get_header_request(zone, True, False, False, False, account_id)
-
-    # Get base URL
     base_url = get_microservice_base_url(environment)
-    request_url = f"{base_url}/product-assortment/?accountId={account_id}&deliveryCenterId={delivery_center_id}"
+
+    if zone == "CA":
+        settings = get_settings()
+        key = "items"
+
+        query = {
+            "vendorId": settings.vendor_id,
+            "vendorAccountId": account_id,
+            "deliveryCenterId": delivery_center_id
+        }
+
+        request_url = f"{base_url}/product-assortment/assortments?{urlencode(query)}"
+    else:
+        key = "skus"
+        query = {
+            "accountId": account_id,
+            "deliveryCenterId": delivery_center_id
+        }
+
+        request_url = f"{base_url}/product-assortment/?{urlencode(query)}"
 
     response = place_request("GET", request_url, "", headers)
     json_data = loads(response.text)
-    skus = json_data["skus"]
+
+    items = json_data[key]
+
     if response.status_code == 200 and len(json_data) != 0:
-        return skus
-    elif response.status_code == 200 and len(skus) == 0:
+        return items
+
+    if response.status_code == 200 and len(items) == 0:
         return "not_found"
-    else:
-        print(
-            text.Red
-            + "\n- [Product Assortment Service] Failure to get product association. Response Status: "
-            "{response_status}. Response message: {response_message}".format(
-                response_status=response.status_code, response_message=response.text
-            )
+
+    print(
+        text.Red
+        + "\n- [Product Assortment Service] Failure to get product association. Response Status: "
+        "{response_status}. Response message: {response_message}".format(
+            response_status=response.status_code, response_message=response.text
         )
-        return False
+    )
+
+    return False
 
 
 def get_sku_name(

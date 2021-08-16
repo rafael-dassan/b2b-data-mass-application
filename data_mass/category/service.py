@@ -1,6 +1,6 @@
 import json
-from urllib.parse import urlencode
 from typing import List, Optional
+from urllib.parse import urlencode
 
 from data_mass.account.accounts import get_multivendor_account_id
 from data_mass.classes.text import text
@@ -126,7 +126,7 @@ def get_category_by_id(
     Returns
     -------
     dict
-        The catefory information.
+        The category information.
     """
     base_url = get_microservice_base_url(environment, False)
     header = get_header_request(zone)
@@ -177,7 +177,7 @@ def get_category_by_id(
                 'when target service is catalog.\n'
             )
 
-            return None
+            return False
 
     response = place_request(
         request_method="GET",
@@ -196,4 +196,4 @@ def get_category_by_id(
         f"Response message: {response.text}"
     )
 
-    return None
+    return False
