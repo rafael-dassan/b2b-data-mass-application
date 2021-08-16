@@ -2,6 +2,8 @@ import re
 from typing import Any
 from unicodedata import numeric
 
+REWARDS_COUNTRIES = ["AR","BR","CO","DO","EC","MX","PE","PY","ZA"]
+
 
 def validate_yes_no_option(option):
     options = ['Y', 'N']
