@@ -308,7 +308,8 @@ def get_magento_datamass_access_token(environment, country):
             'PA': 't1l4tdhvzrsk54qgm9b7wg0nty1ia0jr',
             'PE': 'xcgb5m0rl5pto116q4gxe1msd3zselq6',
             'PY': 'nju63hy7j5nhfzgaeah2y077anlpzs6o',
-            'ZA': '0seca4btewbr3e1opma4je2x8ftj57wx'
+            'ZA': '0seca4btewbr3e1opma4je2x8ftj57wx',
+            'UY': 'Not ready for UAT'
         },
         'SIT': {
             'AR': 'hzp6hw65oqiyeyv8ozfzunex0nc1rff8',
@@ -321,7 +322,8 @@ def get_magento_datamass_access_token(environment, country):
             'PA': '3bs7q1f5wtegt7vrgxumcv1plhjatf1d',
             'PE': 'lda0mjri507oqrm8xfofk6weifajn8cm',
             'PY': 'bgfrp38faxbpwnad7uoc2vqlprmv5nck',
-            'ZA': 'fde80w10jbbaed1mrz6yg0pwy1vzfo48'
+            'ZA': 'fde80w10jbbaed1mrz6yg0pwy1vzfo48',
+            'UY': 'r9grukw8l2ck0r01mqo6bnlir6kyuysl'
         }
     }
     return access_token.get(environment).get(country)
