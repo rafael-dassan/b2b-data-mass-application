@@ -224,7 +224,7 @@ def print_include_delivery_cost_menu():
     """
     option = input(
         f"{DEFAULT_TEXT_COLOR}\n"
-        "Do you want to add delivery fee (interest/charge)? y/N: "
+        "Do you want to add delivery fee (interest/charge)? [y/N]: "
     )
     while not validate_yes_no_option(option.upper()):
         print(INVALID_OPTION)

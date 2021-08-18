@@ -40,9 +40,9 @@ def get_delivery_center_inventory_v2(
     query = {"vendorId": settings.vendor_id}
 
     if delivery_center_id:
-        query = f"{urlencode(query)}&deliveryCenters={delivery_center_id}"
+        query.update({"deliveryCenters": delivery_center_id})
 
-    request_url = f"{base_url}/inventory/inventories?{query}"
+    request_url = f"{base_url}/inventory/inventories?{urlencode(query)}"
 
     response = place_request(
         request_method="GET",

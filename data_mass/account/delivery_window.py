@@ -2,6 +2,7 @@ import calendar
 import json
 import logging
 from datetime import datetime, timedelta
+from distutils.util import strtobool
 from typing import Union
 
 import pkg_resources
@@ -68,25 +69,53 @@ def get_microservice_delivery_fee_charge_relay(
     dict
         JSON payload for interest fee.
     """
+    payment_method = account_data.get("paymentMethods", [])
+
+    if "CREDIT_CARD_POS" in payment_method:
+        change_charge_type = input(
+            f'{text.default_text_color}Do you want to choose '
+            '"PAYMENT_METHOD_FEE" as the type of the charge? [y/N]: '
+        )
+
+        while (change_charge_type.upper() in ["Y", "N"]) is False:
+            print(text.Red + "\n- Invalid option")
+            change_charge_type = input(
+                f'{text.default_text_color}Do you want to choose '
+                '"PAYMENT_METHOD_FEE" as the type of the charge? [y/N]: '
+            )
+
+    change_charge_type = strtobool(change_charge_type)
+
     dict_values = {
-        'accounts': [account_data['accountId']],
-        'charges': [{
-            'chargeId': 'CHARGE-01',
-            'type': 'DELIVERY_DATE_FEE',
-            'conditions': {
-                'alternativeDeliveryDate': True,
-                'orderTotal': {
-                    'maximumValue': include_delivery_cost['min_order_value']
+        "accounts": [account_data.get("accountId")],
+        "charges": [{
+            "chargeId": "CHARGE-01",
+            "type": "DELIVERY_DATE_FEE",
+            "conditions": {
+                "alternativeDeliveryDate": True,
+                "orderTotal": {
+                    "maximumValue": include_delivery_cost.get("min_order_value")
                 }
             },
-            'output': {
-                'scope': 'ORDER',
-                'applyTo': 'TOTAL',
-                'type': 'AMOUNT',
-                'value': include_delivery_cost['fee_value']
+            "output": {
+                "scope": "ORDER",
+                "applyTo": "TOTAL",
+                "type": "AMOUNT",
+                "value": include_delivery_cost.get("fee_value")
             }
         }]
     }
+
+    if change_charge_type:
+        charge, = dict_values.get("charges")
+        charge.update({
+            "type": "PAYMENT_METHOD_FEE",
+            "conditions": {
+                "paymentMethod": "CREDIT_CARD_POS"
+            }
+        })
+
+        dict_values.update({"charges": [charge]})
 
     content: bytes = pkg_resources.resource_string(
         "data_mass",
@@ -173,7 +202,7 @@ def create_delivery_window_microservice(
     # Get headers
     request_headers = get_header_request(zone, False, True, False, False)
 
-    if zone == ["CA", "US"]:
+    if zone in ["CA", "US"]:
         v1 = False
     else:
         v1 = True

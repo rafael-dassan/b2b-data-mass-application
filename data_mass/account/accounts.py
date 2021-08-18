@@ -545,7 +545,7 @@ def get_delivery_cost_values(option: str) -> Dict[str, str]:
 
         tax_value = input(
             f"{text.default_text_color}"
-            f"Define the delivery fee value: "
+            f"Define the fee value: "
         )
 
     delivery_cost_values = {
