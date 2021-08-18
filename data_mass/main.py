@@ -279,6 +279,7 @@ def show_menu():
     clear_terminal()
     print_welcome_script()
     selection_structure = print_structure_menu()
+    selection_structure = selection_structure.encode('utf-8')
     option = print_available_options(selection_structure)
     if selection_structure == '1':
         switcher = {
