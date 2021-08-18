@@ -470,12 +470,12 @@ def print_available_options(selection_structure):
 
 # Print welcome menu
 def print_welcome_script():
-    print(text.Bold + text.Cyan)
-    print("╭──────────────────────────────────╮")
-    print("│                                  │")
-    print("│         DATA-MASS SCRIPT         │")
-    print("│                                  │")
-    print("╰──────────────────────────────────╯")
+    print(text.Bold + text.White + text.BackgroundDarkGray)
+    print("                                    ")
+    print("                                    ")
+    print("          DATA-MASS SCRIPT          ")
+    print("                                    ")
+    print("                                    ")
     print(text.default_text_color + text.ResetAll + text.Bold + "\n")
 
 
