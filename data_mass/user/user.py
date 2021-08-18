@@ -87,7 +87,7 @@ def get_iam_b2c_country_params_uat(country):
             "REDIRECT_URL": "com.abi.bees.paraguay://oauth/redirect",
             "CLIENT_ID": "f0a743c3-4c9f-49c9-8a13-6a7fba9acec1"
         },
-            "UY": {
+        "UY": {
             "REDIRECT_URL": "com.abi.bees.uruguay://oauth/redirect",
             "CLIENT_ID": "PENDING" #TODO: does not have client id yet
         }
