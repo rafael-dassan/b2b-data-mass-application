@@ -360,13 +360,12 @@ def get_sku_price(account_id, combo_item, zone, environment):
     # Get base URL
     request_url = (
         get_microservice_base_url(environment)
-        + "/cart-calculator/prices?accountID="
+        + "/price-service/v1/offers?accountId="
         + account_id
     )
 
     # Get header request
     request_headers = get_header_request(zone, True, False, False, False, account_id)
-
     # Send request
     response = place_request("GET", request_url, "", request_headers)
 
@@ -377,7 +376,7 @@ def get_sku_price(account_id, combo_item, zone, environment):
                 return my_dict["price"]
     else:
         print(
-            text.Red + "\n- [Pricing Engine Service] Failure to get price. Response "
+            text.Red + "\n- [Price Service] Failure to get price. Response "
             "status: {response_status}. Response message: {response_message}".format(
                 response_status=response.status_code, response_message=response.text
             )
