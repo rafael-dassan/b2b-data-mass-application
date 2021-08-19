@@ -145,12 +145,19 @@ def request_inventory_creation(
         )
 
         request_body: dict = {"inventory": []}
-        for inventory in response:
-            for product in inventory.get("inventories", []):
-                if product.get("vendorItemId") == sku_id:
-                    product.update({"quantity": int(sku_quantity)})
+        if response:
+            for inventory in response:
+                for product in inventory.get("inventories", []):
+                    if product.get("vendorItemId") == sku_id:
+                        product.update({"quantity": int(sku_quantity)})
 
-                request_body["inventory"].append(product)
+                    request_body["inventory"].append(product)
+        else:
+            for product in products:
+                request_body["inventory"].append({
+                    "vendorItemId": product,
+                    "quantity": sku_quantity
+                })
     else:
         is_v1: bool = True
         endpoint: str = "inventory-relay/add"

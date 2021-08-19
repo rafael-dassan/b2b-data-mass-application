@@ -203,6 +203,7 @@ def request_get_products_by_account_microservice(account_id, zone, environment):
         false: if there is any error coming from the microservice
     """
     # Define headers
+    v1 = True
     request_headers = get_header_request(
         zone=zone,
         use_jwt_auth=True,
@@ -213,13 +214,9 @@ def request_get_products_by_account_microservice(account_id, zone, environment):
     )
 
     # Define base URL
-    if zone == "US":
+    if zone in ["CA", "US"]:
         account_id = get_multivendor_account_id(account_id, zone, environment)
-        endpoint = "v1/catalog-service"
         v1 = False
-    else:
-        endpoint = "catalog-service"
-        v1 = True
 
     base_url = get_microservice_base_url(environment, v1)
     query = {
@@ -229,7 +226,7 @@ def request_get_products_by_account_microservice(account_id, zone, environment):
         "includeAllPromotions": False
     }
 
-    request_url = f"{base_url}/{endpoint}/catalog/items?{urlencode(query)}"
+    request_url = f"{base_url}/catalog-service/catalog/items?{urlencode(query)}"
 
     # Send request
     response = place_request("GET", request_url, "", request_headers)
@@ -363,13 +360,12 @@ def get_sku_price(account_id, combo_item, zone, environment):
     # Get base URL
     request_url = (
         get_microservice_base_url(environment)
-        + "/cart-calculator/prices?accountID="
+        + "/price-service/v1/offers?accountId="
         + account_id
     )
 
     # Get header request
     request_headers = get_header_request(zone, True, False, False, False, account_id)
-
     # Send request
     response = place_request("GET", request_url, "", request_headers)
 
@@ -380,7 +376,7 @@ def get_sku_price(account_id, combo_item, zone, environment):
                 return my_dict["price"]
     else:
         print(
-            text.Red + "\n- [Pricing Engine Service] Failure to get price. Response "
+            text.Red + "\n- [Price Service] Failure to get price. Response "
             "status: {response_status}. Response message: {response_message}".format(
                 response_status=response.status_code, response_message=response.text
             )

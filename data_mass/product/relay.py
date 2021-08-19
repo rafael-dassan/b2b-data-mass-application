@@ -472,11 +472,12 @@ def associate_product_multivendor(
                 aux_index = aux_index + 1
 
             inventory_response = request_inventory_creation(
-                zone,
-                environment,
-                vendor_account_id,
-                delivery_center_id,
-                skus_id
+                zone=zone,
+                environment=environment,
+                account_id=vendor_account_id,
+                delivery_center_id=delivery_center_id,
+                products=skus_id,
+                sku_quantity=randint(1, 10)
             )
 
             if inventory_response:
@@ -486,8 +487,6 @@ def associate_product_multivendor(
                 f"{text.Red}\n"
                 "- [Inventory Relay Service] "
                 "Failure to create Inventory."
-                f"\nResponse status: {inventory_response.status_code}"
-                f"Response message: {inventory_response.text}"
             )
     else:
         print(

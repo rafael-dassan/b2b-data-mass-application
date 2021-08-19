@@ -1766,7 +1766,7 @@ def flow_create_account(zone, environment, account_id):
     delivery_address = get_account_delivery_address(zone)
     account_status = print_account_status_menu()
     option_include_minimum_order = print_minimum_order_menu()
-    account_eligible_rewards = print_eligible_rewards_menu()
+    account_eligible_rewards = False
 
     has_po_number = None
     customer_id = None
@@ -1782,7 +1782,6 @@ def flow_create_account(zone, environment, account_id):
         enable_empties_loan = False
 
     if zone == "US":
-        account_eligible_rewards = False
         has_po_number = input("Has PO Number? y/N: ")
 
         while (has_po_number.upper() in ["Y", "N"]) is False:
@@ -1793,8 +1792,9 @@ def flow_create_account(zone, environment, account_id):
 
         has_po_number = bool(strtobool(has_po_number))
     elif zone == "CA":
-        account_eligible_rewards = False
         customer_id = input("Customer Account Id (Sold To): ")
+    else:
+        account_eligible_rewards = print_eligible_rewards_menu()
 
     create_account_response = create_account_ms(
         account_id=account_id,
