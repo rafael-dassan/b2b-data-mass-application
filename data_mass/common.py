@@ -6,7 +6,7 @@ import time as t
 import warnings
 from datetime import date, datetime
 from time import time
-from typing import Text, Optional
+from typing import Optional, Text
 from urllib.parse import urlencode
 from uuid import uuid1
 
@@ -146,10 +146,10 @@ def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclus
         'cache-control': 'no-cache',
         'timezone': timezone
     }
-    
-    if zone == "US":
+
+    if zone in ["US", "CA"]:
         header['Authorization'] = get_jwt_token()
-        header['Accept-Language'] = 'en-us'
+        header['Accept-Language'] = 'en'
     elif use_jwt_auth:
         header['Authorization'] = generate_hmac_jwt(zone, account_id, jwt_app_claim)
     elif use_root_auth:
@@ -338,8 +338,8 @@ def print_available_options(selection_structure):
         print(text.default_text_color + str(6), text.Yellow + 'Invoice')
         print(text.default_text_color + str(7), text.Yellow + 'Create rewards')
         print(text.default_text_color + str(8), text.Yellow + 'Create credit statement')
-        print(text.default_text_color + str(9), text.Yellow + 'Categories')
-        selection = input(text.default_text_color + PLEASE_SELECT)
+        print(text.default_text_color + str(9), text.Yellow + 'Categories (Multivendor)')
+        selection = input(text.default_text_color + '\nPlease select: ')
         while not validate_option_request_selection(selection):
             print(text.Red + INVALID_OPTION)
             print(text.default_text_color + str(0), text.Yellow + CLOSE_APPLICATION)
@@ -924,46 +924,6 @@ def print_year_credit_statement():
             year = input(text.default_text_color + which_year)
 
     return year
-
-
-def print_invoices(invoice_info: dict, status: list, zone: str = None):
-    """
-    Print invoices.
-
-    Parameters
-    ----------
-    invoice_info : dict
-    status : list
-    zone : str
-        Defaults by `None`.
-    """
-    invoices = []
-
-    if zone == "US":
-        key = "vendorItemId"
-    else:
-        key = "sku"
-
-    for invoice in invoice_info.get("data", []):
-        products = [item.get(key) for item in invoice.get("items")]
-
-        if invoice.get("status") in status:
-            invoices.append({
-                "Invoice ID": invoice.get("invoiceId"),
-                "Customer Invoice Number": invoice.get("customerInvoiceNumber"),
-                "Product Quantity": invoice.get("itemsQuantity", 0),
-                "Sub Total": invoice.get("subtotal"),
-                "Tax": invoice.get("tax"),
-                "Discount": invoice.get("discount"),
-                "Total": invoice.get("total"),
-                key: ", ".join(products)
-            })
-
-    if invoices:
-        print(text.default_text_color + '\nInvoice Information By Account  -  Status:' + status[1])
-        print(tabulate(invoices, headers='keys', tablefmt='fancy_grid'))
-    else:
-        print(text.Red + '\nThere is no invoices with the status of ' + status[1] + ' for this account')
 
 
 def validate_invoice_id(invoice_id):

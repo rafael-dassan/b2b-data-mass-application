@@ -1,11 +1,13 @@
 import concurrent.futures
 import json
 from datetime import datetime
+from distutils.util import strtobool
 from random import randint, uniform
 from typing import Optional, Union
 
 import pkg_resources
 
+from data_mass.category.relay import associate_product_to_category
 from data_mass.classes.text import text
 from data_mass.common import (
     convert_json_to_string,
@@ -14,8 +16,13 @@ from data_mass.common import (
     place_request,
     update_value_to_json
 )
+from data_mass.config import get_settings
+from data_mass.inventory.relay import request_inventory_creation
 from data_mass.menus.product_menu import print_product_quantity_menu
-from data_mass.product.service import check_item_enabled
+from data_mass.product.service import (
+    check_item_enabled,
+    request_get_account_product_assortment
+)
 from data_mass.product.utils import (
     generate_price_values,
     generate_random_price_ids,
@@ -70,9 +77,9 @@ def request_post_price_microservice(
             price_values=price_values,
             zone=zone
         )
-    elif zone == "US":
+    elif zone in ["CA", "US"]:
         request_url = f"{base_url}/price-relay/v2"
-        request_body = get_body_price_microservice_request_v2_us(
+        request_body = get_payload_price_multivendor(
             account_id=account_id,
             sku_product=sku_product,
             product_price_id=product_price_id,
@@ -108,7 +115,7 @@ def request_post_price_microservice(
     return False
 
 
-def get_body_price_microservice_request_v2_us(
+def get_payload_price_multivendor(
         account_id: str,
         sku_product: str,
         product_price_id: str,
@@ -211,8 +218,7 @@ def product_post_requests_microservice(
     index, product = product_data
     price_values = generate_price_values(zone, product)
 
-    # Call product association via Product Assortment Relay Service
-    product_inclusion_ms_result = request_post_price_inclusion_microservice(
+    product_inclusion_ms_result = associate_product_global(
         zone=zone,
         environment=environment,
         sku_product=product["sku"],
@@ -291,7 +297,7 @@ def request_post_products_account_microservice(
     return True
 
 
-def request_post_price_inclusion_microservice(
+def associate_product_global(
         zone: str,
         environment: str,
         sku_product: str,
@@ -317,7 +323,6 @@ def request_post_price_inclusion_microservice(
         `success` in case of successful response or `false` in \
         case of failure
     """
-
     # Get headers
     request_headers = get_header_request(zone, False, False, True, sku_product)
     base_url = get_microservice_base_url(environment)
@@ -339,7 +344,7 @@ def request_post_price_inclusion_microservice(
     )
 
     if response.status_code == 202:
-        return "success"
+        return True
 
     print(
         f"{text.Red}\n"
@@ -348,6 +353,150 @@ def request_post_price_inclusion_microservice(
         f"\nResponse status: {response.status_code}"
         f"Response message: {response.text}"
     )
+
+    return False
+
+
+def associate_product_multivendor(
+        zone: str,
+        environment: str,
+        vendor_account_id: str,
+        delivery_center_id: str,
+        products: list,
+        category_id: str) -> bool:
+    """
+    Create product association to a vendor account.
+
+    Parameters
+    ----------
+    zone : str
+        e.g. US or CA.
+    environment : str
+        e.g., DEV, SIT, UAT.
+    vendor_account_id : str
+        The POC id.
+    delivery_center_id : str
+        POC's unique delivery center.
+    products : list
+        A list of products.
+    category_id : str
+        The category id.
+
+    Returns
+    -------
+    bool
+        `True` in case of successful response or `False` in \
+        case of failure.
+    """
+    header = get_header_request(zone)
+    base_url = get_microservice_base_url(environment, False)
+    request_url = f"{base_url}/product-assortment-relay/v2/inclusions"
+
+    assortment_body = {
+        "vendorAccountIds": [delivery_center_id],
+        "deliveryCenterId": delivery_center_id,
+        "assortments": []
+    }
+
+    price_relay_body = {
+        "vendorAccountIds": [vendor_account_id],
+        "prices": []
+    }
+
+    category_items = []
+
+    for index, product in enumerate(products):
+        vendor_item_id = product.get("sourceData", {}).get("vendorItemId")
+        sku = product.get("sku")
+
+        assortment_body.get("assortments").append({
+            "vendorItemId": vendor_item_id,
+            "order": index
+        })
+
+        category_items.append({
+            "vendorItemId": vendor_item_id,
+            "sortOrder": index
+        })
+
+        price_relay_body.get("prices").append({
+            "vendorItemId": vendor_item_id,
+            "sku": sku,
+            "basePrice": round(uniform(10.99, 99.99), 2),
+            "measureUnit": "CS",
+            "minimumPrice": round(uniform(0.99, 9.99), 2),
+            "deposit": round(uniform(0.0, 4.99), 2),
+            "consignment": round(uniform(0.0, 4.99), 2),
+            "quantityPerPallet": round(randint(0, 99), 2)
+        })
+        
+    request_url = f"{base_url}/product-assortment-relay/v2/inclusions"
+    assortment_response = place_request(
+        request_method="POST",
+        request_url=request_url,
+        request_body=json.dumps(assortment_body),
+        request_headers=header
+    )
+
+    if assortment_response.status_code == 202:
+        request_url = f"{base_url}/price-relay/v2"
+        price_response = place_request(
+            request_method="PUT",
+            request_url=request_url,
+            request_body=json.dumps(price_relay_body),
+            request_headers=header
+        )
+
+        if price_response.status_code == 202:
+            category_response = associate_product_to_category(
+                zone=zone,
+                environment=environment,
+                items=category_items,
+                category_id=category_id
+            )
+            
+            if not category_response:
+                return False
+
+            products = request_get_account_product_assortment(
+                    account_id=vendor_account_id,
+                    zone=zone,
+                    environment=environment,
+                    delivery_center_id=delivery_center_id
+            )
+
+            skus_id = []
+            aux_index = 0
+            while aux_index <= (len(products) - 1):
+                skus_id.append(products[aux_index])
+                aux_index = aux_index + 1
+
+            inventory_response = request_inventory_creation(
+                zone,
+                environment,
+                vendor_account_id,
+                delivery_center_id,
+                skus_id
+            )
+
+            if inventory_response:
+                return True
+
+            print(
+                f"{text.Red}\n"
+                "- [Inventory Relay Service] "
+                "Failure to create Inventory."
+                f"\nResponse status: {inventory_response.status_code}"
+                f"Response message: {inventory_response.text}"
+            )
+    else:
+        print(
+            f"{text.Red}\n"
+            "- [Product Assortment Relay Service] "
+            "Failure to associate the items to the account."
+            f"\nResponse status: {assortment_response.status_code}"
+            f"Response message: {assortment_response.text}"
+        )
 
     return False
 
@@ -397,7 +546,7 @@ def create_product(
     )
 
     if response.status_code == 202:
-        key = "vendorItemId" if zone == "US" else "sku"
+        key = "vendorItemId" if zone in ["CA", "US"] else "sku"
 
         update_item_response = set_item_enabled(
             zone,
@@ -436,7 +585,7 @@ def create_product_v2(
     environment : str
     product_data : dict
     vendor_item_id : str, optional
-        Required if the target zone is US.
+        Required if the target zone is US or CA.
 
     Returns
     -------
@@ -449,12 +598,6 @@ def create_product_v2(
     base_url = get_microservice_base_url(environment, False)
     request_url = f"{base_url}/item-relay/v2/items"
 
-    content: bytes = pkg_resources.resource_string(
-        "data_mass",
-        "data/update_item_payload_v2.json"
-    )
-    body: dict = json.loads(content.decode("utf-8"))
-
     product_data.update({
         "sku": product_data.get("sku"),
         "name": product_data.get("name"),
@@ -462,32 +605,30 @@ def create_product_v2(
         "package": {
             "count": 1,
             "id": "01",
-            "itemCount": 12,
-            "name": "CD",
-            "pack": "string"
+            "name": "CD"
         },
         "container": {
-            "name": product_data["container.name"],
-            "size": product_data["container.size"],
-            "returnable": product_data["container.returnable"],
-            "unitOfMeasurement": product_data["container.unitOfMeasurement"]
+            "name": product_data.get("container", {}).get("name"),
+            "size": product_data.get("container", {}).get("size"),
+            "returnable": product_data.get("container", {}).get("returnable"),
+            "unitOfMeasurement": product_data.get("container", {}).get("unitOfMeasurement")
         },
-        "uncategorized": product_data.get("uncategorized", False)
+        "uncategorized": product_data.get("uncategorized", False),
+        "defaultLanguage": f"en/{zone.upper()}"
     })
-    body.update(product_data)
 
     # Place request
     response = place_request(
         request_method="PUT",
         request_url=request_url,
-        request_body=json.dumps([body]),
+        request_body=json.dumps([product_data]),
         request_headers=request_headers
     )
     if response.status_code == 202:
         update_item_response = set_item_enabled(
-            zone,
-            environment,
-            product_data
+            zone=zone,
+            environment=environment,
+            product_data=product_data
         )
         get_item_response = check_item_enabled(
             product_data.get("sku"),
@@ -509,7 +650,8 @@ def create_product_v2(
 def set_item_enabled(
         zone: str,
         environment: str,
-        product_data: dict) -> bool:
+        product_data: dict,
+        vendor_account_id: str = None) -> bool:
     """
     Update an item via Item Service.
 
@@ -521,42 +663,27 @@ def set_item_enabled(
         One of `[DEV, SIT, UAT]`.
     product_data : str
         All necessary and relevant SKU data.
+    vendor_account_id : str
+        By default `None`. Should be 
 
     Returns
     -------
-    Whenever the item is updated successfully or not.
+        Whenever the item is updated successfully or not.
     """
     request_headers = get_header_request(zone, True, False, False)
-    body = {}
     sku = product_data.get("sku")
+    body = {}
 
     # Get base URL
     base_url = get_microservice_base_url(environment, False)
     request_url = f"{base_url}/items/{sku}"
 
-    if zone == "US":
-        request_url = f"{base_url}/item-relay/v2/items"
-        payload_path = "data/update_item_payload_v2.json"
+    if zone in ["CA", "US"]:
+        settings = get_settings()
 
-        product_data.update({
-            "sku": product_data.get("sku"),
-            "name": product_data.get("name"),
-            "brandId": str(randint(1, 1000)),
-            "package": {
-                "count": 1,
-                "id": "01",
-                "itemCount": 12,
-                "name": "CD",
-                "pack": "string"
-            },
-            "container": {
-                "name": product_data["container.name"],
-                "size": product_data["container.size"],
-                "returnable": product_data["container.returnable"],
-                "unitOfMeasurement":
-                    product_data["container.unitOfMeasurement"]
-            }
-        })
+        vendor_account_id = None
+        request_url = f"{base_url}/item-relay/v2/items"
+        body = json.dumps([product_data])
     else:
         # get data from Data Mass files
         payload_path = "data/update_item_payload.json"
@@ -578,10 +705,8 @@ def set_item_enabled(
             "salesRanking": product_data.get("salesRanking"),
         })
 
-    body.update(product_data)
-
-    # send as list of object or just object?
-    body = json.dumps([body]) if zone == "US" else json.dumps(body)
+        body.update(product_data)
+        body = json.dumps(body)
 
     # Place request
     response = place_request(

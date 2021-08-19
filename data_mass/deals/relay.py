@@ -15,6 +15,101 @@ from data_mass.common import (
     update_value_to_json
 )
 
+def request_create_stepped_discount_multivendor(
+        vendor_account_id: str,
+        zone: str,
+        environment: str,
+        discount_value: int,
+        minimum_quantity: float,
+        ranges: dict,
+        deal_id: str = None,
+        vendor_item_id: list = None,
+        quantity: int = 10,
+        ) -> str:
+    """
+    Create deal for multivendor.
+
+    Parameters
+    ----------
+    vendor_account_id : str
+    zone : str
+    environment : str
+    vendor_item_id : str
+    deal_id : str
+
+    Returns
+    -------
+    str
+        The deal ID.
+    """
+    request_headers = get_header_request(zone=zone)
+    base_url = get_microservice_base_url(environment, False)
+    request_url = f"{base_url}/promotion-relay/v3/promotions"
+
+    if deal_id is None:
+        vendor_promotion_id = f"DM-{str(randint(1, 100000))}"
+    else:
+        vendor_promotion_id = deal_id
+
+    body = {
+        "vendorPromotionId": vendor_promotion_id,
+        "title": f"Discount Promotion: {vendor_promotion_id}",
+        "description": "Stepped Discount Promotion, Created by Data Mass",
+        "type": "STEPPED_DISCOUNT",
+        "startDate": "2020-01-01T00:00:00.000Z",
+        "endDate": "2050-03-31T23:59:59.999Z",
+        "image": None,
+        "budget": 10,
+        "quantityLimit": quantity
+    }
+
+    response = place_request(
+        request_method="POST",
+        request_url=request_url,
+        request_body=json.dumps([body]),
+        request_headers=request_headers
+    )
+
+    if response.status_code in [200, 202]:
+        request_url = f"{base_url}/deal-relay/v2"
+
+        deal_body = {
+            "vendorAccountIds": [vendor_account_id],
+            "deals": [{
+                "vendorDealId": vendor_promotion_id,
+                "vendorPromotionId": vendor_promotion_id,
+                "conditions": {
+                    "multipleLineItem":  {
+                        "items":[{
+                            "vendorItemIds": [vendor_item_id],
+                            "minimumQuantity": int(minimum_quantity)
+                        }]
+                    }
+                },
+                "output": {
+                    "lineItemScaledDiscount": {
+                        "vendorItemIds": [vendor_item_id],
+                        "ranges": ranges
+                    },
+                    
+                }
+            }
+          ]
+        }
+
+
+        response = place_request(
+            request_method="PUT",
+            request_url=request_url,
+            request_body=json.dumps(deal_body),
+            request_headers=request_headers
+        )
+
+        if response.status_code in [200, 202]:
+            return vendor_promotion_id
+
+    return False
+
 
 def request_create_discount_multivendor(
         vendor_account_id: str,
@@ -302,77 +397,6 @@ def request_create_deal_v2(
     return False
 
 
-def create_free_good_multivendor(
-        vendor_account_id: str,
-        zone: str,
-        environment: str,
-        vendor_item_ids: list,
-        quantity: int = 10) -> Optional[str]:
-
-    request_headers = get_header_request(zone=zone)
-    base_url = get_microservice_base_url(environment, False)
-    request_url = f"{base_url}/promotion-relay/v3/promotions"
-
-    vendor_promotion_id = f"DM-{str(randint(1, 100000))}"
-
-    body = {
-        "vendorPromotionId": vendor_promotion_id,
-        "title": f"Free Goods: {vendor_promotion_id}",
-        "description": "Free Goods Promotion, Created by Data Mass",
-        "type": "FREE_GOOD",
-        "startDate": "2020-01-01T00:00:00.000Z",
-        "endDate": "2050-03-31T23:59:59.999Z",
-        "image": None,
-        "budget": 10,
-        "quantityLimit": quantity
-    }
-
-    response = place_request(
-        request_method="POST",
-        request_url=request_url,
-        request_body=json.dumps([body]),
-        request_headers=request_headers
-    )
-
-    if response.status_code in [200, 202]:
-        request_url = f"{base_url}/deal-relay/v2"
-        items_id = []
-
-        for item in vendor_item_ids:
-            item_id = item.get("sourceData", {}).get("vendorItemId")
-            items_id.append(item_id)
-
-        deal_body = {
-            "vendorAccountIds": [vendor_account_id],
-            "deals": [{
-                "vendorDealId": vendor_promotion_id,
-                "vendorPromotionId": vendor_promotion_id,
-                "conditions": {
-                    "lineItem": {
-                        "vendorItemIds": items_id
-                    }
-                },
-                "output": {
-                    "lineItemDiscount": {
-                        "vendorItemIds": items_id
-                    }
-                },
-            }]
-        }
-
-        response = place_request(
-            request_method="PUT",
-            request_url=request_url,
-            request_body=json.dumps(deal_body),
-            request_headers=request_headers
-        )
-
-        if response.status_code in [200, 202]:
-            return vendor_promotion_id
-
-    return False
-
-
 def create_discount(
         account_id: str,
         sku: str,
@@ -493,13 +517,6 @@ def create_stepped_discount_with_limit(
         deal_id=deal_id
     )
 
-    promotion_response = request_create_deal_v2(
-        deal_type=deal_type,
-        zone=zone,
-        environment=environment,
-        deal_id=deal_id
-    )
-
     cart_response = create_stepped_discount_with_limit_cart_calculation(
         account_id=account_id,
         deal_id=promotion_response,
@@ -547,13 +564,6 @@ def create_stepped_discount(
         STEPPED_FREE_GOOD
     Returns: `promotion_response` if success
     """
-    promotion_response = request_create_deal_v2(
-        deal_type=deal_type,
-        zone=zone,
-        environment=environment,
-        deal_id=deal_id
-    )
-
     promotion_response = request_create_deal_v2(
         deal_type=deal_type,
         zone=zone,
@@ -664,13 +674,6 @@ def create_stepped_free_good(
     -------
         `promotion_response` if success.
     """
-    promotion_response = request_create_deal_v2(
-        deal_type=deal_type,
-        zone=zone,
-        environment=environment,
-        deal_id=deal_id
-    )
-
     promotion_response = request_create_deal_v2(
         deal_type=deal_type,
         zone=zone,
@@ -861,8 +864,6 @@ def create_stepped_discount_with_limit(
         deal_id: deal unique identifier
     Returns: `promotion_response` if success
     """
-    promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
-
     promotion_response = request_create_deal_v2(
         deal_type,
         zone,
@@ -925,8 +926,6 @@ def create_stepped_discount(
     -------
     
     """
-    promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
-
     promotion_response = request_create_deal_v2(
         deal_type=deal_type,
         zone=zone,
@@ -1028,8 +1027,6 @@ def create_stepped_free_good(
         ranges: range of SKU quantities and free good values to be applied
     Returns: `promotion_response` if success
     """
-    promotion_response = request_create_deal_v2(deal_type, zone, environment, deal_id)
-
     promotion_response = request_create_deal_v2(
         deal_type=deal_type,
         zone=zone,
@@ -1075,8 +1072,6 @@ def create_interactive_combos(
             STEPPED_FREE_GOOD, FLEXIBLE_DISCOUNT
     Returns: `promotion_response` if success
     """
-    promotion_response = request_create_deal_v2(deal_type, zone, environment)
-
     promotion_response = request_create_deal_v2(
         deal_type=deal_type,
         zone=zone,
@@ -1121,8 +1116,6 @@ def create_interactive_combos_v2(
             STEPPED_FREE_GOOD, FLEXIBLE_DISCOUNT
     Returns: `promotion_response` if success
     """
-    promotion_response = request_create_deal_v2(deal_type, zone, environment)
-
     promotion_response = request_create_deal_v2(
         deal_type=deal_type,
         zone=zone,
@@ -1457,7 +1450,7 @@ def request_create_stepped_discount_cart_calculation(
     base_url = get_microservice_base_url(environment, False)
 
     # Get base URL
-    if zone == "US":
+    if zone in ["US", "CA"]:
         request_url = f"{base_url}/deal-relay/v2"
     else:
         request_url = f"{base_url}/deal-relay/v1"

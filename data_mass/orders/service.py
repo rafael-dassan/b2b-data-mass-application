@@ -74,48 +74,46 @@ def display_specific_order_information(orders):
 
     Returns: a table containing the available order information
     """
-    items = orders[0]["items"]
-    item_information = list()
-    if len(items) == 0:
-        item_values = {"Items": "None"}
-        item_information.append(item_values)
+    items = orders[0].get('items', [])
+    item_information = []
+    if not items:
+        item_information.append({'Items': 'None'})
     else:
-        for i in range(len(items)):
+        for item in items:
             item_values = {
-                "SKU": items[i]["sku"],
-                "Price": items[i]["price"],
-                "Quantity": items[i]["quantity"],
-                "Subtotal": items[i]["subtotal"],
-                "Total": items[i]["total"],
-                "Free Good": items[i]["freeGood"],
+                'SKU': item.get('sku', ""),
+                'Price': item.get('price', ""),
+                'Quantity': item.get('quantity', ""),
+                'Subtotal': item.get('subtotal', ""),
+                'Total': item.get('total', ""),
+                'Free Good': item.get('freeGood', "")
             }
-            if "tax" in items:
-                tax = items[i]["tax"]
-                set_to_dictionary(item_values, "tax", tax)
+            if 'tax' in items:
+                tax = item.get('tax', "")
+                set_to_dictionary(item_values, 'tax', tax)
             item_information.append(item_values)
 
     combos = orders[0].get('combos', [])
-    combo_information = list()
-    if len(combos) == 0:
-        combo_values = {"Combos": "None"}
-        combo_information.append(combo_values)
+    combo_information = []
+    if not combos:
+        combo_information.append({'Combos': 'None'})
     else:
-        for i in range(len(combos)):
+        for combo in combos:
             combo_values = {
-                "Combo ID": combos[i]["id"],
-                "Type": combos[i]["type"],
-                "Quantity": combos[i]["quantity"],
-                "Title": combos[i]["title"],
-                "Description": combos[i]["description"],
-                "Original Price": combos[i]["originalPrice"],
-                "Price": combos[i]["price"],
+                'Combo ID': combo.get('id', ''),
+                'Type': combo.get('type', ''),
+                'Quantity': combo.get('quantity', ''),
+                'Title': combo.get('title', ''),
+                'Description': combo.get('description', ''),
+                'Original Price': combo.get('originalPrice', ''),
+                'Price': combo.get('price', '')
             }
             combo_information.append(combo_values)
 
-    order_information = list()
+    order_information = []
 
-    for i in range(len(orders)):
-        order_values = validate_order_parameters(orders[i])
+    for order in orders:
+        order_values = validate_order_parameters(order)
         order_information.append(order_values)
 
     print(text.default_text_color + '\nOrder Information By Account')
@@ -138,8 +136,8 @@ def display_all_order_information(orders):
     """
     order_information = list()
 
-    for i in range(len(orders)):
-        order_values = validate_order_parameters(orders[i])
+    for order in orders:
+        order_values = validate_order_parameters(order)
         order_information.append(order_values)
 
     print(text.default_text_color + '\nAll Order Information By Account')
@@ -206,23 +204,25 @@ def check_if_order_exists(account_id, zone, environment, order_id, order_status=
         false: if an error comes from back-end
     """
     # Get header request
-    request_headers = get_header_request(zone, True, False, False, False, account_id)
+    request_headers = get_header_request(
+        zone, True, False, False, False, account_id
+    )
+    base_url = get_microservice_base_url(environment)
 
-    if zone == "US":
-        request_url = f"{get_microservice_base_url(environment)}/order-service/v2?orderIds={order_id}&orderBy=placementDate&sort=ASC&pageSize=2147483647"
-    elif order_status is not None:
-        # Get base URL
+    if zone in ["CA", "US"]:
         request_url = (
-            "{}/order-service/v1?orderIds={}&orderStatus={}&accountId={}".format(
-                get_microservice_base_url(environment),
-                order_id,
-                order_status,
-                account_id,
-            )
+            f"{base_url}/order-service/v2?orderIds={order_id}&"
+            "orderBy=placementDate&sort=ASC&pageSize=2147483647"
+        )
+    elif order_status is not None:
+        request_url = (
+            f"{base_url}/order-service/v1?orderIds={order_id}&"
+            f"orderStatus={order_status}&accountId={account_id}"
         )
     else:
-        request_url = "{}/order-service/v1?orderIds={}&&accountId={}".format(
-            get_microservice_base_url(environment), order_id, account_id
+        request_url = (
+            f"{base_url}/order-service/v1?orderIds={order_id}&"
+            f"accountId={account_id}"
         )
 
     # Place request
@@ -232,26 +232,25 @@ def check_if_order_exists(account_id, zone, environment, order_id, order_status=
     if response.status_code == 200 and len(json_data) != 0:
         return json_data
     elif response.status_code == 200 and len(json_data) == 0:
-        if order_id == "":
+        if order_id == '':
             print(
-                text.Red
-                + "\n- [Order Service] The account {account_id} does not have orders".format(
-                    account_id=account_id
-                )
+                f"{text.Red}- [Order Service] The account "
+                f"{account_id} does not have orders"
             )
-            return "not_found"
+            return 'not_found'
         else:
-            print(text.Red + f"\n- [Order Service] The order {order_id} does not exist")
-            return "not_found"
-    else:
-        print(
-            text.Red
-            + "\n- [Order Service] Failure to retrieve order information. Response Status: "
-            "{response_status}. Response message: {response_message}".format(
-                response_status=response.status_code, response_message=response.text
+            print(
+                f"{text.Red}- [Order Service] The order {order_id} "
+                "does not exist."
             )
-        )
-        return False
+            return 'not_found'
+
+    print(
+        f"{text.Red}- [Order Service] Failure to retrieve order information.\n"
+        f"Response Status: {response.status_code}.\n"
+        f"Response message: {response.text}."
+    )
+    return False
 
 
 def get_order_details(order_data):

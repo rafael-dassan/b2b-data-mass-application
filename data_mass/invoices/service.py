@@ -2,6 +2,8 @@ import json
 from typing import Optional
 from urllib.parse import urlencode
 
+from tabulate import tabulate
+
 from data_mass.account.accounts import get_multivendor_account_id
 from data_mass.classes.text import text
 from data_mass.common import (
@@ -41,12 +43,12 @@ def check_if_invoice_exists(
         account_id=account_id
     )
 
-    if zone == "US":
+    if zone in ["CA", "US"]:
         version = "v2"
     else:
         version = "v1"
 
-    query = {"invoiceId": invoice_id}
+    query = {"customerInvoiceNumber": invoice_id}
     base_url = get_microservice_base_url(environment)
     request_url = f"{base_url}/invoices-service/{version}?{urlencode(query)}"
 
@@ -103,9 +105,8 @@ def get_invoices(
     )
     base_url = get_microservice_base_url(environment, False)
 
-    if zone == "US":
+    if zone in ["CA", "US"]:
         version = "v2"
-        account_id = get_multivendor_account_id(account_id, zone, environment)
     else:
         version = "v1"
 
@@ -113,7 +114,6 @@ def get_invoices(
         f"{base_url}"
         "/invoices-service"
         f"/{version}"
-        f"?accountId={account_id}"
     )
 
     # Place request
@@ -124,3 +124,53 @@ def get_invoices(
         return invoice_info
 
     return None
+
+
+def print_invoices(
+        invoice_info: dict,
+        status: list,
+        account_id: str,
+        zone: str = None,
+        environment: str = None):
+    """
+    Print invoices.
+
+    Parameters
+    ----------
+    invoice_info : dict
+    status : list
+    account_id : str
+    zone : str
+        Defaults by `None`.
+    environment : str
+        Defaults by `None`.
+    """
+    invoices = []
+
+    if zone in ["CA", "US"]:
+        key = "vendorItemId"
+        account_id = get_multivendor_account_id(account_id, zone, environment)
+    else:
+        key = "sku"
+
+    for invoice in invoice_info.get("data", []):
+        products = [item.get(key) for item in invoice.get("items")]
+
+        if invoice.get("status") in status and account_id == invoice.get("accountId"):
+            invoices.append({
+                "Invoice ID": invoice.get("invoiceId"),
+                "Customer Invoice Number": invoice.get("customerInvoiceNumber"),
+                "Product Quantity": invoice.get("itemsQuantity", 0),
+                "Sub Total": invoice.get("subtotal"),
+                "Tax": invoice.get("tax"),
+                "Discount": invoice.get("discount"),
+                "Total": invoice.get("total"),
+                key: ", ".join(products)
+            })
+
+    if invoices:
+        print(text.default_text_color + '\nInvoice Information By Account  -  Status:' + status[1])
+        print(tabulate(invoices, headers='keys', tablefmt='fancy_grid'))
+    else:
+        print(text.Red + '\nThere is no invoices with the status of ' + status[1] + ' for this account')
+        

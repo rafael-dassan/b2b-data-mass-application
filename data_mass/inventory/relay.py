@@ -133,7 +133,7 @@ def request_inventory_creation(
         use_inclusion_auth=True
     )
 
-    if zone == "US":
+    if zone in ["CA", "US"]:
         endpoint: str = f"inventory-relay/inventory/{delivery_center_id}"
         is_v1: bool = False
 
@@ -152,7 +152,10 @@ def request_inventory_creation(
 
                 request_body["inventory"].append(product)
     else:
-        request_body = get_inventory_payload(
+        is_v1: bool = True
+        endpoint: str = "inventory-relay/add"
+
+        request_body: dict = get_inventory_payload(
             zone=zone,
             environment=environment,
             account_id=account_id,
@@ -161,8 +164,6 @@ def request_inventory_creation(
             sku_id=sku_id,
             sku_quantity=sku_quantity
         )
-        is_v1 = True
-        endpoint = "inventory-relay/add"
 
     base_url = get_microservice_base_url(environment, is_v1)
     request_url = f"{base_url}/{endpoint}"
@@ -176,12 +177,12 @@ def request_inventory_creation(
 
     if response.status_code == 202:
         return True
-    else:
-        print(
-            f'\n{text.Red}- '
-            '[Inventory Relay Service] Failure to add stock for products. '
-            f'Response Status: {response.status_code}. '
-            f'Response message: {response.text}'
-        )
 
-        return False
+    print(
+        f'\n{text.Red}- '
+        '[Inventory Relay Service] Failure to add stock for products. '
+        f'Response Status: {response.status_code}. '
+        f'Response message: {response.text}'
+    )
+
+    return False

@@ -43,6 +43,7 @@ from data_mass.populator.preconditions import (
     delete_invoice,
     delete_recommendation
 )
+from data_mass.validations import REWARDS_COUNTRIES
 
 logger = logging.getLogger(__name__)
 
@@ -127,14 +128,15 @@ def execute_test(country, environment):
     populate_invoice(country, environment, invoice_params.get('account_id'), invoice_params.get('invoice_status'),
                      invoice_params.get('order_prefix'), invoice_params.get('invoice_prefix'))
 
-    logger.info("enroll_poc_rewards for %s/%s", country, environment)
-    enroll_poc(country, environment, rewards_params.get('account_id'))
+    if country in REWARDS_COUNTRIES:
+        logger.info("enroll_poc_rewards for %s/%s", country, environment)
+        enroll_poc(country, environment, rewards_params.get('account_id'))
 
-    logger.info("populate_rewards_challenges for %s/%s", country, environment)
-    populate_challenge_take_photo(country, environment, rewards_params.get('take_photo_challenge_id'))
-    populate_challenge_mark_complete(country, environment, rewards_params.get('mark_complete_challenge_id'))
-    populate_challenge_purchase_single(country, environment, rewards_params.get('purchase_single_challenge_id'))
-    populate_challenge_purchase_multiple(country, environment, rewards_params.get('purchase_multiple_challenge_id'))
+        logger.info("populate_rewards_challenges for %s/%s", country, environment)
+        populate_challenge_take_photo(country, environment, rewards_params.get('take_photo_challenge_id'))
+        populate_challenge_mark_complete(country, environment, rewards_params.get('mark_complete_challenge_id'))
+        populate_challenge_purchase_single(country, environment, rewards_params.get('purchase_single_challenge_id'))
+        populate_challenge_purchase_multiple(country, environment, rewards_params.get('purchase_multiple_challenge_id'))
 
     logger.info("enable_products_magento %s/%s", country, environment)
     enable_product_magento(country, environment, category_params.get('sku'))

@@ -2,6 +2,8 @@ import re
 from typing import Any
 from unicodedata import numeric
 
+REWARDS_COUNTRIES = ["AR","BR","CO","DO","EC","MX","PE","PY","ZA"]
+
 
 def validate_yes_no_option(option):
     options = ["Y", "N"]
@@ -108,7 +110,9 @@ def validate_deals_options(option, zone):
     if zone == "US":
         options = ['1', '2', '3']
         return option in options     
-
+    elif zone == "CA":
+        options = ['1']
+        return option in options
     options = ['1', '2', '3', '4', '5', '6', '7']
     return option in options
 

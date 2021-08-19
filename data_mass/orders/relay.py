@@ -1,5 +1,4 @@
 import json
-import logging
 import random
 from datetime import datetime, timedelta
 from typing import Any, Optional
@@ -10,15 +9,9 @@ import pkg_resources
 from data_mass.classes.text import text
 from data_mass.common import (
     convert_json_to_string,
-    find_values,
-    generate_erp_token,
     get_header_request,
     get_microservice_base_url,
-    place_request,
-    set_to_dictionary,
-    update_value_to_json,
-    validate_user_entry_date,
-    validate_yes_no_change_date
+    place_request
 )
 from data_mass.config import get_settings
 from data_mass.orders.service import get_changed_order_payload
@@ -45,7 +38,7 @@ def request_order_creation(
     delivery_center_id : str
         POC's delivery center.
     zone : str
-        One of AR, BR, CO, DO, MX, ZA, ES and US.
+        One of AR, BR, CA, CO, DO, MX, ZA, ES and US.
     environment : str
         One of DEV, SIT and UAT.
     allow_order_cancel : str
@@ -75,7 +68,7 @@ def request_order_creation(
     )
 
     # Define url request
-    if zone == "US":
+    if zone in ["CA", "US"]:
         endpoint = "order-service/v2/"
         is_v1 = False
         settings = get_settings()
@@ -97,7 +90,7 @@ def request_order_creation(
                 "hasEmpties": has_empties
             },
             "subtotal": order_items.get("subTotal"),
-            "total": order_items.get("total"),
+            "total": order_items.get("subTotal"), # como pega esse campo?
             "vendor": {
                 "accountId": account_id,
                 "id": settings.vendor_id
@@ -148,7 +141,7 @@ def create_order_payload(
         order_items: list, 
         order_status: str,
         delivery_date: str,
-        is_v2: Optional[bool] = False) -> str:
+        is_v2: bool = False) -> str:
     """
     Create payload for order creation.
 
@@ -160,7 +153,7 @@ def create_order_payload(
     order_items : list
     order_status : str
     delivery_date : str
-    zone : Optional[bool], optional
+    zone : bool
         By default `False`.
 
     Returns
@@ -252,7 +245,7 @@ def create_order_payload(
     return convert_json_to_string(json_data)
 
 
-def request_changed_order_creation(zone, environment, order_data):
+def request_changed_order_creation(zone, environment, order_data) -> bool:
     """
     Change/Update order information through the Order Relay Service
     Args:
@@ -260,7 +253,7 @@ def request_changed_order_creation(zone, environment, order_data):
         environment: e.g., DEV, SIT, UAT
         order_data: order information
 
-    Returns `success` or error message in case of failure
+    Returns True or False message in case of failure
     """
     # Define headers
     request_headers = get_header_request(zone, False, False, True, False)

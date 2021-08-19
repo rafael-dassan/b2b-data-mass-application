@@ -241,7 +241,7 @@ def post_combo_relay_account(
             "id": dt_combo["id"],
             "externalId": dt_combo["id"],
             "title": dt_combo["title"],
-            "description": dt_combo["description"],
+            "description": dt_combo.get("description", dt_combo["title"]),
             "startDate": dt_combo["startDate"],
             "endDate": dt_combo["endDate"],
             "type": "DT",
@@ -446,8 +446,8 @@ def make_account_eligible(
     # values to associate to a Reward program
     json_object = update_value_to_json(
         account_info,
-        '[0][potential]',
-        'DM-POTENT'
+        '[0][subSegment]',
+        'DM-SUBSEG'
     )
 
     request_body = convert_json_to_string(json_object)

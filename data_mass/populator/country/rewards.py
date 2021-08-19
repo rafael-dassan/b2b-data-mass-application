@@ -20,7 +20,6 @@ def apply_enroll_poc(row, country, environment):
 
 def enroll_poc(country, environment, account_id):
     response = put_rewards(account_id, country, environment)
-
     if response.status_code == 201:
         logger.debug("The account {} has been successfully enrolled to a rewards program.".format(account_id))
     elif response.status_code == 409:

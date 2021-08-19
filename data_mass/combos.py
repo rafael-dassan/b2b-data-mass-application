@@ -56,6 +56,10 @@ def input_combo_type_discount(
             'price': price,
             'score': score,
             'title': title,
+            "limit": {
+                "daily": 200,
+                "monthly": 200,
+            },
             'type': 'D',
             'externalId': combo_id,
             'discountPercentOff': discount_value,

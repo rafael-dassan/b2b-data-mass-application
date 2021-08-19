@@ -90,7 +90,7 @@ def request_get_deals_promo_fusion_service(
     )
 
     # Get base URL
-    if zone == "US":
+    if zone in ["CA", "US"]:
         settings = get_settings()
         base_url = get_microservice_base_url(environment, False)
 

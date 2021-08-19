@@ -224,7 +224,7 @@ def print_include_delivery_cost_menu():
     """
     option = input(
         f"{DEFAULT_TEXT_COLOR}\n"
-        "Do you want to add delivery fee (interest/charge)? y/N: "
+        "Do you want to add delivery fee (interest/charge)? [y/N]: "
     )
     while not validate_yes_no_option(option.upper()):
         print(INVALID_OPTION)
@@ -246,8 +246,7 @@ def print_payment_method_menu(zone):
             f"{text.default_text_color}2. {text.Yellow}BANK SLIP\n"
             f"{text.default_text_color}3. {text.Yellow}CREDIT_CARD_POS\n"
             f"{text.default_text_color}4. {text.Yellow}CHECK\n"
-            f"{text.default_text_color}5. {text.Yellow}TERM_CHECK\n"
-            f"{text.default_text_color}6. {text.Yellow}CASH, BANK SLIP, CHECK, CREDIT_CARD_POS, TERM_CHECK\n"
+            f"{text.default_text_color}5. {text.Yellow}CASH, BANK SLIP, CHECK, CREDIT_CARD_POS\n"
             f"{text.default_text_color}Option: "
         )
 
@@ -260,19 +259,17 @@ def print_payment_method_menu(zone):
                 print(text.Red + '\n- Payments Method should be numeric')
                 payment_method = input(text.default_text_color + menu)
             elif validate_payments_method(payment_method) == 'not_payments_method':
-                print(text.Red + '\n- Payments Method should be 1, 2, 3, 4, 5 or 6')
+                print(text.Red + '\n- Payments Method should be 1, 2, 3, 4, or 5')
                 payment_method = input(text.default_text_color + menu)
 
         payment_credit = ['BANK_SLIP']
         payment_credit_pos = ['CREDIT_CARD_POS']
         payment_check = ['CHECK']
-        payment_term_check = ['TERM_CHECK']
         payment_list = [
             'CASH',
             'BANK_SLIP',
             'CREDIT_CARD_POS',
             'CHECK',
-            'TERM_CHECK'
         ]
 
         switcher = {
@@ -280,14 +277,13 @@ def print_payment_method_menu(zone):
             '2': payment_credit,
             '3': payment_credit_pos,
             '4': payment_check,
-            '5': payment_term_check,
-            '6': payment_list,
+            '5': payment_list,
         }
 
         value = switcher.get(payment_method, False)
         return value
 
-    elif zone == 'AR' or zone == 'PY':
+    elif zone == 'AR':
         payment_option = 'Choose the payment method (1. CASH): '
         payment_method = input(
             DEFAULT_TEXT_COLOR + payment_option)
@@ -349,7 +345,7 @@ def print_payment_method_menu(zone):
 #   Therefore, for simulation, this parameter was created to allow using accounts that do not
 #   follow this pattern of more than 10 characters
 def print_account_id_menu(zone):
-    if zone == "US":
+    if zone in ["US", "CA"]:
         message = "Vendor Account Id: "
     else:
         message = "Account ID: "
@@ -361,19 +357,19 @@ def print_account_id_menu(zone):
         if validate_account(abi_id, zone) == 'error_0':
             print(text.Red + '\n- Account ID should not be empty')
             if attempt < 2:
-                abi_id = str(input(DEFAULT_TEXT_COLOR + 'Account ID: '))
+                abi_id = str(input(DEFAULT_TEXT_COLOR + message))
         if validate_account(abi_id, zone) == 'error_10':
             print(text.Red + '\n- Account ID must contain at least 10 characters')
             if attempt < 2:
-                abi_id = str(input(DEFAULT_TEXT_COLOR + 'Account ID: '))
+                abi_id = str(input(DEFAULT_TEXT_COLOR + message))
         elif validate_account(abi_id, zone) == 'not_number':
             print(text.Red + '\n- The account ID must be Numeric')
             if attempt < 2:
-                abi_id = str(input(DEFAULT_TEXT_COLOR + 'Account ID: '))
+                abi_id = str(input(DEFAULT_TEXT_COLOR + message))
         elif validate_account(abi_id, zone) == 'error_cnpj_cpf':
             print(text.Red + '\n- Account ID must contain at least 11 or 14 characters')
             if attempt < 2:
-                abi_id = str(input(DEFAULT_TEXT_COLOR + 'Account ID: '))
+                abi_id = str(input(DEFAULT_TEXT_COLOR + message))
         attempt = attempt + 1
     if attempt == 3:
         print(YELLOW + '\n- You have reached maximum attempts')

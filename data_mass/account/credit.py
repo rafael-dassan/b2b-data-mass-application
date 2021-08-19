@@ -38,11 +38,14 @@ def add_credit_to_account_microservice(
         else print the failure and return False.
     """
     request_headers = get_header_request(zone=zone, use_root_auth=True)
-
     base_url = get_microservice_base_url(environment)
-    request_url = f"{base_url}/account-relay/credits"
 
-    dict_values = {
+    if zone == "CA":
+        request_url = f"{base_url}/credit-relay"
+    else:
+        request_url = f"{base_url}/account-relay/credits"
+
+    dict_values = [{
         "accountId": account_id,
         "available": credit,
         "balance": balance,
@@ -50,12 +53,12 @@ def add_credit_to_account_microservice(
         "overdue": overdue,
         "paymentTerms": payment_term,
         "total": total
-    }
+    }]
 
     request_body = json.dumps(dict_values)
 
     response = place_request(
-        request_method='POST',
+        request_method="POST",
         request_url=request_url,
         request_body=request_body,
         request_headers=request_headers
