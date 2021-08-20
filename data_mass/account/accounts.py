@@ -754,6 +754,13 @@ def get_account_delivery_address(zone: str) -> dict:
             'city': 'Nashville',
             'state': 'Tennessee',
             'zipcode': '87334'
+        },
+        'UY': {
+            'address': 'AV Italia, 3632',
+            'street': 'AV Italia',
+            'city': 'Montevideo',
+            'state': 'Montevideo',
+            'zipcode': 'N/A'
         }
     }
 

@@ -86,6 +86,10 @@ def get_iam_b2c_country_params_uat(country):
         "PY": {
             "REDIRECT_URL": "com.abi.bees.paraguay://oauth/redirect",
             "CLIENT_ID": "f0a743c3-4c9f-49c9-8a13-6a7fba9acec1"
+        },
+        "UY": {
+            "REDIRECT_URL": "com.abi.bees.uruguay://oauth/redirect",
+            "CLIENT_ID": "PENDING" #TODO: does not have client id yet
         }
     }
     return params[country]
@@ -140,6 +144,10 @@ def get_iam_b2c_country_params_sit(country):
         "PY": {
             "REDIRECT_URL": "com.abi.bees.paraguay://oauth/redirect",
             "CLIENT_ID": "14c66e8e-4820-4426-87e1-9eaa957654a7"
+        },
+        "UY": {
+            "REDIRECT_URL": "com.abi.bees.uruguay://oauth/redirect",
+            "CLIENT_ID": "4fc8fc13-f714-4bb3-9233-98ad3f59a446"
         }
     }
     return params[country]
@@ -194,6 +202,10 @@ def get_iam_b2c_country_params_qa(country):
         "PY": {
             "REDIRECT_URL": "com.abi.bees.paraguay://oauth/redirect",
             "CLIENT_ID": "14c66e8e-4820-4426-87e1-9eaa957654a7"
+        },
+        "UY": {
+            "REDIRECT_URL": "com.abi.bees.uruguay://oauth/redirect",
+            "CLIENT_ID": "78ac7217-900d-4139-b064-43b9cdbc681c"
         }
     }
 

@@ -2,7 +2,7 @@ import re
 from typing import Any
 from unicodedata import numeric
 
-REWARDS_COUNTRIES = ["AR","BR","CO","DO","EC","MX","PE","PY","ZA"]
+REWARDS_COUNTRIES = ["AR", "BR", "CO", "DO", "EC", "MX", "PE", "PY", "ZA", "UY"]
 
 
 def validate_yes_no_option(option):
@@ -55,7 +55,7 @@ def validate_payments_method(payments_method, zone=None):
         return 'not_number'
     elif payments_method not in ['1', '2', '3', '4', '5', '6']:
         return 'not_payments_method'
-    elif zone == "AR" and int(payments_method) != 1:
+    elif zone == ("AR" or "UY") and int(payments_method) != 1:
         return 'not_payments_method'   
     else:
         return True
@@ -120,30 +120,32 @@ def validate_option_sku(option):
 
 def validate_zone_for_interactive_combos_ms(zone):
     return {
-        'BR': True,
-        'CO': True,
-        'AR': True,
-        'DO': True,
-        'CA': True,
-        'PA': True,
-        'PY': True,
+        "BR": True,
+        "CO": True,
+        "AR": True,
+        "DO": True,
+        "CA": True,
+        "PA": True,
+        "PY": True,
+        "UY": True
     }.get(zone, False)
 
 
 def validate_zone_for_ms(zone):
     return {
-        'AR': True,
-        'BR': True,
-        'CA': True,
-        'CO': True,
-        'DO': True,
-        'EC': True,
-        'MX': True,
-        'PA': True,
-        'PE': True,
-        'PY': True,
-        'US': True,
-        'ZA': True,
+        "AR": True,
+        "BR": True,
+        "CA": True,
+        "CO": True,
+        "DO": True,
+        "EC": True,
+        "MX": True,
+        "PA": True,
+        "PE": True,
+        "PY": True,
+        "US": True,
+        "ZA": True,
+        "UY": True
     }.get(zone, False)
 
 

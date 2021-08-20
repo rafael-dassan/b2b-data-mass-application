@@ -86,7 +86,7 @@ def request_get_offers_microservice(
     # Get headers
     headers = get_header_request(zone, True, False, False, False, account_id)
     base_url = get_microservice_base_url(environment, False)
-    projection = kwargs.get("projection", "SMALL")
+    projection = kwargs.get("projection", "SMALL") 
 
     if zone in ["CA", "US"]:
         account_id = get_multivendor_account_id(account_id, zone, environment)
@@ -97,6 +97,13 @@ def request_get_offers_microservice(
             "/catalog"
             f"/items?accountId={account_id}"
             f"&projection={projection}"
+        )
+    elif zone == "UY":
+        request_url = (
+            f"{base_url}"
+            "/catalog-service"
+            f"/catalog?accountId={account_id}"
+            f"&projection=SMALL"
         )
     else:
         request_url = (
