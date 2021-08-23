@@ -6,6 +6,41 @@ pool:
 
 name: $(Date:yyyyMMdd)-$(Rev:r)
 
+variables:
+- group: BEES-GoldenCICD-Microservice-vg
+
+parameters:
+- name: goldenCICDRepo
+  default: templates
+
+- name: sonarScan
+  default: ""
+
+- name: sonarBuildBreaker
+  default: ""
+
+- name: sonarConnection
+  default: $(SonarB2BServiceConnection)
+
+- name: sonarConfigFile
+  default: "sonar-project.properties"
+
+- name: sonarSources
+  default: ""
+
+- name: sonarExtraProperties
+  default: ""
+
+- name: sonarMode
+  default: "cloud" 
+
+resources:
+  repositories:
+  - repository: templates
+    type: git
+    name: GHQ_B2B_Delta/golden-CICD-library
+    ref: master
+
 steps:
 - task: UsePythonVersion@0
   inputs:
@@ -39,3 +74,22 @@ steps:
     buildContext: ./
     tags: dev-$(build.buildNumber)
   condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
+
+- template: /shared/tasks/sonarqube_prepare.yml@templates
+  parameters:
+    sonarConnection: ${{ parameters.sonarConnection }}
+    sonarConfigFile: ${{ parameters.sonarConfigFile }}
+    sonarMode: ${{ parameters.sonarMode }}
+    sonarProjectKey: ""
+    sonarProjectName: ""
+    sonarSources: ${{ parameters.sonarSources }}
+    sonarExtraProperties: ${{ parameters.sonarExtraProperties }}
+
+- template: /shared/tasks/sonarqube_analyze.yml@templates
+  parameters:
+    sonarMode: ${{ parameters.sonarMode }}
+
+- template: /shared/tasks/sonarqube_publish.yml@templates
+  parameters:
+    sonarMode: ${{ parameters.sonarMode }}
+    pollingTimeoutSec: "300"
