@@ -1169,7 +1169,7 @@ def resources_warning():
     services that make use of live-call.
 
     All returned data (if any) is mocked. If there is a need for any
-    specific data, we suggest that you notify the migration team or the Data Mass team.
+    specific data, we suggest that you notify the migration team.
     """
     warnings.filterwarnings(action="once")
     warnings.warn(
