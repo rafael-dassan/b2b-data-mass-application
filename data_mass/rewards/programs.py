@@ -26,7 +26,8 @@ from data_mass.rewards.utils import (
 )
 
 APP_ADMIN = "adminportal"
-BASE_URL_IMAGE = "https://cdn-b2b-abi.global.ssl.fastly.net"
+COUNTRIES_ES = ["DO", "CO", "AR", "MX", "EC", "PE", "SV"]
+URL_BASE = "https://cdn-b2b-abi.global.ssl.fastly.net"
 
 
 def create_new_program(
@@ -146,7 +147,7 @@ def create_new_program(
         "categories[0].title": "Premium",
         "categories[0].subtitle": categories[2],
         "categories[0].headerImage": (
-            f"{BASE_URL_IMAGE}"
+            f"{URL_BASE}"
             "/sit/images/br/redesign/premium"
             "/img-premium-chopp-brahma-logo@2x.png"
         ),
@@ -154,7 +155,7 @@ def create_new_program(
             "brandId": "123",
             "title": "premium brand",
             "image": (
-                f"{BASE_URL_IMAGE}"
+                f"{URL_BASE}"
                 "/uat/images/do/premium/img_puntos_20.png"
             ),
         }],
@@ -166,15 +167,15 @@ def create_new_program(
         "categories[1].title": 'Core',
         "categories[1].subtitle": categories[7],
         "categories[1].headerImage": (
-            f"{BASE_URL_IMAGE}"
+            f"{URL_BASE}"
             "/sit/images/br/redesign/core/img-core-brahmachopp-logo@2x.png"
         ),
         "categories[1].brands": [{
             "brandId": "321",
             "title": "core brand",
             "image": (
-                f"{BASE_URL_IMAGE}"
-                "/uat/images/do/core/img_punto_1.png"
+                f"{URL_BASE}/sit/images/br/redesign/"
+                "core/img-core-brahmachopp-logo@2x.png"
             ),
         }],
         "termsAndConditions[0].documentURL": terms[0],
@@ -988,7 +989,7 @@ def generate_categories_information(zone: str) -> list:
         )
         category_info.append("COMPRA AHORA")
         category_info.append(
-            f"{BASE_URL_IMAGE}"
+            f"{URL_BASE}"
             "/uat/images/do/core/img_punto_1.png"
         )
 
@@ -1001,7 +1002,7 @@ def generate_categories_information(zone: str) -> list:
         )
         category_info.append("COMPRA AHORA")
         category_info.append(
-            f"{BASE_URL_IMAGE}"
+            f"{URL_BASE}"
             "/uat/images/do/core/img_punto_1.png"
         )
     elif zone == "CO":
@@ -1014,7 +1015,7 @@ def generate_categories_information(zone: str) -> list:
         )
         category_info.append("COMPRA AHORA")
         category_info.append(
-            f"{BASE_URL_IMAGE}"
+            f"{URL_BASE}"
             "/uat/images/do/core/img_punto_1.png"
         )
 
@@ -1027,7 +1028,7 @@ def generate_categories_information(zone: str) -> list:
         )
         category_info.append("COMPRA AHORA")
         category_info.append(
-            f"{BASE_URL_IMAGE}"
+            f"{URL_BASE}"
             "/uat/images/do/core/img_punto_1.png"
         )
     elif zone == "AR":
@@ -1040,7 +1041,7 @@ def generate_categories_information(zone: str) -> list:
         )
         category_info.append("COMPRA AHORA")
         category_info.append(
-            f"{BASE_URL_IMAGE}"
+            f"{URL_BASE}"
             "/uat/images/do/core/img_punto_1.png"
         )
 
@@ -1053,7 +1054,7 @@ def generate_categories_information(zone: str) -> list:
         )
         category_info.append("COMPRA AHORA")
         category_info.append(
-            f"{BASE_URL_IMAGE}"
+            f"{URL_BASE}"
             "/uat/images/do/core/img_punto_1.png"
         )
     elif zone == "BR":
@@ -1066,7 +1067,7 @@ def generate_categories_information(zone: str) -> list:
         )
         category_info.append("COMPRAR AGORA")
         category_info.append(
-            f"{BASE_URL_IMAGE}"
+            f"{URL_BASE}"
             "/uat/images/br/premium/img-premium-br-rules-2.png"
         )
 
@@ -1079,7 +1080,7 @@ def generate_categories_information(zone: str) -> list:
         )
         category_info.append("COMPRAR AGORA")
         category_info.append(
-            f"{BASE_URL_IMAGE}"
+            f"{URL_BASE}"
             "/uat/images/br/premium/img-premium-br-rules-2.png"
         )
     elif zone == "ZA":
@@ -1092,7 +1093,7 @@ def generate_categories_information(zone: str) -> list:
         )
         category_info.append("BUY NOW")
         category_info.append(
-            f"{BASE_URL_IMAGE}"
+            f"{URL_BASE}"
             "/uat/images/za/quarts-brands.png"
         )
 
@@ -1105,7 +1106,7 @@ def generate_categories_information(zone: str) -> list:
         )
         category_info.append("BUY NOW")
         category_info.append(
-            f"{BASE_URL_IMAGE}"
+            f"{URL_BASE}"
             "/uat/images/za/bonus-brands.png"
         )
     elif zone == "MX":
@@ -1118,7 +1119,7 @@ def generate_categories_information(zone: str) -> list:
         )
         category_info.append("COMPRA AHORA")
         category_info.append(
-            f"{BASE_URL_IMAGE}"
+            f"{URL_BASE}"
             "/uat/images/mx/core-brands.png"
         )
 
@@ -1131,7 +1132,7 @@ def generate_categories_information(zone: str) -> list:
         )
         category_info.append("COMPRA AHORA")
         category_info.append(
-            f"{BASE_URL_IMAGE}"
+            f"{URL_BASE}"
             "/uat/images/mx/premium-brands.png"
         )
     elif zone == "EC":
@@ -1144,7 +1145,7 @@ def generate_categories_information(zone: str) -> list:
         )
         category_info.append("COMPRA AHORA")
         category_info.append(
-            f"{BASE_URL_IMAGE}"
+            f"{URL_BASE}"
             "/sit/images/ec/premium-brands.png"
         )
 
@@ -1157,7 +1158,7 @@ def generate_categories_information(zone: str) -> list:
         )
         category_info.append("COMPRA AHORA")
         category_info.append(
-            f"{BASE_URL_IMAGE}"
+            f"{URL_BASE}"
             "/uat/images/ec/core-brands.png"
         )
     elif zone == "PE":
@@ -1170,7 +1171,7 @@ def generate_categories_information(zone: str) -> list:
         )
         category_info.append("COMPRA AHORA")
         category_info.append(
-            f"{BASE_URL_IMAGE}"
+            f"{URL_BASE}"
             "/uat/images/pe/premium-brands.png"
         )
 
@@ -1183,7 +1184,7 @@ def generate_categories_information(zone: str) -> list:
         )
         category_info.append("COMPRA AHORA")
         category_info.append(
-            f"{BASE_URL_IMAGE}"
+            f"{URL_BASE}"
             "/uat/images/pe/core-brands.png"
         )
 
@@ -1197,7 +1198,7 @@ def generate_categories_information(zone: str) -> list:
         )
         category_info.append("COMPRA AHORA")
         category_info.append(
-            f"{BASE_URL_IMAGE}/"
+            f"{URL_BASE}/"
             "uat/images/py/premium-brands.png"
         )
 
@@ -1210,7 +1211,7 @@ def generate_categories_information(zone: str) -> list:
         )
         category_info.append("COMPRA AHORA")
         category_info.append(
-            f"{BASE_URL_IMAGE}"
+            f"{URL_BASE}"
             "/uat/images/py/core-brands.png"
         )
 
@@ -1232,9 +1233,9 @@ def generate_terms_information(zone: str) -> list:
     """
     terms_info = []
 
-    if zone in ["DO", "CO", "AR", "MX", "EC", "PE", "PY"]:
+    if zone in ["DO", "CO", "AR", "MX", "EC", "PE", "PY", "UY"]:
         terms_info.append(
-            f"{BASE_URL_IMAGE}"
+            f"{URL_BASE}"
             "/terms/terms-co.html"
         )
         terms_info.append("Términos iniciales introducidos al programa")

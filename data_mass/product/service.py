@@ -41,13 +41,26 @@ def request_get_products_microservice(
     request_headers = get_header_request(zone, True, False, False, False)
     base_url = get_microservice_base_url(environment)
 
-    request_url = (
-        f"{base_url}"
-        "/items/?"
-        "includeDeleted=false"
-        "&includeDisabled=false"
-        f"&pageSize={page_size}"
-    )
+    if zone == "CA":
+        settings = get_settings()
+
+        request_url = (
+            f"{base_url}"
+            "/items"
+            "/items"
+            "?includeDeleted=false"
+            "&includeDisabled=false"
+            f"&pageSize={page_size}"
+            f"&vendorId={settings.vendor_id}"
+        )
+    else:
+        request_url = (
+            f"{base_url}"
+            "/items/?"
+            "includeDeleted=false"
+            "&includeDisabled=false"
+            f"&pageSize={page_size}"
+        )
 
     # Send request
     response = place_request("GET", request_url, "", request_headers)
@@ -86,7 +99,7 @@ def request_get_offers_microservice(
     # Get headers
     headers = get_header_request(zone, True, False, False, False, account_id)
     base_url = get_microservice_base_url(environment, False)
-    projection = kwargs.get("projection", "SMALL")
+    projection = kwargs.get("projection", "SMALL") 
 
     if zone in ["CA", "US"]:
         account_id = get_multivendor_account_id(account_id, zone, environment)
@@ -97,6 +110,13 @@ def request_get_offers_microservice(
             "/catalog"
             f"/items?accountId={account_id}"
             f"&projection={projection}"
+        )
+    elif zone == "UY":
+        request_url = (
+            f"{base_url}"
+            "/catalog-service"
+            f"/catalog?accountId={account_id}"
+            f"&projection=SMALL"
         )
     else:
         request_url = (
@@ -121,11 +141,10 @@ def request_get_offers_microservice(
             return "not_found"
     else:
         print(
-            text.Red
-            + "\n- [Catalog Service] Failure to get a list of available SKUs. Response Status: "
-            "{response_status}. Response message: {response_message}".format(
-                response_status=response.status_code, response_message=response.text
-            )
+            f"{text.Red}"
+            f"- [Catalog Service] Failure to get a list of available SKUs.\n"
+            f"Response Status: {response.status_code}.\n"
+            f"Response message: {response.text}."
         )
         return False
 
@@ -217,16 +236,29 @@ def request_get_products_by_account_microservice(account_id, zone, environment):
     if zone in ["CA", "US"]:
         account_id = get_multivendor_account_id(account_id, zone, environment)
         v1 = False
+    elif zone == "SV":
+        endpoint = "catalog-service"
+        v1 = False
+    else:
+        endpoint = "catalog-service"
+        v1 = True
 
     base_url = get_microservice_base_url(environment, v1)
-    query = {
-        "accountId": account_id,
-        "projection": "SMALL",
-        "includeDiscount": False,
-        "includeAllPromotions": False
-    }
+    if zone == "SV":
+        query = {
+            "fulfillmentCenterId": account_id,
+        }
+        request_headers.update({"regionID": "ES_SV", "custID": account_id})
+        request_url = f"{base_url}/{endpoint}/items?{urlencode(query)}"
+    else:
+        query = {
+            "accountId": account_id,
+            "projection": "SMALL",
+            "includeDiscount": False,
+            "includeAllPromotions": False
+        }
 
-    request_url = f"{base_url}/catalog-service/catalog/items?{urlencode(query)}"
+        request_url = f"{base_url}/{endpoint}/catalog/items?{urlencode(query)}"
 
     # Send request
     response = place_request("GET", request_url, "", request_headers)
@@ -269,7 +301,7 @@ def request_get_account_product_assortment(
     Returns
     -------
     list
-        A list of SKUs in case of success and `false` in case of failure
+        A list of SKUs in case of success and `False` in case of failure
     """
     # Get headers
     headers = get_header_request(zone, True, False, False, False, account_id)

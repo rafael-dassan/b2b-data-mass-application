@@ -251,6 +251,23 @@ Example:
  ┃ ┣ 📜stepped_discount.csv
  ┃ ┣ 📜stepped_free_good.csv
  ┃ ┗ 📜user.csv
+ ┣ 📂sv
+ ┃ ┣ 📜account.csv
+ ┃ ┣ 📜combo_discount.csv
+ ┃ ┣ 📜combo_free_good.csv
+ ┃ ┣ 📜combo_only_free_good.csv
+ ┃ ┣ 📜discount.csv
+ ┃ ┣ 📜discount_with_limit.csv
+ ┃ ┣ 📜free_good.csv
+ ┃ ┣ 📜invoice.csv
+ ┃ ┣ 📜order.csv
+ ┃ ┣ 📜product.csv
+ ┃ ┣ 📜recommendation.csv
+ ┃ ┣ 📜rewards.csv
+ ┃ ┣ 📜rewards_enroll.csv
+ ┃ ┣ 📜stepped_discount.csv
+ ┃ ┣ 📜stepped_free_good.csv
+ ┃ ┗ 📜user.csv
  ┣ 📂za
  ┃ ┣ 📜account.csv
  ┃ ┣ 📜combo_discount.csv

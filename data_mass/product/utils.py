@@ -19,8 +19,7 @@ from data_mass.product.service import (
     request_get_products_by_account_microservice
 )
 
-ZONES_DIFF_CONTRACT = ["AR", "PY", "US"]
-TEXT_GREEN = text.Green
+ZONES_DIFF_CONTRACT = ["AR", "PA", "PY", "US"]
 
 
 def generate_random_price_ids(qtd):
@@ -110,21 +109,21 @@ def get_body_price_inclusion_microservice_request(
     return body_price_inclusion
 
 
-def display_product_information(product_offers):
+def display_product_information(product_offers: list):
     """
     Display item information
     Args:
         product_offers: product data by account
     Returns: a table containing the available item information
     """
-    product_information = list()
+    product_information = []
 
     for product in product_offers:
         product_values = {
             "SKU": product.get("sku"),
-            "Name": product.get("sourceData", {}).get("vendorItemId"),
+            "Name": product.get("itemName"),
             "Price": product.get("price"),
-            "Stock Available": product.get("stockAvailable"),
+            "Stock Available": product.get("inventoryCount"),
         }
         product_information.append(product_values)
 
@@ -307,13 +306,14 @@ def get_body_price_microservice_request_v2(
     )
     json_data = json.loads(content.decode("utf-8"))
 
-    if zone not in ZONES_DIFF_CONTRACT:
-        del json_data["prices"][0]["validFrom"]
-        del json_data["prices"][0]["consignment"]
-
     # Update the price values in runtime
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
+
+    if zone not in ZONES_DIFF_CONTRACT:
+        del json_object["prices"][0]["validFrom"]
+        del json_object["prices"][0]["consignment"]
+
 
     # Create body
     put_price_microservice_body = convert_json_to_string(json_object)

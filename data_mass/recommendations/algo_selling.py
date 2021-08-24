@@ -3,6 +3,7 @@ import logging
 from json import loads
 from random import randint
 from time import time
+from typing import Dict, List, Union
 from urllib.parse import urlencode
 from uuid import uuid1
 
@@ -24,27 +25,63 @@ from data_mass.config import get_settings
 
 logger = logging.getLogger(__name__)
 
+COUNTRIES_ES = ["AR", "CO", "DO", "EC", "MX", "PA", "PE", "PY", "SV", "UY"]
+
 
 def create_all_recommendations(zone, environment, account_id, products):
     # Get responses
     quick_order_response = request_quick_order(
-        zone,
-        environment,
-        account_id,
-        products
+        zone=zone,
+        environment=environment,
+        account_id=account_id,
+        products=products
     )
-    sell_up_response = request_sell_up(zone, environment, account_id, products)
+    sell_up_response = request_sell_up(
+        zone=zone,
+        environment=environment,
+        account_id=account_id,
+        products=products
+    )
     forgotten_items_response = request_forgotten_items(
-        zone,
-        environment,
-        account_id,
-        products
+        zone=zone,
+        environment=environment,
+        account_id=account_id,
+        products=products
     )
+    
 
     if quick_order_response and sell_up_response and forgotten_items_response:
         return True
 
     return False
+
+
+def create_list_product_items(
+        product_list: List) -> List[Dict[str, Union[int, str]]]:
+    """
+    Create a list of dicts using the list of skus.
+
+    Parameters
+    ----------
+    product_list : list
+        a list of skus.
+
+    Returns
+    -------
+    list
+        A list of dicts.
+    """
+    items_list = []
+    for product in product_list:
+        items_values = {
+            "sku": product,
+            "quantity": randint(1, 10),
+            "score":  product_list.index(product) + 1,
+            "type": "clustering",
+            "discount": 0
+        }
+        items_list.append(items_values)
+    return items_list
 
 
 def create_quick_order_payload(
@@ -65,9 +102,7 @@ def create_quick_order_payload(
     dict
         A `payload` for quick order creation.
     """
-    countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PA', 'PE', 'PY']
-
-    if zone in countries_es:
+    if zone in COUNTRIES_ES:
         language = 'es'
         text = 'Pedido Fácil'
         text_description = 'Productos que ordenaste anteriormente <link>Añadir todo al camión</link>'
@@ -76,22 +111,11 @@ def create_quick_order_payload(
         text = 'Pedido Facil'
         text_description = 'Produtos comprados anteriormente <link>Adicionar todos itens ao carrinho</link>'
     else:
-        language = 'en'
-        text = 'Quick Order'
-        text_description = 'Products ordered before <link>Add all items to cart</link>'
+        language = "en"
+        text = "Quick Order"
+        text_description = "Products ordered before <link>Add all items to cart</link>"
 
-    items = list()
-    index = 0
-    while index < len(product_list):
-        items_values = {
-            "sku": product_list[index],
-            "quantity": randint(1, 10),
-            "score": index + 1,
-            "type": "clustering",
-            "discount": 0
-        }
-        items.append(items_values)
-        index = index + 1
+    items = create_list_product_items(product_list)
 
     dict_values = {
         'recommendationId': f'DM-{zone}-{str(randint(1, 100000))}',
@@ -147,12 +171,10 @@ def create_forgotten_items_payload(
     dict
         A `payload` for forgotten items creation.
     """
-    countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PA', 'PE', 'PY']
-
-    if zone in countries_es:
+    if zone in COUNTRIES_ES:
         language = 'es'
-        text = 'Productos Populares para Negocios como el tuyo'
-        text_description = ''
+        text = '¡Socio! Complete tu order'
+        text_description = 'Clientes como tu tambíen compraron'
     elif zone == 'BR':
         language = 'pt'
         text = 'Produtos Populares para Negocios como o seu'
@@ -162,18 +184,7 @@ def create_forgotten_items_payload(
         text = 'Popular Products for Businesses like yours'
         text_description = ''
 
-    items = list()
-    index = 0
-    while index < len(product_list):
-        items_values = {
-            "sku": product_list[index],
-            "quantity": randint(1, 10),
-            "score":  index + 1,
-            "type": "clustering",
-            "discount": 0
-        }
-        items.append(items_values)
-        index = index + 1
+    items = create_list_product_items(product_list)
 
     dict_values = {
         'recommendationId': f'DM-{zone}-{str(randint(1, 100000))}',
@@ -213,9 +224,8 @@ def create_forgotten_items_payload(
 
 # Define JSON to submit UP SELL recommendation type
 def create_upsell_payload(account_id, zone, product_list):
-    countries_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PA', 'PE', 'PY']
 
-    if zone in countries_es:
+    if zone in COUNTRIES_ES:
         language = 'es'
         text = 'Productos Populares para Negocios como el tuyo'
         text_description = 'Los Productos mas Vendidos en tu Zona'
@@ -228,18 +238,7 @@ def create_upsell_payload(account_id, zone, product_list):
         text = 'Popular Products for Businesses like yours'
         text_description = 'The Best Selling Products in your zone'
 
-    items = list()
-    index = 0
-    while index < len(product_list):
-        items_values = {
-            "sku": product_list[index],
-            "quantity": randint(1, 10),
-            "score": index + 1,
-            "type": "clustering",
-            "discount": 0
-        }
-        items.append(items_values)
-        index = index + 1
+    items = create_list_product_items(product_list)
 
     dict_values = {
         'recommendationId': f'DM-{zone}-{str(randint(1, 100000))}',
@@ -301,7 +300,8 @@ def request_forgotten_items(zone, environment, account_id, products):
     request_headers = get_header_request_recommender(zone, environment)
 
     # Define url request
-    request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
+    base_url = get_microservice_base_url(environment)
+    request_url =  f"{base_url}/global-recommendation-relay"
 
     # Get body
     request_body = create_forgotten_items_payload(account_id, zone, products)
@@ -322,20 +322,26 @@ def request_sell_up(zone, environment, account_id, products):
     request_headers = get_header_request_recommender(zone, environment)
 
     # Define url request
-    request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
+    base_url = get_microservice_base_url(environment)
+    request_url = f"{base_url}/global-recommendation-relay"
 
     # Get body
     request_body = create_upsell_payload(account_id, zone, products)
 
     # Send request
-    response = place_request('POST', request_url, request_body, request_headers)
+    response = place_request(
+        'POST', request_url, request_body, request_headers
+    )
 
     if response.status_code == 202:
         return True
-    else:
-        print(text.Red + '\n- [Recommendation Relay Service] Failure to add recommendation. Response Status: {}. '
-                         'Response message: {}'.format(response.status_code, response.text))
-        return False
+
+    print(
+        f"{text.Red}- [Recommendation Relay Service] Failure to add "
+        f"recommendation.\n Response Status: {response.status_code}.\n"
+        f"Response message: {response.text}."
+    )
+    return False
 
 
 # Define an exclusive header for Recommended Products
@@ -355,8 +361,10 @@ def get_header_request_recommender(zone, environment):
             'PA': 'America/Panama',
             'PE': 'America/Lima',
             'PY': 'America/Asuncion',
+            'SV': 'America/San_Salvador',
             'US': 'America/New_York',
-            'ZA': 'Africa/Johannesburg'
+            'ZA': 'Africa/Johannesburg',
+            'UY': 'America/Montevideo'
         }
         timezone = switcher.get(zone, False)
 
@@ -403,20 +411,19 @@ def get_recommendation_by_account(
             return recommendation_data
 
         print(
-            f"{text.Yellow}\n"
-            "- [Global Recommendation Service] "
-            f"The account {account_id} does not contains any recommendation type: {use_case}"
+            f"{text.Yellow}- [Global Recommendation Service] "
+            f"The account {account_id} does not contains any "
+            f"recommendation type: {use_case}."
         )
 
         return 'not_found'
 
     print(
-        f"{text.Red}\n"
-        "- [Global Recommendation Service] Failure to retrieve recommendation."
-        f"Response Status: {response.status_code}."
-        f"Response message: {response.text}\n"
+        f"{text.Red}- [Global Recommendation Service] "
+        "Failure to retrieve recommendation.\n"
+        f"Response Status: {response.status_code}.\n"
+        f"Response message: {response.text}."
     )
-
     return False
 
 
@@ -433,7 +440,8 @@ def delete_recommendation_by_id(environment, recommendation_data, zone, account_
     #                      'OIl19.Hpthi-Joez6m2lNiOpC6y1hfPOT5nvMtYdNnp5NqVTM'
     # }
 
-    request_url = get_microservice_base_url(environment, True) + f'/global-recommendation/{recommendation_id}'
+    base_url = get_microservice_base_url(environment, True)
+    request_url = f"{base_url}/global-recommendation/{recommendation_id}"
     response = place_request('DELETE', request_url, '', headers)
 
     if response.status_code == 202:

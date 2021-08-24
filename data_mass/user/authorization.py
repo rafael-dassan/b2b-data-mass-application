@@ -1,6 +1,5 @@
 import logging
 import re
-
 from uuid import uuid1, uuid4
 
 from data_mass.classes.text import text
@@ -16,15 +15,17 @@ def authorize_iam(params):
         "redirect_uri": params["REDIRECT_URL"],
         "client_id": params["CLIENT_ID"],
         "uuid_nonce": uuid4().hex,
-        "state": "{0}-{1}".format(params["B2B_SIGNIN_POLICY"], uuid4().hex),
+        "state": f'{params["B2B_SIGNIN_POLICY"]}-{uuid4().hex}',
         "scope": "openid"
     }
 
-    url = params["BASE_SIGNIN_URL"] + "/oauth2/authorize"
-
+    url = f'{params["BASE_SIGNIN_URL"]}/oauth2/authorize'
     authorize_response = place_request("POST", url, payload, None)
 
-    logging.debug("Logon :: authorize() :: Response................: {response}".format(response=authorize_response))
+    logging.debug(
+        f"Logon :: authorize() :: \
+        Response................: {authorize_response}"    
+    )
 
     if authorize_response.status_code != 200:
         print((
@@ -40,9 +41,11 @@ def authorize_iam(params):
     api = re.search('\"api\":"([^"]+)', response_text).group(1)
     trans_id = re.search('\"transId\":"([^"]+)', response_text).group(1)
 
-    logging.debug("Logon :: authorize() :: CSRF....................: {csrf}".format(csrf=csrf))
-    logging.debug("Logon :: authorize() :: API.....................: {api}".format(api=api))
-    logging.debug("Logon :: authorize() :: TRANS_ID................: {trans_id}".format(trans_id=trans_id))
+    logging.debug(f"Logon :: authorize() :: CSRF....................: {csrf}")
+    logging.debug(f"Logon :: authorize() :: API.....................: {api}")
+    logging.debug(
+        f"Logon :: authorize() :: TRANS_ID................: {trans_id}"
+    )
 
     if len(csrf) == 0 | len(api) == 0 | len(trans_id) == 0:
         return False
@@ -73,12 +76,15 @@ def authorize_load_request(params):
         "scope": "openid"
     }
 
-    authorize_load_response = place_request("GET", params["BASE_SIGNUP_URL"] + "/oauth2/authorize", data, None)
+    url = f'{params["BASE_SIGNUP_URL"]}/oauth2/v2.0/authorize'
+    authorize_load_response = place_request("GET", url, data, None)
     response_text = authorize_load_response.text
     if authorize_load_response.status_code != 200:
-        print("\n{0}- Fail [authorize_load_request]. Response code: {1}. Response message: {2}".format(text.Red,
-                                                                                                       authorize_load_response.status_code,
-                                                                                                       response_text))
+        print(
+            f"{text.Red}- Fail [authorize_load_request]. \n"
+            f"Response code: {authorize_load_response.status_code}.\n"
+            f"Response message: {response_text}"
+        )
         return False
 
     try:
@@ -86,11 +92,15 @@ def authorize_load_request(params):
         api = re.search('\"api\":"([^"]+)', response_text).group(1)
         trans_id = re.search('\"transId\":"([^"]+)', response_text).group(1)
     except AttributeError as e:
-        print("\n{0}- Fail [authorize_load_request]. Exception: {1}".format(text.Red, str(e)))
+        print(
+            f"{text.Red}- Fail [authorize_load_request]. Exception: {str(e)}"
+        )
         return False
 
     if len(csrf) == 0 | len(api) == 0 | len(trans_id) == 0:
-        print("\n{0}- Fail [authorize_load_request]. Invalid response.".format(text.Red))
+        print(
+            f"{text.Red}- Fail [authorize_load_request]. Invalid response."
+        )
         return False
     else:
         return {
@@ -110,7 +120,7 @@ def authorize_account_request(params, last_response):
         "redirect_uri": params["REDIRECT_URL"],
         "client_id": params["CLIENT_ID"],
         "nonce": uuid1().hex,
-        "state": "{0}-{1}".format(params["B2B_ONBOARDING_POLICY"], uuid1().hex),
+        "state": f'{params["B2B_ONBOARDING_POLICY"]}-{uuid1().hex}',
         "scope": "openid"
     }
 
@@ -118,14 +128,16 @@ def authorize_account_request(params, last_response):
         "Cookie": get_cookies_header(last_response["COOKIES"])
     }
 
-    url = '{0}/oauth2/authorize'.format(params["BASE_ONBOARDING_URL"])
+    url = f'{params["BASE_ONBOARDING_URL"]}/oauth2/authorize'
 
     authorize_account_response = place_request("GET", url, data, headers)
     response_text = authorize_account_response.text
     if authorize_account_response.status_code != 200:
-        print("\n{0}- Fail [authorize_account_request]. Response status: {1}. Response message: {2}".format(text.Red,
-                                                                                                            authorize_account_response
-                                                                                                            .status_code, response_text))
+        print(
+            f"\n{text.Red}- Fail [authorize_account_request].\n"
+            f"Response status: {authorize_account_response.status_code}.\n"
+            f"Response message: {response_text}."
+        )
         return False
 
     csrf = re.search('\"csrf\":"([^"]+)', response_text).group(1)
