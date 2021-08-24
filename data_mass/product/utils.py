@@ -1,7 +1,6 @@
 import json
 from datetime import datetime
 from distutils.util import strtobool
-from json import dumps
 from random import randint, sample, uniform
 
 import click
@@ -89,7 +88,7 @@ def generate_price_values(zone, product):
 
 
 def get_body_price_inclusion_microservice_request(
-        delivery_center_id: str) -> dict:
+        delivery_center_id: str) -> str:
     """
     Create body for product inclusion
 
@@ -102,11 +101,8 @@ def get_body_price_inclusion_microservice_request(
     dict
         A new body.
     """
-    body_price_inclusion = dumps({
-        "deliveryCenters": [delivery_center_id]
-    })
+    return json.dumps({"deliveryCenters": [delivery_center_id]})
 
-    return body_price_inclusion
 
 
 def display_product_information(product_offers: list):
@@ -364,7 +360,7 @@ def get_items_associated_account(
     unique_sku = {item['sku'] for item in product_offers}
     unique_sku = sample(list(unique_sku), len(unique_sku))
     print(
-        f"{TEXT_GREEN}"
+        f"{text.Green}"
         f"The account has {len(unique_sku)} products associated!"
     )
     quantity = click.prompt(
