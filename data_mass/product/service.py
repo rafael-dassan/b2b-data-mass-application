@@ -41,13 +41,26 @@ def request_get_products_microservice(
     request_headers = get_header_request(zone, True, False, False, False)
     base_url = get_microservice_base_url(environment)
 
-    request_url = (
-        f"{base_url}"
-        "/items/?"
-        "includeDeleted=false"
-        "&includeDisabled=false"
-        f"&pageSize={page_size}"
-    )
+    if zone == "CA":
+        settings = get_settings()
+
+        request_url = (
+            f"{base_url}"
+            "/items"
+            "/items"
+            "?includeDeleted=false"
+            "&includeDisabled=false"
+            f"&pageSize={page_size}"
+            f"&vendorId={settings.vendor_id}"
+        )
+    else:
+        request_url = (
+            f"{base_url}"
+            "/items/?"
+            "includeDeleted=false"
+            "&includeDisabled=false"
+            f"&pageSize={page_size}"
+        )
 
     # Send request
     response = place_request("GET", request_url, "", request_headers)
@@ -288,7 +301,7 @@ def request_get_account_product_assortment(
     Returns
     -------
     list
-        A list of SKUs in case of success and `false` in case of failure
+        A list of SKUs in case of success and `False` in case of failure
     """
     # Get headers
     headers = get_header_request(zone, True, False, False, False, account_id)
