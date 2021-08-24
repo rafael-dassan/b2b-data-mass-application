@@ -37,7 +37,7 @@ from data_mass.populator.helpers.database_helper import (
     delete_from_database_by_account,
     get_database_params
 )
-from data_mass.populator.log import *
+from data_mass.populator.log import logging
 from data_mass.populator.preconditions import (
     delete_deal,
     delete_invoice,
@@ -46,7 +46,7 @@ from data_mass.populator.preconditions import (
 from data_mass.validations import REWARDS_COUNTRIES
 
 logger = logging.getLogger(__name__)
-
+COUNTRIES = ['AR', 'BR', 'CA', 'CO', 'EC', 'MX', 'PA', 'PE', 'PY', 'SV', 'ZA']
 
 def execute_test(country, environment):
     account_params = get_account_params(country)
@@ -165,28 +165,25 @@ def execute_preconditions(country, environment, account_params, order_database_p
 
 
 def get_email_param(country):
-    return {
-        'AR': 'test-populator-ar@mailinator.com',
-        'BR': 'test-populator-br@mailinator.com',
-        'CA': 'test-populator-ca@mailinator.com',
-        'CO': 'test-populator-co@mailinator.com',
-        'DO': 'test-populator-do@mailinator.com',
-        'EC': 'test-populator-ec@mailinator.com',
-        'MX': 'test-populator-mx@mailinator.com',
-        'PA': 'test-populator-pa@mailinator.com',
-        'PE': 'test-populator-pe@mailinator.com',
-        'PY': 'test-populator-py@mailinator.com',
-        'US': 'test-populator-us@mailinator.com',
-        'UY': 'test-populator-uy@mailinator.com',
-        'ZA': 'test-populator-za@mailinator.com'
-        
-    }.get(country, False)
+    """
+    Create and return an email for populator test with country param.
+
+    Args:
+        country (str): the country to be used in email
+
+    Returns:
+        str: email for populator test.
+        bool: country not valid.
+    """
+    if country in COUNTRIES:
+        return f"test-populator-{country.lower()}@mailinator.com"
+    return False
 
 
 def get_account_params(country):
     return {
         'id': '17629091762452',
-        'name': 'TEST_POC_001_{country}'.format(country=country),
+        'name': f'TEST_POC_001_{country}',
         'payment_method': ['CASH'],
         'credit': '30000',
         'balance': '30000',

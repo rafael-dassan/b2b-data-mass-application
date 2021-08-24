@@ -79,7 +79,7 @@ def populate_invoices(country, environment):
 
 
 def populate_challenges(country, environment):
-    rewards_not_available_zones = ["CA", "PA"]
+    rewards_not_available_zones = ["CA", "PA", "SV"]
     if country not in rewards_not_available_zones:
         logger.info("remove_rewards_enrollment for %s/%s", country, environment)
         disenroll_pocs(country, environment, search_data_by(country, 'rewards_enroll'))

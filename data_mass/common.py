@@ -17,14 +17,11 @@ import pkg_resources
 import requests
 from click.termui import prompt
 from dateutil.parser import parse
-# Third party imports
 from jsonpath_rw import Fields, Index
 from jsonpath_rw_ext import parse
 from requests import request
-from tabulate import tabulate
 
 from data_mass.classes.text import text
-# Local application imports
 from data_mass.config import get_settings
 from data_mass.logger import log_to_file
 from data_mass.validations import (
@@ -83,6 +80,7 @@ def validate_zone_for_combos_dt(zone):
         'MX': True,
         'PE': True,
         'EC': True,
+        'SV': True,
         "UY": True
     }
     return switcher.get(zone, False)
@@ -135,6 +133,7 @@ def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclus
         'PA': 'America/Panama',
         'PE': 'America/Lima',
         'PY': 'America/Asuncion',
+        'SV': 'America/El_Salvador',
         'US': 'America/New_York',
         'UY': 'America/Montevideo',
         'ZA': 'Africa/Johannesburg',
@@ -155,8 +154,12 @@ def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclus
     if zone in ["US", "CA"]:
         header['Authorization'] = get_jwt_token()
         header['Accept-Language'] = 'en'
+    if zone == "SV":
+        header['Authorization'] = get_jwt_token()
     elif use_jwt_auth:
-        header['Authorization'] = generate_hmac_jwt(zone, account_id, jwt_app_claim)
+        header['Authorization'] = generate_hmac_jwt(
+            zone, account_id, jwt_app_claim
+        )
     elif use_root_auth:
         header['Authorization'] = 'Basic cm9vdDpyb290'
     elif use_inclusion_auth:
@@ -184,8 +187,23 @@ def get_microservice_base_url(environment, is_v1=True):
         return f"https://services-{env_name.lower()}.bees-platform.dev{context}"
 
 
-# Return base URL for Magento
-def get_magento_base_url(environment, country):
+def get_magento_base_url(
+        environment: str, country: str) -> str:
+    """
+    Returns base URL for Magento.
+
+    Parameters
+    ----------
+    environment : str
+        environment for dict selecting.
+    country : str
+        country for dict selecting.
+
+    Returns
+    -------
+    str
+        Base url for the inputed environment and zone.
+    """
     magento_url = {
         'DT': {
             'AR': 'https://qa-dt-las-ar.abi-sandbox.net/',
@@ -217,8 +235,9 @@ def get_magento_base_url(environment, country):
             'PA': 'https://pa.sit.bees-platform.dev',
             'PE': 'https://pe.sit.bees-platform.dev',
             'PY': 'https://py.sit.bees-platform.dev',
-            'ZA': 'https://za.sit.bees-platform.dev',
-            'UY': 'https://uy.sit.bees-platform.dev'
+            'SV': 'https://sv.sit.bees-platform.dev',
+            'UY': 'https://uy.sit.bees-platform.dev',
+            'ZA': 'https://za.sit.bees-platform.dev'
         },
         'UAT': {
             'AR': 'https://ar.uat.bees-platform.dev',
@@ -231,15 +250,31 @@ def get_magento_base_url(environment, country):
             'PA': 'https://pa.uat.bees-platform.dev',
             'PE': 'https://pe.uat.bees-platform.dev',
             'PY': 'https://py.uat.bees-platform.dev',
-            'ZA': 'https://za.uat.bees-platform.dev',
-            'UY': 'https://uy.uat.bees-platform.dev'
+            'SV': 'https://sv.uat.bees-platform.dev',
+            'UY': 'https://uy.uat.bees-platform.dev',
+            'ZA': 'https://za.uat.bees-platform.dev'
         }
     }
     return magento_url.get(environment).get(country)
 
 
-# Returns Magento User Registration Integration Access Token
-def get_magento_user_registration_access_token(environment, country):
+def get_magento_user_registration_access_token(
+        environment: str, country: str) -> str:
+    """
+    Returns Magento User Registration Integration Access Token.
+
+    Parameters
+    ----------
+    environment : str
+        environment for dict selecting.
+    country : str
+        country for dict selecting.
+
+    Returns
+    -------
+    str
+        An user registration access in Magento.
+    """
     access_token = {
         'DT': {
             'AR': '0pj40segd3h67zjn68z9oj18xyx5yib8',
@@ -294,8 +329,23 @@ def get_magento_user_registration_access_token(environment, country):
     return access_token.get(environment).get(country)
 
 
-# Returns Magento Datamass Application Access Token
-def get_magento_datamass_access_token(environment, country):
+def get_magento_datamass_access_token(
+        environment: str, country: str) -> str:
+    """
+    Returns Magento Datamass Application Access Token.
+
+    Parameters
+    ----------
+    environment : str
+        environment for dict selecting.
+    country : str
+        country for dict selecting.
+
+    Returns
+    -------
+    str
+        The data-mass access token for Magento.
+    """
     access_token = {
         'UAT': {
             'AR': 'a34o213zgisn67efeg0zbq04sqg667qk',
@@ -308,8 +358,9 @@ def get_magento_datamass_access_token(environment, country):
             'PA': 't1l4tdhvzrsk54qgm9b7wg0nty1ia0jr',
             'PE': 'xcgb5m0rl5pto116q4gxe1msd3zselq6',
             'PY': 'nju63hy7j5nhfzgaeah2y077anlpzs6o',
-            'ZA': '0seca4btewbr3e1opma4je2x8ftj57wx',
-            'UY': 'Not ready for UAT'
+            'SV': 's2te8e0rzibmqj89cb4h2e4vduebe51o',
+            'UY': 'Not ready for UAT',
+            'ZA': '0seca4btewbr3e1opma4je2x8ftj57wx'
         },
         'SIT': {
             'AR': 'hzp6hw65oqiyeyv8ozfzunex0nc1rff8',
@@ -322,25 +373,39 @@ def get_magento_datamass_access_token(environment, country):
             'PA': '3bs7q1f5wtegt7vrgxumcv1plhjatf1d',
             'PE': 'lda0mjri507oqrm8xfofk6weifajn8cm',
             'PY': 'bgfrp38faxbpwnad7uoc2vqlprmv5nck',
-            'ZA': 'fde80w10jbbaed1mrz6yg0pwy1vzfo48',
-            'UY': 'r9grukw8l2ck0r01mqo6bnlir6kyuysl'
+            'SV': 'fqwj8frye6s4dpucnks6srh0l04xwk35',
+            'UY': 'r9grukw8l2ck0r01mqo6bnlir6kyuysl',
+            'ZA': 'fde80w10jbbaed1mrz6yg0pwy1vzfo48'
         }
     }
     return access_token.get(environment).get(country)
 
 
-# Clear terminal
+
 def clear_terminal():
+    """
+    Clears the terminal
+    """
     os.system('clear')
 
 
-# Kill application
 def finish_application():
+    """
+    Kills the application
+    """
     sys.exit()
 
 
-# Print init menu
 def print_available_options(selection_structure):
+    """
+    Print the init menu for user selection
+
+    Args:
+        selection_structure ([str]): the option selected by the user
+
+    Returns:
+        [str]: the selected option by the user
+    """
     if selection_structure == '1':
         print(text.default_text_color + str(0), text.Yellow + CLOSE_APPLICATION)
         print(text.default_text_color + str(1), text.Yellow + 'Account')
@@ -468,7 +533,6 @@ def print_available_options(selection_structure):
     return selection
 
 
-# Print welcome menu
 def print_welcome_script():
     print(text.Bold + text.White + text.BackgroundDarkGray)
     print("                                    ")
@@ -479,7 +543,6 @@ def print_welcome_script():
     print(text.default_text_color + text.ResetAll + text.Bold + "\n")
 
 
-# Print structure menu
 def print_structure_menu():
     print(text.default_text_color + str(1), text.Yellow + DATA_CREATION + text.White + 'Microservice')
     print(text.default_text_color + str(2), text.Yellow + 'Data searching - ' + text.White + 'Microservice')    
@@ -749,18 +812,19 @@ def validate_user_entry_date(text:str = "New Date entry"):
 
 def validate_country_menu_in_user_create_iam(zone):
     switcher = {
+        "AR": True,
         "BR": True,
+        "CA": True,
         "CO": True,
         "DO": True,
-        "MX": True,
         "EC": True,
+        "MX": True,
         "PE": True,
-        "ZA": True,
-        "AR": True,
-        "CA": True,
-        "US": True,
         "PA": True,
-        "UY": True
+        "SV": True,
+        "US": True,
+        "UY": True,
+        "ZA": True
     }
     return switcher.get(zone, False)
 

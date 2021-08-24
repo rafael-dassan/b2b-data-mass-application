@@ -128,11 +128,10 @@ def request_get_offers_microservice(
             return "not_found"
     else:
         print(
-            text.Red
-            + "\n- [Catalog Service] Failure to get a list of available SKUs. Response Status: "
-            "{response_status}. Response message: {response_message}".format(
-                response_status=response.status_code, response_message=response.text
-            )
+            f"{text.Red}"
+            f"- [Catalog Service] Failure to get a list of available SKUs.\n"
+            f"Response Status: {response.status_code}.\n"
+            f"Response message: {response.text}."
         )
         return False
 
@@ -224,16 +223,29 @@ def request_get_products_by_account_microservice(account_id, zone, environment):
     if zone in ["CA", "US"]:
         account_id = get_multivendor_account_id(account_id, zone, environment)
         v1 = False
+    elif zone == "SV":
+        endpoint = "catalog-service"
+        v1 = False
+    else:
+        endpoint = "catalog-service"
+        v1 = True
 
     base_url = get_microservice_base_url(environment, v1)
-    query = {
-        "accountId": account_id,
-        "projection": "SMALL",
-        "includeDiscount": False,
-        "includeAllPromotions": False
-    }
+    if zone == "SV":
+        query = {
+            "fulfillmentCenterId": account_id,
+        }
+        request_headers.update({"regionID": "ES_SV", "custID": account_id})
+        request_url = f"{base_url}/{endpoint}/items?{urlencode(query)}"
+    else:
+        query = {
+            "accountId": account_id,
+            "projection": "SMALL",
+            "includeDiscount": False,
+            "includeAllPromotions": False
+        }
 
-    request_url = f"{base_url}/catalog-service/catalog/items?{urlencode(query)}"
+        request_url = f"{base_url}/{endpoint}/catalog/items?{urlencode(query)}"
 
     # Send request
     response = place_request("GET", request_url, "", request_headers)

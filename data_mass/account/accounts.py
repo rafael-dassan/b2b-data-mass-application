@@ -741,6 +741,13 @@ def get_account_delivery_address(zone: str) -> dict:
             'state': 'Asuncion',
             'zipcode': 'N/A'
         },
+        'SV': {
+            'address': '7a Avenida Sur final',
+            'street': 'Avenida Sur final',
+            'city': 'San Salvador',
+            'state': 'San Salvador',
+            'zipcode': 'N/A'
+        },
         'ZA': {
             'address': '726  Thomas St',
             'street': 'Thomas St',

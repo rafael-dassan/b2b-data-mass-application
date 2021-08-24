@@ -1,7 +1,7 @@
 import sys
 from datetime import datetime, timedelta
 from distutils.util import strtobool
-from random import choice, randint, sample
+from random import choice, randint, sample, uniform
 
 import click
 import pyperclip
@@ -204,14 +204,12 @@ from data_mass.product.service import (
     finish_application,
     request_get_account_product_assortment,
     request_get_offers_microservice,
-    request_get_products_by_account_microservice,
     request_get_products_microservice
 )
 from data_mass.product.utils import (
     display_items_information_zone,
     display_product_information,
-    get_item_input_data,
-    uniform
+    get_item_input_data
 )
 from data_mass.recommendations.algo_selling import (
     create_all_recommendations,
@@ -379,6 +377,7 @@ def deals_information_menu():
 
 def product_information_menu():
     selection_structure = print_get_products_menu()
+    zone = print_zone_menu_for_ms()
     environment = print_environment_menu()
 
     switcher = {
@@ -390,7 +389,6 @@ def product_information_menu():
     products_type = switcher.get(selection_structure, False)
 
     if products_type == 'PRODUCT':
-        zone = print_zone_menu_for_ms()
 
         if zone == "US":
             resources_warning()
@@ -417,11 +415,10 @@ def product_information_menu():
         elif product_offers == 'not_found':
             print(text.Red + '\n- [Catalog Service] There is no product associated with the account ' + abi_id)
             print_finish_application_menu()
-
-        display_product_information(product_offers)
+        else:
+            display_product_information(product_offers)
 
     elif products_type == 'INVENTORY':
-        zone = print_zone_menu_for_ms()
         abi_id = print_account_id_menu(zone)
         if not abi_id:
             print_finish_application_menu()
@@ -450,8 +447,6 @@ def product_information_menu():
             display_inventory_by_account(inventory, zone)
 
     else:
-        zone = print_zone_menu_for_ms()
-
         products = request_get_products_microservice(zone, environment)
         if not products:
             print_finish_application_menu()

@@ -55,7 +55,6 @@ def populate_product(country, environment, sku, name, brand_name, sub_brand_name
         response = create_product_v2(country, environment, item_data)
     else:
         response = create_product(country, environment, item_data)
-
     if response is None:
         logger.error(log(Message.PRODUCT_CREATE_ERROR, {"sku": sku}))
 
