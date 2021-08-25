@@ -178,7 +178,8 @@ from data_mass.menus.supplier_menu import (
 )
 from data_mass.orders.relay import (
     request_changed_order_creation,
-    request_order_creation
+    request_order_creation,
+    request_order_update
 )
 from data_mass.orders.service import (
     check_if_order_exists,
@@ -732,6 +733,14 @@ def order_menu():
             environment,
             account_id
         ),
+        '3': lambda: flow_update_order(
+            zone,
+            environment,
+            account_id,
+            delivery_center_id,
+            order_status,
+            item_list
+        )
     }.get(operation, lambda: None)()
 
 
@@ -922,6 +931,118 @@ def flow_create_changed_order(
     else:
         print_finish_application_menu()
 
+def flow_update_order(
+        zone: str,
+        environment: str,
+        account_id: str,
+        delivery_center_id: str,
+        order_status: str,
+        item_list: list):
+    """
+    Create a dataflow to match business rules.
+
+    Parameters
+    ----------
+    zone : str
+        e.g., AR, BR, DO, etc
+    environment : str
+        e.g., DEV, SIT, UAT
+    account_id : str
+        POC unique identifier
+    delivery_center_id : str
+        POC's delivery center
+    order_status : str
+        order status e.g. Placed, Pending, Confirmed, etc
+    item_list : list
+        list of items
+    """
+    has_empties = None
+
+    order_id = print_order_id_menu()
+    order_data = check_if_order_exists(account_id, zone, environment, order_id)
+    if not order_data:
+        print_finish_application_menu()
+    elif order_data == "empty":
+        print_finish_application_menu()
+    elif order_data == "not_found":
+        print_finish_application_menu()
+
+    if order_status == 'PLACED':
+        allow_order_cancel = print_allow_cancellable_order_menu()
+    else:
+        allow_order_cancel = 'N'
+
+    if order_status == 'DELIVERED':
+        # Sets the format of the delivery date of the order (current date and time less one day)
+        delivery_date = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+    else:
+        option_change_date = validate_yes_no_change_date()
+        if option_change_date.upper() == "Y": 
+            delivery_date = validate_user_entry_date(
+                'Enter Date for Delivery-Date (YYYY-mm-dd)'
+        )
+        else:
+            tomorrow = datetime.today() + timedelta(1)
+            delivery_date = str(datetime.date(tomorrow))
+
+    if zone in ["CA", "US"]:
+        has_empties = input(
+            f"{text.default_text_color}"
+            "Has empties? y/N: "
+        )
+
+        while (has_empties.upper() in ["Y", "N"]) is False:
+            print(text.Red + "\n- Invalid option")
+            has_empties = input(f"\n{text.default_text_color}Has empties? y/N: ")
+
+        has_empties = bool(strtobool(has_empties))
+
+        order_items = request_order_simulation_v3(
+            account_id=account_id,
+            zone=zone,
+            environment=environment,
+            items=item_list,
+            delivery_date=delivery_date
+        )
+    else:
+        order_items = request_order_simulation(
+            zone=zone,
+            environment=environment,
+            account_id=account_id,
+            delivery_center_id=delivery_center_id,
+            items=item_list,
+            combos=[],
+            empties=[],
+            payment_method='CASH',
+            payment_term=0,
+            delivery_date=delivery_date
+        )
+
+    if not order_items:
+        print_finish_application_menu()
+
+    order_data = request_order_update(
+        account_id=account_id,
+        delivery_center_id=delivery_center_id,
+        zone=zone,
+        environment=environment,
+        allow_order_cancel=allow_order_cancel,
+        order_items=order_items,
+        order_status=order_status,
+        delivery_date=delivery_date,
+        items=item_list,
+        has_empties=has_empties,
+        order_id = order_id
+    )
+
+    if order_data:
+        print(
+            text.Green 
+            + f'\n- Order {order_data.get("orderNumber")} '
+            'created successfully'
+        )
+
+    print_finish_application_menu()
 
 # Place request for simulation service in microservice
 def check_simulation_service_account_microservice_menu():

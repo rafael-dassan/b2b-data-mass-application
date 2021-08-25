@@ -225,7 +225,7 @@ def validate_rewards_challenges(selection):
 
 
 def validate_orders(option):
-    options = ["1", "2"]
+    options = ["1", "2", "3"]
     return option in options
 
 
