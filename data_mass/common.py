@@ -154,11 +154,13 @@ def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclus
     if zone in ["US", "CA"]:
         header['Authorization'] = get_jwt_token()
         header['Accept-Language'] = 'en'
-    if zone == "SV":
+    elif zone == "SV":
         header['Authorization'] = get_jwt_token()
     elif use_jwt_auth:
         header['Authorization'] = generate_hmac_jwt(
-            zone, account_id, jwt_app_claim
+            zone=zone,
+            account_id=account_id,
+            app_claim=jwt_app_claim
         )
     elif use_root_auth:
         header['Authorization'] = 'Basic cm9vdDpyb290'

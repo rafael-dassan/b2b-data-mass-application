@@ -15,7 +15,6 @@ from data_mass.config import get_settings
 def get_categories(
         zone: str,
         environment: str,
-        service: str = "category",
         account_id: str = None) -> Optional[list]:
     """
     Get categories.
@@ -24,65 +23,26 @@ def get_categories(
     ----------
     zone : str
     environment : str
-    service : str
-        Service from which you will be consulted. One of [category, catalog].
     account_id : str
-        If the chosen service is `catalog`, this parameter is required.\
-        Default to `None`.
 
     Returns
     -------
     dict
         A dict with a list of categoires.
+
+    Notes
+    -----
+        This method only supports multivendor zones.
     """
     base_url = get_microservice_base_url(environment, False)
     header = get_header_request(zone)
 
-    if service.lower() == "category":
-        settings = get_settings()
-        query = {
-            "vendorId": settings.vendor_id
-        }
-        request_url = f"{base_url}/categories/?{urlencode(query)}"
+    settings = get_settings()
+    query = {
+        "vendorId": settings.vendor_id
+    }
 
-    if service.lower() == "catalog":
-        if account_id is not None:
-            account_id = get_multivendor_account_id(
-                vendor_account_id=account_id,
-                zone=zone,
-                environment=environment
-            )
-
-            header.update({
-                "accountId": account_id,
-                "Accept-Language": "en"
-            })
-
-            query = {
-                "categoryType": "WEB",
-                "includeEmptyCategory": False,
-                "projection": "SMALL",
-                "page_size": 50,
-                "depth": -1,
-                "includeDiscount": False,
-                "includeAllPromotions": False
-            }
-            request_url = (
-                f"{base_url}"
-                "/v1/catalog-service"
-                "/catalog"
-                "/categories"
-                f"?{urlencode(query)}"
-            )
-        else:
-            print(
-                f"{text.Red}\n"
-                'The parameter "account_id" is required '
-                'when target service is catalog.\n'
-            )
-
-            return None
-
+    request_url = f"{base_url}/categories/?{urlencode(query)}"
     response = place_request(
         request_method="GET",
         request_url=request_url,

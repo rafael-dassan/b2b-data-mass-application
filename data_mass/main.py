@@ -2340,32 +2340,18 @@ def categories_ms_menu():
             print(text.Red + f'\n- {environment.upper()} is not a valid environment\n')
             environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
 
-        service = input(text.default_text_color + 'From which service? category/catalog: ')
-        while service.lower() not in ["category", "catalog"]:
-            print(text.Red + f'\n- {service.upper()} is not a valid service\n')
-            service = input(text.default_text_color + 'From which service? category/catalog: ')
-
-        if service.lower() == "catalog":
-            account_id = environment = input(text.default_text_color + 'Vendor account id: ')
-
         categories = get_categories_ms(
             zone=zone.upper(),
             environment=environment,
-            service=service,
             account_id=account_id
         )
 
-        if not categories:
-            print_finish_application_menu()
-
         if categories:
             print("Categories: [id, name]")
-            if service.lower() == "category":
-                for category in categories:
-                    print(f"- {category['id']}, {category['name']}")
-            else:
-                for category in categories.get("categories", []):
-                    print(f"- {category['categoryID']}, {category['name']}")
+            for category in categories:
+                print(f"- {category['id']}, {category['name']}")
+        else:
+            print_finish_application_menu()
     else:
         zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
         while validate_zone_for_ms(zone.upper()) is False:
