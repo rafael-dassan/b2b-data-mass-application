@@ -85,8 +85,11 @@ def execute_test(country, environment):
                  account_params.get('credit'), account_params.get('balance'), account_params.get('amount_of_products'),
                  account_params.get('has_delivery_window'), account_params.get('eligible_rewards'), [product_params.get('sku')])
 
-    logger.info("populate_users_iam_b2c for %s/%s", country, environment)
-    populate_user_iam_b2c(country, environment, user_params.get('email'), user_params.get('password'), [account_params.get('id')])
+    if country.lower() == "sv":
+        ...
+    else:
+        logger.info("populate_users_iam_b2c for %s/%s", country, environment)
+        populate_user_iam_b2c(country, environment, user_params.get('email'), user_params.get('password'), [account_params.get('id')])
 
     logger.info("populate_recommendations for %s/%s", country, environment)
     populate_recommendation(country, environment, algo_selling_params.get('account_id'), algo_selling_params.get('products'))

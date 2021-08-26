@@ -123,6 +123,8 @@ def add_products_to_account(account, country, environment, amount_of_products):
     # Get all products
     all_products = request_get_products_microservice(
         country, environment, amount_of_products)
+    if not all_products:
+        all_products = []
     logger.debug("Products available to populate: {products} items".format(
         products=str(len(all_products))))
 

@@ -154,8 +154,6 @@ def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclus
     if zone in ["US", "CA"]:
         header['Authorization'] = get_jwt_token()
         header['Accept-Language'] = 'en'
-    elif zone == "SV":
-        header['Authorization'] = get_jwt_token()
     elif use_jwt_auth:
         header['Authorization'] = generate_hmac_jwt(
             zone=zone,
