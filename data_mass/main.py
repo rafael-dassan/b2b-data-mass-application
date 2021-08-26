@@ -13,8 +13,8 @@ from data_mass.account.accounts import (
     get_account_delivery_address,
     get_credit_info,
     get_delivery_cost_values,
-    get_minimum_order_info,
-    get_minimum_order_list
+    get_minimum_order_list,
+    get_order_info
 )
 from data_mass.account.credit import add_credit_to_account_microservice
 from data_mass.account.delivery_window import (
@@ -116,7 +116,7 @@ from data_mass.menus.account_menu import (
     print_get_account_operations_menu,
     print_include_delivery_cost_menu,
     print_input_owner_infos,
-    print_minimum_order_menu,
+    print_order_menu,
     print_payment_method_menu
 )
 from data_mass.menus.algo_selling_menu import print_recommender_type_menu
@@ -1851,16 +1851,23 @@ def flow_create_account(zone, environment, account_id):
     payment_method = print_payment_method_menu(zone)
     delivery_address = get_account_delivery_address(zone)
     account_status = print_account_status_menu()
-    option_include_minimum_order = print_minimum_order_menu()
+    option_include_minimum_order = print_order_menu()
     account_eligible_rewards = False
 
     has_po_number = None
     customer_id = None
 
     if option_include_minimum_order == 'Y':
-        minimum_order = get_minimum_order_info()
+        minimum_order = get_order_info()
     else:
         minimum_order = None
+        
+    option_include_maximum_order = print_order_menu(order_type="maximum")
+    
+    if option_include_maximum_order == 'Y':
+        maximum_order = get_order_info(order_type="Maximum")
+    else:
+        maximum_order = None
 
     if zone == 'MX':
         enable_empties_loan = print_account_enable_empties_loan_menu()
@@ -1895,7 +1902,8 @@ def flow_create_account(zone, environment, account_id):
         enable_empties_loan=enable_empties_loan,
         eligible_rewards=account_eligible_rewards,
         has_po_number=has_po_number,
-        customer_id=customer_id
+        customer_id=customer_id,
+        maximum_order=maximum_order
     )
 
     if create_account_response:
@@ -2098,10 +2106,10 @@ def flow_update_account_minimum_order(zone, environment, account_id):
     else:
         eligible_rewards = False
 
-    option_include_minimum_order = print_minimum_order_menu()
+    option_include_minimum_order = print_order_menu()
 
     if option_include_minimum_order == 'Y':
-        minimum_order = get_minimum_order_info()
+        minimum_order = get_order_info()
     else:
         minimum_order = None
 

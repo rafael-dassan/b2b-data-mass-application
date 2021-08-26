@@ -73,11 +73,11 @@ def delivery_window_menu():
     return option
 
 
-def print_minimum_order_menu():
-    option = input(DEFAULT_TEXT_COLOR + 'Do you want to include the minimum order parameter? y/N: ')
+def print_order_menu(order_type: str = "Minimum"):
+    option = input(f"{DEFAULT_TEXT_COLOR}Do you want to include the {order_type.lower()} order parameter? y/N: ")
     while validate_yes_no_option(option.upper()) is False:
         print(INVALID_OPTION)
-        option = input(DEFAULT_TEXT_COLOR + 'Do you want to include the minimum order parameter? y/N: ')
+        option = input(f"{DEFAULT_TEXT_COLOR}Do you want to include the {order_type.lower()} order parameter? y/N: ")
 
     return option.upper()
 
@@ -102,11 +102,12 @@ def print_minimum_order_type_menu():
     return minimum_order_type
 
 
-def print_minimum_order_value_menu():
-    minimum_order_value = input(DEFAULT_TEXT_COLOR + 'Minimum order value: ')
+def print_order_value_menu(order_type: str = "Minimum"):
+    minimum_order_value = input(f"{DEFAULT_TEXT_COLOR}{order_type} order value: ")
+
     while minimum_order_value == '' or int(minimum_order_value) <= 0:
         print(text.Red + '\n- SKU quantity must be greater than 0\n')
-        minimum_order_value = input(DEFAULT_TEXT_COLOR + 'Minimum order value: ')
+        minimum_order_value = input(f"{DEFAULT_TEXT_COLOR}{order_type} order value: ")
 
     return minimum_order_value
 

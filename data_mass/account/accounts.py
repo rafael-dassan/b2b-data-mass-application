@@ -14,7 +14,7 @@ from data_mass.common import (
 from data_mass.config import get_settings
 from data_mass.menus.account_menu import (
     print_minimum_order_type_menu,
-    print_minimum_order_value_menu
+    print_order_value_menu
 )
 
 
@@ -278,6 +278,15 @@ def create_account_ms(
     else:
         dict_values.update({"minimumOrder": minimum_order})
 
+    if kwargs.get("maximum_order") is not None:
+        maximum_order = kwargs.get("maximum_order")
+        dict_values.update({
+            "maximumOrder": {
+                "type": maximum_order[0],
+                "value": int(maximum_order[1])
+            }
+        })
+
     # If the user chooses to make an account eligible for rewards program,
     # we will include the necessary information
     # to match with a Data Mass available one
@@ -510,15 +519,19 @@ def display_account_information(account: str):
     ))
 
 
-def get_minimum_order_info():
-    minimum_order_type = print_minimum_order_type_menu()
-    minimum_order_value = print_minimum_order_value_menu()
+def get_order_info(order_type: str = "Minimum"):
+    if order_type == "Maximum":
+        _type = "ORDER_TOTAL"
+    else:
+        order_type = print_minimum_order_type_menu()
 
-    minimum_order_values = []
-    minimum_order_values.append(minimum_order_type)
-    minimum_order_values.append(minimum_order_value)
+    value = print_order_value_menu(order_type)
 
-    return minimum_order_values
+    order_values = []
+    order_values.append(_type)
+    order_values.append(value)
+
+    return order_values
 
 
 def get_delivery_cost_values(option: str) -> Dict[str, str]:
