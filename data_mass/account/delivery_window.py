@@ -2,7 +2,6 @@ import calendar
 import json
 import logging
 from datetime import datetime, timedelta
-from distutils.util import strtobool
 from typing import Union
 
 import pkg_resources
@@ -69,23 +68,6 @@ def get_microservice_delivery_fee_charge_relay(
     dict
         JSON payload for interest fee.
     """
-    payment_method = account_data.get("paymentMethods", [])
-
-    if "CREDIT_CARD_POS" in payment_method:
-        change_charge_type = input(
-            f'{text.default_text_color}Do you want to choose '
-            '"PAYMENT_METHOD_FEE" as the type of the charge? [y/N]: '
-        )
-
-        while (change_charge_type.upper() in ["Y", "N"]) is False:
-            print(text.Red + "\n- Invalid option")
-            change_charge_type = input(
-                f'{text.default_text_color}Do you want to choose '
-                '"PAYMENT_METHOD_FEE" as the type of the charge? [y/N]: '
-            )
-
-    change_charge_type = strtobool(change_charge_type)
-
     dict_values = {
         "accounts": [account_data.get("accountId")],
         "charges": [{
@@ -105,17 +87,6 @@ def get_microservice_delivery_fee_charge_relay(
             }
         }]
     }
-
-    if change_charge_type:
-        charge, = dict_values.get("charges")
-        charge.update({
-            "type": "PAYMENT_METHOD_FEE",
-            "conditions": {
-                "paymentMethod": "CREDIT_CARD_POS"
-            }
-        })
-
-        dict_values.update({"charges": [charge]})
 
     content: bytes = pkg_resources.resource_string(
         "data_mass",
