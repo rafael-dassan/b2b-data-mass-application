@@ -519,16 +519,16 @@ def display_account_information(account: str):
     ))
 
 
-def get_order_info(order_type: str = "Minimum"):
-    if order_type == "Maximum":
-        _type = "ORDER_TOTAL"
+def get_order_info(_type: str = "Minimum"):
+    if _type == "Maximum":
+        order_type = "ORDER_TOTAL"
     else:
         order_type = print_minimum_order_type_menu()
 
-    value = print_order_value_menu(order_type)
+    value = print_order_value_menu(_type)
 
     order_values = []
-    order_values.append(_type)
+    order_values.append(order_type)
     order_values.append(value)
 
     return order_values
