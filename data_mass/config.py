@@ -19,7 +19,6 @@ class Settings(BaseSettings):
     client_id: str
     client_secret: str
 
-    @classmethod
     @validator("vendor_id")
     def validate_vendor(cls, vendor_id):
         """
@@ -37,7 +36,8 @@ class Settings(BaseSettings):
         if not vendor_id:
             raise ValueError("vendor_id should not be empty.")
 
-    @classmethod
+        return vendor_id
+
     @validator("client_id")
     def validate_client_id(cls, client_id):
         """
@@ -55,7 +55,8 @@ class Settings(BaseSettings):
         if not client_id:
             raise ValueError("client_id should not be empty.")
 
-    @classmethod
+        return client_id
+
     @validator("client_secret")
     def validate_client_secret(cls, client_secret):
         """
@@ -73,9 +74,12 @@ class Settings(BaseSettings):
         if not client_secret:
             raise ValueError("client_secret should not be empty.")
 
+        return client_secret
+
     class Config:
         env_file: str = ".env"
         env_file_encoding: str = "utf-8"
+        case_sensitive: bool = False
 
 
 @lru_cache()
