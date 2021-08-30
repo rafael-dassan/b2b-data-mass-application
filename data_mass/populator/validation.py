@@ -9,7 +9,7 @@ def valid_country(country):
         "MX": True,
         "PA": True,
         "PE": True,
-        "PY": False,
+        "PY": True,
         "SV": True,
         "US": True,
         "ZA": True,
