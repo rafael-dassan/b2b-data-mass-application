@@ -15,7 +15,7 @@ from data_mass.menus.product_menu import (
     print_is_returnable_menu
 )
 
-ZONES_DIFF_CONTRACT = ["AR", "PY", "US"]
+ZONES_DIFF_CONTRACT = ["AR", "PY", "US", "UY"]
 
 
 def generate_random_price_ids(qtd):
