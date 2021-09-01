@@ -163,8 +163,8 @@ def execute_preconditions(country, environment, account_params, order_database_p
     logger.info("delete_deals for account %s", account_params.get('id'))
     delete_deal(account_params.get('id'), country, environment)
 
-    logger.info("delete_invoices for account %s", invoice_params.get('account_id'))
-    delete_invoice(invoice_params.get('account_id'), country, environment)
+    # logger.info("delete_invoices for account %s", invoice_params.get('account_id'))
+    # delete_invoice(invoice_params.get('account_id'), country, environment)
 
 
 def get_email_param(country):

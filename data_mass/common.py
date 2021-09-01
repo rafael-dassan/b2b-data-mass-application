@@ -1,5 +1,5 @@
 # Standard library imports
-from data_mass.config import Settings, get_email
+from data_mass.config import Settings, get_settings
 import json
 import logging
 import os
@@ -142,7 +142,6 @@ def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclus
     }
     timezone = switcher.get(zone.upper(), False)
     load_dotenv()
-    logger.info(os.getenv('USER_EMAIL'))
     header = {
         'User-Agent': 'BEES - Data Brew Framework Current user: ' + os.getenv('USER_EMAIL'),
         'Content-Type': 'application/json',
