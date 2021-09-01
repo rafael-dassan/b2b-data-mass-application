@@ -1182,7 +1182,6 @@ def create_new_jwt_token():
     query: str = urlencode({
         "client_id": settings.client_id,
         "client_secret": settings.client_secret,
-        "user_email": settings.user_email,
         "scope": "openid",
         "grant_type": "client_credentials"
     })

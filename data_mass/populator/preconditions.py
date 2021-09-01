@@ -39,8 +39,8 @@ def apply_run_preconditions(row, country, environment):
     logger.info("delete_deals for account %s", account_id)
     delete_deal(account_id, country, environment)
 
-    logger.info("delete_invoices for account %s", account_id)
-    delete_invoice(account_id, country, environment)
+    # logger.info("delete_invoices for account %s", account_id)
+    # delete_invoice(account_id, country, environment)
 
     logger.info("delete_orders for account %s", account_id)
     order_database_params = get_database_params(country, environment, 'order-service-ms')
