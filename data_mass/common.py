@@ -1,4 +1,5 @@
 # Standard library imports
+from data_mass.config import Settings, get_email
 import json
 import logging
 import os
@@ -10,6 +11,7 @@ from time import time
 from typing import Optional, Text
 from urllib.parse import urlencode
 from uuid import uuid1
+from dotenv import load_dotenv
 
 import click
 import jwt
@@ -22,7 +24,6 @@ from jsonpath_rw_ext import parse
 from requests import request
 
 from data_mass.classes.text import text
-from data_mass.config import get_settings
 from data_mass.logger import log_to_file
 from data_mass.validations import (
     is_number,
@@ -140,9 +141,10 @@ def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclus
 
     }
     timezone = switcher.get(zone.upper(), False)
-
+    load_dotenv()
+    logger.info(os.getenv('USER_EMAIL'))
     header = {
-        'User-Agent': 'BEES - Data Mass Framework',
+        'User-Agent': 'BEES - Data Brew Framework Current user: ' + os.getenv('USER_EMAIL'),
         'Content-Type': 'application/json',
         'country': zone,
         'requestTraceId': str(uuid1()),
@@ -1181,6 +1183,7 @@ def create_new_jwt_token():
     query: str = urlencode({
         "client_id": settings.client_id,
         "client_secret": settings.client_secret,
+        "user_email": settings.user_email,
         "scope": "openid",
         "grant_type": "client_credentials"
     })

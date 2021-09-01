@@ -1,3 +1,5 @@
+import os
+from data_mass.config import get_email
 import sys
 from datetime import datetime, timedelta
 from distutils.util import strtobool
@@ -67,6 +69,7 @@ from data_mass.common import (
     validate_zone_for_interactive_combos_ms,
     validate_zone_for_ms
 )
+
 from data_mass.deals.relay import (
     create_discount,
     create_free_good,
@@ -271,11 +274,15 @@ from data_mass.supplier.category import (
 from data_mass.supplier.product import create_product_supplier
 from data_mass.user.creation import create_user
 from data_mass.user.deletion import delete_user_v3
-from data_mass.validations import is_number, validate_yes_no_option
+from data_mass.validations import (
+    is_number,
+    validate_yes_no_option
+    )
 
 
 def show_menu():
     clear_terminal()
+    get_email()
     print_welcome_script()
     selection_structure = print_structure_menu()
     option = print_available_options(selection_structure)

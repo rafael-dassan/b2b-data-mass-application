@@ -13,6 +13,9 @@ This repository contains the B2B Data Mass Script, aimed to those who want to cr
 ## Setting Up the Environment
 To maintain a pure and error-free Python environment for running Data Mass, follow the steps below:
 
+### Running the Application
+Provide your company email on the .env file located on the root of repository, e.g."example.surname@ab-inbev.com"
+
 ### Using script
 Change the permissions of the script:
 ```bash
