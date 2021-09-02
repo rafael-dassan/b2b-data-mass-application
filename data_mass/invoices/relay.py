@@ -144,8 +144,8 @@ def create_invoice_multivendor(
     request_headers = get_header_request(zone)
     settings = get_settings()
 
-    if zone == "CA":
-        request_headers.update({"Accept-Language": "en-ca"})
+    if zone in ["CA", "US"]:
+        request_headers.update({"Accept-Language": f"en-{zone.lower()}"})
 
     invoice_id = f"DM-{str(randint(1, 100000))}"
     order_placement_date = order_details.get("placementDate")
