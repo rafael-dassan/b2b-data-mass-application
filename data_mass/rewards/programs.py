@@ -1,3 +1,4 @@
+import concurrent.futures
 from json import loads
 from random import randint, randrange
 from typing import Union
@@ -212,7 +213,11 @@ def update_program_dt_combos(
     None or Response
         `None` if a http error accours, else, the http response.
     """
-    all_programs = get_all_programs(zone, environment, ["COMBOS"])
+    all_programs = get_all_programs(
+        zone=zone,
+        environment=environment,
+        projections=["COMBOS"]
+    )
 
     if all_programs is None:
         return None
@@ -264,28 +269,32 @@ def update_program_dt_combos(
         )
 
         diff_combos_list = diff_combos_list[0:dt_combos_qty]
-        patch_combos_list = []
 
-        for combo_id in diff_combos_list:
-            dict_combo = {
-                "comboId": combo_id,
-                "points": randrange(500, 5000, 100)
-            }
-            patch_combos_list.append(dict_combo)
+        results = []
 
-        dict_patch_program_combos = set_to_dictionary(
-            {},
-            "combos",
-            patch_combos_list
-        )
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            futures = [
+                executor.submit(
+                    put_program_combos,
+                    program_id=selected_program["id"],
+                    combo_id=combo_id,
+                    zone=zone,
+                    environment=environment,
+                    request_body=convert_json_to_string(
+                        {
+                            "points": randrange(500, 5000, 100)
+                        }
+                    )
+                )
+                for combo_id in diff_combos_list
+            ]
+            for future in concurrent.futures.as_completed(futures):
+                results.append(future.result())
 
-        request_body = convert_json_to_string(dict_patch_program_combos)
-
-        return patch_program_combos(
-            program_id=selected_program["id"],
-            zone=zone,
-            environment=environment,
-            request_body=request_body
+        print(
+            f'{text.Green}\n'
+            f'- DT combos included: {results.count(True)} / failed: {results.count(False)} '
+            f'for Rewards program "{selected_program["id"]}".'
         )
 
     return None
@@ -803,17 +812,19 @@ def diff_combos_program_and_zone(
     return diff_combos_list
 
 
-def patch_program_combos(
+def put_program_combos(
         program_id: str,
+        combo_id: str,
         zone: str,
         environment: str,
         request_body: str) -> Response:
     """
-    Update program combos on the microservice.
+    Insert/Update a DT combo into the rewards program on the microservice.
 
     Parameters
     ----------
     program_id : str
+    combo_id: str
     zone : str
     environment : str
     request_body : str
@@ -830,22 +841,17 @@ def patch_program_combos(
     )
 
     base_url = get_microservice_base_url(environment, False)
-    request_url = f"{base_url}/rewards-service/programs/{program_id}/combos"
+    request_url = f"{base_url}/rewards-service/programs/{program_id}/combos/{combo_id}"
 
     response = place_request(
-        request_method="PATCH",
+        request_method="PUT",
         request_url=request_url,
         request_body=request_body,
         request_headers=request_headers
     )
 
     if response.status_code == 200:
-        print(
-            f'{text.Green}\n'
-            f'- [Rewards] The combos for Rewards program "{program_id}" '
-            'have been successfully updated.'
-        )
-
+        return True        
     elif response.status_code == 404:
         print(
             f'{text.Red}\n'
@@ -854,13 +860,13 @@ def patch_program_combos(
     else:
         print(
             f'{text.Red}\n'
-            f'- [Rewards] Failure when updating the program "{program_id}" '
-            'combos configuration.\n'
+            f'- [Rewards] Failure when including the DT combo "{combo_id}" '
+            f'for Rewards program "{program_id}".\n'
             f'- Response Status: "{response.status_code}".\n'
             f'- Response message "{response.text}".'
         )
 
-    return response
+    return False
 
 
 def delete_program_combo(
