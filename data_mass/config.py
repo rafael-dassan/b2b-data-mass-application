@@ -19,7 +19,9 @@ EMAIL_CONFIGURATION_ERROR = \
 
 Please verify your email address on .env
 
-Any doubts check the README.MD
+Any doubts check the README.MD or ctrl/cmd + click the following link:
+
+https://ab-inbev.atlassian.net/wiki/spaces/PKB/pages/2874278739/Add+email+to+environment
 
 """
 
