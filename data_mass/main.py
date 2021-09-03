@@ -1,5 +1,4 @@
 import os
-from data_mass.config import get_email
 import sys
 from datetime import datetime, timedelta
 from distutils.util import strtobool
@@ -33,6 +32,7 @@ from data_mass.category.magento import (
 from data_mass.category.relay import create_category as create_category_ms
 from data_mass.category.service import get_categories as get_categories_ms
 from data_mass.category.service import get_category_by_id
+from data_mass.charge.relay import create_charge_global
 from data_mass.combos import (
     check_combo_exists_microservice,
     input_combo_only_free_good,
@@ -69,7 +69,7 @@ from data_mass.common import (
     validate_zone_for_interactive_combos_ms,
     validate_zone_for_ms
 )
-
+from data_mass.config import get_email
 from data_mass.deals.relay import (
     create_discount,
     create_free_good,
@@ -274,10 +274,7 @@ from data_mass.supplier.category import (
 from data_mass.supplier.product import create_product_supplier
 from data_mass.user.creation import create_user
 from data_mass.user.deletion import delete_user_v3
-from data_mass.validations import (
-    is_number,
-    validate_yes_no_option
-    )
+from data_mass.validations import is_number, validate_yes_no_option
 
 
 def show_menu():
@@ -1872,11 +1869,11 @@ def flow_create_account(zone, environment, account_id):
     option_include_maximum_order = print_order_menu(order_type="maximum")
     
     if option_include_maximum_order == 'Y':
-        maximum_order = get_order_info(order_type="Maximum")
+        maximum_order = get_order_info("Maximum")
     else:
         maximum_order = None
 
-    if zone == 'MX':
+    if zone == "MX":
         enable_empties_loan = print_account_enable_empties_loan_menu()
     else:
         enable_empties_loan = False
@@ -1931,6 +1928,31 @@ def flow_create_account(zone, environment, account_id):
 
         if not credit_response:
             print_finish_application_menu()
+
+    if zone == "BR" and "CREDIT_CARD_POS" in payment_method:
+        has_credit_card_fee = input(f"\n{text.default_text_color}Would you like to add credit card pos fee? y/N: ")
+
+        while (has_credit_card_fee.upper() in ["Y", "N"]) is False:
+            print(text.Red + "\n- Invalid option")
+            has_credit_card_fee = input(f"\n{text.default_text_color}Would you like to add credit card pos fee? y/N: ")
+
+        if has_credit_card_fee.upper() == "Y":
+            value = int(input(f"{text.default_text_color}Fee percentage value: "))
+            charge_id = f"DM-{randint(1, 999)}"
+
+            response = create_charge_global(
+                account_id=account_id,
+                zone=zone,
+                environment=environment,
+                value=value,
+                charge_id=charge_id,
+                payment_method="CREDIT_CARD_POS",
+                charge_type="PERCENT",
+                type="PAYMENT_METHOD_FEE"
+            )
+
+            if response:
+                print(f"{text.Green}\nSuccessfully created card fee charge!")
 
     print_finish_application_menu()
 
@@ -2174,6 +2196,32 @@ def flow_update_account_payment_method(zone, environment, account_id):
             f"{text.Green}\n"
             f"- Payment method updated for the account {account_id}"
         )
+        
+        if zone == "BR" and "CREDIT_CARD_POS" in payment_method:
+            has_credit_card_fee = input(f"\n{text.default_text_color}Would you like to add credit card pos fee? y/N: ")
+
+            while (has_credit_card_fee.upper() in ["Y", "N"]) is False:
+                print(text.Red + "\n- Invalid option")
+                has_credit_card_fee = input(f"\n{text.default_text_color}Would you like to add credit card pos fee? y/N: ")
+
+            if has_credit_card_fee.upper() == "Y":
+                value = int(input(f"{text.default_text_color}Fee percentage value: "))
+                charge_id = f"DM-{randint(1, 999)}"
+
+                response = create_charge_global(
+                    account_id=account_id,
+                    zone=zone,
+                    environment=environment,
+                    value=value,
+                    charge_id=charge_id,
+                    payment_method="CREDIT_CARD_POS",
+                    charge_type="PERCENT",
+                    type="PAYMENT_METHOD_FEE"
+                )
+
+                if response:
+                    print(f"{text.Green}\nSuccessfully created fee charge!")
+
     else:
         print_finish_application_menu()
 
