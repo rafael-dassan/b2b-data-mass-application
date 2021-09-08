@@ -1,3 +1,4 @@
+from data_mass.account.accounts import check_account_exists_microservice
 import json
 from datetime import datetime, timedelta
 from json import loads
@@ -21,6 +22,7 @@ def request_order_creation(
         delivery_center_id: str,
         zone: str,
         environment: str,
+        payment_method: str,
         allow_order_cancel: str,
         order_items: list,
         order_status: str,
@@ -103,6 +105,7 @@ def request_order_creation(
         # Get body
         request_body = create_order_payload(
             account_id=account_id,
+            payment_method=payment_method,
             delivery_center_id=delivery_center_id,
             allow_order_cancel=allow_order_cancel,
             order_items=order_items,
@@ -138,6 +141,7 @@ def request_order_update(
         delivery_center_id: str,
         zone: str,
         environment: str,
+        payment_method: str,
         allow_order_cancel: str,
         order_items: list,
         order_status: str,
@@ -221,6 +225,7 @@ def request_order_update(
         # Get body
         request_body = update_order_payload(
             order_id=order_id,
+            payment_method=payment_method,
             account_id=account_id,
             delivery_center_id=delivery_center_id,
             allow_order_cancel=allow_order_cancel,
@@ -253,6 +258,7 @@ def request_order_update(
 
 def create_order_payload(
         account_id: str,
+        payment_method: str,
         delivery_center_id: str, 
         allow_order_cancel: str, 
         order_items: list, 
@@ -335,6 +341,7 @@ def create_order_payload(
         payload_path = "data/create_order_payload.json"
         dict_values.update({
             "deliveryCenter": delivery_center_id,
+            "paymentMethod": payment_method
         })
 
     # get data from Data Mass files
@@ -359,6 +366,7 @@ def create_order_payload(
 
 def update_order_payload(
         order_id: str,
+        payment_method: str,
         account_id: str,
         delivery_center_id: str, 
         allow_order_cancel: str, 
@@ -443,6 +451,7 @@ def update_order_payload(
         payload_path = "data/create_order_payload.json"
         dict_values.update({
             "deliveryCenter": delivery_center_id,
+            "paymentMethod": payment_method
         })
 
     # get data from Data Mass files
@@ -498,3 +507,36 @@ def request_changed_order_creation(zone, environment, order_data) -> bool:
         f"Response message: {response.text}.\n"
     )
     return False
+
+def order_payment_method(account_id, zone, environment)-> str:
+    """
+    Get the available payment methods for the account and return one
+    for being used on the order creation
+    Args:
+        account_id: POC number
+        zone: e.g., AR, BR, CO, DO, MX, ZA
+        environment: e.g., DEV, SIT, UAT
+
+    Returns the selected payment method
+    """
+    response_data = check_account_exists_microservice(account_id, zone, environment)
+    payment_list = response_data[0]['paymentMethods']
+
+    if len(payment_list) == 1:
+        payment_method, = payment_list
+        return payment_method
+
+    else:
+        options = []
+
+        for index, pay_item in enumerate(payment_list, 1):
+            pay_option = f'{index}: {pay_item}'
+            options.append(pay_option)
+
+        check_option =  int(input(
+                f'{text.Yellow}\n'
+                f'Available payment methods for this POC: '+ f'{options}\n'
+                f'Select the corresponding number: \n'
+                        ))
+        payment_method = payment_list[check_option -1]
+        return payment_method

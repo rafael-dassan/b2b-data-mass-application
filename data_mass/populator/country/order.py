@@ -53,7 +53,8 @@ def populate_order(country, environment, account_id, allow_order_cancel, items, 
                 if not order_items:
                     logger.error(log(Message.ORDER_SIMULATION_ERROR, {'account_id': account_id}))
                 else:
+                    payment_method = 'CASH'
                     delivery_date = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
-                    if False == request_order_creation(account_id, delivery_center_id, country, environment,
+                    if False == request_order_creation(account_id, delivery_center_id, country, environment, payment_method,
                                                             allow_order_cancel, order_items, order_status, delivery_date):
                         logger.error(log(Message.CREATE_ORDER_ERROR, {'account_id': account_id}))

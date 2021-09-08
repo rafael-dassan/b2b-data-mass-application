@@ -1,4 +1,3 @@
-import os
 import sys
 from datetime import datetime, timedelta
 from distutils.util import strtobool
@@ -180,6 +179,7 @@ from data_mass.menus.supplier_menu import (
     print_new_page
 )
 from data_mass.orders.relay import (
+    order_payment_method,
     request_changed_order_creation,
     request_order_creation,
     request_order_update
@@ -813,6 +813,7 @@ def flow_create_order(
             delivery_date=delivery_date
         )
     else:
+        payment_method = order_payment_method(account_id, zone, environment)
         order_items = request_order_simulation(
             zone=zone,
             environment=environment,
@@ -821,7 +822,7 @@ def flow_create_order(
             items=item_list,
             combos=[],
             empties=[],
-            payment_method='CASH',
+            payment_method=payment_method,
             payment_term=0,
             delivery_date=delivery_date
         )
@@ -834,6 +835,7 @@ def flow_create_order(
         delivery_center_id=delivery_center_id,
         zone=zone,
         environment=environment,
+        payment_method=payment_method,
         allow_order_cancel=allow_order_cancel,
         order_items=order_items,
         order_status=order_status,
@@ -1009,6 +1011,7 @@ def flow_update_order(
             delivery_date=delivery_date
         )
     else:
+        payment_method = order_payment_method(account_id, zone, environment)
         order_items = request_order_simulation(
             zone=zone,
             environment=environment,
@@ -1017,7 +1020,7 @@ def flow_update_order(
             items=item_list,
             combos=[],
             empties=[],
-            payment_method='CASH',
+            payment_method=payment_method,
             payment_term=0,
             delivery_date=delivery_date
         )
@@ -1030,6 +1033,7 @@ def flow_update_order(
         delivery_center_id=delivery_center_id,
         zone=zone,
         environment=environment,
+        payment_method=payment_method,
         allow_order_cancel=allow_order_cancel,
         order_items=order_items,
         order_status=order_status,
