@@ -57,9 +57,11 @@ def display_available_products(account_id, zone, environment, delivery_center_id
                         if not enabled_skus[aux_index]:
                             aux_index = aux_index + 1
                         else:
+                            name = sku_name[aux_index].upper() if sku_name[aux_index] != None else ''
+                            enabled = enabled_skus[aux_index] if enabled_skus[aux_index] != None else ''
                             print(
-                                text.default_text_color + '\n SKU: ' + text.Blue + enabled_skus[aux_index] + '  ||  ' +
-                                sku_name[aux_index].upper())
+                                text.default_text_color + '\n SKU: ' + text.Blue + enabled + '  ||  ' +
+                                name)
                             aux_index = aux_index + 1
 
                     sku_id = input(text.default_text_color + '\n Type here the SKU from the list above you want to add '
