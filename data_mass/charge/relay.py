@@ -1,5 +1,5 @@
 from json import dumps
-from random import uniform
+from random import randint, uniform
 
 from data_mass.common import (
     get_header_request,
@@ -33,7 +33,7 @@ def create_charge_global(
     body = {
         "accounts": [account_id],
         "charges": [{
-            "chargeId": kwargs.get("charge_id"),
+            "chargeId": kwargs.get("charge_id", f"DM-{randint(1, 999)}"),
             "type": kwargs.get("type", "PAYMENT_METHOD_FEE"),
             "conditions": {
                 "paymentMethod": kwargs.get("payment_method")

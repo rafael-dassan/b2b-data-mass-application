@@ -1860,6 +1860,7 @@ def flow_create_account(zone, environment, account_id):
     delivery_address = get_account_delivery_address(zone)
     account_status = print_account_status_menu()
     option_include_minimum_order = print_order_menu()
+    fee_methods = ["CREDIT_CARD_POS", "BANK_SLIP"]
     account_eligible_rewards = False
 
     has_po_number = None
@@ -1933,30 +1934,28 @@ def flow_create_account(zone, environment, account_id):
         if not credit_response:
             print_finish_application_menu()
 
-    if zone == "BR" and "CREDIT_CARD_POS" in payment_method:
-        has_credit_card_fee = input(f"\n{text.default_text_color}Would you like to add credit card pos fee? y/N: ")
+    if zone == "BR" and set(payment_method).issubset(fee_methods):
+        has_credit_card_fee = input(f"\n{text.default_text_color}Would you like to add payment fee? y/N: ")
 
         while (has_credit_card_fee.upper() in ["Y", "N"]) is False:
             print(text.Red + "\n- Invalid option")
-            has_credit_card_fee = input(f"\n{text.default_text_color}Would you like to add credit card pos fee? y/N: ")
+            has_credit_card_fee = input(f"\n{text.default_text_color}Would you like to add payment fee? y/N: ")
 
         if has_credit_card_fee.upper() == "Y":
-            value = int(input(f"{text.default_text_color}Fee percentage value: "))
-            charge_id = f"DM-{randint(1, 999)}"
+            for method in payment_method:
+                if method in fee_methods:
+                    value = int(input(f"{text.default_text_color}Fee percentage value for {method}: "))
 
-            response = create_charge_global(
-                account_id=account_id,
-                zone=zone,
-                environment=environment,
-                value=value,
-                charge_id=charge_id,
-                payment_method="CREDIT_CARD_POS",
-                charge_type="PERCENT",
-                type="PAYMENT_METHOD_FEE"
-            )
+                    response = create_charge_global(
+                        account_id=account_id,
+                        zone=zone,
+                        environment=environment,
+                        payment_method=method,
+                        value=value
+                    )
 
-            if response:
-                print(f"{text.Green}\nSuccessfully created card fee charge!")
+                    if response:
+                        print(f"{text.Green}\nSuccessfully created card fee charge!")
 
     print_finish_application_menu()
 

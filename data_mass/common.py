@@ -1,5 +1,4 @@
 # Standard library imports
-from data_mass.config import Settings, get_settings
 import json
 import logging
 import os
@@ -11,7 +10,6 @@ from time import time
 from typing import Optional, Text
 from urllib.parse import urlencode
 from uuid import uuid1
-from dotenv import load_dotenv
 
 import click
 import jwt
@@ -19,11 +17,13 @@ import pkg_resources
 import requests
 from click.termui import prompt
 from dateutil.parser import parse
+from dotenv import load_dotenv
 from jsonpath_rw import Fields, Index
 from jsonpath_rw_ext import parse
 from requests import request
 
 from data_mass.classes.text import text
+from data_mass.config import Settings, get_settings
 from data_mass.logger import log_to_file
 from data_mass.validations import (
     is_number,
@@ -1186,7 +1186,7 @@ def create_new_jwt_token():
         "grant_type": "client_credentials"
     })
 
-    request_url: str = get_microservice_base_url("SIT", False)
+    request_url: str = get_microservice_base_url(settings.environment, False)
     request_url: str = f"{request_url}/auth/token?{query}"
     response = place_request(
         request_method="POST",
