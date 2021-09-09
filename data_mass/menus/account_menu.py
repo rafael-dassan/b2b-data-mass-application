@@ -115,8 +115,10 @@ def print_order_value_menu(order_type: str = "Minimum"):
 def print_account_status_menu():
     option = input(
         DEFAULT_TEXT_COLOR + 'Account status (1. Active / 2. Blocked): ')
-    while option == '' and option != '1' and option != '2':
+
+    while option not in ['1', '2']:
         print(INVALID_OPTION)
+
         option = input(
             DEFAULT_TEXT_COLOR + '\nAccount status (1. Active / 2. Blocked): ')
 
@@ -125,7 +127,7 @@ def print_account_status_menu():
         '2': 'BLOCKED'
     }
 
-    status = switcher.get(option, False)
+    status = switcher.get(option)
 
     return status
 

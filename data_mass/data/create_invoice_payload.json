@@ -3,6 +3,7 @@
     "channel": "string",
     "date": "string",
     "deleted": false,
+    "dueDate": "string",
     "discount": 0,
     "interestAmount": 0,
     "invoiceId": "string",

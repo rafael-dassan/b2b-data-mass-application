@@ -41,6 +41,7 @@ from data_mass.combos import (
     update_combo_consumption
 )
 from data_mass.common import (
+    INVALID_OPTION,
     clear_terminal,
     print_available_options,
     print_combo_id_menu,
@@ -2393,8 +2394,39 @@ def flow_create_invoice(zone, environment, account_id):
             order_details=order_data
         )
     else:
-        order_details = get_order_details(order_data)
-        invoice_response = create_invoice_request(zone, environment, order_id, invoice_status, order_details, order_items)
+        due_date = None
+        option = input(
+            f'{text.Yellow}'
+            f'Do you want to add a due date? (Y or N):'
+        ).upper()
+
+        while option not in ["Y", "N"]:
+            print(INVALID_OPTION)
+
+            option = input(
+                f'{text.Yellow}'
+                f'Do you want to add a due date? (Y or N):'
+            ).upper()
+
+        if option == 'Y':
+            due_date = input (
+                f'{text.Yellow}'
+                f'Type your due date with YYYY-MM-DD format: '
+            )
+
+        order_details = get_order_details(
+            order_data
+        )
+            
+        invoice_response = create_invoice_request(
+            zone=zone,
+            environment=environment,
+            order_id=order_id,
+            status=invoice_status,
+            order_details=order_details,
+            order_items=order_items,
+            due_date=due_date
+        )
 
     if invoice_response:
         print(text.Green + f'\n- Invoice {invoice_response} created successfully')

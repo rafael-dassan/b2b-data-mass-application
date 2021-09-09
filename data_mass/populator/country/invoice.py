@@ -48,5 +48,5 @@ def populate_invoice(country, environment, account_id, invoice_status, order_pre
         invoice_id = '{0}-{1}'.format(invoice_prefix, country)
 
         if False == create_invoice_request(country, environment, order_id, invoice_status, order_details,
-                                             order_items, invoice_id):
+                                             order_items, invoice_id, due_date="2999-01-01"):
             logger.error(log(Message.CREATE_INVOICE_ERROR, {'account_id': account_id}))

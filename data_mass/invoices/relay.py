@@ -6,6 +6,7 @@ import pkg_resources
 
 from data_mass.classes.text import text
 from data_mass.common import (
+    INVALID_OPTION,
     convert_json_to_string,
     create_list,
     get_header_request,
@@ -24,7 +25,8 @@ def create_invoice_request(
         status: str,
         order_details: dict,
         order_items: dict,
-        invoice_id: str = None) -> str:
+        invoice_id: str = None,
+        due_date: str = None) -> str:
     """
     Create Invoice.
 
@@ -60,7 +62,10 @@ def create_invoice_request(
         placement_date = order_placement_date.split('T')[0] + 'T00:00:00Z'
     else:
         placement_date = order_placement_date.split('+')[0] + 'Z'
-
+        
+    if due_date is not None:
+        due_date = due_date + 'T00:00:00.000Z'
+ 
     dict_values = {
         'accountId': order_details.get('accountId'),
         'channel': order_details.get('channel'),
@@ -76,7 +81,8 @@ def create_invoice_request(
         'poNumber': order_id,
         'paymentType': order_details.get('paymentMethod'),
         'discount': abs(order_details.get('discount')),
-        'itemsQuantity': order_details.get('itemsQuantity')
+        'itemsQuantity': order_details.get('itemsQuantity'),
+        'dueDate': due_date
     }
 
     for key in dict_values.keys():
