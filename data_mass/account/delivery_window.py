@@ -70,27 +70,30 @@ def get_microservice_delivery_fee_charge_relay(
     """
     dict_values = {
         "accounts": [account_data.get("accountId")],
-        "charges": [{
-            "chargeId": "CHARGE-01",
-            "type": "DELIVERY_DATE_FEE",
-            "conditions": {
-                "alternativeDeliveryDate": True,
-                "orderTotal": {
-                    "maximumValue": include_delivery_cost.get("min_order_value")
-                }
-            },
-            "output": {
-                "scope": "ORDER",
-                "applyTo": "TOTAL",
-                "type": "AMOUNT",
-                "value": include_delivery_cost.get("fee_value")
+        "charges": [
+            {
+                "chargeId": "CHARGE-01",
+                "type": "DELIVERY_DATE_FEE",
+                "conditions": {
+                    "alternativeDeliveryDate": True,
+                    "orderTotal": {
+                        "maximumValue": include_delivery_cost.get(
+                            "min_order_value"
+                        )
+                    },
+                },
+                "output": {
+                    "scope": "ORDER",
+                    "applyTo": "TOTAL",
+                    "type": "AMOUNT",
+                    "value": include_delivery_cost.get("fee_value"),
+                },
             }
-        }]
+        ],
     }
 
     content: bytes = pkg_resources.resource_string(
-        "data_mass",
-        "data/create_delivery_fee_charge-relay.json"
+        "data_mass", "data/create_delivery_fee_charge-relay.json"
     )
     json_data = json.loads(content.decode("utf-8"))
 
@@ -204,7 +207,7 @@ def create_delivery_window_microservice(
             account_data=account_data,
             is_alternative_delivery_date=option_is_alternative_delivery_date,
             dates_list=dates_list[index],
-            index=index
+            index=index,
         )
         request_body.append(temporary_body)
         index = index + 1
@@ -214,7 +217,7 @@ def create_delivery_window_microservice(
         request_method="POST",
         request_url=request_url,
         request_body=json.dumps(request_body),
-        request_headers=request_headers
+        request_headers=request_headers,
     )
 
     if response.status_code in [200, 202]:
@@ -252,7 +255,9 @@ def default_delivery_window():
         clone_initial_date = clone_initial_date + timedelta(days=1)
         start_date = clone_initial_date.strftime(DATE_FORMAT)
         end_date = start_date
-        expiration_date = initial_date.strftime(DATE_FORMAT) + "T20:00:00Z"
+        expiration_date = (initial_date - timedelta(days=1)).strftime(
+            DATE_FORMAT
+        ) + "T20:00:00Z"
 
         list_delivery_dates.append(
             {
@@ -266,28 +271,27 @@ def default_delivery_window():
 
 
 def delivery_window_specific():
-    
+
     start_date = validate_user_entry_date(
         text=f"{text.LightYellow}Date (YYYY-mm-dd)"
     )
     while not start_date:
         print(f"{text.Red}\nNo delivery window date was inputed.")
-        start_date = validate_user_entry_date(
-            text=f"{text.LightYellow}Date"
-        )
+        start_date = validate_user_entry_date(text=f"{text.LightYellow}Date")
     date = datetime.strptime(start_date, DATE_FORMAT).date()
     list_delivery_dates = [
         {
             "startDate": date.strftime(DATE_FORMAT),
             "endDate": date.strftime(DATE_FORMAT),
-            "expirationDate": date.strftime(DATE_FORMAT) + "T20:00:00Z",
+            "expirationDate": (date - timedelta(days=1)).strftime(DATE_FORMAT)
+            + "T20:00:00Z",
         }
     ]
     return list_delivery_dates
 
-    
+
 def delivery_window_range():
-    
+
     date_begin = validate_user_entry_date(
         text=f"{text.LightYellow}Begin Date (YYYY-mm-dd)"
     )
@@ -307,9 +311,9 @@ def delivery_window_range():
     while datetime_begin <= datetime_end:
         start_date = datetime_begin.strftime(DATE_FORMAT)
         end_date = start_date
-        expiration_date = (
-            datetime_begin.strftime(DATE_FORMAT) + "T20:00:00Z"
-        )
+        expiration_date = (datetime_begin - timedelta(days=1)).strftime(
+            DATE_FORMAT
+        ) + "T20:00:00Z"
 
         list_delivery_dates.append(
             {
@@ -339,7 +343,7 @@ def return_dates_payload(option: str) -> list:
     options = {
         "1": default_delivery_window,
         "2": delivery_window_specific,
-        "3": delivery_window_range
+        "3": delivery_window_range,
     }
     dates = options.get(option)()
     return dates
@@ -366,7 +370,7 @@ def create_delivery_fee_microservice(
         True if creation is okay and False if fail.
     """
     charge_relay_countries = ["AR", "BR", "CO", "DO", "EC", "MX", "PE", "ZA"]
-    
+
     # Get base URL
     base_url = get_microservice_base_url(environment)
     if zone in charge_relay_countries:
@@ -385,7 +389,7 @@ def create_delivery_fee_microservice(
         request_method="PUT",
         request_url=request_url,
         request_body=json.dumps(request_body),
-        request_headers=request_headers
+        request_headers=request_headers,
     )
     if response.status_code != 202:
         print(
