@@ -845,12 +845,14 @@ def flow_create_order(
         has_empties=has_empties
     )
 
-    if order_data:
+    if isinstance(order_data, dict):
         print(
             text.Green 
             + f'\n- Order {order_data.get("orderNumber")} '
             'created successfully'
         )
+    elif isinstance(order_data, bool):
+        print(f'{text.Green}\n- Order created successfully')
 
     print_finish_application_menu()
 

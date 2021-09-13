@@ -1,4 +1,3 @@
-from data_mass.account.accounts import check_account_exists_microservice
 import json
 from datetime import datetime, timedelta
 from json import loads
@@ -6,6 +5,7 @@ from typing import Any, Optional
 
 import pkg_resources
 
+from data_mass.account.accounts import check_account_exists_microservice
 from data_mass.classes.text import text
 from data_mass.common import (
     convert_json_to_string,
@@ -58,18 +58,14 @@ def request_order_creation(
         (a str, bytes or bytearray instance containing a JSON document)\
         to a Python object.
     """
-    # Define headers
-    request_headers = get_header_request(
-        zone,
-        True,
-        False,
-        False,
-        False,
-        account_id
-    )
-
     # Define url request
     if zone in ["CA", "US"]:
+        request_headers = get_header_request(
+            zone=zone,
+            use_jwt_auth=True,
+            account_id=account_id
+        )
+
         endpoint = "order-service/v2/"
         is_v1 = False
         settings = get_settings()
@@ -99,7 +95,11 @@ def request_order_creation(
             "paymentMethod": "CASH"
         })
     else:
-        endpoint = "order-service"
+        request_headers = get_header_request(
+            zone=zone,
+            use_inclusion_auth=True
+        )
+        endpoint = "order-relay"
         is_v1 = True
 
         # Get body
@@ -119,12 +119,17 @@ def request_order_creation(
 
     # Send request
     response = place_request(
-        "POST", request_url, request_body, request_headers
+        request_method="POST",
+        request_url=request_url,
+        request_body=request_body,
+        request_headers=request_headers
     )
-    json_data = loads(response.text)
 
-    if response.status_code in [200, 202] and json_data:
-        return json_data
+    if response.status_code in [200, 202]:
+        if response.text:
+            response = loads(response.text)
+
+        return True
 
     print(
         f"{text.Red}\n"
@@ -133,7 +138,7 @@ def request_order_creation(
         f"Response message {response.text}"
     )
 
-    return None
+    return False
 
 
 def request_order_update(
@@ -240,7 +245,10 @@ def request_order_update(
 
     # Send request
     response = place_request(
-        "POST", request_url, request_body, request_headers
+        request_method="POST",
+        request_url=request_url,
+        request_body=request_body,
+        request_headers=request_headers
     )
     json_data = loads(response.text)
 
@@ -362,7 +370,8 @@ def create_order_payload(
 
     json_data.update(dict_values)
 
-    return convert_json_to_string(json_data)
+    return json.dumps([json_data])
+
 
 def update_order_payload(
         order_id: str,
