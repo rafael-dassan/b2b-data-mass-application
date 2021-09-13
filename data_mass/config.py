@@ -9,7 +9,7 @@ from data_mass.classes.text import text
 FILE_CONFIGURATION_ERROR = \
 """ # noqa
 Apparently your .env configuration file is not properly populated
-with the essential information (vendorId, client_id and client_secret)
+with the essential information (vendorId, client_id, client_secret and environment)
 to run US region features. If you have any questions, please check our
 user guide (doc/USER_GUIDE.md in our repository).
 """

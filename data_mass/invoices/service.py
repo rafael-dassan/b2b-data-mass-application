@@ -23,7 +23,7 @@ def check_if_invoice_exists(
 
     Parameters
     ----------
-    account_id : [str
+    account_id : str
     invoice_id : str
     zone : str
     environment : str
@@ -82,7 +82,7 @@ def get_invoices(
         account_id: str,
         environment: str) -> Optional[dict]:
     """
-    Get invoice by id.
+    Get invoices by accountId.
 
     Parameters
     ----------
@@ -100,20 +100,22 @@ def get_invoices(
         use_jwt_auth=True,
         use_root_auth=False,
         use_inclusion_auth=False,
-        sku_product=False,
-        account_id=account_id
+        sku_product=False
     )
     base_url = get_microservice_base_url(environment, False)
 
     if zone in ["CA", "US"]:
         version = "v2"
+        account_id = get_multivendor_account_id(account_id, zone, environment)
     else:
         version = "v1"
+
+    query = urlencode({"accountId": account_id})
 
     request_url = (
         f"{base_url}"
         "/invoices-service"
-        f"/{version}"
+        f"/{version}?{query}"
     )
 
     # Place request
