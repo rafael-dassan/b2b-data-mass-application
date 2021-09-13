@@ -613,7 +613,7 @@ def create_product_v2(
             "unitOfMeasurement": product_data.get("container", {}).get("unitOfMeasurement")
         },
         "uncategorized": product_data.get("uncategorized", False),
-        "defaultLanguage": f"en/{zone.upper()}"
+        "defaultLanguage": f"en-{zone.upper()}"
     })
 
     # Place request
