@@ -45,10 +45,12 @@ def check_if_invoice_exists(
 
     if zone in ["CA", "US"]:
         version = "v2"
+        query = {"customerInvoiceNumber": invoice_id}
     else:
         version = "v1"
+        query = {"invoiceId": invoice_id}
 
-    query = {"customerInvoiceNumber": invoice_id}
+    
     base_url = get_microservice_base_url(environment)
     request_url = f"{base_url}/invoices-service/{version}?{urlencode(query)}"
 
