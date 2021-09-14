@@ -24,6 +24,7 @@ from data_mass.product.service import (
     request_get_account_product_assortment
 )
 from data_mass.product.utils import (
+    ZONES_DIFF_CONTRACT,
     generate_price_values,
     generate_random_price_ids,
     get_body_price_inclusion_microservice_request,
@@ -68,13 +69,22 @@ def request_post_price_microservice(
     request_headers = get_header_request(zone)
     base_url = get_microservice_base_url(environment, False)
     
-    request_url = f"{base_url}/price-relay/v2"
-    request_body = get_payload_price_multivendor(
-        account_id=account_id,
-        sku_product=sku_product,
-        product_price_id=product_price_id,
-        price_values=price_values
-    )
+    if zone in ZONES_DIFF_CONTRACT:
+        request_url = f"{base_url}/price-relay/v2"
+        request_body = get_payload_price_multivendor(
+            account_id=account_id,
+            sku_product=sku_product,
+            product_price_id=product_price_id,
+            price_values=price_values
+        )
+    else:
+        request_url = f"{base_url}/price-relay/v2"
+        request_body = get_payload_price_no_validfrom(
+            account_id=account_id,
+            sku_product=sku_product,
+            product_price_id=product_price_id,
+            price_values=price_values
+        )
 
     # Send request
     response = place_request(
@@ -121,6 +131,60 @@ def get_payload_price_multivendor(
         "vendorAccountIds": [account_id],
         "prices": [{
             "validFrom": datetime.now().strftime("%Y-%m-%d"),
+            "vendorItemId": str(randint(1, 99999)),
+            "sku": sku_product,
+            "basePrice": price_values.get("basePrice"),
+            "measureUnit": "CS",
+            "minimumPrice": 0,
+            "deposit": price_values.get("deposit"),
+            "quantityPerPallet": price_values.get("quantityPerPallet"),
+            "promotionalPrice": {
+                "price": round(uniform(10.99, 99.99), 2),
+                "externalId": "ZTPM",
+                "validUntil": "2021-12-31"
+            },
+            "measureUnitConversion": {
+                "6PACK": 6,
+                "CASE": 30,
+                "LITER": 1
+            },
+            "taxes": [{
+                "taxId": product_price_id,
+                "type": "$",
+                "value": str(price_values.get("tax")),
+                "taxBaseInclusionIds": [],
+                "hidden": False
+            }]
+        }]
+    }
+
+    body = json.dumps(content)
+
+    return body
+
+def get_payload_price_no_validfrom(
+        account_id: str,
+        sku_product: str,
+        product_price_id: str,
+        price_values: dict):
+    """
+    Create body por posting new product price rules for us.
+
+    Parameters
+    ----------
+    account_id : str
+    sku_product : str
+    product_price_id : str
+    price_values : dict
+
+    Returns
+    -------
+    str
+        The request body.
+    """
+    content = {
+        "vendorAccountIds": [account_id],
+        "prices": [{
             "vendorItemId": str(randint(1, 99999)),
             "sku": sku_product,
             "basePrice": price_values.get("basePrice"),
