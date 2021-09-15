@@ -104,27 +104,13 @@ def request_get_offers_microservice(
     if zone in ["CA", "US"]:
         account_id = get_multivendor_account_id(account_id, zone, environment)
 
-        request_url = (
-            f"{base_url}"
-            "/catalog-service"
-            "/catalog"
-            f"/items?accountId={account_id}"
-            f"&projection={projection}"
-        )
-    elif zone == "UY":
-        request_url = (
-            f"{base_url}"
-            "/catalog-service"
-            f"/catalog?accountId={account_id}"
-            f"&projection=SMALL"
-        )
-    else:
-        request_url = (
-            f"{base_url}"
-            "/catalog-service"
-            f"/catalog?accountId={account_id}"
-            f"&projection={projection}"
-        )
+    request_url = (
+        f"{base_url}"
+        "/catalog-service"
+        "/catalog"
+        f"/items?accountId={account_id}"
+        f"&projection={projection}"
+    )
 
     # Send request
     response = place_request("GET", request_url, "", headers)
