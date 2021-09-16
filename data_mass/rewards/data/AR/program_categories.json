@@ -1,0 +1,40 @@
+[
+    {
+        "categoryId": "582",
+        "categoryIdWeb": "494",
+        "description": "Gana 100 puntos por cada RD $1000 pesos de compra en estos productos",
+        "buttonLabel": "COMPRA AHORA",
+        "buttonName": "premium-product-button",
+        "image": "https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/core/img_punto_1.png",
+        "title": "Gana 100 puntos",
+        "subtitle": "por cada RD $1000 pesos de compra en estos productos",
+        "headerImage": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/intermediate-category.jpg",
+        "brands": [
+            {
+                "brandId": "123",
+                "title": "premium brand",
+                "image": "https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/premium/img_puntos_20.png"
+            }
+        ],
+        "position": 0
+    },
+    {
+        "categoryId": "581",
+        "categoryIdWeb": "493",
+        "description": "Gana 50 puntos por cada RD $1000 pesos de compra en estos productos",
+        "buttonLabel": "COMPRA AHORA",
+        "buttonName": "core-product-button",
+        "image": "https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/core/img_punto_1.png",
+        "title": "Gana 50 puntos",
+        "subtitle": "por cada RD $1000 pesos de compra en estos productos",
+        "headerImage": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/intermediate-category.jpg",
+        "brands": [
+            {
+                "brandId": "321",
+                "title": "core brand",
+                "image": "https://cdn-b2b-abi.global.ssl.fastly.net/sit/images/br/redesign/core/img-core-brahmachopp-logo@2x.png"
+            }
+        ],
+        "position": 1
+    }
+]

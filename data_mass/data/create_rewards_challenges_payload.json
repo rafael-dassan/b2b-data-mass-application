@@ -10,7 +10,8 @@
     "erpSalesCenter": [],
     "groupIds": [],
     "potential": [],
-    "segment": []
+    "segment": [],
+    "vendorIds": []
   },
   "executionMethod": "string",
   "mode": "PUBLISHED"

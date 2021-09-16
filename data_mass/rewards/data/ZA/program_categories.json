@@ -1,0 +1,40 @@
+[
+    {
+        "categoryId": "217",
+        "categoryIdWeb": "214",
+        "description": "Earn 1 point for each R100 spent on quarts products.",
+        "buttonLabel": "BUY NOW",
+        "buttonName": "premium-product-button",
+        "image": "https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/za/quarts-brands.png",
+        "title": "Earn 1 point",
+        "subtitle": "for each R100 spent on quarts products.",
+        "headerImage": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/intermediate-category.jpg",
+        "brands": [
+            {
+                "brandId": "123",
+                "title": "premium brand",
+                "image": "https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/premium/img_puntos_20.png"
+            }
+        ],
+        "position": 0
+    },
+    {
+        "categoryId": "219",
+        "categoryIdWeb": "216",
+        "description": "Earn 10 points for each R100 spent on bonus products.",
+        "buttonLabel": "COMPRA AHORA",
+        "buttonName": "core-product-button",
+        "image": "https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/za/bonus-brands.png",
+        "title": "Earn 10 points",
+        "subtitle": "for each R100 spent on bonus products.",
+        "headerImage": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/intermediate-category.jpg",
+        "brands": [
+            {
+                "brandId": "321",
+                "title": "core brand",
+                "image": "https://cdn-b2b-abi.global.ssl.fastly.net/sit/images/br/redesign/core/img-core-brahmachopp-logo@2x.png"
+            }
+        ],
+        "position": 1
+    }
+]

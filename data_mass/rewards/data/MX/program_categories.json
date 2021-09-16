@@ -1,0 +1,40 @@
+[
+    {
+        "categoryId": "9",
+        "categoryIdWeb": "1",
+        "description": "Gana 1 punto por cada $10 de compra en estos productos",
+        "buttonLabel": "COMPRA AHORA",
+        "buttonName": "premium-product-button",
+        "image": "https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/mx/premium-brands.png",
+        "title": "Gana 1 punto",
+        "subtitle": "por cada $10 de compra en estos productos",
+        "headerImage": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/intermediate-category.jpg",
+        "brands": [
+            {
+                "brandId": "123",
+                "title": "premium brand",
+                "image": "https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/premium/img_puntos_20.png"
+            }
+        ],
+        "position": 0
+    },
+    {
+        "categoryId": "12",
+        "categoryIdWeb": "2",
+        "description": "Gana 3 puntos por cada $10 de compra en estos productos",
+        "buttonLabel": "COMPRA AHORA",
+        "buttonName": "core-product-button",
+        "image": "https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/mx/core-brands.png",
+        "title": "Gana 3 puntos",
+        "subtitle": "por cada $10 de compra en estos productos",
+        "headerImage": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/intermediate-category.jpg",
+        "brands": [
+            {
+                "brandId": "321",
+                "title": "core brand",
+                "image": "https://cdn-b2b-abi.global.ssl.fastly.net/sit/images/br/redesign/core/img-core-brahmachopp-logo@2x.png"
+            }
+        ],
+        "position": 1
+    }
+]

@@ -27,9 +27,6 @@ from data_mass.rewards.utils import (
 )
 
 APP_ADMIN = "adminportal"
-COUNTRIES_ES = ["DO", "CO", "AR", "MX", "EC", "PE", "SV"]
-URL_BASE = "https://cdn-b2b-abi.global.ssl.fastly.net"
-
 
 def create_new_program(
         zone: str,
@@ -118,12 +115,24 @@ def create_new_program(
 
     # Getting all the basic information for the Program to be created
     generated_combos = generate_combos_information(zone_dt_combos)
-    categories = generate_categories_information(zone)
-    terms = generate_terms_information(zone)
+
+    # get data from Rewards Data Mass files
+    categories_content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        f"rewards/data/{zone.upper()}/program_categories.json"
+    )
+    categories_json_data = loads(categories_content.decode("utf-8"))
+
+    # get data from Rewards Data Mass files
+    terms_content: bytes = pkg_resources.resource_string(
+        "data_mass",
+        f"rewards/data/{zone.upper()}/program_terms.json"
+    )
+    terms_json_data = loads(terms_content.decode("utf-8"))
 
     print(
         f"{text.default_text_color}\n"
-        f"Creating new Rewards program in {zone} -"
+        f"Creating new Rewards program in {zone} - "
         f"{environment}. Please wait..."
     )
 
@@ -136,51 +145,12 @@ def create_new_program(
 
     dict_values = {
         "name": new_program_id,
-        "rules[0].moneySpentSkuRule.skus": premium_rule_skus,
-        "rules[1].moneySpentSkuRule.skus": core_rule_skus,
+        "rules[0].skus": premium_rule_skus,
+        "rules[1].skus": core_rule_skus,
         "combos": generated_combos,
         "initialBalance": initial_balance,
-        "categories[0].categoryId": categories[0],
-        "categories[0].categoryIdWeb": categories[1],
-        "categories[0].description": categories[2],
-        "categories[0].buttonLabel": categories[3],
-        "categories[0].image": categories[4],
-        "categories[0].title": "Premium",
-        "categories[0].subtitle": categories[2],
-        "categories[0].headerImage": (
-            f"{URL_BASE}"
-            "/sit/images/br/redesign/premium"
-            "/img-premium-chopp-brahma-logo@2x.png"
-        ),
-        "categories[0].brands": [{
-            "brandId": "123",
-            "title": "premium brand",
-            "image": (
-                f"{URL_BASE}"
-                "/uat/images/do/premium/img_puntos_20.png"
-            ),
-        }],
-        "categories[1].categoryId": categories[5],
-        "categories[1].categoryIdWeb": categories[6],
-        "categories[1].description": categories[7],
-        "categories[1].buttonLabel": categories[8],
-        "categories[1].image": categories[9],
-        "categories[1].title": 'Core',
-        "categories[1].subtitle": categories[7],
-        "categories[1].headerImage": (
-            f"{URL_BASE}"
-            "/sit/images/br/redesign/core/img-core-brahmachopp-logo@2x.png"
-        ),
-        "categories[1].brands": [{
-            "brandId": "321",
-            "title": "core brand",
-            "image": (
-                f"{URL_BASE}/sit/images/br/redesign/"
-                "core/img-core-brahmachopp-logo@2x.png"
-            ),
-        }],
-        "termsAndConditions[0].documentURL": terms[0],
-        "termsAndConditions[0].changeLog": terms[1]
+        "categories": categories_json_data,
+        "termsAndConditions": terms_json_data
     }
 
     for key in dict_values.keys():
@@ -968,294 +938,3 @@ def generate_combos_information(zone_dt_combos: list) -> list:
         combos_list.append(dic_combos)
 
     return combos_list
-
-
-def generate_categories_information(zone: str) -> list:
-    """
-    Generates the Categories for Rewards program.
-
-    Parameters
-    ----------
-    zone : str
-
-    Returns
-    -------
-    list
-        The Categories for Rewards list.
-    """
-    category_info = []
-
-    if zone == "DO":
-        # Premium category
-        category_info.append("96")
-        category_info.append("94")
-        category_info.append(
-            "Gana 100 puntos por cada RD $1000 pesos "
-            "de compra en estos productos"
-        )
-        category_info.append("COMPRA AHORA")
-        category_info.append(
-            f"{URL_BASE}"
-            "/uat/images/do/core/img_punto_1.png"
-        )
-
-        # Core category
-        category_info.append("95")
-        category_info.append("93")
-        category_info.append(
-            "Gana 50 puntos por cada RD $1000 pesos "
-            "de compra en estos productos"
-        )
-        category_info.append("COMPRA AHORA")
-        category_info.append(
-            f"{URL_BASE}"
-            "/uat/images/do/core/img_punto_1.png"
-        )
-    elif zone == "CO":
-        # Premium category
-        category_info.append("124")
-        category_info.append("304")
-        category_info.append(
-            "Gana 100 puntos por cada RD $1000 pesos de "
-            "compra en estos productos"
-        )
-        category_info.append("COMPRA AHORA")
-        category_info.append(
-            f"{URL_BASE}"
-            "/uat/images/do/core/img_punto_1.png"
-        )
-
-        # Core category
-        category_info.append("123")
-        category_info.append("261")
-        category_info.append(
-            "Gana 50 puntos por cada RD $1000 pesos de "
-            "compra en estos productos"
-        )
-        category_info.append("COMPRA AHORA")
-        category_info.append(
-            f"{URL_BASE}"
-            "/uat/images/do/core/img_punto_1.png"
-        )
-    elif zone == "AR":
-        # Premium category
-        category_info.append("582")
-        category_info.append("494")
-        category_info.append(
-            "Gana 100 puntos por cada RD $1000 pesos de "
-            "compra en estos productos"
-        )
-        category_info.append("COMPRA AHORA")
-        category_info.append(
-            f"{URL_BASE}"
-            "/uat/images/do/core/img_punto_1.png"
-        )
-
-        # Core category
-        category_info.append("581")
-        category_info.append("493")
-        category_info.append(
-            "Gana 50 puntos por cada RD $1000 pesos de "
-            "compra en estos productos"
-        )
-        category_info.append("COMPRA AHORA")
-        category_info.append(
-            f"{URL_BASE}"
-            "/uat/images/do/core/img_punto_1.png"
-        )
-    elif zone == "BR":
-        # Premium category
-        category_info.append("262")
-        category_info.append("226")
-        category_info.append(
-            "Ganhe 100 pontos para cada R$1000,00 gastos em compras "
-            "e troque por produtos gratis."
-        )
-        category_info.append("COMPRAR AGORA")
-        category_info.append(
-            f"{URL_BASE}"
-            "/uat/images/br/premium/img-premium-br-rules-2.png"
-        )
-
-        # Core category
-        category_info.append("272")
-        category_info.append("236")
-        category_info.append(
-            "Ganhe 50 pontos para cada R$1000,00 gastos em compras "
-            "e troque por produtos gratis."
-        )
-        category_info.append("COMPRAR AGORA")
-        category_info.append(
-            f"{URL_BASE}"
-            "/uat/images/br/premium/img-premium-br-rules-2.png"
-        )
-    elif zone == "ZA":
-        # Premium category
-        category_info.append("217")
-        category_info.append("214")
-        category_info.append(
-            "Earn 1 point for each R100 spent on "
-            "quarts products."
-        )
-        category_info.append("BUY NOW")
-        category_info.append(
-            f"{URL_BASE}"
-            "/uat/images/za/quarts-brands.png"
-        )
-
-        # Core category
-        category_info.append("219")
-        category_info.append("216")
-        category_info.append(
-            "Earn 10 points for each R100 spent on "
-            "bonus products."
-        )
-        category_info.append("BUY NOW")
-        category_info.append(
-            f"{URL_BASE}"
-            "/uat/images/za/bonus-brands.png"
-        )
-    elif zone == "MX":
-        # Premium category
-        category_info.append("9")
-        category_info.append("1")
-        category_info.append(
-            "Gana 1 punto por cada $10 de "
-            "compra en estos productos"
-        )
-        category_info.append("COMPRA AHORA")
-        category_info.append(
-            f"{URL_BASE}"
-            "/uat/images/mx/core-brands.png"
-        )
-
-        # Core category
-        category_info.append("12")
-        category_info.append("2")
-        category_info.append(
-            "Gana 3 puntos por cada $10 de "
-            "compra en estos productos"
-        )
-        category_info.append("COMPRA AHORA")
-        category_info.append(
-            f"{URL_BASE}"
-            "/uat/images/mx/premium-brands.png"
-        )
-    elif zone == "EC":
-        # Premium category
-        category_info.append("129")
-        category_info.append("115")
-        category_info.append(
-            "Gana 4 puntos por cada $1 de "
-            "compra en estos productos"
-        )
-        category_info.append("COMPRA AHORA")
-        category_info.append(
-            f"{URL_BASE}"
-            "/sit/images/ec/premium-brands.png"
-        )
-
-        # Core category
-        category_info.append("127")
-        category_info.append("113")
-        category_info.append(
-            "Gana 1 punto por cada $1 de "
-            "compra en estos productos"
-        )
-        category_info.append("COMPRA AHORA")
-        category_info.append(
-            f"{URL_BASE}"
-            "/uat/images/ec/core-brands.png"
-        )
-    elif zone == "PE":
-        # Premium category
-        category_info.append("premium")
-        category_info.append("premium")
-        category_info.append(
-            "Gana 2 puntos por cada S/ 1.00 de "
-            "compra en estos productos"
-        )
-        category_info.append("COMPRA AHORA")
-        category_info.append(
-            f"{URL_BASE}"
-            "/uat/images/pe/premium-brands.png"
-        )
-
-        # Core category
-        category_info.append("core")
-        category_info.append("core")
-        category_info.append(
-            "Gana 1 punto por cada S/ 1.00 "
-            "de compra en estos productos"
-        )
-        category_info.append("COMPRA AHORA")
-        category_info.append(
-            f"{URL_BASE}"
-            "/uat/images/pe/core-brands.png"
-        )
-
-    elif zone == 'PY':
-        # Premium category
-        category_info.append("168")
-        category_info.append("11")
-        category_info.append(
-            "Gana 10 puntos por cada Gs.100.00 de "
-            "compra en estos productos"
-        )
-        category_info.append("COMPRA AHORA")
-        category_info.append(
-            "https://cdn-b2b-abi.global.ssl.fastly.net/"
-            "uat/images/py/premium-brands.png"
-        )
-
-        # Core category
-        category_info.append("167")
-        category_info.append("4")
-        category_info.append(
-            "Gana 1 punto por cada Gs.1.00 de "
-            "compra en estos productos"
-        )
-        category_info.append("COMPRA AHORA")
-        category_info.append(
-            f"{URL_BASE}"
-            "/uat/images/py/core-brands.png"
-        )
-
-    return category_info
-
-
-def generate_terms_information(zone: str) -> list:
-    """
-    Generates the Terms and Conditions for Rewards program.
-
-    Parameters
-    ----------
-    zone : str
-
-    Returns
-    -------
-    list
-        Terms and Conditions list.
-    """
-    terms_info = []
-
-    if zone in ["DO", "CO", "AR", "MX", "EC", "PE", "PY", "UY"]:
-        terms_info.append(
-            f"{URL_BASE}"
-            "/terms/terms-co.html"
-        )
-        terms_info.append("Términos iniciales introducidos al programa")
-    elif zone == "BR":
-        terms_info.append(
-            "https://b2bstaticwebsagbdev.blob.core.windows.net"
-            "/digitaltrade/terms/terms-br.html"
-        )
-        terms_info.append("Termos iniciais introduzidos ao programa")
-    elif zone == "ZA":
-        terms_info.append(
-            "https://cdn-b2b-abi-prod.global.ssl.fastly.net"
-            "/prod/terms/terms-za.html"
-        )
-        terms_info.append("Initial terms added to the program")
-
-    return terms_info

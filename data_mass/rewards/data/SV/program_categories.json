@@ -1,0 +1,134 @@
+[
+    {
+        "categoryId": "0",
+        "categoryIdWeb": "0",
+        "description": "Gana 5 puntos por cada $1.00 de compra en estos productos",
+        "buttonLabel": "COMPRA AHORA",
+        "buttonName": "premium-product-button",
+        "image": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/sv/premium.png",
+        "title": "5 puntos",
+        "subtitle": "por cada $1.00 de compra en estos productos",
+        "headerImage": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/intermediate-category.jpg",
+        "brands": [
+            {
+                "brandId": 1,
+                "title": "Corona",
+                "image": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/sv/brands/premium/Premium05_Corona2x.png"
+            },
+            {
+                "brandId": 2,
+                "title": "MichelobUltra",
+                "image": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/sv/brands/premium/Premium05_MichelobUltra2x.png"
+            },
+            {
+                "brandId": 3,
+                "title": "Stella",
+                "image": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/sv/brands/premium/Premium05_Estella1x.png"
+            },
+            {
+                "brandId": 4,
+                "title": "Modelo",
+                "image": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/sv/brands/premium/Premium05_Modelo2x.png"
+            }
+        ],
+        "position": 0
+    },
+    {
+        "categoryId": "1",
+        "categoryIdWeb": "0",
+        "description": "Gana 4 puntos por cada $1.00 de compra en estos productos",
+        "buttonLabel": "COMPRA AHORA",
+        "buttonName": "no-alcoholicos-product-button",
+        "image": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/sv/NA.png",
+        "title": "4 puntos",
+        "subtitle": "por cada $1.00 de compra en estos productos",
+        "headerImage": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/intermediate-category.jpg",
+        "brands": [
+            {
+                "brandId": 1,
+                "title": "Cristal",
+                "image": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/sv/brands/no-alcoholicos/NA04_AguaCrital2x.png"
+            },
+            {
+                "brandId": 2,
+                "title": "Coca Cola",
+                "image": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/sv/brands/no-alcoholicos/NA04_CocaCola2x.png"
+            },
+            {
+                "brandId": 3,
+                "title": "Del Valle",
+                "image": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/sv/brands/no-alcoholicos/NA04_DelValle2x.png"
+            },
+            {
+                "brandId": 4,
+                "title": "Fanta",
+                "image": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/sv/brands/no-alcoholicos/NA04_Fanta2x.png"
+            },
+            {
+                "brandId": 5,
+                "title": "Fury",
+                "image": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/sv/brands/no-alcoholicos/NA04_Fury2x.png"
+            },
+            {
+                "brandId": 6,
+                "title": "Fuze",
+                "image": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/sv/brands/no-alcoholicos/NA04_Fuze2x.png"
+            },
+            {
+                "brandId": 7,
+                "title": "Kinley",
+                "image": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/sv/brands/no-alcoholicos/NA04_Kinleyl2x.png"
+            },
+            {
+                "brandId": 8,
+                "title": "Monster",
+                "image": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/sv/brands/no-alcoholicos/NA04_Monster2x.png"
+            },
+            {
+                "brandId": 9,
+                "title": "Powerade",
+                "image": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/sv/brands/no-alcoholicos/NA04_Powerade2x.png"
+            },
+            {
+                "brandId": 10,
+                "title": "Tropical",
+                "image": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/sv/brands/no-alcoholicos/NA04_Tropical2x.png"
+            }
+        ],
+        "position": 1
+    },
+    {
+        "categoryId": "2",
+        "categoryIdWeb": "0",
+        "description": "Gana 1 punto por cada $1.00 de compra en estos productos",
+        "buttonLabel": "COMPRA AHORA",
+        "buttonName": "core-product-button",
+        "image": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/sv/core.png",
+        "title": "1 punto",
+        "subtitle": "por cada $1.00 de compra en estos productos",
+        "headerImage": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/intermediate-category.jpg",
+        "brands": [
+            {
+                "brandId": 1,
+                "title": "Pilsener",
+                "image": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/sv/brands/core/Core01_Pilsener2x.png"
+            },
+            {
+                "brandId": 2,
+                "title": "Golden",
+                "image": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/sv/brands/core/Core01_Golden2x.png"
+            },
+            {
+                "brandId": 3,
+                "title": "Santa Cruz",
+                "image": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/sv/brands/core/Core01_SantaCruz2x.png"
+            },
+            {
+                "brandId": 4,
+                "title": "Golden Extra",
+                "image": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/sv/brands/core/Core01_GoldenExtra2x.png"
+            }
+        ],
+        "position": 2
+    }
+]

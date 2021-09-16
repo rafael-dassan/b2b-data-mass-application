@@ -378,25 +378,25 @@ def display_program_rules_skus(zone: str, environment: str, abi_id: str):
                 f'Program Name: "{p_response_response}"'
             )
 
-            program_rules_skus = {}
-
             for rule in json_program_response['rules']:
-                money_spent_name = rule['moneySpentSkuRule']['name']
-                money_spent_points = rule['moneySpentSkuRule']['points']
-                money_spent_amount = rule['moneySpentSkuRule']['amountSpent']
+                program_rules_skus = {}
+
+                rule_id = rule['ruleId']
+                rule_points = rule['points']
+                rule_amount_spent = rule['amountSpent']
 
                 print(
                     f'{text.Yellow}\n'
-                    f'Rule name: {money_spent_name}'
+                    f'Rule ID: {rule_id}'
                 )
 
                 print(
                     f'{text.Yellow}'
-                    f'Earn {money_spent_points} points '
-                    f'per {money_spent_amount} spent.'
+                    f'Earn {rule_points} points '
+                    f'per ${rule_amount_spent} spent.'
                 )
 
-                for sku in rule['moneySpentSkuRule']['skus']:
+                for sku in rule['skus']:
                     sku_name = get_sku_name(zone, environment, sku)
                     program_rules_skus.setdefault(
                         'SKU ID',

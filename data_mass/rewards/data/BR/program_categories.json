@@ -1,0 +1,40 @@
+[
+    {
+        "categoryId": "262",
+        "categoryIdWeb": "226",
+        "description": "Ganhe 100 pontos para cada R$1000,00 gastos em compras e troque por produtos gratis.",
+        "buttonLabel": "COMPRAR AGORA",
+        "buttonName": "premium-product-button",
+        "image": "https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/br/premium/img-premium-br-rules-2.png",
+        "title": "Ganhe 100 pontos",
+        "subtitle": "para cada R$1000,00 gastos em compras e troque por produtos gratis.",
+        "headerImage": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/intermediate-category.jpg",
+        "brands": [
+            {
+                "brandId": "123",
+                "title": "premium brand",
+                "image": "https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/do/premium/img_puntos_20.png"
+            }
+        ],
+        "position": 0
+    },
+    {
+        "categoryId": "272",
+        "categoryIdWeb": "236",
+        "description": "Ganhe 50 pontos para cada R$1000,00 gastos em compras e troque por produtos gratis.",
+        "buttonLabel": "COMPRAR AGORA",
+        "buttonName": "core-product-button",
+        "image": "https://cdn-b2b-abi.global.ssl.fastly.net/uat/images/br/premium/img-premium-br-rules-2.png",
+        "title": "Ganhe 50 pontos",
+        "subtitle": "para cada R$1000,00 gastos em compras e troque por produtos gratis.",
+        "headerImage": "https://cdn-b2b-abi-prod.global.ssl.fastly.net/prod/images/intermediate-category.jpg",
+        "brands": [
+            {
+                "brandId": "321",
+                "title": "core brand",
+                "image": "https://cdn-b2b-abi.global.ssl.fastly.net/sit/images/br/redesign/core/img-core-brahmachopp-logo@2x.png"
+            }
+        ],
+        "position": 1
+    }
+]
