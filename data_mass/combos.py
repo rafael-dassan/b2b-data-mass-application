@@ -51,7 +51,10 @@ def input_combo_type_discount(
             'startDate': '2020-01-01T00:00:00Z',
             'endDate': '2045-02-28T00:00:00Z',
             'id': combo_id,
-            'items[0].sku': sku,
+            'items': [{
+                'sku': sku,
+                'quantity': 10
+            }],
             'originalPrice': original_price,
             'price': price,
             'score': score,
@@ -71,8 +74,8 @@ def input_combo_type_discount(
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
     # Get base URL
-    base_url = get_microservice_base_url(environment)
-    request_url = f'{base_url}/combo-relay/accounts'
+    base_url = get_microservice_base_url(environment, True)
+    request_url = f'{base_url}/combo-relay/v2/accounts'
 
     # Create body
     request_body = convert_json_to_string(json_object)
@@ -120,8 +123,8 @@ def input_combo_type_digital_trade(abi_id, zone, environment):
     request_headers = get_header_request(zone, False, False, True, False)
 
     # Get base URL
-    base_url = get_microservice_base_url(environment)
-    request_url = base_url + '/combo-relay/accounts'
+    base_url = get_microservice_base_url(environment, True)
+    request_url = base_url + '/combo-relay/v2/accounts'
 
     # get data from Data Mass files
     content: bytes = pkg_resources.resource_string(
@@ -220,8 +223,8 @@ def input_combo_type_free_good(
         json_object = update_value_to_json(json_data, key, dict_values[key])
 
     # Get base URL
-    base_url = get_microservice_base_url(environment)
-    request_url = f'{base_url}/combo-relay/accounts'
+    base_url = get_microservice_base_url(environment, True)
+    request_url = f'{base_url}/combo-relay/v2/accounts'
 
     # Create body
     request_body = convert_json_to_string(json_object)
@@ -308,7 +311,7 @@ def input_combo_only_free_good(
 
     # Get base URL
     base_url = get_microservice_base_url(environment)
-    request_url = f'{base_url}/combo-relay/accounts'
+    request_url = f'{base_url}/combo-relay/v2/accounts'
 
     # Create body
     request_body = convert_json_to_string(json_object)

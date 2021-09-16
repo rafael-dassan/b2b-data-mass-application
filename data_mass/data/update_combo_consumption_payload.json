@@ -5,15 +5,14 @@
       "comboId": "string",
       "availableToday": 333,
       "consumedLimit": {
-        "daily": 201,
-        "monthly": 201,
+        "daily": 100,
+        "monthly": 100,
         "availableToday": 222
-      },
-      "limit": {
-        "daily": 201,
-        "monthly": 201,
-        "availableToday": 222
-    }
+        },
+        "limit": {
+          "daily": 200,
+          "monthly": 200
+      }
     }
   ]
 }
