@@ -69,7 +69,16 @@ def request_post_price_microservice(
     request_headers = get_header_request(zone)
     base_url = get_microservice_base_url(environment, False)
     
-    if zone in ZONES_DIFF_CONTRACT:
+    if zone in ZONES_NEW_ENDPOINT:
+        request_url = f"{base_url}/price-relay/v1"
+        request_body = get_body_price_microservice_request_v2(
+            abi_id=account_id,
+            sku_product=sku_product,
+            product_price_id=product_price_id,
+            price_values=price_values,
+            zone=zone
+        )
+    elif zone in ["CA", "US"]:
         request_url = f"{base_url}/price-relay/v2"
         request_body = get_payload_price_multivendor(
             account_id=account_id,
@@ -78,9 +87,9 @@ def request_post_price_microservice(
             price_values=price_values
         )
     else:
-        request_url = f"{base_url}/price-relay/v2"
-        request_body = get_payload_price_no_validfrom(
-            account_id=account_id,
+        request_url = f"{base_url}/cart-calculation-relay/v2/prices"
+        request_body = get_body_price_microservice_request_v2(
+            abi_id=account_id,
             sku_product=sku_product,
             product_price_id=product_price_id,
             price_values=price_values
