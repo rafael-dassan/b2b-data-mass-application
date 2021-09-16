@@ -27,6 +27,7 @@ def request_order_creation(
         order_items: list,
         order_status: str,
         delivery_date: str,
+        order_number: str = None,
         items: list = None,
         has_empties: bool = False) -> Optional[Any]:
     """
@@ -46,6 +47,7 @@ def request_order_creation(
         One of `Y` or `N`.
     order_items : list
         List of SKUs
+    order_number : str
     order_status : str
         PLACED, CANCELLED, etc.
     delivery_date : str
@@ -111,7 +113,8 @@ def request_order_creation(
             order_items=order_items,
             order_status=order_status,
             delivery_date=delivery_date,
-            is_v2=False
+            is_v2=False,
+            order_number=order_number
         )
 
     base_url = get_microservice_base_url(environment, is_v1)
@@ -272,6 +275,7 @@ def create_order_payload(
         order_items: list, 
         order_status: str,
         delivery_date: str,
+        order_number: str = None,
         is_v2: bool = False) -> str:
     """
     Create payload for order creation.
@@ -284,6 +288,7 @@ def create_order_payload(
     order_items : list
     order_status : str
     delivery_date : str
+    order_number : str
     zone : bool
         By default `False`.
 
@@ -335,6 +340,9 @@ def create_order_payload(
         'status': order_status,
         'items': items
     }
+
+    if order_number:
+        dict_values.update({'orderNumber': order_number})
 
     if is_v2:
         payload_path = "data/create_order_payload_v2.json"

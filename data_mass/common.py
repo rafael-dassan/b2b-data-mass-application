@@ -762,7 +762,7 @@ def print_input_text(input_text):
 
 
 def validate_yes_no_change_date(
-    question: str = "New Date entry for Delivery Date? y/N:"
+    question: str = "New Date entry for Delivery Date? y/N: "
     ):
     """
     Validate user input for change date.

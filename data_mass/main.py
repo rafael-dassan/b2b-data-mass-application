@@ -794,6 +794,12 @@ def flow_create_order(
             tomorrow = datetime.today() + timedelta(1)
             delivery_date = str(datetime.date(tomorrow))
 
+    order_number = input(f"{text.default_text_color}Order number: ")
+
+    while not order_number:
+        print(text.Red + "\n- Invalid option")
+        order_number = input(f"{text.default_text_color}Order number: ")
+
     if zone in ["CA", "US"]:
         has_empties = input(
             f"{text.default_text_color}"
@@ -842,17 +848,15 @@ def flow_create_order(
         order_status=order_status,
         delivery_date=delivery_date,
         items=item_list,
-        has_empties=has_empties
+        has_empties=has_empties,
+        order_number=order_number
     )
 
-    if isinstance(order_data, dict):
-        print(
-            text.Green 
-            + f'\n- Order {order_data.get("orderNumber")} '
-            'created successfully'
-        )
-    elif isinstance(order_data, bool):
-        print(f'{text.Green}\n- Order created successfully')
+    if order_data:
+        if order_number:
+            print(f'{text.Green}\n- Order {order_number} created successfully')
+        else:
+            print(f'{text.Green}\n- Order created successfully')
 
     print_finish_application_menu()
 
