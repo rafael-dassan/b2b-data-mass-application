@@ -152,7 +152,7 @@ def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclus
         'timezone': timezone
     }
 
-    if zone in ["US", "CA"]:
+    if zone in ["CA", "SV", "TZ", "US", "UY"]:
         header['Authorization'] = get_jwt_token()
         header['Accept-Language'] = 'en'
     elif use_jwt_auth:
