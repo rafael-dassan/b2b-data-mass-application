@@ -10,6 +10,7 @@ from uuid import uuid1
 import pkg_resources
 from tabulate import tabulate
 
+from data_mass.account.accounts import check_account_exists_microservice
 from data_mass.classes.text import text
 from data_mass.common import (
     convert_json_to_string,
@@ -87,6 +88,7 @@ def create_list_product_items(
 def create_quick_order_payload(
         account_id: str,
         zone: str,
+        environment: str,
         product_list: list) -> dict:
     """
     Define JSON to submit QUICK ORDER recommendation type
@@ -95,6 +97,7 @@ def create_quick_order_payload(
     ----------
     account_id : str
     zone : str
+    environment : str
     product_list : list
 
     Returns
@@ -134,6 +137,9 @@ def create_quick_order_payload(
         resources_warning()
         settings = get_settings()
         dict_values.update({"vendorId": settings.vendor_id})
+    else:
+        account, = check_account_exists_microservice(account_id, zone, environment)
+        dict_values.update({"vendorId": account.get("vendorId")})
 
     # Create file path
     content = pkg_resources.resource_string(
@@ -156,6 +162,7 @@ def create_quick_order_payload(
 def create_forgotten_items_payload(
         account_id: str,
         zone: str,
+        environment: str,
         product_list: list) -> dict:
     """
     Define JSON to submit FORGOTTEN ITEMS recommendation type
@@ -164,6 +171,7 @@ def create_forgotten_items_payload(
     ----------
     account_id : str
     zone : str
+    environment : str
     product_list : list
 
     Returns
@@ -202,6 +210,9 @@ def create_forgotten_items_payload(
         resources_warning()
         settings = get_settings()
         dict_values.update({"vendorId": settings.vendor_id})
+    else:
+        account, = check_account_exists_microservice(account_id, zone, environment)
+        dict_values.update({"vendorId": account.get("vendorId")})
 
     set_to_dictionary(dict_values, 'items', items)
 
@@ -223,7 +234,7 @@ def create_forgotten_items_payload(
 
 
 # Define JSON to submit UP SELL recommendation type
-def create_upsell_payload(account_id, zone, product_list):
+def create_upsell_payload(account_id, zone, environment, product_list):
 
     if zone in COUNTRIES_ES:
         language = 'es'
@@ -254,6 +265,9 @@ def create_upsell_payload(account_id, zone, product_list):
         resources_warning()
         settings = get_settings()
         dict_values.update({"vendorId": settings.vendor_id})
+    else:
+        account, = check_account_exists_microservice(account_id, zone, environment)
+        dict_values.update({"vendorId": account.get("vendorId")})
 
     set_to_dictionary(dict_values, 'items', items)
 
@@ -282,7 +296,12 @@ def request_quick_order(zone, environment, account_id, products):
     request_url = get_microservice_base_url(environment) + '/global-recommendation-relay'
 
     # Get body
-    request_body = create_quick_order_payload(account_id, zone, products)
+    request_body = create_quick_order_payload(
+        account_id=account_id,
+        zone=zone,
+        environment=environment,
+        product_list=products
+    )
 
     # Send request
     response = place_request('POST', request_url, request_body, request_headers)
@@ -304,7 +323,7 @@ def request_forgotten_items(zone, environment, account_id, products):
     request_url =  f"{base_url}/global-recommendation-relay"
 
     # Get body
-    request_body = create_forgotten_items_payload(account_id, zone, products)
+    request_body = create_forgotten_items_payload(account_id, zone, environment, products)
 
     # Send request
     response = place_request('POST', request_url, request_body, request_headers)
@@ -326,7 +345,7 @@ def request_sell_up(zone, environment, account_id, products):
     request_url = f"{base_url}/global-recommendation-relay"
 
     # Get body
-    request_body = create_upsell_payload(account_id, zone, products)
+    request_body = create_upsell_payload(account_id, zone, environment, products)
 
     # Send request
     response = place_request(
