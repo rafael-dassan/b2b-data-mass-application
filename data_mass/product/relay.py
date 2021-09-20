@@ -32,7 +32,7 @@ from data_mass.product.utils import (
     slice_array_products
 )
 
-ZONES_NEW_ENDPOINT = ["AR", "PY", "PA", "SV", "UY"]
+ZONES_NEW_ENDPOINT = ["AR", "PY", "PA", "SV", "UY", "TZ"]
 
 
 def request_post_price_microservice(

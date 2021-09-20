@@ -46,7 +46,7 @@ from data_mass.populator.preconditions import (
 from data_mass.validations import REWARDS_COUNTRIES
 
 logger = logging.getLogger(__name__)
-COUNTRIES = ['AR', 'BR', 'CA', 'CO', 'EC', 'MX', 'PA', 'PE', 'PY', 'SV', 'ZA']
+COUNTRIES = ['AR', 'BR', 'CA', 'CO', 'EC', 'MX', 'PA', 'PE', 'PY', 'SV', 'ZA', 'TZ']
 
 def execute_test(country, environment):
     account_params = get_account_params(country)

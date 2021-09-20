@@ -430,8 +430,8 @@ def check_combo_exists_microservice(account_id, zone, environment, combo_id):
 
 
 def get_combo_information(zone, combo_id, combo_type):
-    zones_es = ['AR', 'CO', 'DO', 'EC', 'MX', 'PE']
-    zones_en = ['ZA']
+    zones_es = ["AR", "CO", "DO", "EC", "MX", "PE", "SV", "UY"]
+    zones_en = ["ZA"]
 
     if zone in zones_es:
         combo_info = {

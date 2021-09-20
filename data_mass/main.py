@@ -2,6 +2,7 @@ import sys
 from datetime import datetime, timedelta
 from distutils.util import strtobool
 from random import choice, randint, sample, uniform
+from typing import Text
 
 import click
 import pyperclip
@@ -1433,7 +1434,9 @@ def input_combos_menu():
     selection_structure = print_combos_menu()
     zone = print_zone_menu_for_ms()
     environment = print_environment_menu()
-
+    if zone in ["TZ"]:
+        print(f"{text.Red}This zone is not elegible for combos")
+        print_finish_application_menu()
     abi_id = print_account_id_menu(zone)
     if not abi_id:
         print_finish_application_menu()

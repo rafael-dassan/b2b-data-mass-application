@@ -82,7 +82,8 @@ def validate_zone_for_combos_dt(zone):
         'PE': True,
         'EC': True,
         'SV': True,
-        "UY": True
+        "UY": True,
+        "TZ": True
     }
     return switcher.get(zone, False)
 
@@ -138,6 +139,7 @@ def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclus
         'US': 'America/New_York',
         'UY': 'America/Montevideo',
         'ZA': 'Africa/Johannesburg',
+        'TZ': 'Africa/Dar_es_Salaam'
 
     }
     timezone = switcher.get(zone.upper(), False)
@@ -152,9 +154,18 @@ def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclus
         'timezone': timezone
     }
 
-    if zone in ["CA", "SV", "TZ", "US", "UY"]:
+    if zone in ["CA", "US"]:
         header['Authorization'] = get_jwt_token()
         header['Accept-Language'] = 'en'
+
+    elif zone in ["SV", "UY"]:
+        header['Authorization'] = get_jwt_token()
+        header['Accept-Language'] = 'es'
+
+    elif zone in ["TZ"]:
+        header['Authorization'] = get_jwt_token()
+        header['Accept-Language'] = 'EN-TZ'
+
     elif use_jwt_auth:
         header['Authorization'] = generate_hmac_jwt(
             zone=zone,
@@ -825,7 +836,8 @@ def validate_country_menu_in_user_create_iam(zone):
         "SV": True,
         "US": True,
         "UY": True,
-        "ZA": True
+        "ZA": True,
+        "TZ": True
     }
     return switcher.get(zone, False)
 

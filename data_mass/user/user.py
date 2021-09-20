@@ -95,6 +95,10 @@ def get_iam_b2c_country_params_uat(country):
         "ZA": {
             "REDIRECT_URL": f"com.abi.sab-connect{AUTH_REDIRECT}",
             "CLIENT_ID": "499bf4c3-5c26-4e21-8ad8-c01957937cd5"
+        },
+        "TZ": {
+            "REDIRECT_URL": f"{BASE_REDIRECT}melifera{AUTH_REDIRECT}",
+            "CLIENT_ID": "7305f589-1fdc-4277-84eb-f7e9ab56501a"
         }
     }
     return params[country]
@@ -153,6 +157,10 @@ def get_iam_b2c_country_params_sit(country):
         "ZA": {
             "REDIRECT_URL": f"com.abi.sab-connect{AUTH_REDIRECT}",
             "CLIENT_ID": "2cca5cb9-b89d-4986-a427-63af29d0149d"
+        },
+        "TZ": {
+            "REDIRECT_URL": f"{BASE_REDIRECT}melifera{AUTH_REDIRECT}",
+            "CLIENT_ID": "22e75335-9312-4e09-89bc-0395a75ff960"
         }
     }
     return params[country]
@@ -215,6 +223,10 @@ def get_iam_b2c_country_params_qa(country):
         "ZA": {
             "REDIRECT_URL": f"com.abi.sab-connect{AUTH_REDIRECT}",
             "CLIENT_ID": "d427d243-2f42-40ff-849c-1d67d3590fa8"
+        },
+        "TZ": {
+            "REDIRECT_URL": f"{BASE_REDIRECT}melifera{AUTH_REDIRECT}",
+            "CLIENT_ID": "6e57f1f8-00f5-4286-a684-01472786102a"
         }
     }
 

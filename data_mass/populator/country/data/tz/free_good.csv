@@ -1,0 +1,4 @@
+account_id,deal_id,sku,proportion,quantity,partial_free_good,need_to_bTZ_product
+"5577780820","DMA-TZ-WEB-0104","0106WEB",10,1,"N","Y"
+"5577780821","DMA-TZ-ANDROID-0104","0106ANDROID",10,1,"N","Y"
+"5577780822","DMA-TZ-IOS-0104","0106IOS",10,1,"N","Y"

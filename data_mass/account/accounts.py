@@ -781,6 +781,13 @@ def get_account_delivery_address(zone: str) -> dict:
             'city': 'Montevideo',
             'state': 'Montevideo',
             'zipcode': 'N/A'
+        },
+        'TZ': {
+            'address': 'Kykuyo Av, 234',
+            'street': 'Kykuyo Av',
+            'city': 'Dodoma',
+            'state': 'Dodoma',
+            'zipcode': 'N/A'
         }
     }
 

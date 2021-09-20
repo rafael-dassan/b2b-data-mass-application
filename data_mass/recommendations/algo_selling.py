@@ -383,7 +383,8 @@ def get_header_request_recommender(zone, environment):
             'SV': 'America/San_Salvador',
             'US': 'America/New_York',
             'ZA': 'Africa/Johannesburg',
-            'UY': 'America/Montevideo'
+            'UY': 'America/Montevideo',
+            'TZ': 'Africa/Dar_es_Salaam'
         }
         timezone = switcher.get(zone, False)
 

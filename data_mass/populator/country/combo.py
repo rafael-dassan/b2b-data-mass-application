@@ -19,11 +19,14 @@ def apply_populate_combo_discount(row, country, environment):
 
 
 def populate_combo_discount(country, environment, account_id, combo_id, sku, discount_value):
-    if False == check_account_exists_microservice(account_id, country, environment):
-        logger.error(log(Message.RETRIEVE_ACCOUNT_ERROR, {'account_id': account_id}))
+    if country == "TZ":
+        ...
     else:
-        if False == input_combo_type_discount(account_id, country, environment, sku, discount_value, combo_id):
-            logger.error(log(Message.CREATE_COMBO_ERROR, {'account_id': account_id}))
+        if False == check_account_exists_microservice(account_id, country, environment):
+            logger.error(log(Message.RETRIEVE_ACCOUNT_ERROR, {'account_id': account_id}))
+        else:
+            if False == input_combo_type_discount(account_id, country, environment, sku, discount_value, combo_id):
+                logger.error(log(Message.CREATE_COMBO_ERROR, {'account_id': account_id}))
 
 
 def populate_combo_free_good_base(country, environment, dataframe_combos):
@@ -36,11 +39,14 @@ def apply_populate_combo_free_good(row, country, environment):
 
 
 def populate_combo_free_good(country, environment, account_id, combo_id, sku):
-    if False == check_account_exists_microservice(account_id, country, environment):
-        logger.error(log(Message.RETRIEVE_ACCOUNT_ERROR, {'account_id': account_id}))
+    if country == "TZ":
+        ...
     else:
-        if False == input_combo_type_free_good(account_id, country, environment, sku, combo_id):
-            logger.error(log(Message.CREATE_COMBO_ERROR, {'account_id': account_id}))
+        if False == check_account_exists_microservice(account_id, country, environment):
+            logger.error(log(Message.RETRIEVE_ACCOUNT_ERROR, {'account_id': account_id}))
+        else:
+            if False == input_combo_type_free_good(account_id, country, environment, sku, combo_id):
+                logger.error(log(Message.CREATE_COMBO_ERROR, {'account_id': account_id}))
 
 
 def populate_combo_only_free_good_base(country, environment, dataframe_combos):
@@ -53,8 +59,11 @@ def apply_populate_combo_only_free_good(row, country, environment):
 
 
 def populate_combo_only_free_good(country, environment, account_id, combo_id, sku):
-    if False == check_account_exists_microservice(account_id, country, environment):
-        logger.error(log(Message.RETRIEVE_ACCOUNT_ERROR, {'account_id': account_id}))
+    if country == "TZ":
+        ...
     else:
-        if False == input_combo_only_free_good(account_id, country, environment, sku, combo_id):
-            logger.error(log(Message.CREATE_COMBO_ERROR, {'account_id': account_id}))
+        if False == check_account_exists_microservice(account_id, country, environment):
+            logger.error(log(Message.RETRIEVE_ACCOUNT_ERROR, {'account_id': account_id}))
+        else:
+            if False == input_combo_only_free_good(account_id, country, environment, sku, combo_id):
+                logger.error(log(Message.CREATE_COMBO_ERROR, {'account_id': account_id}))

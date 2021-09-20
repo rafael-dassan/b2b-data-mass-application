@@ -134,7 +134,8 @@ def validate_zone_for_interactive_combos_ms(zone):
         "PA": True,
         "PY": True,
         "SV": True,
-        "UY": True
+        "UY": True,
+        "TZ": False
     }.get(zone, False)
 
 
@@ -154,6 +155,7 @@ def validate_zone_for_ms(zone):
         "US": True,
         "UY": True,
         "ZA": True,
+        "TZ": True
     }.get(zone, False)
 
 
