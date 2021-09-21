@@ -1944,7 +1944,7 @@ def flow_create_account(zone, environment, account_id):
         if not credit_response:
             print_finish_application_menu()
 
-    if zone == "BR" and set(payment_method).issubset(fee_methods):
+    if zone.upper() == "BR" and not set(fee_methods).isdisjoint(payment_method):
         has_credit_card_fee = input(f"\n{text.default_text_color}Would you like to add payment fee? y/N: ")
 
         while (has_credit_card_fee.upper() in ["Y", "N"]) is False:
@@ -2178,6 +2178,8 @@ def flow_update_account_minimum_order(zone, environment, account_id):
 def flow_update_account_payment_method(zone, environment, account_id):
     # Call check account exists function
     account = check_account_exists_microservice(account_id, zone, environment)
+    fee_methods = ["CREDIT_CARD_POS", "BANK_SLIP"]
+
     if not account:
         print_finish_application_menu()
     account_data = account[0]
@@ -2188,7 +2190,6 @@ def flow_update_account_payment_method(zone, environment, account_id):
         eligible_rewards = False
 
     payment_method = print_payment_method_menu(zone)
-
     minimum_order = get_minimum_order_list(account_data['minimumOrder'])
 
     create_account_response = create_account_ms(
@@ -2209,31 +2210,29 @@ def flow_update_account_payment_method(zone, environment, account_id):
             f"{text.Green}\n"
             f"- Payment method updated for the account {account_id}"
         )
-        
-        if zone == "BR" and "CREDIT_CARD_POS" in payment_method:
-            has_credit_card_fee = input(f"\n{text.default_text_color}Would you like to add credit card pos fee? y/N: ")
 
-            while (has_credit_card_fee.upper() in ["Y", "N"]) is False:
-                print(text.Red + "\n- Invalid option")
-                has_credit_card_fee = input(f"\n{text.default_text_color}Would you like to add credit card pos fee? y/N: ")
+    if zone.upper() == "BR" and not set(fee_methods).isdisjoint(payment_method):
+        has_credit_card_fee = input(f"\n{text.default_text_color}Would you like to add payment fee? y/N: ")
 
-            if has_credit_card_fee.upper() == "Y":
-                value = int(input(f"{text.default_text_color}Fee percentage value: "))
-                charge_id = f"DM-{randint(1, 999)}"
+        while (has_credit_card_fee.upper() in ["Y", "N"]) is False:
+            print(text.Red + "\n- Invalid option")
+            has_credit_card_fee = input(f"\n{text.default_text_color}Would you like to add payment fee? y/N: ")
 
-                response = create_charge_global(
-                    account_id=account_id,
-                    zone=zone,
-                    environment=environment,
-                    value=value,
-                    charge_id=charge_id,
-                    payment_method="CREDIT_CARD_POS",
-                    charge_type="PERCENT",
-                    type="PAYMENT_METHOD_FEE"
-                )
+        if has_credit_card_fee.upper() == "Y":
+            for method in payment_method:
+                if method in fee_methods:
+                    value = int(input(f"{text.default_text_color}Fee percentage value for {method}: "))
 
-                if response:
-                    print(f"{text.Green}\nSuccessfully created fee charge!")
+                    response = create_charge_global(
+                        account_id=account_id,
+                        zone=zone,
+                        environment=environment,
+                        payment_method=method,
+                        value=value
+                    )
+
+                    if response:
+                        print(f"{text.Green}\nSuccessfully created card fee charge!")
 
     else:
         print_finish_application_menu()
