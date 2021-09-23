@@ -1875,18 +1875,18 @@ def flow_create_account(zone, environment, account_id):
 
     has_po_number = None
     customer_id = None
+    maximum_order = None
 
     if option_include_minimum_order == 'Y':
         minimum_order = get_order_info()
     else:
         minimum_order = None
-        
-    option_include_maximum_order = print_order_menu(order_type="maximum")
-    
-    if option_include_maximum_order == 'Y':
-        maximum_order = get_order_info("Maximum")
-    else:
-        maximum_order = None
+
+    if zone == "BR" and payment_method == ["CASH"]:
+        option_include_maximum_order = print_order_menu(order_type="maximum")
+
+        if option_include_maximum_order == 'Y':
+            maximum_order = get_order_info("Maximum")
 
     if zone == "MX":
         enable_empties_loan = print_account_enable_empties_loan_menu()
