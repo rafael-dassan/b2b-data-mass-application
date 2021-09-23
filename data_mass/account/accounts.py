@@ -282,6 +282,7 @@ def create_account_ms(
         maximum_order = kwargs.get("maximum_order")
         dict_values.update({
             "maximumOrder": {
+                "paymentMethods": ["CASH"],
                 "type": maximum_order[0],
                 "value": int(maximum_order[1])
             }

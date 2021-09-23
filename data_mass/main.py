@@ -1882,7 +1882,7 @@ def flow_create_account(zone, environment, account_id):
     else:
         minimum_order = None
 
-    if zone == "BR" and payment_method == ["CASH"]:
+    if zone == "BR":
         option_include_maximum_order = print_order_menu(order_type="maximum")
 
         if option_include_maximum_order == 'Y':
