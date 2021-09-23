@@ -204,30 +204,33 @@ def input_combo_type_free_good(
     )
     json_data = json.loads(content.decode("utf-8"))
 
-    dict_values = {
+    json_data.update({
         'accounts': [account_id],
-        'combos[0].description': description,
-        'combos[0].id': combo_id,
-        'combos[0].items[0].sku': sku,
-        'combos[0].originalPrice': price,
-        'combos[0].price': price,
-        'combos[0].score': score,
-        'combos[0].title': title,
-        'combos[0].type': 'FG',
-        'combos[0].externalId': combo_id,
-        'combos[0].freeGoods.quantity': 1,
-        'combos[0].freeGoods.skus': [sku]
-    }
-
-    for key in dict_values.keys():
-        json_object = update_value_to_json(json_data, key, dict_values[key])
+        'combos': [{
+            'description': description,
+            'id': combo_id,
+            'items[0].sku': sku,
+            'originalPrice': price,
+            'price': price,
+            'score': score,
+            'title': title,
+            'type': 'FG',
+            'externalId': combo_id,
+            'freeGoods': [{
+                'quantity': 1,
+                'skus': [sku]
+            }],
+            'startDate': '2020-01-01T00:00:00Z',
+            'endDate': '2045-02-28T00:00:00Z'
+        }]
+    })
 
     # Get base URL
     base_url = get_microservice_base_url(environment, True)
     request_url = f'{base_url}/combo-relay/v2/accounts'
 
     # Create body
-    request_body = convert_json_to_string(json_object)
+    request_body = convert_json_to_string(json_data)
 
     # Get header request
     request_headers = get_header_request(
