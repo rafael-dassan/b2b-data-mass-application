@@ -181,7 +181,7 @@ def create_forgotten_items_payload(
     """
     if zone in COUNTRIES_ES:
         language = 'es'
-        text = '¡Socio! Complete tu order'
+        text = '¡Socio! Completa tu orden'
         text_description = 'Clientes como tu tambíen compraron'
     elif zone == 'BR':
         language = 'pt'
