@@ -802,6 +802,7 @@ def flow_create_order(
         order_number = input(f"{text.default_text_color}Order number: ")
 
     if zone in ["CA", "US"]:
+        payment_method = order_payment_method(account_id, zone, environment)
         has_empties = input(
             f"{text.default_text_color}"
             "Has empties? y/N: "
