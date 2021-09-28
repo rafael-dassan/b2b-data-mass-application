@@ -278,6 +278,9 @@ from data_mass.user.creation import create_user
 from data_mass.user.deletion import delete_user_v3
 from data_mass.validations import is_number, validate_yes_no_option
 
+def error_tz():
+    print(f"{text.Red}\nTanzania only allows account and order creation")
+    print_finish_application_menu()
 
 def show_menu():
     clear_terminal()
@@ -362,6 +365,8 @@ def show_menu():
 
 def deals_information_menu():
     zone = print_zone_menu_for_ms()
+    if zone == "TZ":
+        error_tz()
     environment = print_environment_menu()
     abi_id = print_account_id_menu(zone)
     if not abi_id:
@@ -385,6 +390,8 @@ def deals_information_menu():
 def product_information_menu():
     selection_structure = print_get_products_menu()
     zone = print_zone_menu_for_ms()
+    if zone == "TZ":
+        error_tz()
     environment = print_environment_menu()
 
     switcher = {
@@ -471,6 +478,8 @@ def print_error_delivery_center_inventory(delivery_id: str):
 def account_information_menu():
     operation = print_get_account_operations_menu()
     zone = print_zone_menu_for_ms()
+    if zone == "TZ":
+        error_tz()    
     environment = print_environment_menu()
 
     return {
@@ -529,6 +538,8 @@ def create_rewards_to_account():
     reward_option = switcher.get(selection_structure, False)
  
     zone = print_zone_menu_for_ms()
+    if zone == "TZ":
+        error_tz()
     environment = print_environment_menu()
 
     # Option to create a new program
@@ -1170,6 +1181,8 @@ def check_simulation_service_account_microservice_menu():
 
 def deals_menu():
     zone = print_zone_menu_for_ms()
+    if zone == "TZ":
+        error_tz()
     operation = print_deals_operations_menu(zone)
     
     # For Interactive Combos
@@ -1434,6 +1447,8 @@ def flow_create_interactive_combos_v2(zone, environment, account_id, sku):
 def input_combos_menu():
     selection_structure = print_combos_menu()
     zone = print_zone_menu_for_ms()
+    if zone == "TZ":
+        error_tz()
     environment = print_environment_menu()
     if zone in ["TZ"]:
         print(f"{text.Red}This zone is not elegible for combos")
@@ -1498,6 +1513,8 @@ def input_combos_menu():
 
 def product_menu():
     zone = print_zone_menu_for_ms()
+    if zone == "TZ":
+        error_tz()
     environment = print_environment_menu()
     operation = print_product_operations_menu(zone)
 
@@ -2313,6 +2330,8 @@ def registration_user_iam():
         - Tax ID
     """
     country = print_zone_menu_for_ms()
+    if country == "TZ":
+        error_tz()
     environment = print_environment_menu_in_user_create_iam()
     email = print_input_email()
     password = print_input_password()
@@ -2344,6 +2363,8 @@ def delete_user_iam():
         - Email
     """
     country = print_zone_menu_for_ms()
+    if country == "TZ":
+        error_tz()
     environment = print_environment_menu_in_user_create_iam()
     email = print_input_email()
 
@@ -2360,6 +2381,8 @@ def delete_user_iam():
 def invoice_menu():
     operation = print_invoice_operations_menu()
     zone = print_zone_menu_for_ms()
+    if zone == "TZ":
+        error_tz()
 
     if zone == "US" and operation != '1':
         print(text.Red + "\n- Function not available in this country.")
@@ -2487,6 +2510,8 @@ def flow_update_invoice_payment_method(zone, environment, account_id):
 
 def token_generator_jwt():
     zone = print_zone_menu_for_ms()
+    if zone == "TZ":
+        error_tz()
     account_id = print_account_id_menu(zone)
     token_generator(jwt=True, account_id=account_id)
 
@@ -2526,6 +2551,8 @@ def get_categories_menu():
         - Parent id (default: 0)
     """
     country = print_zone_menu_for_ms()
+    if country == "TZ":
+        error_tz()
     environment = print_environment_menu_user_creation()
     parent_id = print_input_number_with_default('Parent id')
 
@@ -2639,6 +2666,8 @@ def associate_product_to_category_menu():
         - Category ID
     """
     country = print_zone_menu_for_ms()
+    if country == "TZ":
+        error_tz()
     environment = print_environment_menu_user_creation()
     product_sku = print_input_text('Product SKU')
     category_id = print_input_number('Category ID')
@@ -2669,6 +2698,8 @@ def create_categories_menu():
         - Parent id (default: 0)
     """
     country = print_zone_menu_for_ms()
+    if country == "TZ":
+        error_tz()
     environment = print_environment_menu_user_creation()
     category_name = print_input_text('Category name')
     parent_id = print_input_number_with_default('Parent id')
@@ -2736,6 +2767,8 @@ def order_information_menu():
 
 def recommender_information_menu():
     zone = print_zone_menu_for_ms()
+    if zone == "TZ":
+        error_tz()
     environment = print_environment_menu()
     account_id = print_account_id_menu(zone)
     if not account_id:
@@ -2752,6 +2785,8 @@ def recommender_information_menu():
 def retrieve_available_invoices_menu():
     status = print_invoice_status_menu_retriever()
     zone = print_zone_menu_for_ms()
+    if zone == "TZ":
+        error_tz()
     environment = print_environment_menu()
     abi_id = print_account_id_menu(zone)
 
@@ -2771,6 +2806,8 @@ def retrieve_available_invoices_menu():
 
 def retriever_sku_menu():
     zone = print_zone_menu_for_ms()
+    if zone == "TZ":
+        error_tz()
     environment = print_environment_menu()
     account_id = print_account_id_menu(zone)
     if not account_id:
@@ -3082,6 +3119,8 @@ def edit_attribute_type_menu():
 def create_product_menu():
     category_id = input(text.default_text_color + 'Category ID the product will be linked with: ')
     country = print_zone_menu_for_ms()
+    if country == "TZ":
+        error_tz()
     environment = print_environment_menu_supplier()
 
     product = create_product_supplier(environment, category_id, country)
