@@ -1,3 +1,5 @@
+from math import inf
+
 import click
 
 # Local application imports
@@ -425,3 +427,34 @@ def print_input_owner_infos():
             "last_name": "TEST OWNER LAST NAME",
         }
     return owner_infos
+
+
+def get_account_metadata():
+    """
+    Prompt user entries for metadata.
+
+    Returns
+    -------
+    metadata : dict
+    """
+    user_choice = click.prompt(
+        f"{text.LightYellow}"
+        f"Would like to insert metadata value for account? ",
+        type=click.Choice(["y", "n"], case_sensitive=False),
+    )
+    metadata = {}
+    if user_choice.upper() == "Y":
+        prompt_debit = click.prompt(
+                f'{text.default_text_color}'
+                'Amount of debit',
+                type=click.IntRange(1, inf)
+            )
+        promt_accumulative = click.prompt(
+                f'{text.default_text_color}'
+                'Amount of accumulative discount',
+                type=click.IntRange(1, inf),
+            )
+        metadata.update(
+            {"debit": prompt_debit, "accumulativeDiscount": promt_accumulative}
+        )
+    return metadata

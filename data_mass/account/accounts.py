@@ -183,6 +183,7 @@ def create_account_ms(
         environment: str,
         delivery_address: dict,
         owner: dict = None,
+        account_metadata: dict = {},
         account_status: str = "ACTIVE",
         enable_empties_loan: bool = False,
         eligible_rewards: bool = True,
@@ -200,6 +201,7 @@ def create_account_ms(
     environment : str
     delivery_address : dict
     owner: dict
+    account_metadata: dict
     account_status : str
     enable_empties_loan : bool
     eligible_rewards : bool
@@ -220,6 +222,7 @@ def create_account_ms(
         "challengeIds": [account_id],
         "deliveryCenterId": account_id,
         "deliveryScheduleId": account_id,
+        "metadata": account_metadata,
         "liquorLicense": [{
             "number": account_id
         }],
@@ -393,7 +396,8 @@ def account_information_logic(
         'Tax ID': account_data['taxId'],
         'Challenge IDs': challenge_ids,
         'Liquor License Number': liquor_license,
-        'Payment Methods': payment_methods
+        'Payment Methods': payment_methods,
+        'Account Metadata': account_data.get('metadata', {})
     }
     basic_information.append(account_values)
 

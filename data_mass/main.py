@@ -110,6 +110,7 @@ from data_mass.invoices.service import (
 )
 from data_mass.menus.account_menu import (
     delivery_window_menu,
+    get_account_metadata,
     print_account_enable_empties_loan_menu,
     print_account_id_menu,
     print_account_name_menu,
@@ -1884,6 +1885,7 @@ def account_menu():
 def flow_create_account(zone, environment, account_id):
     name = print_account_name_menu()
     owner_infos = print_input_owner_infos()
+    metadata = get_account_metadata()
     payment_method = print_payment_method_menu(zone)
     delivery_address = get_account_delivery_address(zone)
     account_status = print_account_status_menu()
@@ -1940,7 +1942,8 @@ def flow_create_account(zone, environment, account_id):
         eligible_rewards=account_eligible_rewards,
         has_po_number=has_po_number,
         customer_id=customer_id,
-        maximum_order=maximum_order
+        maximum_order=maximum_order,
+        account_metadata=metadata
     )
 
     if create_account_response:

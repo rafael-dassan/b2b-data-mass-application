@@ -1,52 +1,50 @@
 {
   "accountId": "string",
-  "challengeIds": [
-      "string"
-  ],
+  "challengeIds": ["string"],
   "channel": null,
   "deliveryAddress": {
-      "address": "string",
-      "city": "string",
-      "latitude": null,
-      "longitude": null,
-      "state": "string",
-      "zipcode": "string"
+    "address": "string",
+    "city": "string",
+    "latitude": null,
+    "longitude": null,
+    "state": "string",
+    "zipcode": "string"
   },
   "deliveryCenterId": "string",
   "deliveryRegion": null,
   "deliveryRoute": null,
   "deliveryScheduleId": "string",
   "erpSalesCenter": null,
+  "isKeyAccount": false,
   "liquorLicense": [
     {
-        "description": null,
-        "expirationDate": "2040-12-31",
-        "number": "string",
-        "status": "VALID",
-        "type": "PERMANENT"
+      "description": null,
+      "expirationDate": "2040-12-31",
+      "number": "string",
+      "status": "VALID",
+      "type": "PERMANENT"
     }
   ],
   "maximumOrder": null,
+  "metadata": {},
   "minimumOrder": {
     "type": "string",
     "value": 0
   },
   "name": "string",
   "owner": {
-      "email": "test@mailinator.com",
-      "firstName": "TEST OWNER FIRST NAME",
-      "lastName": "TEST OWNER LAST NAME",
-      "phone": 11999999999
+    "email": "test@mailinator.com",
+    "firstName": "TEST OWNER FIRST NAME",
+    "lastName": "TEST OWNER LAST NAME",
+    "phone": 11999999999
   },
-  "paymentMethods": [
-      "string"
-  ],
+  "paymentMethods": ["string"],
   "paymentTerms": null,
   "priceListId": "string",
   "salesRepresentative": {
-      "email": "test@zone.com",
-      "name": "BEES BDR",
-      "phone": 11000000000
+    "email": "test@zone.com",
+    "name": "BEES BDR",
+    "phone": 11000000000
   },
   "hasEmptiesLoan": false,
   "hasOverprice": false,

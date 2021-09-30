@@ -1,8 +1,6 @@
 {
   "vendorAccountId": "string",
-  "challengeIds": [
-    "string"
-  ],
+  "challengeIds": ["string"],
   "channel": null,
   "contacts": [
     {
@@ -27,6 +25,7 @@
   "hasEmptiesLoan": true,
   "hasPONumberRequirement": false,
   "hasOverprice": true,
+  "isKeyAccount": false,
   "liquorLicense": [
     {
       "description": null,
@@ -53,9 +52,7 @@
     "lastName": "TEST OWNER LAST NAME",
     "phone": "11999999999"
   },
-  "paymentMethods": [
-    "CREDIT"
-  ],
+  "paymentMethods": ["CREDIT"],
   "paymentTerms": [
     {
       "termPeriods": [

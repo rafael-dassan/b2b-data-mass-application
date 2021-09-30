@@ -228,7 +228,6 @@ def request_get_products_by_account_microservice(account_id, zone, environment):
     else:
         endpoint = "catalog-service"
         v1 = True
-
     base_url = get_microservice_base_url(environment, v1)
     if zone == "SV":
         query = {
