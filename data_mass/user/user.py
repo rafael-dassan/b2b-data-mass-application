@@ -54,7 +54,7 @@ def get_iam_b2c_country_params_uat(country):
         },
         "US": {
             "REDIRECT_URL": f"{BASE_REDIRECT}unitedstates{AUTH_REDIRECT}",
-            "CLIENT_ID": "PENDING MIGRATION" #TODO: does not have client id yet
+            "CLIENT_ID": "PENDING"
         },
         "CO": {
             "REDIRECT_URL": f"{BASE_REDIRECT}colombia{AUTH_REDIRECT}",
@@ -90,7 +90,7 @@ def get_iam_b2c_country_params_uat(country):
         },
         "UY": {
             "REDIRECT_URL": f"{BASE_REDIRECT}uruguay{AUTH_REDIRECT}",
-            "CLIENT_ID": "PENDING" #TODO: does not have client id yet
+            "CLIENT_ID": "PENDING"
         },
         "ZA": {
             "REDIRECT_URL": f"com.abi.sab-connect{AUTH_REDIRECT}",

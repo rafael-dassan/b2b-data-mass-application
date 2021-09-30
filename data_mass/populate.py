@@ -29,9 +29,6 @@ def regression(country, environment):
 
 def test(country, environment):
     logger.debug(f"TEST method executed with Country/Environment: {country}/{environment}")
-    # if country == "US":
-    #     execute_test_us(country, environment)
-    # else:
     execute_test(country, environment)
 
 def product(country, environment):
