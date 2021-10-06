@@ -122,7 +122,7 @@ def place_request(request_method, request_url, request_body, request_headers):
 
 # Return JWT header request
 def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclusion_auth=False,
-                       sku_product=False, account_id=None, jwt_app_claim=None):
+                       sku_product=False, account_id=None, jwt_app_claim=None, should_not_use_m2m=False):
 
     switcher = {
         'AR': 'America/Buenos_Aires',
@@ -154,15 +154,15 @@ def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclus
         'timezone': timezone
     }
 
-    if zone in ["CA", "US"]:
+    if zone in ["CA", "US"] and not should_not_use_m2m:
         header['Authorization'] = get_jwt_token()
         header['Accept-Language'] = 'en'
 
-    elif zone in ["SV", "UY"]:
+    elif zone in ["SV", "UY"] and not should_not_use_m2m:
         header['Authorization'] = get_jwt_token()
         header['Accept-Language'] = 'es'
 
-    elif zone in ["TZ"]:
+    elif zone in ["TZ"] and not should_not_use_m2m:
         header['Authorization'] = get_jwt_token()
         header['Accept-Language'] = 'EN-TZ'
 

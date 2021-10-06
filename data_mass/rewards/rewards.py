@@ -127,11 +127,13 @@ def disenroll_poc_from_program(
     Response
         The http response.
     """
+
     request_headers = get_header_request(
         zone=zone,
         use_jwt_auth=True,
         account_id=account_id,
-        jwt_app_claim=APP_ADMIN
+        jwt_app_claim=APP_ADMIN,
+        should_not_use_m2m=True
     )
 
     base_url = get_microservice_base_url(environment, False)
@@ -439,7 +441,8 @@ def get_rewards(
         zone=zone,
         use_jwt_auth=True,
         account_id=account_id,
-        jwt_app_claim=APP_B2B
+        jwt_app_claim=APP_B2B,
+        should_not_use_m2m=True
     )
 
     base_url = get_microservice_base_url(environment, False)
@@ -498,6 +501,7 @@ def put_rewards(
         use_jwt_auth=True,
         account_id=account_id,
         jwt_app_claim=APP_B2B,
+        should_not_use_m2m=True
     )
 
     base_url = get_microservice_base_url(environment, False)
