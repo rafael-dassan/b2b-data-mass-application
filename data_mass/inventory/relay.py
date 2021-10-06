@@ -10,16 +10,9 @@ from data_mass.common import (
     place_request,
     update_value_to_json
 )
-from data_mass.inventory.service import (
-    get_delivery_center_inventory,
-    get_delivery_center_inventory_v2
-)
 
 
 def get_inventory_payload(
-        zone: str,
-        environment: str,
-        account_id: str,
         products: list,
         delivery_center_id: str,
         sku_id: str,
@@ -29,9 +22,6 @@ def get_inventory_payload(
 
     Parameters
     ----------
-    zone : str
-    environment : str
-    account_id : str
     products : list
     delivery_center_id : str
     sku_id : str
@@ -42,15 +32,6 @@ def get_inventory_payload(
     dict
         The request body.
     """
-    get_inventory_response = get_delivery_center_inventory(
-        environment=environment,
-        zone=zone,
-        account_id=account_id,
-        delivery_center_id=delivery_center_id,
-        products=products
-    )
-
-    inventory = get_inventory_response.get('inventory', {})
 
     quantity = 999999
     if int(sku_quantity) >= 0:
@@ -58,7 +39,7 @@ def get_inventory_payload(
 
     inventory_list = []
 
-    len_inventory = len(inventory) if inventory else len(products)
+    len_inventory = len(products)
 
     for product in products[:len_inventory]:
         if sku_id is not None:
@@ -70,8 +51,8 @@ def get_inventory_payload(
                 inventory_list.append(specific_inventory)
             else:
                 current_inventory = {
-                    'sku': inventory[products.index(product)]['sku'],
-                    'quantity': inventory[products.index(product)]['quantity']
+                    'sku': products.index(product),
+                    'quantity': quantity
                 }
                 inventory_list.append(current_inventory)
         else:
@@ -148,9 +129,6 @@ def request_inventory_creation(
         endpoint: str = "inventory-relay/add"
 
         request_body: dict = get_inventory_payload(
-            zone=zone,
-            environment=environment,
-            account_id=account_id,
             products=products,
             delivery_center_id=delivery_center_id,
             sku_id=sku_id,

@@ -20,7 +20,7 @@ def print_inventory_sku_quantity_menu(zone, environment, products):
     if len_products > 0:
         with Pool(20) as pool:
             sku_name = pool.starmap(get_sku_name, zip(repeat(zone), repeat(environment), products))
-
+            
     aux = 0
     while aux < len_products:
         if not products[aux]:
