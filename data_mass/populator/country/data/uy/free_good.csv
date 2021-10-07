@@ -2,3 +2,4 @@ account_id,deal_id,sku,proportion,quantity,partial_free_good,need_to_buy_product
 "5577780820","DMA-UY-WEB-0104","0106WEB",10,1,"N","Y"
 "5577780821","DMA-UY-ANDROID-0104","0106ANDROID",10,1,"N","Y"
 "5577780822","DMA-UY-IOS-0104","0106IOS",10,1,"N","Y"
+"1112223334","DMA-UY-MANUAL-0104","0106WEB",10,1,"N","Y"

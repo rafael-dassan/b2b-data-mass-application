@@ -2,3 +2,4 @@ account_id,deal_id,sku,proportion,quantity,partial_free_good,need_to_buy_product
 "9883300001","DMA-DO-WEB-0104","0106WEB",10,1,"N","Y"
 "9883300002","DMA-DO-ANDROID-0104","0106ANDROID",10,1,"N","Y"
 "9883300003","DMA-DO-IOS-0104","0106IOS",10,1,"N","Y"
+"1112223334","DMA-DO-MANUAL-0104","0106WEB",10,1,"N","Y"
