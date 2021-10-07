@@ -21,6 +21,7 @@ def converters_by_entity(entity):
         'stepped_free_good': ['ranges'],
         'recommendation': ['products'],
         'order': ['items']
+
     }
     converter = entities_converters_switcher.get(entity)
     return converter if converter is not None else {}
