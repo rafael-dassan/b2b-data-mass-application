@@ -136,7 +136,8 @@ def add_products_to_account(account, country, environment, amount_of_products):
     products_by_account = request_get_products_by_account_microservice(
         account['accountId'], country, environment)
     if not products_by_account:
-        return False 
+        logger.debug("Products not found on account {account_id}".format(account_id=account['accountId']))
+        products_by_account = []
     logger.debug("Products found on account {account_id}: {products} items".format(account_id=account['accountId'],
                                                                                    products=str(len(products_by_account))))
 
@@ -177,7 +178,7 @@ def associate_products_to_account(country, environment, account_id, products):
     products_data = list(zip(generate_random_price_ids(products_length), [{'sku': products[i]} for i in
                                                                           range(products_length)]))
 
-    if request_post_products_account_microservice(account['accountId'], country, environment,
+    if not request_post_products_account_microservice(account['accountId'], country, environment,
                                                                account['deliveryCenterId'], products_data):
         logger.error(log(Message.PRODUCT_ERROR, {"account_id": account_id}))
 
