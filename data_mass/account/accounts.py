@@ -705,7 +705,7 @@ def get_account_delivery_address(zone: str) -> dict:
         },
         'CA': {
             'address': '1305  Heatherleigh',
-            'strret': 'Heatherleigh',
+            'street': 'Heatherleigh',
             'city': 'Cooksville',
             'state': 'Ontario',
             'zipcode': 'L5A 1V9'

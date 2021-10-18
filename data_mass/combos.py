@@ -7,6 +7,7 @@ import pkg_resources
 from data_mass.classes.text import text
 # Local application imports
 from data_mass.common import (
+    PLEASE_SELECT,
     convert_json_to_string,
     create_list,
     get_header_request,
@@ -117,7 +118,7 @@ def input_combo_type_discount(
     return False
 
 
-def input_combo_type_digital_trade(abi_id, zone, environment):
+def input_combo_type_digital_trade(account_id, vendor_id, zone, environment):
 
     # Get header request
     request_headers = get_header_request(zone, False, False, True, False)
@@ -136,7 +137,7 @@ def input_combo_type_digital_trade(abi_id, zone, environment):
     combo_id = 'DM-DT-' + str(randint(1, 100000))
 
     dict_values = {
-        'accounts': [abi_id],
+        'accounts': [account_id],
         'combos': [{
             'id': combo_id,
             'externalId': combo_id,
@@ -149,6 +150,11 @@ def input_combo_type_digital_trade(abi_id, zone, environment):
             'type': 'DT',
         }]
     }
+
+    if(is_3P_combo()):
+        dict_values['combos'][0]['type'] = 'DT3P'
+        dict_values['combos'][0]['vendorId'] = vendor_id
+        dict_values['combos'][0]['virtualDeliveryCenter'] = 'Virtual Delivery Center - ' + combo_id
 
     for key in dict_values.keys():
         json_object = update_value_to_json(json_data, key, dict_values[key])
@@ -164,7 +170,7 @@ def input_combo_type_digital_trade(abi_id, zone, environment):
         request_headers
         )
     update_consumption_response = update_combo_consumption(
-        abi_id,
+        account_id,
         zone,
         environment,
         combo_id)
@@ -181,6 +187,16 @@ def input_combo_type_digital_trade(abi_id, zone, environment):
         )
     return False
 
+
+def is_3P_combo(): 
+    is3PCombo = input(text.default_text_color + 'Is a 3P combo? (y/N): ')
+    is3PCombo = is3PCombo.upper()
+    isInvalidOption = is3PCombo == None and (is3PCombo != 'Y' or is3PCombo != 'N')
+    if(isInvalidOption):
+        print('Invalid option, please try again')
+        return is_3P_combo()
+    else: 
+        return is3PCombo == 'Y'
 
 def input_combo_type_free_good(
         account_id,

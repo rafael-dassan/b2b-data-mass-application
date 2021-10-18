@@ -1454,21 +1454,21 @@ def input_combos_menu():
     if zone in ["TZ"]:
         print(f"{text.Red}This zone is not elegible for combos")
         print_finish_application_menu()
-    abi_id = print_account_id_menu(zone)
-    if not abi_id:
+    account_id = print_account_id_menu(zone)
+    if not account_id:
         print_finish_application_menu()
 
     # Call check account exists function
-    account = check_account_exists_microservice(abi_id, zone, environment)
+    account = check_account_exists_microservice(account_id, zone, environment)
 
     if not account:
         print_finish_application_menu()
 
-    product_offers = request_get_offers_microservice(abi_id, zone, environment)
+    product_offers = request_get_offers_microservice(account_id, zone, environment)
     if not product_offers:
         print_finish_application_menu()
     elif product_offers == 'not_found':
-        print(text.Red + '\n- [Catalog Service] There is no product associated with the account ' + abi_id)
+        print(text.Red + '\n- [Catalog Service] There is no product associated with the account ' + account_id)
         print_finish_application_menu()
 
     index_offers = randint(0, (len(product_offers) - 1))
@@ -1483,25 +1483,25 @@ def input_combos_menu():
             except ValueError:
                 print(text.Red + '\n- Invalid value')
 
-        response = input_combo_type_discount(abi_id, zone, environment, sku, discount_value)
+        response = input_combo_type_discount(account_id, zone, environment, sku, discount_value)
 
     # Combo type free good
     elif selection_structure == '2':
-        response = input_combo_type_free_good(abi_id, zone, environment, sku)
+        response = input_combo_type_free_good(account_id, zone, environment, sku)
 
     # Combo type digital trade
     elif selection_structure == '3':
-        response = input_combo_type_digital_trade(abi_id, zone, environment)
+        response = input_combo_type_digital_trade(account_id, account[0]['vendorId'], zone, environment)
 
     # Combo type only free goods
     elif selection_structure == '4':
-        response = input_combo_only_free_good(abi_id, zone, environment, sku)
+        response = input_combo_only_free_good(account_id, zone, environment, sku)
 
     # Reset combo consumption to zero
     else:
         combo_id = print_combo_id_menu()
-        combo = check_combo_exists_microservice(abi_id, zone, environment, combo_id)
-        update_combo = update_combo_consumption(abi_id, zone, environment, combo_id)
+        combo = check_combo_exists_microservice(account_id, zone, environment, combo_id)
+        update_combo = update_combo_consumption(account_id, zone, environment, combo_id)
 
         if combo and update_combo:
             print(text.Green + '\n- Combo consumption for ' + combo_id + ' was successfully updated')
