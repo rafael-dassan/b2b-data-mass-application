@@ -119,7 +119,6 @@ def input_combo_type_discount(
 
 
 def input_combo_type_digital_trade(account_id, vendor_id, zone, environment):
-
     # Get header request
     request_headers = get_header_request(zone, False, False, True, False)
 

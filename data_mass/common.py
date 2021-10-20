@@ -1253,3 +1253,12 @@ def resources_warning():
         f"{text.Red}{message}",
         ResourceWarning, stacklevel=2
     )
+
+def get_confirmation_option(option, callbackFunction): 
+    option = option.upper()
+    isInvalidOption = option != '' and (option != 'Y' and option != 'N')
+    if(isInvalidOption):
+        print('Invalid option, please try again')
+        return callbackFunction()
+    else: 
+        return option == 'Y'

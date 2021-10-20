@@ -1,5 +1,6 @@
 # Local application imports
 from data_mass.classes.text import text
+from data_mass.common import get_confirmation_option
 from data_mass.validations import (
     validate_get_products,
     validate_product_operations_structure,
@@ -60,6 +61,19 @@ def print_product_quantity_menu(all_products_zone):
             print('\n{0}- The product quantity must be Numeric\n'.format(text.Red))
 
     return qtd
+
+def print_skus_specification_menu(): 
+    will_specify_skus = input(text.default_text_color + '\nDo you want to specify the skus? y/N: ')
+    return get_confirmation_option(will_specify_skus, print_skus_specification_menu)
+
+def get_skus_to_associate():
+    input_entry = input('Please type the skus separated by commas (example: SKU1, SKU2, SKU3): ')
+    skus = input_entry.split(',')
+    if(len(skus) == 0):
+        print('Invalid entry, please try again')
+        return get_skus_to_associate()
+        
+    return skus
 
 
 def print_get_products_menu():

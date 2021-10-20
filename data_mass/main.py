@@ -160,9 +160,11 @@ from data_mass.menus.order_menu import (
     print_order_status_menu
 )
 from data_mass.menus.product_menu import (
+    get_skus_to_associate,
     print_get_products_menu,
     print_product_operations_menu,
-    print_product_quantity_menu
+    print_product_quantity_menu,
+    print_skus_specification_menu
 )
 from data_mass.menus.rewards_menu import (
     print_rewards_challenges_menu,
@@ -205,6 +207,7 @@ from data_mass.product.relay import (
     associate_product_multivendor,
     create_product,
     create_product_v2,
+    is_sku_in_the_list,
     request_empties_discounts_creation
 )
 from data_mass.product.service import (
@@ -1650,6 +1653,17 @@ def flow_associate_products_to_account_multivendor(zone: str, environment: str):
 
     quantity = print_product_quantity_menu(all_products_zone)
     products = all_products_zone[:quantity]
+
+    willSpecifyTheSkus = print_skus_specification_menu()
+    if(willSpecifyTheSkus): 
+        skus = get_skus_to_associate()
+        products = list(filter(lambda product: is_sku_in_the_list(product['sku'], skus), all_products_zone))
+        if(len(products) == 0):
+            print('No products were found with this skus, please try again\n')
+            return flow_associate_products_to_account_multivendor(zone,environment)
+        quantity = len(products)
+
+    
 
     response = associate_product_multivendor(
         zone,

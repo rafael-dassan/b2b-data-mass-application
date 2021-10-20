@@ -18,7 +18,7 @@ from data_mass.common import (
 )
 from data_mass.config import get_settings
 from data_mass.inventory.relay import request_inventory_creation
-from data_mass.menus.product_menu import print_product_quantity_menu
+from data_mass.menus.product_menu import get_skus_to_associate, print_product_quantity_menu, print_skus_specification_menu
 from data_mass.product.service import (
     check_item_enabled,
     request_get_account_product_assortment
@@ -225,22 +225,8 @@ def get_payload_price_no_validfrom(
 
     return body
 
-
-def add_products_to_account_microservice(
-    abi_id, zone, environment, delivery_center_id, all_products_zone
-):
-    # Get desired product quantity to be associated
-    product_qty = print_product_quantity_menu(all_products_zone)
-
-    # Builds a list of products to be posted,\
-    # along with their generated random IDs for price and inclusion
-    products_data = list(
-        zip(
-            generate_random_price_ids(product_qty),
-            slice_array_products(product_qty, all_products_zone),
-        )
-    )
-
+def add_products_to_account_microservice(abi_id, zone, environment, delivery_center_id, all_products_zone):
+    products_data = get_products_data(abi_id, zone, environment, delivery_center_id, all_products_zone)
     # Associate products to an account
     result = request_post_products_account_microservice(
         abi_id, zone, environment, delivery_center_id, products_data
@@ -248,6 +234,32 @@ def add_products_to_account_microservice(
 
     return result
 
+def is_sku_in_the_list(sku, skuList): 
+    return list(filter(lambda skuFromList: skuFromList == sku, skuList))
+
+def get_products_data(abi_id, zone, environment, delivery_center_id, all_products_zone): 
+    willSpecifyTheSkus = print_skus_specification_menu()
+    if(willSpecifyTheSkus): 
+        skus = get_skus_to_associate()
+        products_with_same_sku = list(filter(lambda product: is_sku_in_the_list(product['sku'], skus), all_products_zone))
+        if(len(products_with_same_sku) == 0):
+            print('No products were found with this skus, please try again\n')
+            add_products_to_account_microservice(abi_id, zone, environment, delivery_center_id, all_products_zone)
+        else:
+            return list(
+                zip(
+                    generate_random_price_ids(len(products_with_same_sku)),
+                    products_with_same_sku
+                )
+            )
+    else: 
+        product_qty = print_product_quantity_menu(all_products_zone)
+        return list(
+            zip(
+                generate_random_price_ids(product_qty),
+                slice_array_products(product_qty, all_products_zone),
+            )
+        )
 
 def product_post_requests_microservice(
         product_data: dict,
@@ -298,7 +310,6 @@ def product_post_requests_microservice(
         return False
 
     return True
-
 
 def request_post_products_account_microservice(
         account_id: str,
@@ -351,7 +362,6 @@ def request_post_products_account_microservice(
     )
 
     return True
-
 
 def associate_product_global(
         zone: str,
