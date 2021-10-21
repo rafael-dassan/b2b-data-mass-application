@@ -313,3 +313,15 @@ def validate_sku(sku_id, enabled_skus):
 def validate_environment_supplier(environment):
     environments = ["DEV", "SIT", "UAT", "LOCAL"]
     return environment in environments
+
+def validate_option(option):
+    options = ["1", "2"]
+    return option in options
+
+def validate_priority(option):
+    options = ['1', '2', '3']
+    return option in options
+
+def validate_acumulation_type(option):
+    options = ['ADD', 'COMPOSE', 'UNIQUE', 'HIGH', 'LOW']
+    return option in options

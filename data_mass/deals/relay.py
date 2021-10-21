@@ -404,6 +404,8 @@ def create_discount(
         environment: str,
         discount_value: int,
         minimum_quantity: int,
+        accumulationType: str,
+        priority: int,
         deal_id: str = None,
         discount_type: str = 'percentOff',
         deal_type: str = 'DISCOUNT') -> Union[dict, bool]:
@@ -452,6 +454,8 @@ def create_discount(
         zone=zone,
         environment=environment,
         deal_sku=sku,
+        accumulationType=accumulationType,
+        priority=priority,
         discount_type=discount_type,
         discount_value=discount_value,
         minimum_quantity=minimum_quantity
@@ -468,6 +472,8 @@ def create_stepped_discount_with_limit(
         sku: str,
         zone: str,
         environment: str,
+        accumulationType: str,
+        priority: int,
         index_range: int,
         discount_range: int,
         max_quantity: int,
@@ -523,10 +529,13 @@ def create_stepped_discount_with_limit(
         zone=zone,
         environment=environment,
         sku=sku,
+        accumulationType=accumulationType,
+        priority=priority,
         quantity=max_quantity,
         index_range=index_range,
         discount_type=discount_type,
-        discount_range=discount_range
+        discount_range=discount_range,
+        
     )
 
     if promotion_response and cart_response:
@@ -541,6 +550,8 @@ def create_stepped_discount(
         zone: str,
         environment: str,
         ranges: int,
+        accumulationType: str,
+        priority: int,
         deal_id: str = None,
         discount_type: str = "percentOff",
         deal_type: str = "STEPPED_DISCOUNT"):
@@ -577,6 +588,8 @@ def create_stepped_discount(
         zone=zone,
         environment=environment,
         deal_sku=sku,
+        accumulationType=accumulationType,
+        priority=priority,
         discount_type=discount_type,
         ranges=ranges
     )
@@ -592,6 +605,8 @@ def create_free_good(
     sku_list,
     zone,
     environment,
+    accumulationType,
+    priority,
     proportion,
     quantity,
     partial_free_good,
@@ -629,6 +644,8 @@ def create_free_good(
         zone=zone,
         environment=environment,
         sku_list=sku_list,
+        accumulationType=accumulationType,
+        priority=priority,
         proportion=proportion,
         quantity=quantity,
         partial_free_good=partial_free_good,
@@ -647,6 +664,8 @@ def create_stepped_free_good(
         zone: str,
         environment: str,
         ranges: int,
+        accumulationType: str,
+        priority: int,
         deal_id: str = None,
         deal_type: str = "STEPPED_FREE_GOOD"):
     """
@@ -687,7 +706,9 @@ def create_stepped_free_good(
         zone=zone,
         environment=environment,
         sku=sku,
-        ranges=ranges
+        ranges=ranges,
+        accumulationType=accumulationType,
+        priority=priority
     )
 
     if promotion_response and cart_response:
@@ -789,6 +810,8 @@ def create_interactive_combos(
     sku,
     zone,
     environment,
+    accumulationType,
+    priority,
     index_range,
     deal_type='FLEXIBLE_DISCOUNT'
 ):
@@ -815,9 +838,11 @@ def create_interactive_combos(
     cart_response = request_create_interactive_combos_cart_calculation(
         account_id=account_id,
         deal_id=promotion_response,
-        zone=zone,
-        environment=environment,
+        zone=zone, 
         sku=sku,
+        environment=environment,
+        accumulationType=accumulationType,
+        priority=priority,
         index_range=index_range
     )
 
@@ -832,6 +857,8 @@ def create_interactive_combos_v2(
     sku,
     zone,
     environment,
+    accumulationType,
+    priority,
     index_range,
     deal_type='FLEXIBLE_DISCOUNT'
 ):
@@ -859,9 +886,11 @@ def create_interactive_combos_v2(
     cart_response = request_create_interactive_combos_cart_calculation_v2(
         account_id=account_id,
         deal_id=promotion_response,
+        sku=sku,
         zone=zone,
         environment=environment,
-        sku=sku,
+        accumulationType=accumulationType,
+        priority=priority,
         index_range=index_range
     )
 
@@ -877,6 +906,8 @@ def request_create_free_good_cart_calculation(
     zone,
     environment,
     sku_list,
+    accumulationType,
+    priority,
     proportion,
     quantity,
     partial_free_good,
@@ -931,7 +962,8 @@ def request_create_free_good_cart_calculation(
             'deals[0].dealId': deal_id,
             'deals[0].promotionId': deal_id,
             'deals[0].externalId': deal_id,
-            'deals[0].accumulationType': accumulation_type,
+            'deals[0].accumulationType': accumulationType,
+            'deals[0].priority': priority,
             'deals[0].conditions.simulationDateTime.startDateTime': dates_payload['startDate'],
             'deals[0].conditions.simulationDateTime.endDateTime': dates_payload['endDate'],
             'deals[0].conditions.lineItem.skus': [sku_list[0]['sku']],
@@ -949,7 +981,8 @@ def request_create_free_good_cart_calculation(
             'deals[0].dealId': deal_id,
             'deals[0].promotionId': deal_id,
             'deals[0].externalId': deal_id,
-            'deals[0].accumulationType': accumulation_type,
+            'deals[0].accumulationType': accumulationType,
+            'deals[0].priority': priority,
             'deals[0].quantityLimit': quantity,
             'deals[0].conditions.simulationDateTime.startDateTime': dates_payload['startDate'],
             'deals[0].conditions.simulationDateTime.endDateTime': dates_payload['endDate'],
@@ -958,7 +991,6 @@ def request_create_free_good_cart_calculation(
             'deals[0].output.freeGoods.freeGoods[0].skus[0].price': sku_list[0]['price'],
             'deals[0].output.freeGoods.freeGoods[0].quantity': quantity
         }
-
     content = pkg_resources.resource_string("data_mass", path_file)
     json_data = json.loads(content.decode("utf-8"))
 
@@ -984,7 +1016,7 @@ def request_create_free_good_cart_calculation(
         return False
 
 
-def request_create_stepped_free_good_cart_calculation(account_id, deal_id, zone, environment, sku, ranges):
+def request_create_stepped_free_good_cart_calculation(account_id, deal_id, zone, environment, sku, ranges, accumulationType, priority):
     """
     Input deal type stepped free good rules (API version 2) to the Pricing Engine Relay Service
     Args:
@@ -1020,7 +1052,8 @@ def request_create_stepped_free_good_cart_calculation(account_id, deal_id, zone,
         'deals[0].dealId': deal_id,
         'deals[0].promotionId': deal_id,
         'deals[0].externalId': deal_id,
-        'deals[0].accumulationType': accumulation_type,
+        'deals[0].accumulationType': accumulationType,
+        'deals[0].priority':priority,
         'deals[0].conditions.simulationDateTime.startDateTime': dates_payload['startDate'],
         'deals[0].conditions.simulationDateTime.endDateTime': dates_payload['endDate'],
         'deals[0].conditions.scaledLineItem.skus': [sku],
@@ -1064,7 +1097,7 @@ def request_create_stepped_free_good_cart_calculation(account_id, deal_id, zone,
         return False
 
 
-def request_create_discount_cart_calculation(account_id, deal_id, zone, environment, deal_sku, discount_type,
+def request_create_discount_cart_calculation(account_id, deal_id, zone, environment, deal_sku,accumulationType, priority, discount_type,
                                              discount_value, minimum_quantity):
     """
     Input deal type discount rules (API version 2) to the Pricing Engine Relay Service
@@ -1106,7 +1139,8 @@ def request_create_discount_cart_calculation(account_id, deal_id, zone, environm
         'deals[0].dealId': deal_id,
         'deals[0].promotionId': deal_id,
         'deals[0].externalId': deal_id,
-        'deals[0].accumulationType': accumulation_type,
+        'deals[0].accumulationType': accumulationType,
+        'deals[0].priority':priority,
         'deals[0].conditions.simulationDateTime.startDateTime': dates_payload['startDate'],
         'deals[0].conditions.simulationDateTime.endDateTime': dates_payload['endDate'],
         'deals[0].conditions.lineItem.skus': [deal_sku],
@@ -1154,7 +1188,7 @@ def request_create_discount_cart_calculation(account_id, deal_id, zone, environm
 
 
 def request_create_stepped_discount_cart_calculation(
-    account_id, deal_id, zone, environment, deal_sku, discount_type, ranges
+    account_id, deal_id, zone, environment, deal_sku, discount_type, ranges, accumulationType, priority
 ) -> bool:
     """
     Input deal type stepped discount rules (API version 2) to 
@@ -1197,7 +1231,8 @@ def request_create_stepped_discount_cart_calculation(
         'accounts': [account_id],
         'deals[0].dealId': deal_id,
         'deals[0].promotionId': deal_id,
-        'deals[0].accumulationType': accumulation_type,
+        'deals[0].accumulationType': accumulationType,
+        'deals[0].priority':priority,
         'deals[0].conditions.simulationDateTime.startDateTime': dates_payload['startDate'],
         'deals[0].conditions.simulationDateTime.endDateTime': dates_payload['endDate'],
         'deals[0].conditions.scaledLineItem.skus': [deal_sku],
@@ -1253,8 +1288,10 @@ def create_stepped_discount_with_limit_cart_calculation(
         account_id: str,
         deal_id: str,
         zone: str,
-        environment: str,
         sku: str,
+        environment: str,
+        accumulationType: str,
+        priority: int,
         quantity: int,
         index_range: str,
         discount_type: str,
@@ -1318,7 +1355,8 @@ def create_stepped_discount_with_limit_cart_calculation(
         'deals[0].dealId': deal_id,
         'deals[0].promotionId': deal_id,
         'deals[0].externalId': deal_id,
-        'deals[0].accumulationType': accumulation_type,
+        'deals[0].accumulationType': accumulationType,
+        'deals[0].priority': priority,
         'deals[0].conditions.simulationDateTime.startDateTime': dates_payload['startDate'],
         'deals[0].conditions.simulationDateTime.endDateTime': dates_payload['endDate'],
         'deals[0].conditions.scaledLineItem.skus': [sku],
@@ -1366,9 +1404,11 @@ def create_stepped_discount_with_limit_cart_calculation(
 def request_create_interactive_combos_cart_calculation(
         account_id: str,
         deal_id: str,
+        sku: str,
         zone: str,
         environment: str,
-        sku: str,
+        accumulationType: str,
+        priority: int,
         index_range: int) -> bool:
     """
     Input deal type stepped discount rules (API version 2) to the \
@@ -1410,6 +1450,8 @@ def request_create_interactive_combos_cart_calculation(
         'deals[0].dealId': deal_id,
         'deals[0].promotionId': deal_id,
         'deals[0].externalId': deal_id,
+        'deals[0].accumulationType': accumulationType,
+        'deals[0].priority':priority,
         'deals[0].conditions.multipleLineItem.items[0].skus': [sku[0]['sku']],
         'deals[0].conditions.multipleLineItem.items[1].skus': [sku[1]['sku']],
         'deals[0].conditions.multipleLineItem.items[2].skus': [sku[2]['sku']],
@@ -1461,6 +1503,8 @@ def request_create_interactive_combos_cart_calculation_v2(
         zone: str,
         environment: str,
         sku: str,
+        accumulationType: str,
+        priority: int,
         index_range: int) -> bool:
     """
     Input deal type stepped discount rules (API version 2) to \
@@ -1497,6 +1541,8 @@ def request_create_interactive_combos_cart_calculation_v2(
         'deals[0].dealId': deal_id,
         'deals[0].promotionId': deal_id,
         'deals[0].externalId': deal_id,
+        'deals[0].accumulationType': accumulationType,
+        'deals[0].priority':priority,
         'deals[0].conditions.multipleLineItem.items[0].skus': [sku[0]['sku'], sku[1]['sku']],
         'deals[0].conditions.multipleLineItem.items[1].skus': [sku[2]['sku']],
         'deals[0].conditions.multipleLineItem.items[0].minimumQuantity': int(index_range['minimum'][0]),

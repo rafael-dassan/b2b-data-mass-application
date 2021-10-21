@@ -1,6 +1,6 @@
 # Local application imports
 from data_mass.classes.text import text
-from data_mass.validations import validate_deals_options, validate_option_sku
+from data_mass.validations import validate_acumulation_type, validate_deals_options, validate_option, validate_option_sku, validate_priority
 
 
 def print_deals_operations_menu(zone):
@@ -260,3 +260,27 @@ def print_option_sku_menu():
                                                  '2. No): ')
 
     return option
+
+def print_accumulation_priority_menu():
+    option_accumulation_priority = input(text.default_text_color + 'Do you want to specify the accumulation type and priority?   (1. Yes / 2. No): ')
+    while validate_option(option_accumulation_priority) is False:
+        print(text.Red + '\n- Invalid option')
+        option_accumulation_priority = input(text.default_text_color + 'Do you want to specify the accumulation type and priority? (1. Yes / 2. No): ')
+
+    return option_accumulation_priority
+
+def print_priority_menu():
+    option_priority = input(text.default_text_color + 'What is the priority? (1,2 or 3): ')
+    while validate_priority(option_priority) is False:
+        print(text.Red + '\n- Invalid option')
+        option_priority = input(text.default_text_color + 'What is the priority? (1,2 or 3): ')
+
+    return option_priority
+
+def print_accumulation_type_menu():
+    option_accumulation_type = input(text.default_text_color + 'What is the accumulation type? (ADD, COMPOSE, UNIQUE, HIGH, LOW) :  ').upper()
+    while validate_acumulation_type(option_accumulation_type) is False:
+        print(text.Red + '\n- Invalid option')
+        option_accumulation_type = input(text.default_text_color + 'What is the accumulation type? (ADD, COMPOSE, UNIQUE, HIGH, LOW) :  ').upper()
+
+    return option_accumulation_type

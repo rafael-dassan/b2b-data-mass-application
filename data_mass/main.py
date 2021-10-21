@@ -126,6 +126,8 @@ from data_mass.menus.account_menu import (
 )
 from data_mass.menus.algo_selling_menu import print_recommender_type_menu
 from data_mass.menus.deals_menu import (
+    print_accumulation_priority_menu,
+    print_accumulation_type_menu,
     print_deals_operations_menu,
     print_discount_percentage_menu,
     print_discount_range_menu,
@@ -137,6 +139,7 @@ from data_mass.menus.deals_menu import (
     print_minimum_quantity_menu,
     print_option_sku_menu,
     print_partial_free_good_menu,
+    print_priority_menu,
     print_stepped_discount_ranges_menu,
     print_stepped_discount_ranges_menu_canada,
     print_stepped_free_good_ranges_menu
@@ -1290,15 +1293,28 @@ def deals_menu():
 def flow_create_discount(zone, environment, account_id, sku):
     minimum_quantity = print_minimum_quantity_menu()
     discount_value = print_discount_percentage_menu()
+    
+    accumulation_priority = print_accumulation_priority_menu()
+    if(accumulation_priority == '1'):
+        accumulationType = print_accumulation_type_menu()
+        priority = print_priority_menu()
+    else:
+        accumulationType = 'UNIQUE'
+        priority = 1
+
 
     if zone in ["CA", "US"]:
         response = request_create_discount_multivendor(
             vendor_account_id=account_id,
+             
             zone=zone,
             environment=environment,
             discount_value=discount_value,
             minimum_quantity=minimum_quantity,
-            vendor_item_id=sku
+            vendor_item_id=sku,
+            accumulationType=accumulationType,
+            priority=priority
+            
         )
     else:
         response = create_discount(
@@ -1307,7 +1323,9 @@ def flow_create_discount(zone, environment, account_id, sku):
             zone=zone,
             environment=environment,
             discount_value=discount_value,
-            minimum_quantity=minimum_quantity
+            minimum_quantity=minimum_quantity,
+            accumulationType=accumulationType,
+            priority=priority
         )
 
     if response:
@@ -1317,6 +1335,15 @@ def flow_create_discount(zone, environment, account_id, sku):
 
 
 def flow_create_stepped_discount(zone, environment, account_id, sku):
+    
+    accumulation_priority = print_accumulation_priority_menu()
+    
+    if(accumulation_priority == '1'):
+        accumulationType = print_accumulation_type_menu()
+        priority = print_priority_menu()
+    else:
+        accumulationType = 'UNIQUE'
+        priority = 1
     minimum_quantity = print_minimum_quantity_menu()
     discount_value = print_discount_percentage_menu()
     if zone == "CA":
@@ -1328,11 +1355,13 @@ def flow_create_stepped_discount(zone, environment, account_id, sku):
             discount_value=discount_value,
             minimum_quantity=minimum_quantity,
             vendor_item_id=sku,
-            ranges=ranges
+            ranges=ranges,
+            accumulationType=accumulationType,
+            priority=priority
         )
     else:
         ranges = print_stepped_discount_ranges_menu()
-        response = create_stepped_discount(account_id, sku, zone, environment, ranges)
+        response = create_stepped_discount(account_id, sku, zone, environment, ranges, accumulationType=accumulationType, priority=priority)
     if response:
         print(text.Green + f'\n- Deal {response} created successfully')
     else:
@@ -1342,12 +1371,23 @@ def flow_create_stepped_discount(zone, environment, account_id, sku):
 def flow_create_stepped_discount_with_limit(zone, environment, account_id, sku):
     # Default index range (from 1 to 9999 products)
     default_index_range = [1, 9999]
-
-    discount_range = print_discount_range_menu(1)
     max_quantity = print_max_quantity_menu(default_index_range)
+    
+    discount_range = print_discount_range_menu()
+    
+    
+    accumulation_priority = print_accumulation_priority_menu()
+    if(accumulation_priority == '1'):
+        accumulationType = print_accumulation_type_menu()
+        priority = print_priority_menu()
+    else:
+        accumulationType = 'UNIQUE'
+        priority = 1
 
-    response = create_stepped_discount_with_limit(account_id, sku, zone, environment, default_index_range,
+  
+    response = create_stepped_discount_with_limit(account_id, sku, zone, environment,accumulationType, priority, default_index_range, 
                                                   discount_range, max_quantity)
+    
     if response:
         print(text.Green + f'\n- Deal {response} created successfully')
     else:
@@ -1355,9 +1395,18 @@ def flow_create_stepped_discount_with_limit(zone, environment, account_id, sku):
 
 
 def flow_create_free_good(zone, environment, account_id, sku_list):
+  
+    
+    accumulation_priority = print_accumulation_priority_menu()
+    if(accumulation_priority == '1'):
+        accumulationType = print_accumulation_type_menu()
+        priority = print_priority_menu()
+    else:
+        accumulationType = 'UNIQUE'
+        priority = 1
+
     partial_free_good = print_partial_free_good_menu(zone)
     need_to_buy_product = print_free_good_redemption_menu(partial_free_good)
-
     if need_to_buy_product == 'Y':
         minimum_quantity = print_minimum_quantity_menu()
         quantity = print_free_good_quantity_menu()
@@ -1371,7 +1420,8 @@ def flow_create_free_good(zone, environment, account_id, sku_list):
             zone=zone,
             environment=environment,
             vendor_item_ids=sku_list,
-            quantity=quantity
+                        
+            
         )
     else:
         response = create_free_good(
@@ -1379,10 +1429,14 @@ def flow_create_free_good(zone, environment, account_id, sku_list):
             sku_list=sku_list,
             zone=zone,
             environment=environment,
+            accumulationType=accumulationType,
+            priority=priority,
             proportion=minimum_quantity,
             quantity=quantity,
             partial_free_good=partial_free_good,
-            need_to_buy_product=need_to_buy_product
+            need_to_buy_product=need_to_buy_product,
+            
+            
         )
     if response:
         print(text.Green + f'\n- Deal {response} created successfully')
@@ -1392,9 +1446,19 @@ def flow_create_free_good(zone, environment, account_id, sku_list):
 
 
 def flow_create_stepped_free_good(zone, environment, account_id, sku):
-    ranges = print_stepped_free_good_ranges_menu()
+    
 
-    response = create_stepped_free_good(account_id, sku, zone, environment, ranges)
+    accumulation_priority = print_accumulation_priority_menu()
+    if(accumulation_priority == '1'):
+        accumulationType = print_accumulation_type_menu()
+        priority = print_priority_menu()
+    else:
+        accumulationType = 'UNIQUE'
+        priority = 1
+    
+    ranges = print_stepped_free_good_ranges_menu()
+    print(accumulationType, priority,ranges)
+    response = create_stepped_free_good(account_id, sku, zone, environment, ranges, accumulationType, priority)
     if response:
         print(text.Green + f'\n- Deal {response} created successfully')
     else:
@@ -1402,6 +1466,14 @@ def flow_create_stepped_free_good(zone, environment, account_id, sku):
 
 
 def flow_create_mix_match(zone, environment, vendor_account_id, sku_list):
+    
+    accumulation_priority = print_accumulation_priority_menu()
+    if(accumulation_priority == '1'):
+        accumulationType = print_accumulation_type_menu()
+        priority = print_priority_menu()
+    else:
+        accumulationType = 'UNIQUE'
+        priority = 1
     max_quantity = input(
         f"{text.default_text_color}"
         "Maximum amount of items that can receive discounts: "
@@ -1414,7 +1486,9 @@ def flow_create_mix_match(zone, environment, vendor_account_id, sku_list):
         environment=environment,
         vendor_item_ids=sku_list,
         max_quantity=max_quantity,
-        quantity=quantity
+        quantity=quantity,
+        accumulationType=accumulationType,
+        priority=priority,
     )
 
     if response:
@@ -1426,8 +1500,15 @@ def flow_create_mix_match(zone, environment, vendor_account_id, sku_list):
 # Interactive combos v1
 def flow_create_interactive_combos(zone, environment, account_id, sku):
     index_range = print_interactive_combos_quantity_range_menu()
+    accumulation_priority = print_accumulation_priority_menu()
+    if(accumulation_priority == '1'):
+        accumulationType = print_accumulation_type_menu()
+        priority = print_priority_menu()
+    else:
+        accumulationType = 'UNIQUE'
+        priority = 1
 
-    response = create_interactive_combos(account_id, sku, zone, environment, index_range)
+    response = create_interactive_combos(account_id, sku, zone, environment,  accumulationType, priority, index_range)
 
     if response:
         print(text.Green + f'\n- Deal {response} created successfully')
@@ -1438,8 +1519,15 @@ def flow_create_interactive_combos(zone, environment, account_id, sku):
 # Interactive combos v2
 def flow_create_interactive_combos_v2(zone, environment, account_id, sku):
     index_range = print_interactive_combos_quantity_range_menu_v2()
+    accumulation_priority = print_accumulation_priority_menu()
+    if(accumulation_priority == '1'):
+        accumulationType = print_accumulation_type_menu()
+        priority = print_priority_menu()
+    else:
+        accumulationType = 'UNIQUE'
+        priority = 1
 
-    response = create_interactive_combos_v2(account_id, sku, zone, environment, index_range)
+    response = create_interactive_combos_v2(account_id, sku, zone, environment, accumulationType, priority, index_range)
 
     if response:
         print(text.Green + f'\n- Deal {response} created successfully')
