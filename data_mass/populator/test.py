@@ -1,6 +1,6 @@
 import logging
 
-from data_mass.common import block_print
+from data_mass.common import block_print, save_environment_to_env, save_environment_zone_to_env
 from data_mass.populator.country.account import populate_poc
 from data_mass.populator.country.category import (
     associate_products_to_category_magento
@@ -49,6 +49,8 @@ logger = logging.getLogger(__name__)
 COUNTRIES = ['AR', 'BR', 'CA', 'CO', 'EC', 'MX', 'PA', 'PE', 'PY', 'SV', 'ZA', 'TZ']
 
 def execute_test(country, environment):
+    save_environment_to_env(environment)
+    save_environment_zone_to_env(country)
     account_params = get_account_params(country)
     user_params = get_user_params(country)
     product_params = get_product_params()

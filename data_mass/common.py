@@ -614,9 +614,11 @@ def validate_combo_structure(option):
 # Print zone menu for Microservice
 def print_zone_menu_for_ms():
     zone = input(text.default_text_color + ZONE_SELECTION)
+    save_environment_zone_to_env(zone)
     while not validate_zone_for_ms(zone.upper()):
         print(text.Red + f'\n- {zone.upper()} is not a valid zone\n')
         zone = input(text.default_text_color + ZONE_SELECTION)
+        save_environment_zone_to_env(zone)
 
     return zone.upper()
 
@@ -624,31 +626,37 @@ def print_zone_menu_for_ms():
 # For interactive combos
 def print_zone_for_interactive_combos_menu_for_ms():
     zone = input(text.default_text_color + ZONE_SELECTION)
+    save_environment_zone_to_env(zone)
     while not validate_zone_for_interactive_combos_ms(zone.upper()):
         print(text.Red + f'\n- {zone.upper()} is not a valid zone\n')
         zone = input(text.default_text_color + ZONE_SELECTION)
+        save_environment_zone_to_env(zone)
 
-    return zone.upper()
+    return zone.upper() 
 
 
 # Print environment menu
 def print_environment_menu():
     environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
+    save_environment_to_env(environment)
     while validate_environment(environment.upper()) is False:
         print(text.Red + f'\n- {environment.upper()} is not a valid environment\n')
         environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
+        save_environment_to_env(environment)
 
-    return environment.upper()
+    return environment.upper() 
 
 
 # Print environment menu for User creation
 def print_environment_menu_user_creation():
     environment = input(text.default_text_color + "Environment (e.g., SIT, UAT): ")
+    save_environment_to_env(environment)
     while not validate_environment_user_creation(environment.upper()):
         print(text.Red + f"\n- {environment} is not a valid environment")
         environment = input(text.default_text_color + "Environment (e.g., SIT, UAT): ")
+        save_environment_to_env(environment)
 
-    return environment.upper()
+    return environment.upper() 
 
 
 # Print user name menu
@@ -1170,49 +1178,11 @@ def get_jwt_token():
         pass
 
     if access_token is None or token_has_expired():
-        access_token = create_new_jwt_token()
+        access_token = get_new_token()
         os.environ["TOKEN"] = access_token
 
     return access_token
     
-
-def create_new_jwt_token():
-    """
-    Create a new jwt token.
-
-    Returns
-    -------
-    str
-        The new token.
-    """
-    settings = get_settings()
-    header: dict = {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "requestTraceId": str(uuid1()),
-    }
-
-    query: str = urlencode({
-        "client_id": settings.client_id,
-        "client_secret": settings.client_secret,
-        "scope": "openid",
-        "grant_type": "client_credentials"
-    })
-
-    request_url: str = get_microservice_base_url(settings.environment, False)
-    request_url: str = f"{request_url}/auth/token?{query}"
-    response = place_request(
-        request_method="POST",
-        request_url=request_url,
-        request_body="",
-        request_headers=header
-    )
-    content: dict = json.loads(response.content)
-    token = content.get("access_token", None)
-
-    os.environ["EXPIRATION_TIME"] = str(round(t.time() + 1800))
-
-    return f"Bearer {token}"
-
 
 def token_has_expired() -> bool:
     """
@@ -1262,3 +1232,33 @@ def get_confirmation_option(option, callbackFunction):
         return callbackFunction()
     else: 
         return option == 'Y'
+
+def save_environment_to_env(environment):
+    os.environ['environment_env']=environment.upper()
+    
+def save_environment_zone_to_env(zone):
+    os.environ['zone_env']=zone.upper() 
+
+
+def get_new_token():
+    env = os.environ['environment_env']
+    email = os.environ['USER_EMAIL']
+    zone = os.environ['zone_env']
+    header: dict = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "requestTraceId": str(uuid1()),
+    }
+    request_url: str = f"https://services-{env}.bees-platform.dev/data-brew-server/token/create?email={email}&zone={zone}"
+
+    response = place_request(
+        request_method="POST",
+        request_url=request_url,
+        request_body="",
+        request_headers=header
+    )
+    content: dict = json.loads(response.content)
+    token = content.get("token", None)
+
+    os.environ["EXPIRATION_TIME"] = str(round(t.time() + 1800))
+    
+    return f"Bearer {token}"
