@@ -12,12 +12,12 @@
       "endDate": "2045-02-28T00:00:00Z",
       "type": "string",
       "image": "https://test-conv-micerveceria.abi-sandbox.net/media/catalog/product/c/o/combo-icon_11.png",
-      "freeGoods": {
+      "freeGoods": [{
         "quantity": 1,
         "skus": [
           "string"
         ]
-      },
+      }],
       "items": [
         {
           "sku": "string",

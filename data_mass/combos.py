@@ -291,7 +291,6 @@ def input_combo_only_free_good(
         environment,
         sku,
         combo_id=None):
-
     if combo_id is None:
         combo_id = 'DM-' + str(randint(1, 100000))
 
@@ -316,8 +315,8 @@ def input_combo_only_free_good(
         'combos[0].title': title,
         'combos[0].type': 'FG',
         'combos[0].externalId': combo_id,
-        'combos[0].freeGoods.quantity': 1,
-        'combos[0].freeGoods.skus': [sku]
+        'combos[0].freeGoods[0].quantity': 1,
+        'combos[0].freeGoods[0].skus': [sku]
     }
 
     for key in dict_values.keys():
