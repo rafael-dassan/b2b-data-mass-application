@@ -132,7 +132,9 @@ def create_purchase_challenge(
         environment: str,
         is_multiple: bool,
         challenge_id: str = None,
-        is_expired: Optional[bool] = False) -> Union[None, Response]:
+        is_expired: Optional[bool] = False,
+        account_id: str = None
+    ) -> Union[None, Response]:
     """
     Create Purchase challenge.
 
@@ -154,10 +156,10 @@ def create_purchase_challenge(
     print(
         f"{text.Yellow}\n"
         "- [Products] Verifying the list of "
-        f'available products for "{zone}" zone'
+        f'available products for "{zone}" zone and {account_id} account'
     )
 
-    zone_skus_list = create_product_list_from_zone(zone, environment)
+    zone_skus_list = create_product_list_from_zone(zone, environment, account_id)
 
     if zone_skus_list is None:
         return None

@@ -659,13 +659,15 @@ def create_rewards_to_account():
         print_finish_application_menu()
 
     # Option to create a PURCHASE challenge for zone
-    elif reward_option == 'CREATE_PURCHASE':
-        create_purchase_challenge(zone, environment, False)
-        print_finish_application_menu()
-    
-    # Option to create a PURCHASE_MULTIPLE challenge for zone
-    elif reward_option == 'CREATE_PURCHASE_MULTIPLE':
-        create_purchase_challenge(zone, environment, True)
+    elif reward_option == 'CREATE_PURCHASE' or reward_option == 'CREATE_PURCHASE_MULTIPLE':
+        account_id = print_account_id_menu(zone)
+        is_multiple = reward_option == 'CREATE_PURCHASE_MULTIPLE'
+        create_purchase_challenge(
+            zone=zone, 
+            environment=environment, 
+            is_multiple=is_multiple, 
+            account_id=account_id
+        )
         print_finish_application_menu()
 
     # Option to DELETE a challenge

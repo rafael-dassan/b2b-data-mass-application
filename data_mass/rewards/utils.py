@@ -19,7 +19,7 @@ from data_mass.common import (
     print_input_number,
     update_value_to_json
 )
-from data_mass.product.service import request_get_products_microservice
+from data_mass.product.service import request_get_products_by_account_microservice, request_get_products_microservice
 from data_mass.validations import validate_yes_no_option
 
 APP_B2B = "b2b"
@@ -315,22 +315,18 @@ def post_combo_relay_account(
 
 def create_product_list_from_zone(
         zone: str,
-        environment: str) -> Union[None, list]:
+        environment: str,
+        account_id = None
+    ) -> Union[None, list]:
     """
     Generates the SKU list available for a zone.
-
-    Parameters
-    ----------
-    zone : str
-    environment : str
-
-    Returns
-    -------
-    None or list
-        None if there's no products in the microservice, \
-        else, a list with sku's.
     """
-    response_products = request_get_products_microservice(zone, environment)
+
+    if account_id: 
+        response_products = request_get_products_by_account_microservice(account_id, zone, environment)
+    else: 
+        response_products = request_get_products_microservice(zone, environment)
+    
     sku_list = []
 
     if not response_products:
@@ -340,7 +336,6 @@ def create_product_list_from_zone(
         sku_list.append(product['sku'])
 
     return sku_list
-
 
 def display_all_programs_info(
         list_all_programs: list,
