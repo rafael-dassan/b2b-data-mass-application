@@ -227,7 +227,11 @@ def request_order_update(
             "paymentMethod": "CASH"
         })
     else:
-        endpoint = "order-service"
+        request_headers = get_header_request(
+            zone=zone,
+            use_inclusion_auth=True
+        )
+        endpoint = "order-relay"
         is_v1 = True
 
         # Get body
@@ -248,15 +252,15 @@ def request_order_update(
 
     # Send request
     response = place_request(
-        request_method="POST",
+        request_method="PATCH",
         request_url=request_url,
         request_body=request_body,
         request_headers=request_headers
     )
-    json_data = loads(response.text)
-
-    if response.status_code in [200, 202] and json_data:
-        return json_data
+    
+    if response.status_code in [200, 202]:
+        
+        return response.text
 
     print(
         f"{text.Red}\n"
@@ -489,7 +493,7 @@ def update_order_payload(
 
     json_data.update(dict_values)
 
-    return convert_json_to_string(json_data)
+    return json.dumps([json_data])
 
 
 def request_changed_order_creation(zone, environment, order_data) -> bool:

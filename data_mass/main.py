@@ -1076,6 +1076,12 @@ def flow_update_order(
             + f'\n- Order {order_data.get("orderNumber")} '
             'created successfully'
         )
+    else:
+        print(
+            text.Green 
+            + f'\n- Order {order_id} updated '
+            
+        )
 
     print_finish_application_menu()
 
