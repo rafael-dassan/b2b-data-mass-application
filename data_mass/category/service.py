@@ -1,6 +1,8 @@
 import json
+import os
 from typing import List, Optional
 from urllib.parse import urlencode
+
 
 from data_mass.account.accounts import get_multivendor_account_id
 from data_mass.classes.text import text
@@ -34,13 +36,26 @@ def get_categories(
     -----
         This method only supports multivendor zones.
     """
+    zone = os.environ['zone_env']
+    environment = os.environ['environment_env']
+    
     base_url = get_microservice_base_url(environment, False)
     header = get_header_request(zone)
 
+
     settings = get_settings()
-    query = {
-        "vendorId": settings.vendor_id
+    if zone == "CA" and environment == "UAT":
+        query = {
+            "vendorId": "540146c1-64fd-4b7c-a659-cedfc7023068"
+        }
+    elif zone == "CA" and environment == "SIT":
+        query = {
+        "vendorId": "3c8023c1-8d12-4f64-b11d-5f3172abf3ab"
     }
+    else:
+        query = {
+            "vendorId": settings.vendor_id
+        }
 
     request_url = f"{base_url}/categories/?{urlencode(query)}"
     response = place_request(

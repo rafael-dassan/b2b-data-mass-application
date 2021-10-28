@@ -63,6 +63,8 @@ from data_mass.common import (
     print_year_credit_statement,
     print_zone_credit_statement,
     print_zone_menu_for_ms,
+    save_environment_to_env,
+    save_environment_zone_to_env,
     validate_environment,
     validate_option_request_selection,
     validate_user_entry_date,
@@ -2699,14 +2701,19 @@ def categories_ms_menu():
         account_id = None
 
         zone = input(text.default_text_color + 'Zone (US or CA): ')
+        save_environment_zone_to_env(zone)
         while zone.upper() not in ["CA", "US"]:
             print(text.Red + f'\n- {zone.upper()} is not a valid zone\n')
             zone = input(text.default_text_color + 'Zone (US or CA): ')
+            save_environment_zone_to_env(zone)
+            
 
         environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
+        save_environment_to_env(environment)
         while validate_environment(environment.upper()) is False:
             print(text.Red + f'\n- {environment.upper()} is not a valid environment\n')
             environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
+            save_environment_to_env(environment)
 
         categories = get_categories_ms(
             zone=zone.upper(),
@@ -2722,16 +2729,21 @@ def categories_ms_menu():
             print_finish_application_menu()
     else:
         zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
+        save_environment_zone_to_env(zone)
         while validate_zone_for_ms(zone.upper()) is False:
             print(text.Red + f'\n- {zone.upper()} is not a valid zone\n')
             zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
+            save_environment_zone_to_env(zone)
 
         environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
+        save_environment_to_env(environment)
         while validate_environment(environment.upper()) is False:
             print(text.Red + f'\n- {environment.upper()} is not a valid environment\n')
             environment = input(text.default_text_color + 'Environment (DEV, SIT, UAT): ')
+            save_environment_to_env(environment)
 
         category_id = input(text.default_text_color + 'Vendor Category Id: ')
+
         while not category_id:
             print(text.Red + "\n- Invalid option")
             is_enabled = input(f"\n{text.default_text_color}Vendor Category Id: ")
