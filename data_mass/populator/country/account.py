@@ -184,3 +184,46 @@ def associate_products_to_account(country, environment, account_id, products):
 
     # Populate the default inventory for all countries
     populate_default_inventory(account_id, country, environment, account['deliveryCenterId'])
+
+
+def populate_minimum_order(country, environment, dataframe_minimum_order):
+    if dataframe_minimum_order is not None:
+        dataframe_minimum_order.apply(apply_populate_minimum_order, args=(country, environment), axis=1)
+
+
+def apply_populate_minimum_order(row, country, environment):
+    execute_minimum_order_creation(
+        country,
+        environment,
+        row['account_id'],
+        row['type'],
+        row['value'])
+
+
+def execute_minimum_order_creation(zone, environment, account_id):
+    account = check_account_exists_microservice(account_id, zone, environment)
+    if not account:
+        account_data = account[0]
+
+    execute_minimum_order = get_minimum_order_list(account_data['minimumOrder'])
+
+    if execute_minimum_order:
+        minimum_order = get_order_info()
+    else:
+        minimum_order = None
+
+    create_account_response = create_account_ms(
+        account_id=account_id,
+        #name=account_data.get('name'),
+        minimum_order=minimum_order,
+        zone=zone,
+        environment=environment,
+        type=ORDER_TOTAL,
+        value=10000
+    )
+
+    if create_account_response:
+        print(text.Green + '\n- Minimum order updated for the account {account_id}'
+              .format(account_id=account_id))
+    else:
+        print_finish_application_menu()

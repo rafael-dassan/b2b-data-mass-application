@@ -35,6 +35,7 @@ logger = logging.getLogger(__name__)
 def populate_accounts(country, environment):
     logger.info("populate_accounts for %s/%s", country, environment)
     populate_pocs(country, environment, search_data_by(country, 'account'))
+    populate_minimum_order(country, environment, search_data_by(country, 'minimum_order'))
 
 
 # def populate_users_magento(country, environment):
