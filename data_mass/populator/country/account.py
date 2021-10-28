@@ -64,6 +64,9 @@ def populate_poc(country, environment, account_id, account_name, payment_method,
                 else:
                     associate_products_to_account(country, environment, account_id, [not_associated_products[i]])
 
+        # Populate the default inventory for all countries
+        populate_default_inventory(account_id, country, environment, account_id)
+
 
 # Populate an account
 def populate_account(country, environment, account_id, account_name, payment_method, eligible_rewards):
@@ -181,6 +184,3 @@ def associate_products_to_account(country, environment, account_id, products):
     if not request_post_products_account_microservice(account['accountId'], country, environment,
                                                                account['deliveryCenterId'], products_data):
         logger.error(log(Message.PRODUCT_ERROR, {"account_id": account_id}))
-
-    # Populate the default inventory for all countries
-    populate_default_inventory(account_id, country, environment, account['deliveryCenterId'])

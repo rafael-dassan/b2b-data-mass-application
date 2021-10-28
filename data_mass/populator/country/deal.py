@@ -46,7 +46,7 @@ def apply_populate_discount(row, country, environment):
     populate_discount(country, environment, str(row['account_id']), row['deal_id'], row['sku'], row['discount_value'], row['min_quantity'], priority)
 
 
-def populate_discount(country, environment, account_id, deal_id, sku, discount_value, minimum_quantity):
+def populate_discount(country, environment, account_id, deal_id, sku, discount_value, minimum_quantity, priority):
     if False == check_account_exists_microservice(account_id, country, environment):
         logger.error(log(Message.RETRIEVE_ACCOUNT_ERROR, {'account_id': account_id}))
     else:
@@ -63,7 +63,7 @@ def apply_populate_stepped_discount(row, country, environment):
     populate_stepped_discount(country, environment, str(row['account_id']), row['deal_id'], row['sku'], row['ranges'], priority)
 
 
-def populate_stepped_discount(country, environment, account_id, deal_id, sku, ranges):
+def populate_stepped_discount(country, environment, account_id, deal_id, sku, ranges, priority):
     if False == check_account_exists_microservice(account_id, country, environment):
         logger.error(log(Message.RETRIEVE_ACCOUNT_ERROR, {'account_id': account_id}))
     else:
