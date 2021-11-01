@@ -36,6 +36,7 @@ def check_account_exists_microservice(
     bool or json
         `False` if not exists, else the account data.
     """
+    
     request_headers = get_header_request(
         zone=zone,
         use_jwt_auth=True,

@@ -2,6 +2,7 @@
 import json
 import logging
 import os
+from posix import environ
 import sys
 import time as t
 import warnings
@@ -564,6 +565,7 @@ def print_structure_menu():
     print(text.default_text_color + str(6), text.Yellow + DATA_CREATION + text.White + 'Supplier/PIM')
     print(text.default_text_color + str(7), text.Yellow + 'Data searching - ' + text.White + 'Supplier/PIM')    
     print(text.default_text_color + str(8), text.Yellow + CLOSE_APPLICATION)
+    
     structure = input(text.default_text_color + '\nPlease choose an option: ')
     while validate_structure(structure) is False:
         print(text.Red + INVALID_OPTION)
@@ -1262,3 +1264,16 @@ def get_new_token():
     os.environ["EXPIRATION_TIME"] = str(round(t.time() + 1800))
     
     return f"Bearer {token}"
+
+
+def show_env_variables():
+    zone = os.environ['zone_env']
+    environment = os.environ['environment_env']
+    print('\n')
+    print(f"{text.Yellow} - You are using zone=[{zone}] and environment=[{environment}]")
+    print('\n')
+    selector = input(f"{text.Yellow}Do you want to change it ? (y/N) ")
+    if selector.upper() == "Y":
+        print_environment_menu()
+        print_zone_menu_for_ms()
+

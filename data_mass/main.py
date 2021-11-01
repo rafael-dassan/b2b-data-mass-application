@@ -1,10 +1,12 @@
 import sys
+import os
 from datetime import datetime, timedelta
 from distutils.util import strtobool
 from random import choice, randint, sample, uniform
 from typing import Text
 
 import click
+from pkg_resources import Environment
 import pyperclip
 
 from data_mass.account.accounts import (
@@ -65,6 +67,7 @@ from data_mass.common import (
     print_zone_menu_for_ms,
     save_environment_to_env,
     save_environment_zone_to_env,
+    show_env_variables,
     validate_environment,
     validate_option_request_selection,
     validate_user_entry_date,
@@ -286,7 +289,6 @@ from data_mass.supplier.product import create_product_supplier
 from data_mass.user.creation import create_user
 from data_mass.user.deletion import delete_user_v3
 from data_mass.validations import is_number, validate_yes_no_option
-
 def error_tz():
     print(f"{text.Red}\nTanzania only allows account and order creation")
     print_finish_application_menu()
@@ -296,8 +298,14 @@ def show_menu():
     get_email()
     print_welcome_script()
     selection_structure = print_structure_menu()
+    zone = print_zone_menu_for_ms()
+    environment = print_environment_menu()
+    save_environment_to_env(environment)
+    save_environment_zone_to_env(zone)
     option = print_available_options(selection_structure)
+
     if selection_structure == '1':
+
         switcher = {
             '0': finish_application,
             '1': account_menu,
@@ -373,10 +381,11 @@ def show_menu():
 
 
 def deals_information_menu():
-    zone = print_zone_menu_for_ms()
+    zone = os.environ['zone_env']
+    environment = os.environ['environment_env']
     if zone == "TZ":
         error_tz()
-    environment = print_environment_menu()
+    
     abi_id = print_account_id_menu(zone)
     if not abi_id:
         print_finish_application_menu()
@@ -398,11 +407,11 @@ def deals_information_menu():
 
 def product_information_menu():
     selection_structure = print_get_products_menu()
-    zone = print_zone_menu_for_ms()
+    zone = os.environ['zone_env']
+    environment = os.environ['environment_env']
     if zone == "TZ":
         error_tz()
-    environment = print_environment_menu()
-
+    
     switcher = {
         '1': 'PRODUCT',
         '2': 'INVENTORY',
@@ -486,10 +495,10 @@ def print_error_delivery_center_inventory(delivery_id: str):
 
 def account_information_menu():
     operation = print_get_account_operations_menu()
-    zone = print_zone_menu_for_ms()
+    zone = os.environ['zone_env']
+    environment = os.environ['environment_env']
     if zone == "TZ":
         error_tz()    
-    environment = print_environment_menu()
 
     return {
         '1': lambda: flow_get_account(zone, environment)
@@ -546,10 +555,10 @@ def create_rewards_to_account():
 
     reward_option = switcher.get(selection_structure, False)
  
-    zone = print_zone_menu_for_ms()
+    zone = os.environ['zone_env']
+    environment = os.environ['environment_env']
     if zone == "TZ":
         error_tz()
-    environment = print_environment_menu()
 
     # Option to create a new program
     if reward_option == 'NEW_PROGRAM':
@@ -680,8 +689,8 @@ def create_rewards_to_account():
 
 def order_menu():
     operation = print_order_operations_menu()
-    zone = print_zone_menu_for_ms()
-    environment = print_environment_menu()
+    zone = os.environ['zone_env']
+    environment = os.environ['environment_env']
     account_id = print_account_id_menu(zone)
 
     if not account_id:
@@ -1091,8 +1100,8 @@ def flow_update_order(
 
 # Place request for simulation service in microservice
 def check_simulation_service_account_microservice_menu():
-    zone = print_zone_menu_for_ms()
-    environment = print_environment_menu()
+    zone = os.environ['zone_env']
+    environment = os.environ['environment_env']
     abi_id = print_account_id_menu(zone)
     if not abi_id:
         print_finish_application_menu()
@@ -1197,7 +1206,8 @@ def check_simulation_service_account_microservice_menu():
 
 
 def deals_menu():
-    zone = print_zone_menu_for_ms()
+    zone = os.environ['zone_env']
+    environment = os.environ['environment_env']
     if zone == "TZ":
         error_tz()
     operation = print_deals_operations_menu(zone)
@@ -1208,7 +1218,6 @@ def deals_menu():
             print(text.Red + f'\n- {zone.upper()} is not a valid zone\n')
             zone = input(text.default_text_color + 'Zone (e.g., AR, BR, CO): ')
 
-    environment = print_environment_menu()
     account_id = print_account_id_menu(zone)
 
     if not account_id:
@@ -1548,10 +1557,10 @@ def flow_create_interactive_combos_v2(zone, environment, account_id, sku):
 # Input combos to an account
 def input_combos_menu():
     selection_structure = print_combos_menu()
-    zone = print_zone_menu_for_ms()
+    zone = os.environ['zone_env']
+    environment = os.environ['environment_env']
     if zone == "TZ":
         error_tz()
-    environment = print_environment_menu()
     if zone in ["TZ"]:
         print(f"{text.Red}This zone is not elegible for combos")
         print_finish_application_menu()
@@ -1614,10 +1623,10 @@ def input_combos_menu():
 
 
 def product_menu():
-    zone = print_zone_menu_for_ms()
+    zone = os.environ['zone_env']
+    environment = os.environ['environment_env']
     if zone == "TZ":
         error_tz()
-    environment = print_environment_menu()
     operation = print_product_operations_menu(zone)
 
     if zone in ["CA", "US"]:
@@ -1972,12 +1981,13 @@ def flow_input_empties_discounts(zone, environment):
 
 
 def account_menu():
+    zone = os.environ['zone_env']
+    environment = os.environ['environment_env']
     operation = print_account_operations_menu()
     if operation == '2':
         option = delivery_window_menu()
-    zone = print_zone_menu_for_ms()
-    environment = print_environment_menu()
-    account_id = print_account_id_menu(zone)
+    
+    account_id = print_account_id_menu(zone=os.environ["zone_env"])
 
     if not account_id:
         print_finish_application_menu()
@@ -1995,6 +2005,10 @@ def account_menu():
 
 
 def flow_create_account(zone, environment, account_id):
+    print(zone, environment)
+    zone = os.environ['zone_env']
+    environment = os.environ['environment_env']
+    print(zone, environment)
     name = print_account_name_menu()
     owner_infos = print_input_owner_infos()
     metadata = get_account_metadata()
@@ -2104,6 +2118,8 @@ def flow_create_account(zone, environment, account_id):
 
 
 def flow_create_delivery_window(zone, environment, account_id, option):
+    zone = os.environ['zone_env']
+    environment = os.environ['environment_env']
     allow_flexible_delivery_dates = [
         "AR", "BR", "CO", "DO", "EC", "MX", "PA", "PE", "US", "ZA"
     ]
@@ -2234,6 +2250,7 @@ def flow_update_account_name(zone, environment, account_id):
 
 
 def flow_update_account_status(zone, environment, account_id):
+
     # Call check account exists function
     account = check_account_exists_microservice(account_id, zone, environment)
     if not account:
@@ -2419,6 +2436,7 @@ def print_finish_application_menu():
     if option.upper() == 'Y':
         finish_application()
     else:
+        show_env_variables()
         show_menu()
 
 
@@ -2495,7 +2513,8 @@ def delete_user_iam():
 
 def invoice_menu():
     operation = print_invoice_operations_menu()
-    zone = print_zone_menu_for_ms()
+    zone = os.environ['zone_env']
+    environment = os.environ['environment_env']
     if zone == "TZ":
         error_tz()
 
@@ -2503,7 +2522,6 @@ def invoice_menu():
         print(text.Red + "\n- Function not available in this country.")
         print_finish_application_menu()
 
-    environment = print_environment_menu()
     account_id = print_account_id_menu(zone)
 
     if not account_id:
@@ -2865,8 +2883,8 @@ def create_categories_menu():
 
 def order_information_menu():
     selection_structure = print_get_order_menu()
-    zone = print_zone_menu_for_ms()
-    environment = print_environment_menu()
+    zone = os.environ['zone_env']
+    environment = os.environ['environment_env']
     abi_id = print_account_id_menu(zone)
     if not abi_id:
         print_finish_application_menu()
@@ -2891,10 +2909,10 @@ def order_information_menu():
 
 
 def recommender_information_menu():
-    zone = print_zone_menu_for_ms()
+    zone = os.environ['zone_env']
+    environment = os.environ['environment_env']
     if zone == "TZ":
         error_tz()
-    environment = print_environment_menu()
     account_id = print_account_id_menu(zone)
     if not account_id:
         print_finish_application_menu()
@@ -2909,10 +2927,10 @@ def recommender_information_menu():
 
 def retrieve_available_invoices_menu():
     status = print_invoice_status_menu_retriever()
-    zone = print_zone_menu_for_ms()
+    zone = os.environ['zone_env']
+    environment = os.environ['environment_env']
     if zone == "TZ":
         error_tz()
-    environment = print_environment_menu()
     abi_id = print_account_id_menu(zone)
 
     if not abi_id:
@@ -2930,10 +2948,10 @@ def retrieve_available_invoices_menu():
 
 
 def retriever_sku_menu():
-    zone = print_zone_menu_for_ms()
+    zone = os.environ['zone_env']
+    environment = os.environ['environment_env']
     if zone == "TZ":
         error_tz()
-    environment = print_environment_menu()
     account_id = print_account_id_menu(zone)
     if not account_id:
         print_finish_application_menu()
@@ -3256,7 +3274,6 @@ def create_product_menu():
         print_finish_application_menu()
     else:
         print_finish_application_menu()
-
 
 if __name__ == '__main__':
     try:
