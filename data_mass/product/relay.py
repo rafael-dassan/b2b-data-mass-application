@@ -17,7 +17,7 @@ from data_mass.common import (
     update_value_to_json
 )
 from data_mass.config import get_settings
-from data_mass.inventory.relay import request_inventory_creation
+from data_mass.inventory.relay import delete_inventory_for_delivery_center, request_inventory_creation
 from data_mass.menus.product_menu import get_skus_to_associate, print_product_quantity_menu, print_skus_specification_menu
 from data_mass.product.service import (
     check_item_enabled,
@@ -228,6 +228,7 @@ def get_payload_price_no_validfrom(
 def add_products_to_account_microservice(abi_id, zone, environment, delivery_center_id, all_products_zone):
     products_data = get_products_data(abi_id, zone, environment, delivery_center_id, all_products_zone)
     # Associate products to an account
+    delete_inventory_for_delivery_center(zone, environment, delivery_center_id)
     result = request_post_products_account_microservice(
         abi_id, zone, environment, delivery_center_id, products_data
     )
@@ -422,7 +423,6 @@ def associate_product_global(
 
     return False
 
-
 def associate_product_multivendor(
         zone: str,
         environment: str,
@@ -542,7 +542,7 @@ def associate_product_multivendor(
                 environment=environment,
                 account_id=vendor_account_id,
                 delivery_center_id=delivery_center_id,
-                products=skus_id,
+                skus_id=skus_id,
                 sku_quantity=randint(1, 10)
             )
 

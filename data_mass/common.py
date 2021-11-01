@@ -149,7 +149,7 @@ def get_header_request(zone, use_jwt_auth=False, use_root_auth=False, use_inclus
         'Content-Type': 'application/json',
         'country': zone,
         'requestTraceId': str(uuid1()),
-        'x-timestamp': str(int(round(time() * 1000))),
+        'x-timestamp': str(int(round(time()))),
         'cache-control': 'no-cache',
         'timezone': timezone
     }

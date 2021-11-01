@@ -115,15 +115,20 @@ def display_product_information(product_offers: list):
     product_information = []
 
     for product in product_offers:
+        limit = product.get("limit")
+        stockAvailable = product.get("inventoryCount")
+        if(limit and limit.get("balance") > 0):
+            stockAvailable = limit.get("balance")
+
         product_values = {
             "SKU": product.get("sku"),
             "Name": product.get("itemName"),
             "Price": product.get("price"),
-            "Stock Available": product.get("inventoryCount"),
+            "Stock Available": stockAvailable,
         }
         product_information.append(product_values)
 
-    print(text.default_text_color + "\nProduct Information By Account")
+    print(text.default_text_color + f"\nProduct Information By Account ({len(product_information)})")
     print(tabulate(product_information, headers="keys", tablefmt='fancy_grid'))
 
 
@@ -242,13 +247,17 @@ def display_items_information_zone(items: list):
 
     if items:
         for i in range(len(items)):
+
             dict_values = {
                 "SKU": items[i]["sku"],
                 "Name": items[i]["itemName"],
                 "Description": items[i]["description"],
-                "Brand Name": items[i]["brandName"],
-                "Returnable": items[i]["container"]["returnable"],
+                "Brand Name": items[i]["brandName"]
             }
+
+            if(items[i]["container"]):
+                dict_values["Returnable"] = items[i]["container"]["returnable"]
+
             list_items.append(dict_values)
     else:
         dict_values = {"Products": "None"}

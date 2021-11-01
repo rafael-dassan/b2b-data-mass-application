@@ -1,5 +1,5 @@
 from json import dumps, loads
-from typing import Optional
+from typing import Optional, Union
 
 import pkg_resources
 
@@ -10,6 +10,7 @@ from data_mass.common import (
     place_request,
     update_value_to_json
 )
+from data_mass.enforcement import update_sku_limit_enforcement_microservice
 
 
 def get_inventory_payload(
@@ -85,7 +86,7 @@ def request_inventory_creation(
         environment: str,
         account_id: str,
         delivery_center_id: str,
-        products: list,
+        skus_id: list,
         sku_id: Optional[str] = None,
         sku_quantity: Optional[int] = 0) -> bool:
     """
@@ -114,14 +115,26 @@ def request_inventory_creation(
         use_inclusion_auth=True
     )
 
+    if zone in ["BR", "DO", "ZA"]:
+        for sku_id in skus_id:
+            update_sku_limit_enforcement_microservice(
+                zone, 
+                environment,
+                account_id,
+                sku_id,
+                999999
+            )
+        # TODO: treat the status codes to check if some are not 202
+        return True
+
     if zone in ["CA", "US"]:
         endpoint: str = f"inventory-relay/inventory/{delivery_center_id}"
         is_v1: bool = False
 
         request_body: dict = {"inventory": []}
-        for product in products:
+        for sku_id in skus_id:
             request_body["inventory"].append({
-                "vendorItemId": product,
+                "vendorItemId": sku_id,
                 "quantity": sku_quantity
             })
     else:
@@ -129,7 +142,7 @@ def request_inventory_creation(
         endpoint: str = "inventory-relay/add"
 
         request_body: dict = get_inventory_payload(
-            products=products,
+            products=skus_id,
             delivery_center_id=delivery_center_id,
             sku_id=sku_id,
             sku_quantity=sku_quantity
@@ -145,6 +158,15 @@ def request_inventory_creation(
         request_headers=request_headers
     )
 
+    return handle_response(response)
+
+def create_skus_from_products_or_sku_id(skus_id: list, sku_id: Optional[str]): 
+    if(skus_id): 
+        return skus_id
+    else:
+        return [sku_id]
+
+def handle_response(response): 
     if response.status_code == 202:
         return True
 
@@ -154,5 +176,29 @@ def request_inventory_creation(
         f'Response Status: {response.status_code}. '
         f'Response message: {response.text}'
     )
+
+    return False
+
+def delete_inventory_for_delivery_center(
+        zone: str,
+        environment: str,
+        delivery_center_id: str) -> Union[bool, str]:
+    # Get headers
+    request_headers = get_header_request(zone=zone, use_inclusion_auth=True)
+    base_url = get_microservice_base_url(environment)
+
+    # Get base URL
+    request_url = f"{base_url}/inventory-relay/deliveryCenter/{delivery_center_id}"
+
+    # Send request
+    response = place_request(
+        request_method="DELETE",
+        request_url=request_url,
+        request_body=None,
+        request_headers=request_headers
+    )
+
+    if response.status_code == 202:
+        return True
 
     return False
