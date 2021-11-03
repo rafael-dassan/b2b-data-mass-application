@@ -33,7 +33,7 @@ def populate_invoice(country, environment, account_id, invoice_status, order_pre
         order_prefix: order prefix that composes the order ID
         invoice_prefix: invoice prefix that composes the invoice ID
     """
-    account = check_account_exists_microservice(account_id, country, environment)
+    account = check_account_exists_microservice(country, environment, account_id)
     if not account:
         logger.error(log(Message.RETRIEVE_ACCOUNT_ERROR, {'account_id': account_id}))
 

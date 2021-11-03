@@ -297,9 +297,11 @@ def show_menu():
     clear_terminal()
     get_email()
     print_welcome_script()
+    zone_env = os.getenv('zone_env')
+    environment_env=os.getenv('environment_env')
     selection_structure = print_structure_menu()
-    zone = print_zone_menu_for_ms()
-    environment = print_environment_menu()
+    zone = print_zone_menu_for_ms() if zone_env == None else zone_env
+    environment = print_environment_menu() if environment_env == None else environment_env
     save_environment_to_env(environment)
     save_environment_zone_to_env(zone)
     option = print_available_options(selection_structure)
