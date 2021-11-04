@@ -52,6 +52,7 @@ from data_mass.common import (
     print_environment_menu,
     print_environment_menu_in_user_create_iam,
     print_environment_menu_user_creation,
+    print_indicate_vendor_id,
     print_input_email,
     print_input_number,
     print_input_number_with_default,
@@ -299,11 +300,12 @@ def show_menu():
     print_welcome_script()
     zone_env = os.getenv('zone_env')
     environment_env=os.getenv('environment_env')
+    vendor_id_env = os.getenv('VENDOR_ID')
     selection_structure = print_structure_menu()
-    zone = print_zone_menu_for_ms() if zone_env == None else zone_env
-    environment = print_environment_menu() if environment_env == None else environment_env
-    save_environment_to_env(environment)
-    save_environment_zone_to_env(zone)
+    if (zone_env == None): print_zone_menu_for_ms()
+    if (environment_env == None): print_environment_menu()
+    if (vendor_id_env == None): print_indicate_vendor_id()
+
     option = print_available_options(selection_structure)
 
     if selection_structure == '1':

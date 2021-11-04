@@ -325,3 +325,8 @@ def validate_priority(option):
 def validate_acumulation_type(option):
     options = ['ADD', 'COMPOSE', 'UNIQUE', 'HIGH', 'LOW']
     return option in options
+
+def validate_vendor_id(vendor_id):
+    regex = re.compile('^[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}\Z', re.I)
+    match = regex.match(vendor_id)
+    return match

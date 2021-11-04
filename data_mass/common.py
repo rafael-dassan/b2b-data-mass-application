@@ -33,6 +33,7 @@ from data_mass.validations import (
     validate_structure,
     validate_supplier_menu_structure,
     validate_supplier_search_menu_structure,
+    validate_vendor_id,
     validate_zone_for_interactive_combos_ms,
     validate_zone_for_ms
 )
@@ -660,7 +661,16 @@ def print_environment_menu_user_creation():
 
     return environment.upper() 
 
-
+# Print vendor_id menu
+def print_vendor_id_menu():
+    vendor_id = input(text.default_text_color + "Vendor ID: ")
+    save_environment_vendor_id_to_env(vendor_id)
+    while not validate_vendor_id(vendor_id):
+        print(text.Red + f"\n- {vendor_id} is not a valid Vendor ID")
+        vendor_id = input(text.default_text_color + "Vendor ID: ")
+        save_environment_vendor_id_to_env(vendor_id)
+    
+    return vendor_id
 # Print user name menu
 def print_input_email():
     email = input(text.default_text_color + "User email/UserPhone: ")
@@ -1241,6 +1251,8 @@ def save_environment_to_env(environment):
 def save_environment_zone_to_env(zone):
     os.environ['zone_env']=zone.upper() 
 
+def save_environment_vendor_id_to_env(vendor_id):
+    os.environ['VENDOR_ID']=vendor_id
 
 def get_new_token():
     env = os.environ['environment_env']
@@ -1269,6 +1281,7 @@ def get_new_token():
 def show_env_variables():
     zone = os.environ['zone_env']
     environment = os.environ['environment_env']
+    vendor_id = os.environ['VENDOR_ID']
     print('\n')
     print(f"{text.Yellow} - You are using zone=[{zone}] and environment=[{environment}]")
     print('\n')
@@ -1277,3 +1290,16 @@ def show_env_variables():
         print_environment_menu()
         print_zone_menu_for_ms()
 
+    print('\n')
+    print(f"{text.Yellow} - You are using Vendor Id=[{vendor_id}]")
+    print('\n')
+    option = input(f"{text.Yellow}Do you want to change it ? (y/N) ")
+    if option.upper() == "Y":
+        print_vendor_id_menu()
+
+def print_indicate_vendor_id():
+    selector = input(f"{text.Yellow}Do you want to  indicate the Vendor ID? (y/N) ")
+    if selector.upper() == "Y":
+        print_vendor_id_menu()
+    else:
+        save_environment_vendor_id_to_env('x')
