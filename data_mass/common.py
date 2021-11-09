@@ -320,7 +320,7 @@ def get_magento_user_registration_access_token(
             'PE': 'hwv67q9d3zyy2u500n2x0r5g7mr2j5is',
             'PY': '03ijjunt2djravu3kin3siirfdah0u7j',
             'ZA': 'nmvvuk58lc425a7p5l55orrkgh0jprr2',
-            'UY': 'Placeholder'
+            'UY': 'wfuqds2xd2ufmagho4qm2n9suc5qwuxk'
         },
         'UAT': {
             'AR': '30lqki06nbdegugcmdb0ttm9yppnmoec',
@@ -334,7 +334,7 @@ def get_magento_user_registration_access_token(
             'PE': '4z0crqq6yb6t5mip43i63tgntdll09vc',
             'PY': 'z3l3d1l09hxd9wy0jmnphfwj09o8iefn',
             'ZA': '31pdb0yht5kn3eld7gum021f6k984jh9',
-            'UY': 'Placeholder'
+            'UY': 'fjsmjuj8d022z19yn7sa196wcfsjp006'
         }
     }
 
