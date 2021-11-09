@@ -2108,7 +2108,7 @@ def flow_create_delivery_window(zone, environment, account_id, option):
         "AR", "BR", "CO", "DO", "EC", "MX", "PA", "PE", "US", "ZA"
     ]
     allow_delivery_cost = [
-        "AR", "BR", "CO", "DO", "EC", "MX", "PE", "US", "ZA"
+        "AR", "BR", "CO", "DO", "EC", "MX", "PA", "PE", "US", "ZA"
     ]
 
     # Call check account exists function
