@@ -33,6 +33,7 @@ from data_mass.product.utils import (
 )
 
 ZONES_NEW_ENDPOINT = ["AR", "PY", "UY"]
+ZONE_NOT_MIGRATED = ['BR','CO','DO','EC','MX','PE','ZA', 'UY']
 
 
 
@@ -77,7 +78,17 @@ def request_post_price_microservice(
             sku_product=sku_product,
             product_price_id=product_price_id,
             price_values=price_values,
-            #zone=zone
+            
+        )
+
+    elif zone in ZONE_NOT_MIGRATED:
+        request_url = f"{base_url}/price-relay/v2"
+        request_body = get_payload_price_v2(
+            account_id=account_id,
+            sku_product=sku_product,
+            product_price_id=product_price_id,
+            price_values=price_values,
+            
         )
     elif zone in ["CA", "US"]:
         request_url = f"{base_url}/price-relay/v2"
