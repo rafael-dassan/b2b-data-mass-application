@@ -7,6 +7,7 @@ from data_mass.classes.text import text
 from data_mass.common import (
     get_header_request,
     get_microservice_base_url,
+    get_new_token,
     remove_from_dictionary,
     set_to_dictionary
 )
@@ -64,6 +65,7 @@ def create_file_api(
     set_to_dictionary(request_headers, "purpose", purpose)
     set_to_dictionary(request_headers, "title", title)
     set_to_dictionary(request_headers, "expiresAt", "")
+    set_to_dictionary(request_headers, 'Authorization', get_new_token())
     remove_from_dictionary(request_headers, "Content-Type")
 
     # Define url request
