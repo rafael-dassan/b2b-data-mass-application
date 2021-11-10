@@ -32,7 +32,8 @@ from data_mass.product.utils import (
     slice_array_products
 )
 
-ZONES_NEW_ENDPOINT = ["AR", "PY", "PA", "SV", "UY", "TZ"]
+ZONES_NEW_ENDPOINT = ["AR", "PY", "UY"]
+
 
 
 def request_post_price_microservice(
@@ -69,9 +70,9 @@ def request_post_price_microservice(
     request_headers = get_header_request(zone)
     base_url = get_microservice_base_url(environment, False)
     
-    if zone in ZONES_NEW_ENDPOINT:
+    if zone not in ZONES_NEW_ENDPOINT:
         request_url = f"{base_url}/price-relay/v2"
-        request_body = get_payload_price_v2(
+        request_body = get_payload_price_no_validfrom(
             account_id=account_id,
             sku_product=sku_product,
             product_price_id=product_price_id,
